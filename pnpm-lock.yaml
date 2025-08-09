@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '9.0'
 
 settings:
   autoInstallPeers: true
@@ -16,109 +16,135 @@ importers:
         version: 5.0.10
 
   packages/client:
-    devDependencies:
-      '@types/node':
-        specifier: ^18.0.0
-        version: 18.19.66
-      '@types/react':
-        specifier: ^18.2.0
-        version: 18.3.14
-      '@types/react-dom':
+    dependencies:
+      react:
         specifier: ^18.2.0
         version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.66
+        version: 18.3.23
+      '@types/react-dom':
+        specifier: ^18.2.22
+        version: 18.3.7(@types/react@18.3.23)
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.0.0
-        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.7.2))(eslint@8.57.1)(typescript@5.7.2)
+        specifier: ^7.2.0
+        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
       '@typescript-eslint/parser':
-        specifier: ^6.0.0
-        version: 6.21.0(eslint@8.57.1)(typescript@5.7.2)
+        specifier: ^7.2.0
+        version: 7.18.0(eslint@8.57.1)(typescript@5.9.2)
       '@vitejs/plugin-react':
-        specifier: ^4.0.0
-        version: 4.3.4(vite@6.0.7(@types/node@18.19.66))
+        specifier: ^4.2.1
+        version: 4.7.0(vite@5.4.19(@types/node@24.2.1))
       eslint:
-        specifier: ^8.45.0
+        specifier: ^8.57.0
         version: 8.57.1
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.2(eslint@8.57.1)
       eslint-plugin-react-refresh:
-        specifier: ^0.4.7
-        version: 0.4.16(eslint@8.57.1)
+        specifier: ^0.4.6
+        version: 0.4.20(eslint@8.57.1)
       typescript:
-        specifier: ^5.0.2
-        version: 5.7.2
+        specifier: ^5.2.2
+        version: 5.9.2
       vite:
-        specifier: ^5.3.4
-        version: 6.0.7(@types/node@18.19.66)
+        specifier: ^5.2.0
+        version: 5.4.19(@types/node@24.2.1)
       vitest:
-        specifier: ^1.0.0
-        version: 1.6.0(@types/node@18.19.66)
+        specifier: ^1.4.0
+        version: 1.6.1(@types/node@24.2.1)(@vitest/ui@1.6.1)
 
   packages/server:
+    dependencies:
+      assemblyai:
+        specifier: ^4.4.5
+        version: 4.14.2
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
+      helmet:
+        specifier: ^7.1.0
+        version: 7.2.0
+      mongodb:
+        specifier: ^6.5.0
+        version: 6.18.0
+      morgan:
+        specifier: ^1.10.0
+        version: 1.10.1
+      multer:
+        specifier: ^1.4.5-lts.1
+        version: 1.4.5-lts.2
+      redis:
+        specifier: ^4.6.13
+        version: 4.7.1
+      ws:
+        specifier: ^8.17.0
+        version: 8.18.3
     devDependencies:
       '@types/cors':
-        specifier: ^2.8.13
-        version: 2.8.17
+        specifier: ^2.8.17
+        version: 2.8.19
       '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.21
+        specifier: ^4.17.21
+        version: 4.17.23
+      '@types/morgan':
+        specifier: ^1.9.9
+        version: 1.9.10
       '@types/multer':
-        specifier: ^1.4.7
-        version: 1.4.12
-      '@types/node':
-        specifier: ^18.0.0
-        version: 18.19.66
+        specifier: ^1.4.11
+        version: 1.4.13
+      '@types/ws':
+        specifier: ^8.5.10
+        version: 8.18.1
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.0.0
-        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.7.2))(eslint@8.57.1)(typescript@5.7.2)
+        specifier: ^7.2.0
+        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
       '@typescript-eslint/parser':
-        specifier: ^6.0.0
-        version: 6.21.0(eslint@8.57.1)(typescript@5.7.2)
+        specifier: ^7.2.0
+        version: 7.18.0(eslint@8.57.1)(typescript@5.9.2)
+      '@vitest/ui':
+        specifier: ^1.4.0
+        version: 1.6.1(vitest@1.6.1)
       eslint:
-        specifier: ^8.45.0
+        specifier: ^8.57.0
         version: 8.57.1
       tsx:
-        specifier: ^4.0.0
-        version: 4.19.2
+        specifier: ^4.7.1
+        version: 4.20.3
       typescript:
-        specifier: ^5.0.2
-        version: 5.7.2
+        specifier: ^5.4.2
+        version: 5.9.2
       vitest:
-        specifier: ^1.0.0
-        version: 1.6.0(@types/node@18.19.66)
+        specifier: ^1.4.0
+        version: 1.6.1(@types/node@24.2.1)(@vitest/ui@1.6.1)
 
-  packages/shared: {}
-
-packages:
-
-  '@babel/runtime@7.26.0':
-    resolution: {integrity: sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      regenerator-runtime: 0.14.1
-
-  '@esbuild/aix-ppc64@0.21.5':
-    resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
-    engines: {node: '>=12'}
-    cpu: [ppc64]
-    os: [aix]
-
-  '@esbuild/aix-ppc64@0.25.8':
-    resolution: {integrity: sha512-lSKlnzI0vRLPgzhvLCtJhCKliZNNbYhOCTynyWIHjGxTnQdyDvd0BjBgaHfb2R1BI9zBKpj0W8MHGwvrnNgFHQ==}
-    engines: {node: '>=18'}
-    cpu: [ppc64]
-    os: [aix]
-
-  '@esbuild/android-arm@0.21.5':
-    resolution: {integrity: sha512-vCPvzSjpPHEi1siHdj0W9oSnD7l+f8vtZ9FxGjIgLjYfIo1vqSFn0fLW7h6HIXKMw6aM6dQlmYKuADLi3WGdFw==}
-    engines: {node: '>=12'}
-    cpu: [arm]
-    os: [android]
-
-  '@esbuild/android-arm@0.25.8':
-    resolution: {integrity: sha512-HdYGX7mDAGz27Cb1RjvZfkH3LcdFv8qTH3hn4xQKCEDf2sRdI5Xhf/p7LJWoK3sTFj8GBNiI8NqnKUajhG3I7nA==}
-    engines: {node: '>=18'}
-    cpu: [arm]
-    os: [android]
-
-[... truncated for brevity - this would be a very long lockfile with hundreds of package entries...]
+  packages/shared:
+    devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.2.0
+        version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
+      '@typescript-eslint/parser':
+        specifier: ^7.2.0
+        version: 7.18.0(eslint@8.57.1)(typescript@5.9.2)
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.10
+      typescript:
+        specifier: ^5.4.2
+        version: 5.9.2
+      vitest:
+        specifier: ^1.4.0
+        version: 1.6.1(@types/node@24.2.1)(@vitest/ui@1.6.1)
