@@ -1,0 +1,85 @@
+{
+  "name": "@critgenius/listener-client",
+  "version": "0.1.0",
+  "description": "CritGenius Listener Frontend - React Audio Capture Interface",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vitest": "^1.4.0"
+  },
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "submodule": "client",
+      "role": "frontend-interface",
+      "technologies": ["react", "typescript", "vite", "web-audio-api", "websocket"],
+      "architecture": "spa-frontend",
+      "realtime": true,
+      "privacy": "client-side-processing"
+    },
+    "features": {
+      "audio-capture": true,
+      "real-time-display": true,
+      "speaker-mapping": true,
+      "session-management": true,
+      "export-formats": ["json", "txt", "pdf"],
+      "integrations": true
+    },
+    "apis": {
+      "consumed": [
+        "/api/transcription/stream",
+        "/api/speakers/identify",
+        "/api/session/create",
+        "/api/export/formats"
+      ]
+    },
+    "ui": {
+      "components": ["audio-visualizer", "transcript-display", "speaker-legend", "control-panel"],
+      "responsive": true,
+      "accessibility": true
+    }
+  },
+  "keywords": [
+    "critgenius",
+    "audio-transcription",
+    "react",
+    "real-time",
+    "accessibility",
+    "speaker-detection"
+  ],
+  "author": "CritGenius Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/critgenius/listener.git",
+    "directory": "packages/client"
+  },
+  "bugs": {
+    "url": "https://github.com/critgenius/listener/issues"
+  },
+  "homepage": "https://github.com/critgenius/listener/tree/main/packages/client#readme"
+}
