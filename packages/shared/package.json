@@ -1,0 +1,120 @@
+{
+  "name": "@critgenius/listener-shared",
+  "version": "0.1.0",
+  "description": "CritGenius Listener Shared - TypeScript Types and Utilities",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./interfaces": {
+      "types": "./dist/interfaces/index.d.ts",
+      "import": "./dist/interfaces/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext ts --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "eslint": "^8.57.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2",
+    "vitest": "^1.4.0"
+  },
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "submodule": "shared",
+      "role": "type-definitions",
+      "technologies": ["typescript"],
+      "architecture": "shared-library",
+      "realtime": false,
+      "privacy": "type-safe"
+    },
+    "features": {
+      "type-definitions": true,
+      "utility-functions": true,
+      "constants": true,
+      "validation-schemas": true,
+      "error-types": true,
+      "event-types": true
+    },
+    "exports": {
+      "types": {
+        "audio": "./types/audio.ts",
+        "transcription": "./types/transcription.ts",
+        "speaker": "./types/speaker.ts",
+        "session": "./types/session.ts",
+        "export": "./types/export.ts",
+        "integration": "./types/integration.ts",
+        "api": "./types/api.ts",
+        "events": "./types/events.ts"
+      },
+      "interfaces": {
+        "services": "./interfaces/services.ts",
+        "repositories": "./interfaces/repositories.ts",
+        "handlers": "./interfaces/handlers.ts",
+        "middleware": "./interfaces/middleware.ts"
+      },
+      "utils": {
+        "validation": "./utils/validation.ts",
+        "formatting": "./utils/formatting.ts",
+        "time": "./utils/time.ts",
+        "audio": "./utils/audio.ts"
+      },
+      "constants": {
+        "api": "./constants/api.ts",
+        "audio": "./constants/audio.ts",
+        "export": "./constants/export.ts",
+        "errors": "./constants/errors.ts"
+      }
+    },
+    "consumers": [
+      "@critgenius/listener-client",
+      "@critgenius/listener-server"
+    ]
+  },
+  "keywords": [
+    "critgenius",
+    "typescript",
+    "types",
+    "shared",
+    "audio-transcription",
+    "type-definitions"
+  ],
+  "author": "CritGenius Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/critgenius/listener.git",
+    "directory": "packages/shared"
+  },
+  "bugs": {
+    "url": "https://github.com/critgenius/listener/issues"
+  },
+  "homepage": "https://github.com/critgenius/listener/tree/main/packages/shared#readme"
+}
