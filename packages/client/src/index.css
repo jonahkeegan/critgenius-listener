@@ -1,0 +1,312 @@
+/**
+ * Global styles for CritGenius Listener React application
+ * Provides modern, clean styling with focus on usability and accessibility
+ */
+
+:root {
+  /* Color palette */
+  --primary-color: #646cff;
+  --primary-hover: #535bf2;
+  --secondary-color: #f9f9f9;
+  --background-color: #ffffff;
+  --text-color: #213547;
+  --text-secondary: #747bff;
+  --border-color: #e0e0e0;
+  --error-color: #ff6b6b;
+  --success-color: #51cf66;
+  --warning-color: #ffd43b;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  
+  /* Typography */
+  --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  
+  /* Borders and shadows */
+  --border-radius: 8px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #747bff;
+    --primary-hover: #646cff;
+    --secondary-color: #1a1a1a;
+    --background-color: #242424;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --text-secondary: #888;
+    --border-color: #404040;
+  }
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family);
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--font-size-2xl);
+}
+
+h2 {
+  font-size: var(--font-size-xl);
+}
+
+h3 {
+  font-size: var(--font-size-lg);
+}
+
+p {
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+/* App layout */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.app-header {
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+.app-header h1 {
+  margin-bottom: var(--spacing-xs);
+  color: var(--primary-color);
+}
+
+.app-header p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.version {
+  display: inline-block;
+  background: var(--secondary-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.app-main {
+  flex: 1;
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sections */
+section {
+  padding: var(--spacing-md);
+  background: var(--secondary-color);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+}
+
+section h2 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Recording controls */
+.recording-controls {
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.record-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-lg);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  min-width: 180px;
+}
+
+.record-button.start {
+  background: var(--success-color);
+  color: white;
+}
+
+.record-button.start:hover {
+  background: #45c760;
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.record-button.stop {
+  background: var(--error-color);
+  color: white;
+}
+
+.record-button.stop:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+/* File upload */
+.file-upload {
+  margin-bottom: var(--spacing-md);
+}
+
+.file-upload label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
+}
+
+.file-upload input[type="file"] {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--background-color);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.file-upload input[type="file"]:hover {
+  border-color: var(--primary-color);
+}
+
+/* File list */
+.file-list {
+  background: var(--background-color);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.file-list h3 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-color);
+}
+
+.file-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-list li {
+  padding: var(--spacing-xs) 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+}
+
+.file-list li:last-child {
+  border-bottom: none;
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Loading and status indicators */
+.status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: var(--spacing-xs);
+}
+
+.status-indicator.success {
+  background: var(--success-color);
+}
+
+.status-indicator.error {
+  background: var(--error-color);
+}
+
+.status-indicator.warning {
+  background: var(--warning-color);
+}
+
+.status-indicator.processing {
+  background: var(--primary-color);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
