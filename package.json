@@ -1,77 +1,125 @@
 {
-  "name": "@critgenius/listener",
+  "name": "critgenius-listener",
   "version": "0.1.0",
-  "description": "CritGenius Listener - Real-time audio capture and processing for intelligent feedback analysis",
+  "description": "D&D Audio Capture & Transcription System with Real-time Speaker-to-Character Mapping",
   "type": "module",
   "private": true,
-  "keywords": [
-    "audio",
-    "real-time",
-    "feedback",
-    "analysis",
-    "typescript",
-    "react",
-    "express"
+  "workspaces": [
+    "packages/*"
   ],
-  "author": {
-    "name": "Jonah Keegan",
-    "email": "jonah@clicktruemedia.com"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jonahkeegan/critgenius-listener.git"
-  },
-  "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
-  "bugs": {
-    "url": "https://github.com/jonahkeegan/critgenius-listener/issues"
-  },
+  "packageManager": "pnpm@8.15.8",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@9.15.0",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "dev": "concurrently \"pnpm --filter @critgenius/server dev\" \"pnpm --filter @critgenius/client dev\"",
-    "build": "pnpm --filter @critgenius/shared build && pnpm --filter @critgenius/server build && pnpm --filter @critgenius/client build",
-    "start": "pnpm --filter @critgenius/server start",
-    "clean": "pnpm --recursive exec rimraf dist build .turbo node_modules/.cache",
-    "clean:all": "pnpm clean && pnpm --recursive exec rimraf node_modules && rimraf node_modules",
-    "test": "pnpm --recursive test",
-    "test:unit": "pnpm --recursive test:unit",
-    "test:integration": "pnpm --recursive test:integration",
-    "test:watch": "pnpm --recursive test:watch",
-    "test:coverage": "pnpm --recursive test:coverage",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "pnpm lint --fix",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "type-check": "pnpm --recursive type-check",
-    "install:clean": "pnpm clean:all && pnpm install",
-    "prepare": "husky install",
-    "precommit": "pnpm lint:fix && pnpm format && pnpm type-check"
+    "dev": "pnpm --parallel --stream run dev",
+    "build": "pnpm --recursive run build",
+    "test": "pnpm --recursive run test",
+    "test:watch": "pnpm --recursive run test:watch",
+    "test:ui": "pnpm --recursive run test:ui",
+    "test:coverage": "pnpm --recursive run test:coverage",
+    "test:integration": "pnpm --recursive run test:integration",
+    "test:client": "pnpm --filter @critgenius/listener-client run test",
+    "test:server": "pnpm --filter @critgenius/listener-server run test",
+    "test:shared": "pnpm --filter @critgenius/listener-shared run test",
+    "lint": "pnpm --recursive run lint",
+    "lint:fix": "pnpm --recursive run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "pnpm --recursive run clean && rimraf dist",
+    "setup": "pnpm install && pnpm run build",
+    "type-check": "pnpm --recursive run type-check",
+    "prepare": "husky"
   },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "catalog:",
-    "@typescript-eslint/parser": "catalog:",
-    "concurrently": "catalog:",
-    "eslint": "catalog:",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "husky": "^9.1.6",
-    "prettier": "catalog:",
-    "rimraf": "catalog:",
-    "typescript": "catalog:",
-    "typescript-eslint": "^8.15.0"
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "role": "audio-processor",
+      "version": "0.1.0",
+      "integrations": {
+        "prompter": "^1.0.0",
+        "llm": "^1.0.0",
+        "publisher": "^1.0.0"
+      },
+      "capabilities": [
+        "real-time-transcription",
+        "speaker-diarization",
+        "character-mapping",
+        "session-recording"
+      ],
+      "apis": {
+        "export": "/api/export",
+        "transcription": "/api/transcription",
+        "speakers": "/api/speakers",
+        "integration": "/api/integration"
+      }
+    },
+    "architecture": {
+      "pattern": "modular-monolith",
+      "deployment": "containerized",
+      "realtime": true,
+      "privacy-first": true
+    }
+  },
+  "keywords": [
+    "critgenius",
+    "dnd",
+    "dungeons-dragons",
+    "transcription",
+    "speaker-diarization",
+    "tabletop-rpg",
+    "audio-processing",
+    "real-time",
+    "gaming"
+  ],
+  "author": "CritGenius Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crit-genius/listener.git"
+  },
+  "bugs": {
+    "url": "https://github.com/crit-genius/listener/issues"
+  },
+  "homepage": "https://github.com/crit-genius/listener#readme",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.{css,scss}": [
+      "prettier --write"
+    ]
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "catalog:",
-      "@types/react-dom": "catalog:"
+      "esbuild": ">=0.25.0"
     }
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.6.2",
+    "rimraf": "^5.0.0",
+    "supertest": "^7.1.4",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.2.4"
   }
 }
