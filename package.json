@@ -2,6 +2,7 @@
   "name": "critgenius-listener",
   "version": "0.1.0",
   "description": "D&D Audio Capture & Transcription System with Real-time Speaker-to-Character Mapping",
+  "type": "module",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -15,12 +16,20 @@
     "dev": "pnpm --parallel --stream run dev",
     "build": "pnpm --recursive run build",
     "test": "pnpm --recursive run test",
+    "test:watch": "pnpm --recursive run test:watch",
+    "test:ui": "pnpm --recursive run test:ui",
+    "test:coverage": "pnpm --recursive run test:coverage",
+    "test:integration": "pnpm --recursive run test:integration",
+    "test:client": "pnpm --filter @critgenius/listener-client run test",
+    "test:server": "pnpm --filter @critgenius/listener-server run test",
+    "test:shared": "pnpm --filter @critgenius/listener-shared run test",
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "pnpm --recursive run clean && rimraf dist",
     "setup": "pnpm install && pnpm run build",
-    "type-check": "pnpm --recursive run type-check"
+    "type-check": "pnpm --recursive run type-check",
+    "prepare": "husky"
   },
   "critgenius": {
     "ecosystem": {
@@ -29,7 +38,7 @@
       "version": "0.1.0",
       "integrations": {
         "prompter": "^1.0.0",
-        "llm": "^1.0.0", 
+        "llm": "^1.0.0",
         "publisher": "^1.0.0"
       },
       "capabilities": [
@@ -54,7 +63,7 @@
   },
   "keywords": [
     "critgenius",
-    "dnd", 
+    "dnd",
     "dungeons-dragons",
     "transcription",
     "speaker-diarization",
@@ -67,14 +76,45 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jonahkeegan/critgenius-listener.git"
+    "url": "https://github.com/crit-genius/listener.git"
   },
   "bugs": {
-    "url": "https://github.com/jonahkeegan/critgenius-listener/issues"
+    "url": "https://github.com/crit-genius/listener/issues"
   },
-  "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
+  "homepage": "https://github.com/crit-genius/listener#readme",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.{css,scss}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.5",
+    "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
-    "prettier": "^3.0.0"
+    "supertest": "^7.1.4",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.2.4"
   }
 }
