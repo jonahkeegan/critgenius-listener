@@ -1,15 +1,29 @@
-import { describe, it, expect } from 'vitest'
-import { version } from './version'
+/**
+ * @fileoverview Tests for version utilities
+ */
 
-describe('Version Module', () => {
-  it('should export a version string', () => {
-    expect(version).toBeDefined()
-    expect(typeof version).toBe('string')
-  })
+import { describe, it, expect } from 'vitest';
+import { version, getVersionInfo } from './version.js';
 
-  it('should follow semantic versioning pattern', () => {
-    // Basic semantic versioning pattern: X.Y.Z
-    const semverPattern = /^\d+\.\d+\.\d+$/
-    expect(version).toMatch(semverPattern)
-  })
-})
+describe('Version utilities', () => {
+  it('should export a valid version', () => {
+    expect(version).toBeDefined();
+    expect(typeof version).toBe('string');
+    expect(version).toMatch(/^\d+\.\d+\.\d+/);
+  });
+
+  it('should return comprehensive version info', () => {
+    const versionInfo = getVersionInfo();
+    
+    expect(versionInfo).toBeDefined();
+    expect(versionInfo.version).toBe(version);
+    expect(versionInfo.buildTime).toBeDefined();
+    expect(versionInfo.nodeVersion).toBeDefined();
+    
+    // Validate ISO date format
+    expect(new Date(versionInfo.buildTime).toISOString()).toBe(versionInfo.buildTime);
+    
+    // Validate Node.js version format
+    expect(versionInfo.nodeVersion).toMatch(/^v\d+\.\d+\.\d+/);
+  });
+});
