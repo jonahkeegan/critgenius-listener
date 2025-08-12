@@ -1,9 +1,9 @@
 # Consolidated Learnings - File 001
 
 **Created:** 2025-01-11 19:49 PST  
-**Last Updated:** 2025-01-11 19:49 PST  
-**Row Count:** 92  
-**Version:** 1.0.0
+**Last Updated:** 2025-01-12 07:23 PST  
+**Row Count:** 98  
+**Version:** 1.0.1
 
 ## TypeScript & Monorepo Architecture
 
@@ -137,3 +137,17 @@
   requirements
 - _Rationale:_ External validation tools reduce risk of dependency conflicts and security
   vulnerabilities
+
+## Material UI Integration
+
+### Pattern: Material UI v7 Installation Strategy
+
+- **Dependency Harmonization:** Use Context7 MCP to validate Material UI dependencies for version
+  stability, security, and React compatibility
+- **Emotion Integration:** Install @emotion/react and @emotion/styled alongside @mui/material for
+  CSS-in-JS styling engine
+- **Icon Library:** Include @mui/icons-material for comprehensive Material Design icon support
+- **Version Alignment:** Ensure @mui/material and @mui/icons-material versions match for
+  compatibility
+- _Rationale:_ Modern Material UI v7 provides React 19 forward compatibility and comprehensive
+  component library for rapid UI development
