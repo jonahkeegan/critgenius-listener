@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CritGenius Listener - D&D Audio Capture & Transcription</title>
+    <meta name="description" content="Real-time audio capture and transcription system for D&D sessions with speaker-to-character mapping" />
+    
+    <!-- Web Audio API requires HTTPS or localhost -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Audio processing optimizations -->
+    <meta name="audio-processing" content="low-latency" />
+    
+    <!-- Theme and appearance -->
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="color-scheme" content="light dark" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

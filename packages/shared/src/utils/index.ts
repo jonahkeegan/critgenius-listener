@@ -13,12 +13,20 @@ export function createApiResponse<T>(
   data?: T,
   error?: string
 ): ApiResponse<T> {
-  return {
+  const response: ApiResponse<T> = {
     success,
-    data,
-    error,
     timestamp: new Date().toISOString(),
   };
+
+  if (data !== undefined) {
+    response.data = data;
+  }
+
+  if (error !== undefined) {
+    response.error = error;
+  }
+
+  return response;
 }
 
 /**
@@ -26,11 +34,11 @@ export function createApiResponse<T>(
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
@@ -50,7 +58,7 @@ export function isValidAudioFile(mimeType: string): boolean {
     'audio/webm',
     'audio/flac',
   ];
-  
+
   return validTypes.includes(mimeType.toLowerCase());
 }
 
@@ -75,21 +83,21 @@ export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as T;
   }
-  
+
   if (Array.isArray(obj)) {
     return obj.map(item => deepClone(item)) as T;
   }
-  
+
   const cloned = {} as T;
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
       cloned[key] = deepClone(obj[key]);
     }
   }
-  
+
   return cloned;
 }

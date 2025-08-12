@@ -3,13 +3,13 @@
  * Common interface definitions used across client and server applications
  */
 
-import type { AudioFileMetadata, AudioProcessingResult } from '../types/index.js';
+import type { AudioProcessingResult } from '../types/index.js';
 
 /**
  * Interface for audio upload request
  */
 export interface AudioUploadRequest {
-  files: File[] | Express.Multer.File[];
+  files: File[] | any[]; // Support both browser File and server-side files
   metadata?: {
     userId?: string;
     sessionId?: string;

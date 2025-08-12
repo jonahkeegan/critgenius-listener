@@ -19,8 +19,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "@critgenius/shared": "workspace:*"
   },
   "devDependencies": {
@@ -37,13 +37,7 @@
       "component": "listener",
       "submodule": "client",
       "role": "frontend-interface",
-      "technologies": [
-        "react",
-        "typescript",
-        "vite",
-        "web-audio-api",
-        "websocket"
-      ],
+      "technologies": ["react", "typescript", "vite", "web-audio-api", "websocket"],
       "architecture": "spa-frontend",
       "realtime": true,
       "privacy": "client-side-processing"
@@ -53,40 +47,19 @@
       "real-time-display": true,
       "speaker-mapping": true,
       "session-management": true,
-      "export-formats": [
-        "json",
-        "txt",
-        "pdf"
-      ],
+      "export-formats": ["json", "txt", "pdf"],
       "integrations": true
     },
     "apis": {
-      "consumed": [
-        "/api/transcription/stream",
-        "/api/speakers/identify",
-        "/api/session/create",
-        "/api/export/formats"
-      ]
+      "consumed": ["/api/transcription/stream", "/api/speakers/identify", "/api/session/create", "/api/export/formats"]
     },
     "ui": {
-      "components": [
-        "audio-visualizer",
-        "transcript-display",
-        "speaker-legend",
-        "control-panel"
-      ],
+      "components": ["audio-visualizer", "transcript-display", "speaker-legend", "control-panel"],
       "responsive": true,
       "accessibility": true
     }
   },
-  "keywords": [
-    "critgenius",
-    "audio-transcription",
-    "react",
-    "real-time",
-    "accessibility",
-    "speaker-detection"
-  ],
+  "keywords": ["critgenius", "audio-transcription", "react", "real-time", "accessibility", "speaker-detection"],
   "author": "CritGenius Team",
   "license": "MIT",
   "repository": {
