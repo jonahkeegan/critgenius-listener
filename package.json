@@ -76,12 +76,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/crit-genius/listener.git"
+    "url": "https://github.com/jonahkeegan/critgenius-listener.git"
   },
   "bugs": {
-    "url": "https://github.com/crit-genius/listener/issues"
+    "url": "https://github.com/jonahkeegan/critgenius-listener/issues"
   },
-  "homepage": "https://github.com/crit-genius/listener#readme",
+  "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
