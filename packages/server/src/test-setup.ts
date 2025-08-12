@@ -3,7 +3,7 @@
  * Configures test environment and global utilities for Node.js testing
  */
 
-import { expect, vi } from 'vitest';
+import { vi } from 'vitest';
 
 // Extend global object with test utilities
 declare global {
@@ -31,7 +31,7 @@ process.env.ASSEMBLYAI_API_KEY = 'test-api-key';
 
 // Mock external services if needed
 vi.mock('dotenv', () => ({
-  config: vi.fn()
+  config: vi.fn(),
 }));
 
 // Setup test database or storage mocks
@@ -42,13 +42,15 @@ global.testUtils = {
   /**
    * Create a mock Express.Multer.File object for testing
    */
-  createMockFile: (options: {
-    filename?: string;
-    originalname?: string;
-    mimetype?: string;
-    size?: number;
-    buffer?: Buffer;
-  } = {}) => ({
+  createMockFile: (
+    options: {
+      filename?: string;
+      originalname?: string;
+      mimetype?: string;
+      size?: number;
+      buffer?: Buffer;
+    } = {}
+  ) => ({
     fieldname: 'audio',
     originalname: options.originalname || 'test.wav',
     encoding: '7bit',
@@ -59,11 +61,12 @@ global.testUtils = {
     size: options.size || 1024,
     buffer: options.buffer || Buffer.from('mock audio data'),
   }),
-  
+
   /**
    * Generate a mock upload ID for testing
    */
-  generateMockUploadId: () => `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  generateMockUploadId: () =>
+    `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
 };
 
 console.log('✅ Server test environment configured successfully!');
