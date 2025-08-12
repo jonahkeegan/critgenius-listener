@@ -4,7 +4,10 @@
 
 ## Overview
 
-CritGenius Listener is a modular monolith application that provides real-time audio capture, transcription, and speaker identification capabilities. Built as part of the CritGenius ecosystem, it seamlessly integrates with other components for comprehensive content analysis and publishing workflows.
+CritGenius Listener is a modular monolith application that provides real-time audio capture,
+transcription, and speaker identification capabilities. Built as part of the CritGenius ecosystem,
+it seamlessly integrates with other components for comprehensive content analysis and publishing
+workflows.
 
 ## Architecture
 
@@ -18,7 +21,9 @@ CritGenius Listener is a modular monolith application that provides real-time au
 This monorepo contains three main packages:
 
 ### 📱 Client (`packages/client`)
+
 React-based frontend application providing:
+
 - Real-time audio capture interface
 - Live transcription display with speaker mapping
 - Session management and export capabilities
@@ -27,7 +32,9 @@ React-based frontend application providing:
 **Technologies**: React, TypeScript, Vite, Web Audio API, WebSocket
 
 ### ⚙️ Server (`packages/server`)
+
 Node.js backend processing engine featuring:
+
 - Real-time audio stream processing
 - AssemblyAI transcription integration
 - Speaker identification and management
@@ -37,7 +44,9 @@ Node.js backend processing engine featuring:
 **Technologies**: Node.js, Express, WebSocket, AssemblyAI, MongoDB, Redis
 
 ### 📦 Shared (`packages/shared`)
+
 TypeScript shared library containing:
+
 - Common type definitions
 - Utility functions and constants
 - API interfaces and schemas
@@ -49,7 +58,7 @@ TypeScript shared library containing:
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm 8+
 - MongoDB instance
 - Redis instance
@@ -58,27 +67,31 @@ TypeScript shared library containing:
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/critgenius/listener.git
-   cd listener
+   git clone https://github.com/jonahkeegan/critgenius-listener.git
+   cd critgenius-listener
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Start development servers**
+
    ```bash
    # Start all packages in development mode
    pnpm dev
-   
+
    # Or start individual packages
    pnpm --filter @critgenius/listener-server dev
    pnpm --filter @critgenius/listener-client dev
@@ -156,17 +169,17 @@ pnpm -r build
 
 ### Server APIs (`packages/server`)
 
-| Endpoint | Method | Description |
-|----------|---------|-------------|
-| `/api/transcription/stream` | WebSocket | Real-time transcription stream |
-| `/api/transcription/upload` | POST | Upload audio file for transcription |
-| `/api/speakers/identify` | POST | Identify speakers in audio |
-| `/api/speakers/manage` | GET/POST/PUT | Manage speaker profiles |
-| `/api/session/create` | POST | Create new transcription session |
-| `/api/session/list` | GET | List user sessions |
-| `/api/export/*` | GET | Export transcripts (JSON/TXT/PDF) |
-| `/api/integration/webhooks` | POST | Ecosystem integration webhooks |
-| `/api/health` | GET | Health check endpoint |
+| Endpoint                    | Method       | Description                         |
+| --------------------------- | ------------ | ----------------------------------- |
+| `/api/transcription/stream` | WebSocket    | Real-time transcription stream      |
+| `/api/transcription/upload` | POST         | Upload audio file for transcription |
+| `/api/speakers/identify`    | POST         | Identify speakers in audio          |
+| `/api/speakers/manage`      | GET/POST/PUT | Manage speaker profiles             |
+| `/api/session/create`       | POST         | Create new transcription session    |
+| `/api/session/list`         | GET          | List user sessions                  |
+| `/api/export/*`             | GET          | Export transcripts (JSON/TXT/PDF)   |
+| `/api/integration/webhooks` | POST         | Ecosystem integration webhooks      |
+| `/api/health`               | GET          | Health check endpoint               |
 
 ## CritGenius Ecosystem Integration
 
@@ -176,32 +189,38 @@ The Listener component integrates with other CritGenius services:
 - **CritGenius LLM**: Processes transcripts for insights and analysis
 - **CritGenius Publisher**: Publishes processed content to various platforms
 
-Integration is configured through environment variables and follows the CritGenius ecosystem metadata standards.
+Integration is configured through environment variables and follows the CritGenius ecosystem
+metadata standards.
 
 ## Features
 
 ### 🎙️ Audio Processing
+
 - Real-time audio capture from microphone
 - Support for various audio formats
 - Audio quality optimization and noise reduction
 
 ### 📝 Transcription
+
 - Real-time transcription via AssemblyAI
 - High accuracy with punctuation and formatting
 - Custom vocabulary and domain-specific models
 
 ### 👥 Speaker Identification
+
 - Automatic speaker detection and separation
 - Speaker labeling and management
 - Visual speaker mapping in transcripts
 
 ### 💾 Data Management
+
 - Session-based organization
 - Configurable data retention policies
 - GDPR-compliant data handling
 - Export in multiple formats (JSON, TXT, PDF)
 
 ### 🔗 Ecosystem Integration
+
 - Seamless connection to CritGenius services
 - Webhook-based event system
 - Service discovery through metadata
@@ -209,18 +228,21 @@ Integration is configured through environment variables and follows the CritGeni
 ## Development Guidelines
 
 ### Code Quality
+
 - TypeScript strict mode enabled
 - ESLint with CritGenius-specific rules
 - Prettier for consistent formatting
 - Husky for pre-commit hooks
 
 ### Testing Strategy
+
 - Unit tests with Vitest
 - Integration tests for API endpoints
 - E2E tests for critical user flows
 - Test coverage reporting
 
 ### Architecture Principles
+
 - Modular monolith design
 - Dependency injection
 - Event-driven communication
@@ -230,6 +252,7 @@ Integration is configured through environment variables and follows the CritGeni
 ## Deployment
 
 ### Docker Support
+
 ```bash
 # Build and run with Docker Compose
 docker-compose up --build
@@ -240,6 +263,7 @@ docker build -f packages/client/Dockerfile .
 ```
 
 ### Production Environment
+
 - Configure environment variables for production
 - Set up MongoDB and Redis instances
 - Configure AssemblyAI production API key
@@ -261,7 +285,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - 📧 Email: support@critgenius.com
-- 🐛 Issues: [GitHub Issues](https://github.com/critgenius/listener/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/jonahkeegan/critgenius-listener/issues)
 - 📖 Documentation: [CritGenius Docs](https://docs.critgenius.com)
 - 💬 Community: [CritGenius Discord](https://discord.gg/critgenius)
 
