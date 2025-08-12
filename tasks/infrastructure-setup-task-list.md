@@ -122,6 +122,15 @@
         experience
   - [ ] 2.4 Install and configure Material-UI (MUI) with theme customization and responsive design
         system
+    - [x] 2.4.1 Material-UI Installation - Install @mui/material, @emotion/react, @emotion/styled,
+          @mui/icons-material with Context7 MCP validation for dependency harmonization
+    - [ ] 2.4.2 Theme Customization for CritGenius Brand - Create custom MUI theme with D&D/gaming
+          aesthetic, dark mode primary, typography scale, component overrides for audio
+          visualization
+    - [ ] 2.4.3 Responsive Design System - Configure breakpoints, responsive typography, layout
+          components for audio capture interface and speaker-character mapping UI
+    - [ ] 2.4.4 Integration & Validation - Integrate theme provider, validate TypeScript
+          compatibility, test responsive behavior, ensure Vitest compatibility
   - [ ] 2.5 Integrate AssemblyAI Node SDK with proper configuration management and error handling
   - [ ] 2.6 Configure WebSocket.io for real-time communication with connection resilience and
         reconnection logic
