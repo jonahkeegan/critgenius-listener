@@ -102,7 +102,7 @@
     DATABASE_URL, etc.)
 
 - [ ] 2.0 Development Environment Configuration and Dependencies
-  - [ ] 2.1 Initialize Node.js project with package.json including React, TypeScript, and AssemblyAI
+  - [x] 2.1 Initialize Node.js project with package.json including React, TypeScript, and AssemblyAI
         SDK dependencies
     - [x] 2.1.1 Initialize basic Node.js project structure and package.json with essential metadata
     - [x] 2.1.2 Install and configure core React dependencies (react, react-dom, react-scripts)
@@ -111,10 +111,10 @@
           context7 MCP to check version stability, security and harmonization with workspace
     - [x] 2.1.5 Install development tooling dependencies (ESLint, Prettier, Husky for git hooks),
           use context7 MCP to check version stability, security and harmonization with workspace
-    - [ ] 2.1.6 Install testing framework dependencies (Jest, React Testing Library,
+    - [x] 2.1.6 Install testing framework dependencies (Jest, React Testing Library,
           @testing-library/jest-dom), use context7 MCP to check version stability, security and
           harmonization with workspace
-    - [ ] 2.1.7 Verify package.json integrity and run initial dependency audit for security
+    - [x] 2.1.7 Verify package.json integrity and run initial dependency audit for security
           vulnerabilities
   - [x] 2.2 Configure TypeScript with strict mode, React JSX support, and path mapping for clean
         imports

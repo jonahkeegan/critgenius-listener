@@ -10,29 +10,139 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "test:unit": "vitest run --reporter=verbose",
     "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rimraf dist .turbo node_modules/.cache"
+    "clean": "rimraf dist",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js"
   },
   "dependencies": {
-    "express": "catalog:",
-    "cors": "catalog:",
-    "multer": "catalog:",
-    "@critgenius/shared": "workspace:*"
+    "assemblyai": "^4.14.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "mongodb": "^6.5.0",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "redis": "^4.6.13",
+    "ws": "^8.17.0"
   },
   "devDependencies": {
-    "@types/express": "catalog:",
-    "@types/cors": "catalog:",
-    "@types/multer": "catalog:",
-    "@types/node": "^22.10.0",
-    "nodemon": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
-    "rimraf": "catalog:"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.2.1",
+    "@types/ws": "^8.5.10",
+    "@vitest/ui": "^3.2.4",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.2",
+    "vitest": "^3.2.4"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "submodule": "server",
+      "role": "processing-engine",
+      "technologies": [
+        "nodejs",
+        "express",
+        "websocket",
+        "assemblyai",
+        "mongodb",
+        "redis"
+      ],
+      "architecture": "api-backend",
+      "realtime": true,
+      "privacy": "configurable-retention"
+    },
+    "features": {
+      "audio-processing": true,
+      "real-time-transcription": true,
+      "speaker-identification": true,
+      "session-persistence": true,
+      "export-generation": true,
+      "integration-apis": true,
+      "data-retention-policies": true
+    },
+    "apis": {
+      "provided": [
+        "/api/transcription/stream",
+        "/api/transcription/upload",
+        "/api/speakers/identify",
+        "/api/speakers/manage",
+        "/api/session/create",
+        "/api/session/list",
+        "/api/export/json",
+        "/api/export/txt",
+        "/api/export/pdf",
+        "/api/integration/webhooks",
+        "/api/health"
+      ]
+    },
+    "integrations": {
+      "external": [
+        {
+          "service": "assemblyai",
+          "type": "transcription-api",
+          "realtime": true
+        }
+      ],
+      "internal": [
+        {
+          "component": "critgenius-prompter",
+          "apis": [
+            "/api/prompts/generate"
+          ]
+        },
+        {
+          "component": "critgenius-llm",
+          "apis": [
+            "/api/analysis/process"
+          ]
+        },
+        {
+          "component": "critgenius-publisher",
+          "apis": [
+            "/api/content/publish"
+          ]
+        }
+      ]
+    },
+    "data": {
+      "storage": [
+        "mongodb",
+        "redis"
+      ],
+      "retention": "configurable",
+      "privacy": "gdpr-compliant",
+      "encryption": "at-rest-and-transit"
+    }
+  },
+  "keywords": [
+    "critgenius",
+    "audio-transcription",
+    "nodejs",
+    "real-time",
+    "assemblyai",
+    "speaker-detection",
+    "api-backend"
+  ],
+  "author": "CritGenius Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/critgenius/listener.git",
+    "directory": "packages/server"
+  },
+  "bugs": {
+    "url": "https://github.com/critgenius/listener/issues"
+  },
+  "homepage": "https://github.com/critgenius/listener/tree/main/packages/server#readme"
 }

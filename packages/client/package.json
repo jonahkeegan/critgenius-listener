@@ -9,11 +9,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:unit": "vitest run --reporter=verbose",
     "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "eslint src --max-warnings 0",
+    "lint:fix": "eslint src --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rimraf dist .turbo node_modules/.cache"
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "react": "catalog:",
@@ -21,18 +24,78 @@
     "@critgenius/shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
-    "@testing-library/react": "catalog:",
-    "@testing-library/jest-dom": "catalog:",
-    "jsdom": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:",
-    "vitest": "catalog:",
-    "rimraf": "catalog:"
+    "@types/node": "^24.2.1",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vitest": "^3.2.4"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "submodule": "client",
+      "role": "frontend-interface",
+      "technologies": [
+        "react",
+        "typescript",
+        "vite",
+        "web-audio-api",
+        "websocket"
+      ],
+      "architecture": "spa-frontend",
+      "realtime": true,
+      "privacy": "client-side-processing"
+    },
+    "features": {
+      "audio-capture": true,
+      "real-time-display": true,
+      "speaker-mapping": true,
+      "session-management": true,
+      "export-formats": [
+        "json",
+        "txt",
+        "pdf"
+      ],
+      "integrations": true
+    },
+    "apis": {
+      "consumed": [
+        "/api/transcription/stream",
+        "/api/speakers/identify",
+        "/api/session/create",
+        "/api/export/formats"
+      ]
+    },
+    "ui": {
+      "components": [
+        "audio-visualizer",
+        "transcript-display",
+        "speaker-legend",
+        "control-panel"
+      ],
+      "responsive": true,
+      "accessibility": true
+    }
+  },
+  "keywords": [
+    "critgenius",
+    "audio-transcription",
+    "react",
+    "real-time",
+    "accessibility",
+    "speaker-detection"
+  ],
+  "author": "CritGenius Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/critgenius/listener.git",
+    "directory": "packages/client"
+  },
+  "bugs": {
+    "url": "https://github.com/critgenius/listener/issues"
+  },
+  "homepage": "https://github.com/critgenius/listener/tree/main/packages/client#readme"
 }

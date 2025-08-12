@@ -3,20 +3,36 @@
  * Configures test environment and global utilities for Node.js testing
  */
 
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
+
+// Extend global object with test utilities
+declare global {
+  var testUtils: {
+    createMockFile: (options?: {
+      filename?: string;
+      originalname?: string;
+      mimetype?: string;
+      size?: number;
+      buffer?: Buffer;
+    }) => any;
+    generateMockUploadId: () => string;
+  };
+}
 
 // Global test setup for server package
 console.log('🧪 Setting up server package test environment...');
 
 // Mock environment variables for testing
 process.env.NODE_ENV = 'test';
-process.env.PORT = '0'; // Use random available port for tests
-
-// Mock file system operations if needed
-// vi.mock('fs', () => ({ ... }));
+process.env.PORT = '3001';
+process.env.MONGODB_URI = 'mongodb://localhost:27017/critgenius-test';
+process.env.REDIS_URL = 'redis://localhost:6379';
+process.env.ASSEMBLYAI_API_KEY = 'test-api-key';
 
 // Mock external services if needed
-// vi.mock('some-external-service', () => ({ ... }));
+vi.mock('dotenv', () => ({
+  config: vi.fn()
+}));
 
 // Setup test database or storage mocks
 // global.testDb = { ... };
