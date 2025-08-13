@@ -114,7 +114,7 @@ const colors = {
   },
 } as const;
 
-// Typography configuration optimized for gaming sessions
+// Responsive typography configuration with fluid scaling optimized for gaming sessions
 const typography = {
   fontFamily: [
     '-apple-system',
@@ -129,102 +129,271 @@ const typography = {
     '"Segoe UI Symbol"',
   ].join(','),
 
-  // Optimized for readability during long sessions
+  // Fluid typography using clamp() for optimal readability across devices
   h1: {
     fontWeight: 700,
-    fontSize: '2.5rem',
-    lineHeight: 1.2,
+    fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', // 28px → 40px responsive scaling
+    lineHeight: 'clamp(1.2, 1.25, 1.3)', // Responsive line height
     letterSpacing: '-0.01562em',
     color: colors.text.primary,
   },
   h2: {
     fontWeight: 600,
-    fontSize: '2rem',
-    lineHeight: 1.3,
+    fontSize: 'clamp(1.5rem, 3.5vw, 2rem)', // 24px → 32px responsive scaling
+    lineHeight: 'clamp(1.25, 1.3, 1.35)',
     letterSpacing: '-0.00833em',
     color: colors.text.primary,
   },
   h3: {
     fontWeight: 600,
-    fontSize: '1.75rem',
-    lineHeight: 1.3,
+    fontSize: 'clamp(1.25rem, 3vw, 1.75rem)', // 20px → 28px responsive scaling
+    lineHeight: 'clamp(1.3, 1.35, 1.4)',
     color: colors.text.primary,
   },
   h4: {
     fontWeight: 500,
-    fontSize: '1.5rem',
-    lineHeight: 1.4,
+    fontSize: 'clamp(1.125rem, 2.5vw, 1.5rem)', // 18px → 24px responsive scaling
+    lineHeight: 'clamp(1.35, 1.4, 1.45)',
     color: colors.text.primary,
   },
   h5: {
     fontWeight: 500,
-    fontSize: '1.25rem',
-    lineHeight: 1.4,
+    fontSize: 'clamp(1rem, 2vw, 1.25rem)', // 16px → 20px responsive scaling
+    lineHeight: 'clamp(1.4, 1.45, 1.5)',
     color: colors.text.primary,
   },
   h6: {
     fontWeight: 500,
-    fontSize: '1rem',
-    lineHeight: 1.5,
+    fontSize: 'clamp(0.875rem, 1.5vw, 1rem)', // 14px → 16px responsive scaling
+    lineHeight: 'clamp(1.45, 1.5, 1.55)',
     color: colors.text.primary,
   },
 
-  // Body text optimized for transcript display
+  // Body text optimized for transcript display with enhanced readability
   body1: {
-    fontSize: '1rem',
-    lineHeight: 1.6,
+    fontSize: 'clamp(0.875rem, 2.5vw, 1.125rem)', // 14px → 18px for transcript readability
+    lineHeight: 'clamp(1.5, 1.6, 1.7)', // Enhanced line height for long reading sessions
     letterSpacing: '0.00938em',
     color: colors.text.primary,
   },
   body2: {
-    fontSize: '0.875rem',
-    lineHeight: 1.5,
+    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', // 12px → 14px for metadata
+    lineHeight: 'clamp(1.4, 1.5, 1.6)',
     letterSpacing: '0.01071em',
     color: colors.text.secondary,
   },
 
-  // Caption for metadata and timestamps
+  // Caption for metadata and timestamps with improved scaling
   caption: {
-    fontSize: '0.75rem',
-    lineHeight: 1.4,
+    fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', // 10px → 12px responsive scaling
+    lineHeight: 'clamp(1.3, 1.4, 1.5)',
     letterSpacing: '0.03333em',
     color: colors.text.secondary,
     fontWeight: 400,
   },
 
-  // Overline for section headers
+  // Overline for section headers with responsive sizing
   overline: {
-    fontSize: '0.75rem',
-    lineHeight: 2,
+    fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', // 10px → 12px responsive scaling
+    lineHeight: 'clamp(1.8, 2, 2.2)',
     letterSpacing: '0.08333em',
     color: colors.text.secondary,
     fontWeight: 500,
     textTransform: 'uppercase' as const,
   },
 
-  // Button text
+  // Button text with touch-friendly scaling
   button: {
-    fontSize: '0.875rem',
-    lineHeight: 1.75,
+    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', // 12px → 14px for better touch targets
+    lineHeight: 'clamp(1.6, 1.75, 1.9)',
     letterSpacing: '0.02857em',
     fontWeight: 500,
     textTransform: 'none' as const, // No uppercase for better readability
   },
 } as const;
 
-// Breakpoints for responsive design
-const breakpoints = {
-  values: {
-    xs: 0,
-    sm: 600,
-    md: 960,
-    lg: 1280,
-    xl: 1920,
+// Responsive typography utilities for component-level customization
+const typographyUtilities = {
+  // Fluid font sizes for specific use cases
+  transcriptText: {
+    fontSize: 'clamp(0.875rem, 2.8vw, 1.25rem)', // Enhanced for transcript readability
+    lineHeight: 'clamp(1.6, 1.7, 1.8)',
+    letterSpacing: '0.01em',
+  },
+  
+  speakerLabel: {
+    fontSize: 'clamp(0.75rem, 2vw, 1rem)', // Speaker identification labels
+    lineHeight: 'clamp(1.4, 1.5, 1.6)',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+  },
+  
+  timestamp: {
+    fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', // Session timestamps
+    lineHeight: 'clamp(1.3, 1.4, 1.5)',
+    fontWeight: 400,
+    letterSpacing: '0.04em',
+    fontVariantNumeric: 'tabular-nums' as const, // Monospace numbers for alignment
+  },
+  
+  audioControls: {
+    fontSize: 'clamp(0.875rem, 2.2vw, 1.125rem)', // Audio control labels
+    lineHeight: 'clamp(1.5, 1.6, 1.7)',
+    fontWeight: 500,
+    letterSpacing: '0.01em',
+  },
+  
+  characterName: {
+    fontSize: 'clamp(0.875rem, 2.5vw, 1.25rem)', // D&D character names
+    lineHeight: 'clamp(1.4, 1.5, 1.6)',
+    fontWeight: 600,
+    letterSpacing: '0.015em',
+  },
+  
+  errorMessage: {
+    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', // Error and warning messages
+    lineHeight: 'clamp(1.4, 1.5, 1.6)',
+    fontWeight: 500,
+    letterSpacing: '0.02em',
   },
 } as const;
 
-// Spacing configuration
-const spacing = 8; // 8px base unit
+// Accessibility-aware typography helpers
+const typographyHelpers = {
+  // Respect user font-size preferences while maintaining design integrity
+  respectUserPreferences: (baseFontSize: string, scaleFactor: number = 1) => ({
+    fontSize: `calc(${baseFontSize} * ${scaleFactor})`,
+    '@media (prefers-reduced-motion: reduce)': {
+      transition: 'none', // Disable transitions for reduced motion preference
+    },
+  }),
+  
+  // High contrast mode support
+  highContrastMode: {
+    '@media (prefers-contrast: high)': {
+      fontWeight: 600, // Increase font weight for better readability
+      textShadow: 'none', // Remove decorative shadows
+    },
+  },
+  
+  // Large text mode support
+  largeTextMode: {
+    '@media (min-resolution: 1.25dppx)': {
+      fontSize: '110%', // Slight increase for high-DPI displays
+    },
+  },
+  
+  // Reading mode optimizations
+  readingOptimization: {
+    textRendering: 'optimizeLegibility' as const,
+    fontSmooth: 'always' as const,
+    WebkitFontSmoothing: 'antialiased' as const,
+    MozOsxFontSmoothing: 'grayscale' as const,
+  },
+} as const;
+
+// Enhanced breakpoints optimized for audio interface and D&D gaming sessions
+const breakpoints = {
+  values: {
+    xs: 0,      // Mobile portrait (phones) - minimal audio controls
+    sm: 480,    // Mobile landscape / small tablets - compact speaker mapping
+    md: 768,    // Tablet portrait - audio controls need adequate space
+    lg: 1024,   // Tablet landscape / small desktop - two-column layouts
+    xl: 1440,   // Desktop - optimal for speaker mapping UI
+    xxl: 1920,  // Large desktop - full feature display with sidebars
+  },
+} as const;
+
+// Responsive spacing system with fluid scaling
+const spacing = (factor: number) => `${8 * factor}px`; // Base 8px unit
+
+// Custom spacing utilities for responsive design
+const responsiveSpacing = {
+  // Container padding that scales with screen size
+  containerPadding: {
+    xs: spacing(2),    // 16px on mobile
+    sm: spacing(3),    // 24px on small tablets
+    md: spacing(4),    // 32px on tablets
+    lg: spacing(5),    // 40px on desktop
+    xl: spacing(6),    // 48px on large desktop
+    xxl: spacing(8),   // 64px on ultra-wide
+  },
+  
+  // Section spacing for consistent layout rhythm
+  sectionSpacing: {
+    xs: spacing(3),    // 24px between sections on mobile
+    sm: spacing(4),    // 32px on small tablets  
+    md: spacing(5),    // 40px on tablets
+    lg: spacing(6),    // 48px on desktop
+    xl: spacing(8),    // 64px on large desktop
+    xxl: spacing(10),  // 80px on ultra-wide
+  },
+  
+  // Component spacing for UI elements
+  componentSpacing: {
+    xs: spacing(1),    // 8px tight spacing on mobile
+    sm: spacing(1.5),  // 12px 
+    md: spacing(2),    // 16px standard spacing
+    lg: spacing(2.5),  // 20px
+    xl: spacing(3),    // 24px generous spacing on desktop
+    xxl: spacing(4),   // 32px ultra-wide spacing
+  },
+  
+  // Touch target sizes for mobile optimization
+  touchTargets: {
+    minimum: spacing(6),    // 48px minimum touch target
+    comfortable: spacing(7), // 56px comfortable touch target
+    large: spacing(8),      // 64px large touch target for primary actions
+  },
+  
+  // Audio interface specific spacing
+  audioInterface: {
+    controlSpacing: {
+      xs: spacing(1),    // Tight spacing on mobile
+      sm: spacing(2),    // 16px
+      md: spacing(3),    // 24px  
+      lg: spacing(4),    // 32px generous desktop spacing
+    },
+    visualizerHeight: {
+      xs: spacing(6),    // 48px compact visualizer
+      sm: spacing(8),    // 64px
+      md: spacing(10),   // 80px
+      lg: spacing(12),   // 96px full-featured visualizer
+    },
+  },
+} as const;
+
+// Breakpoint helper utilities
+const breakpointHelpers = {
+  // Check if current screen is mobile (xs, sm)
+  isMobile: (theme: any) => theme.breakpoints.down('md'),
+  
+  // Check if current screen is tablet (md, lg)  
+  isTablet: (theme: any) => theme.breakpoints.between('md', 'xl'),
+  
+  // Check if current screen is desktop (xl+)
+  isDesktop: (theme: any) => theme.breakpoints.up('xl'),
+  
+  // Get responsive value based on breakpoint
+  getResponsiveValue: (values: Record<string, any>, breakpoint: string) => {
+    return values[breakpoint] || values.md || values.xs;
+  },
+  
+  // Generate media queries for custom breakpoints
+  customMediaQuery: (minWidth: number, maxWidth?: number) => {
+    if (maxWidth) {
+      return `@media (min-width: ${minWidth}px) and (max-width: ${maxWidth}px)`;
+    }
+    return `@media (min-width: ${minWidth}px)`;
+  },
+  
+  // Touch-friendly sizing utilities
+  touchTarget: {
+    minimum: { minHeight: responsiveSpacing.touchTargets.minimum, minWidth: responsiveSpacing.touchTargets.minimum },
+    comfortable: { minHeight: responsiveSpacing.touchTargets.comfortable, minWidth: responsiveSpacing.touchTargets.comfortable },
+    large: { minHeight: responsiveSpacing.touchTargets.large, minWidth: responsiveSpacing.touchTargets.large },
+  },
+} as const;
 
 // Component overrides for CritGenius branding
 const components = {
@@ -449,8 +618,12 @@ const themeOptions: ThemeOptions = {
 export const critgeniusTheme = createTheme(themeOptions);
 
 // Export additional theme utilities
-export { colors };
+export { colors, responsiveSpacing, breakpointHelpers, typographyUtilities, typographyHelpers };
 export type CritGeniusTheme = typeof critgeniusTheme;
+export type ResponsiveSpacing = typeof responsiveSpacing;
+export type BreakpointHelpers = typeof breakpointHelpers;
+export type TypographyUtilities = typeof typographyUtilities;
+export type TypographyHelpers = typeof typographyHelpers;
 
 // Custom theme augmentation for TypeScript
 declare module '@mui/material/styles' {
