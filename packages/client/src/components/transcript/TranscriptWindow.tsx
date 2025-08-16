@@ -14,8 +14,15 @@ import {
   TextField,
   InputAdornment,
   Chip,
+<<<<<<< HEAD
   Menu,
   MenuItem,
+=======
+  Button,
+  Menu,
+  MenuItem,
+  Paper,
+>>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
   Fab,
 } from '@mui/material';
 import {
@@ -164,12 +171,20 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
 
   const getCharacterForSpeaker = (speakerId: string | null) => {
     if (!speakerId) return null;
+<<<<<<< HEAD
     return characters.find(c => c.speakerId === speakerId) || null;
+=======
+    return characters.find(c => c.speakerId === speakerId);
+>>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
   };
 
   const getSpeaker = (speakerId: string | null) => {
     if (!speakerId) return null;
+<<<<<<< HEAD
     return speakers.find(s => s.id === speakerId) || null;
+=======
+    return speakers.find(s => s.id === speakerId);
+>>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
   };
 
   return (
@@ -319,7 +334,11 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
           </Box>
         ) : (
           <Box sx={{ pb: 2 }}>
+<<<<<<< HEAD
             {filteredEntries.map((entry, _index) => {
+=======
+            {filteredEntries.map((entry, index) => {
+>>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
               const speaker = getSpeaker(entry.speakerId);
               const character = getCharacterForSpeaker(entry.speakerId);
               
@@ -417,4 +436,8 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   );
 };
 
+<<<<<<< HEAD
 export default TranscriptWindow;
+=======
+export default TranscriptWindow;
+>>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
