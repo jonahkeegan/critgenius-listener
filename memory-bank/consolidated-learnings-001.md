@@ -151,3 +151,64 @@
   compatibility
 - _Rationale:_ Modern Material UI v7 provides React 19 forward compatibility and comprehensive
   component library for rapid UI development
+
+### Pattern: MUI Theme Development Workflow
+
+- **Theme Creation Process:** Follow systematic workflow: theme creation → TypeScript augmentation → ThemeProvider integration → showcase validation
+- **Brand Integration:** Implement comprehensive color palette with 50-900 shade scales for primary and secondary brand colors
+- **Dark Mode Optimization:** Use deep blacks (#0D0D0D) with mystical purple branding (#6A4C93) for gaming sessions to reduce eye strain
+- **Component Overrides:** Create specialized styling for Button, Card, TextField, List, IconButton, Chip, LinearProgress, Slider components
+- **TypeScript Augmentation:** Use proper theme.d.ts declaration merging for custom palette colors and theme extensions
+- _Rationale:_ Systematic theme development ensures consistent brand implementation and maintainable styling architecture
+
+### Pattern: Audio Interface Design Patterns
+
+- **Gaming Aesthetic:** Apply mystical purple (#6A4C93) and gold (#FFB300) color schemes optimized for D&D gaming sessions
+- **Audio Visualization:** Use gradient backgrounds, subtle borders, and hover effects for waveform and frequency displays
+- **Component Specialization:** Custom styling for AudioCapturePanel, VolumeVisualizer, SpeakerIdentificationPanel, TranscriptWindow
+- **Session Optimization:** Typography and color choices optimized for long gaming sessions with minimal eye strain
+- _Rationale:_ Specialized audio interface patterns provide immersive gaming experience while maintaining professional functionality
+
+## Responsive Design Architecture
+
+### Pattern: Comprehensive Responsive Design System
+
+- **Custom Breakpoint Configuration:** Implement xxl (1920px+) breakpoint for ultra-wide displays alongside standard MUI breakpoints
+- **Fluid Typography:** Use clamp() CSS functions for seamless text sizing across all devices, particularly effective for transcript readability
+- **Mobile-First Approach:** Design mobile-optimized base → tablet enhancements → desktop optimizations → ultra-wide refinements
+- **Touch Optimization:** Implement minimum 44px touch targets, readable typography, and intuitive navigation for mobile devices
+- _Rationale:_ Systematic responsive design ensures optimal user experience across device spectrum from 320px mobile to 1920px+ displays
+
+### Pattern: Responsive Layout Development
+
+- **Component Architecture:** Create specialized layout components (ResponsiveContainer, TwoColumnLayout, AudioCaptureLayout, TranscriptLayout)
+- **Layout Switching:** Implement isVerticalLayout logic for automatic mobile/desktop layout transitions based on screen size
+- **Container Patterns:** Use fluid padding/margins, dynamic breakpoint-aware spacing, and mobile-first design principles
+- **Performance Optimization:** Apply useMemo for expensive calculations, proper flex layouts, WebKit scroll optimizations
+- _Rationale:_ Dedicated layout components provide reusable responsive patterns that accelerate development and ensure consistency
+
+### Pattern: React Responsive Hook System
+
+- **Comprehensive Hooks:** Develop useResponsiveLayout, useFluidSpacing, useAudioInterfaceLayout, useResponsiveProps, useResponsiveValue
+- **Performance:** Use useMediaQuery optimization, useMemo for calculations, ResizeObserver for container queries
+- **Spacing System:** Implement containerPadding, sectionSpacing, componentSpacing, and specialized audioInterface spacing
+- **TypeScript Integration:** Proper hook return types and component prop interfaces for type safety
+- _Rationale:_ Centralized responsive logic eliminates duplication and provides consistent responsive behavior across components
+
+## Component Architecture Patterns
+
+### Pattern: Layout Component Composition
+
+- **Flexible Interfaces:** Design prop interfaces for component composition while maintaining TypeScript type safety
+- **Conditional Rendering:** Separate content generation from wrapper selection to avoid JSX structure issues
+- **Progressive Enhancement:** Build components that work from basic mobile functionality to advanced desktop features
+- **Accessibility Integration:** Include proper ARIA labels, keyboard navigation, and screen reader support
+- _Rationale:_ Flexible component architecture enables rapid development while maintaining accessibility and type safety
+
+### Pattern: Audio Interface Component Development
+
+- **Specialized Components:** Build components specifically for audio capture workflow (recording controls, visualizers, transcript display)
+- **Session Management:** Integrate session state handling, speaker identification, and audio processing controls
+- **Responsive Adaptation:** Ensure audio interface components adapt properly to different screen sizes and orientations
+- **Gaming Context:** Design components that support D&D gaming sessions with appropriate visual hierarchy and interaction patterns
+- _Rationale:_ Purpose-built audio components provide optimal user experience for the specific CritGenius use case

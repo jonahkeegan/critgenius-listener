@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useResponsiveLayout, useFluidSpacing } from '../../hooks/useResponsiveLayout';
+import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 
 export interface TranscriptLayoutProps {
   /** Main transcript content */
@@ -56,7 +56,6 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
 }) => {
   const theme = useTheme();
   const { isMobile, isTablet } = useResponsiveLayout();
-  const { sectionSpacing } = useFluidSpacing();
 
   // Determine effective layout mode
   const shouldStack = React.useMemo(() => {
@@ -128,14 +127,14 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
       {/* Header Section: Controls and Status */}
       {(controls || statusInfo) && (
         <Box
-          sx={
+          sx={{
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
             gap: theme.spacing(2),
             mb: theme.spacing(2),
             pb: theme.spacing(2),
             borderBottom: `1px solid ${theme.palette.divider}`,
-          }
+          }}
         >
           {/* Controls */}
           {controls && (

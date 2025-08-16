@@ -4,6 +4,7 @@
  */
 
 import { vi } from 'vitest';
+import '@testing-library/jest-dom';
 
 // Setup for client-side testing
 Object.defineProperty(window, 'matchMedia', {

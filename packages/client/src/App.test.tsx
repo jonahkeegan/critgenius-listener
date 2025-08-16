@@ -4,35 +4,48 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
+import { critgeniusTheme } from './theme';
+
+// Test wrapper with MUI theme provider
+const renderWithTheme = (component: React.ReactElement) => {
+  return render(
+    <ThemeProvider theme={critgeniusTheme}>
+      <CssBaseline />
+      {component}
+    </ThemeProvider>
+  );
+};
 
 describe('App Component', () => {
   it('renders the main heading', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const heading = screen.getByText('CritGenius Listener');
     expect(heading).toBeInTheDocument();
   });
 
   it('renders the subtitle', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const subtitle = screen.getByText('Real-time audio capture and processing');
     expect(subtitle).toBeInTheDocument();
   });
 
   it('displays the version number', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const versionElement = screen.getByText(/^v\d+\.\d+\.\d+/);
     expect(versionElement).toBeInTheDocument();
   });
 
   it('shows start recording button initially', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const startButton = screen.getByText('🎤 Start Recording');
     expect(startButton).toBeInTheDocument();
   });
 
   it('changes to stop recording button when recording starts', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const startButton = screen.getByText('🎤 Start Recording');
     
     fireEvent.click(startButton);
@@ -43,7 +56,7 @@ describe('App Component', () => {
   });
 
   it('returns to start recording button when recording stops', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const startButton = screen.getByText('🎤 Start Recording');
     
     // Start recording
@@ -59,7 +72,7 @@ describe('App Component', () => {
   });
 
   it('renders file upload input', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const fileInput = screen.getByLabelText(/Or upload audio files/);
     expect(fileInput).toBeInTheDocument();
     expect(fileInput).toHaveAttribute('type', 'file');
@@ -68,7 +81,7 @@ describe('App Component', () => {
   });
 
   it('renders processing status section', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const statusHeading = screen.getByText('Processing Status');
     expect(statusHeading).toBeInTheDocument();
     
@@ -77,7 +90,7 @@ describe('App Component', () => {
   });
 
   it('renders footer with copyright', () => {
-    render(<App />);
+    renderWithTheme(<App />);
     const footer = screen.getByText(/© 2024 CritGenius Listener/);
     expect(footer).toBeInTheDocument();
   });

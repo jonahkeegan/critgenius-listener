@@ -71,7 +71,21 @@ app.post(API_ENDPOINTS.UPLOAD, upload.array('audio'), (req, res) => {
   try {
     const files = req.files as Express.Multer.File[];
 
-    if (!files || files.length === 0) {
+    // Handle case where no files were uploaded (files is undefined/null)
+    if (!files) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json(createApiResponse(false, null, 'No files uploaded'));
+    }
+
+    // Runtime type validation to prevent type confusion attacks
+    if (!Array.isArray(files)) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json(createApiResponse(false, null, 'Invalid file upload format'));
+    }
+
+    if (files.length === 0) {
       return res
         .status(HTTP_STATUS.BAD_REQUEST)
         .json(createApiResponse(false, null, 'No files uploaded'));

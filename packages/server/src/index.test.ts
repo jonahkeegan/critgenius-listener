@@ -144,4 +144,54 @@ describe('CritGenius Listener Server', () => {
       expect(response.headers).toHaveProperty('access-control-allow-origin');
     });
   });
+
+  describe('Security Tests', () => {
+    it('should handle file upload errors gracefully', async () => {
+      const response = await request(app)
+        .post(API_ENDPOINTS.UPLOAD)
+        .attach('audio', Buffer.from('invalid audio'), 'test.txt');
+
+      expect(response.status).toBe(HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE);
+      expect(response.body).toMatchObject({
+        success: false,
+        error: expect.any(String),
+        timestamp: expect.any(String),
+      });
+    });
+
+    it('should reject invalid file types with proper error handling', async () => {
+      const response = await request(app)
+        .post(API_ENDPOINTS.UPLOAD)
+        .attach('audio', Buffer.from('not audio content'), 'malicious.exe');
+
+      expect(response.status).toBe(HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE);
+      expect(response.body.success).toBe(false);
+      expect(response.body.error).toBeDefined();
+    });
+
+    it('should validate file array structure to prevent type confusion', async () => {
+      // Test with malformed multipart data that could potentially cause issues
+      const response = await request(app)
+        .post(API_ENDPOINTS.UPLOAD)
+        .set('Content-Type', 'multipart/form-data; boundary=----malformed')
+        .send('------malformed\r\nContent-Disposition: form-data; name="audio"\r\n\r\nmalformed-data\r\n------malformed--');
+
+      // Should either be handled gracefully by multer or caught by our validation
+      expect([HTTP_STATUS.BAD_REQUEST, HTTP_STATUS.UNSUPPORTED_MEDIA_TYPE]).toContain(response.status);
+      expect(response.body.success).toBe(false);
+    });
+
+    it('should return appropriate error for empty upload requests', async () => {
+      const response = await request(app)
+        .post(API_ENDPOINTS.UPLOAD)
+        .send({});
+
+      expect(response.status).toBe(HTTP_STATUS.BAD_REQUEST);
+      expect(response.body).toMatchObject({
+        success: false,
+        error: 'No files uploaded',
+        timestamp: expect.any(String),
+      });
+    });
+  });
 });
