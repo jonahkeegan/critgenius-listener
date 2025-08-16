@@ -71,7 +71,7 @@ app.post(API_ENDPOINTS.UPLOAD, upload.array('audio'), (req, res) => {
   try {
     const files = req.files as Express.Multer.File[];
 
-    if (!files || files.length === 0) {
+    if (!Array.isArray(files) || files.length === 0) {
       return res
         .status(HTTP_STATUS.BAD_REQUEST)
         .json(createApiResponse(false, null, 'No files uploaded'));
