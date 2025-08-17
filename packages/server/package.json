@@ -31,6 +31,7 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
     "redis": "^4.6.13",
+    "socket.io": "^4.8.1",
     "ws": "^8.17.0"
   },
   "devDependencies": {
@@ -50,14 +51,7 @@
       "component": "listener",
       "submodule": "server",
       "role": "processing-engine",
-      "technologies": [
-        "nodejs",
-        "express",
-        "websocket",
-        "assemblyai",
-        "mongodb",
-        "redis"
-      ],
+      "technologies": ["nodejs", "express", "websocket", "assemblyai", "mongodb", "redis"],
       "architecture": "api-backend",
       "realtime": true,
       "privacy": "configurable-retention"
@@ -97,29 +91,20 @@
       "internal": [
         {
           "component": "critgenius-prompter",
-          "apis": [
-            "/api/prompts/generate"
-          ]
+          "apis": ["/api/prompts/generate"]
         },
         {
           "component": "critgenius-llm",
-          "apis": [
-            "/api/analysis/process"
-          ]
+          "apis": ["/api/analysis/process"]
         },
         {
           "component": "critgenius-publisher",
-          "apis": [
-            "/api/content/publish"
-          ]
+          "apis": ["/api/content/publish"]
         }
       ]
     },
     "data": {
-      "storage": [
-        "mongodb",
-        "redis"
-      ],
+      "storage": ["mongodb", "redis"],
       "retention": "configurable",
       "privacy": "gdpr-compliant",
       "encryption": "at-rest-and-transit"

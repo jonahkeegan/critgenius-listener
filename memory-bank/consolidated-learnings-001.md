@@ -154,61 +154,163 @@
 
 ### Pattern: MUI Theme Development Workflow
 
-- **Theme Creation Process:** Follow systematic workflow: theme creation → TypeScript augmentation → ThemeProvider integration → showcase validation
-- **Brand Integration:** Implement comprehensive color palette with 50-900 shade scales for primary and secondary brand colors
-- **Dark Mode Optimization:** Use deep blacks (#0D0D0D) with mystical purple branding (#6A4C93) for gaming sessions to reduce eye strain
-- **Component Overrides:** Create specialized styling for Button, Card, TextField, List, IconButton, Chip, LinearProgress, Slider components
-- **TypeScript Augmentation:** Use proper theme.d.ts declaration merging for custom palette colors and theme extensions
-- _Rationale:_ Systematic theme development ensures consistent brand implementation and maintainable styling architecture
+- **Theme Creation Process:** Follow systematic workflow: theme creation → TypeScript augmentation →
+  ThemeProvider integration → showcase validation
+- **Brand Integration:** Implement comprehensive color palette with 50-900 shade scales for primary
+  and secondary brand colors
+- **Dark Mode Optimization:** Use deep blacks (#0D0D0D) with mystical purple branding (#6A4C93) for
+  gaming sessions to reduce eye strain
+- **Component Overrides:** Create specialized styling for Button, Card, TextField, List, IconButton,
+  Chip, LinearProgress, Slider components
+- **TypeScript Augmentation:** Use proper theme.d.ts declaration merging for custom palette colors
+  and theme extensions
+- _Rationale:_ Systematic theme development ensures consistent brand implementation and maintainable
+  styling architecture
 
 ### Pattern: Audio Interface Design Patterns
 
-- **Gaming Aesthetic:** Apply mystical purple (#6A4C93) and gold (#FFB300) color schemes optimized for D&D gaming sessions
-- **Audio Visualization:** Use gradient backgrounds, subtle borders, and hover effects for waveform and frequency displays
-- **Component Specialization:** Custom styling for AudioCapturePanel, VolumeVisualizer, SpeakerIdentificationPanel, TranscriptWindow
-- **Session Optimization:** Typography and color choices optimized for long gaming sessions with minimal eye strain
-- _Rationale:_ Specialized audio interface patterns provide immersive gaming experience while maintaining professional functionality
+- **Gaming Aesthetic:** Apply mystical purple (#6A4C93) and gold (#FFB300) color schemes optimized
+  for D&D gaming sessions
+- **Audio Visualization:** Use gradient backgrounds, subtle borders, and hover effects for waveform
+  and frequency displays
+- **Component Specialization:** Custom styling for AudioCapturePanel, VolumeVisualizer,
+  SpeakerIdentificationPanel, TranscriptWindow
+- **Session Optimization:** Typography and color choices optimized for long gaming sessions with
+  minimal eye strain
+- _Rationale:_ Specialized audio interface patterns provide immersive gaming experience while
+  maintaining professional functionality
 
 ## Responsive Design Architecture
 
 ### Pattern: Comprehensive Responsive Design System
 
-- **Custom Breakpoint Configuration:** Implement xxl (1920px+) breakpoint for ultra-wide displays alongside standard MUI breakpoints
-- **Fluid Typography:** Use clamp() CSS functions for seamless text sizing across all devices, particularly effective for transcript readability
-- **Mobile-First Approach:** Design mobile-optimized base → tablet enhancements → desktop optimizations → ultra-wide refinements
-- **Touch Optimization:** Implement minimum 44px touch targets, readable typography, and intuitive navigation for mobile devices
-- _Rationale:_ Systematic responsive design ensures optimal user experience across device spectrum from 320px mobile to 1920px+ displays
+- **Custom Breakpoint Configuration:** Implement xxl (1920px+) breakpoint for ultra-wide displays
+  alongside standard MUI breakpoints
+- **Fluid Typography:** Use clamp() CSS functions for seamless text sizing across all devices,
+  particularly effective for transcript readability
+- **Mobile-First Approach:** Design mobile-optimized base → tablet enhancements → desktop
+  optimizations → ultra-wide refinements
+- **Touch Optimization:** Implement minimum 44px touch targets, readable typography, and intuitive
+  navigation for mobile devices
+- _Rationale:_ Systematic responsive design ensures optimal user experience across device spectrum
+  from 320px mobile to 1920px+ displays
 
 ### Pattern: Responsive Layout Development
 
-- **Component Architecture:** Create specialized layout components (ResponsiveContainer, TwoColumnLayout, AudioCaptureLayout, TranscriptLayout)
-- **Layout Switching:** Implement isVerticalLayout logic for automatic mobile/desktop layout transitions based on screen size
-- **Container Patterns:** Use fluid padding/margins, dynamic breakpoint-aware spacing, and mobile-first design principles
-- **Performance Optimization:** Apply useMemo for expensive calculations, proper flex layouts, WebKit scroll optimizations
-- _Rationale:_ Dedicated layout components provide reusable responsive patterns that accelerate development and ensure consistency
+- **Component Architecture:** Create specialized layout components (ResponsiveContainer,
+  TwoColumnLayout, AudioCaptureLayout, TranscriptLayout)
+- **Layout Switching:** Implement isVerticalLayout logic for automatic mobile/desktop layout
+  transitions based on screen size
+- **Container Patterns:** Use fluid padding/margins, dynamic breakpoint-aware spacing, and
+  mobile-first design principles
+- **Performance Optimization:** Apply useMemo for expensive calculations, proper flex layouts,
+  WebKit scroll optimizations
+- _Rationale:_ Dedicated layout components provide reusable responsive patterns that accelerate
+  development and ensure consistency
 
 ### Pattern: React Responsive Hook System
 
-- **Comprehensive Hooks:** Develop useResponsiveLayout, useFluidSpacing, useAudioInterfaceLayout, useResponsiveProps, useResponsiveValue
-- **Performance:** Use useMediaQuery optimization, useMemo for calculations, ResizeObserver for container queries
-- **Spacing System:** Implement containerPadding, sectionSpacing, componentSpacing, and specialized audioInterface spacing
+- **Comprehensive Hooks:** Develop useResponsiveLayout, useFluidSpacing, useAudioInterfaceLayout,
+  useResponsiveProps, useResponsiveValue
+- **Performance:** Use useMediaQuery optimization, useMemo for calculations, ResizeObserver for
+  container queries
+- **Spacing System:** Implement containerPadding, sectionSpacing, componentSpacing, and specialized
+  audioInterface spacing
 - **TypeScript Integration:** Proper hook return types and component prop interfaces for type safety
-- _Rationale:_ Centralized responsive logic eliminates duplication and provides consistent responsive behavior across components
+- _Rationale:_ Centralized responsive logic eliminates duplication and provides consistent
+  responsive behavior across components
 
 ## Component Architecture Patterns
 
 ### Pattern: Layout Component Composition
 
-- **Flexible Interfaces:** Design prop interfaces for component composition while maintaining TypeScript type safety
-- **Conditional Rendering:** Separate content generation from wrapper selection to avoid JSX structure issues
-- **Progressive Enhancement:** Build components that work from basic mobile functionality to advanced desktop features
-- **Accessibility Integration:** Include proper ARIA labels, keyboard navigation, and screen reader support
-- _Rationale:_ Flexible component architecture enables rapid development while maintaining accessibility and type safety
+- **Flexible Interfaces:** Design prop interfaces for component composition while maintaining
+  TypeScript type safety
+- **Conditional Rendering:** Separate content generation from wrapper selection to avoid JSX
+  structure issues
+- **Progressive Enhancement:** Build components that work from basic mobile functionality to
+  advanced desktop features
+- **Accessibility Integration:** Include proper ARIA labels, keyboard navigation, and screen reader
+  support
+- _Rationale:_ Flexible component architecture enables rapid development while maintaining
+  accessibility and type safety
 
 ### Pattern: Audio Interface Component Development
 
-- **Specialized Components:** Build components specifically for audio capture workflow (recording controls, visualizers, transcript display)
-- **Session Management:** Integrate session state handling, speaker identification, and audio processing controls
-- **Responsive Adaptation:** Ensure audio interface components adapt properly to different screen sizes and orientations
-- **Gaming Context:** Design components that support D&D gaming sessions with appropriate visual hierarchy and interaction patterns
-- _Rationale:_ Purpose-built audio components provide optimal user experience for the specific CritGenius use case
+- **Specialized Components:** Build components specifically for audio capture workflow (recording
+  controls, visualizers, transcript display)
+- **Session Management:** Integrate session state handling, speaker identification, and audio
+  processing controls
+- **Responsive Adaptation:** Ensure audio interface components adapt properly to different screen
+  sizes and orientations
+- **Gaming Context:** Design components that support D&D gaming sessions with appropriate visual
+  hierarchy and interaction patterns
+- _Rationale:_ Purpose-built audio components provide optimal user experience for the specific
+  CritGenius use case
+
+## External Service Integration Patterns
+
+### Pattern: Enterprise Configuration Management System
+
+- **Environment-First Configuration:** Implement config systems with environment variable parsing,
+  validation ranges, and fallback defaults
+- **API Key Security:** Use format validation (64-char hex for AssemblyAI), sanitization for logging
+  security, and proper redaction patterns
+- **Runtime Validation:** Include numeric range validation (timeouts 1000-30000ms), boolean parsing
+  with defaults, and configuration update capabilities
+- **D&D Context Integration:** Support specialized vocabulary configuration, session-specific
+  settings, and gaming context parameters
+- _Rationale:_ Robust configuration management enables secure, flexible external service integration
+  with gaming-specific optimizations
+
+### Pattern: Connection Resilience & Error Handling
+
+- **Exponential Backoff Strategy:** Implement retry logic with max 5 attempts, exponential delays,
+  and jitter for distributed systems
+- **Error Classification:** Categorize errors as retryable vs non-retryable with specific handling
+  for rate limits (429), authentication (401), and network failures
+- **Connection Pooling:** Maintain connection health monitoring, graceful degradation capabilities,
+  and statistics tracking for service reliability
+- **Context Preservation:** Maintain correlation IDs for distributed tracing, detailed error
+  context, and comprehensive logging integration
+- _Rationale:_ Production-grade resilience patterns ensure reliable external service integration
+  under various failure conditions
+
+### Pattern: Structured Logging Architecture for External Services
+
+- **Multi-Output System:** Configure logging with console output, file persistence, metrics
+  collection, and alerting integration hooks
+- **Security-Conscious Logging:** Implement API key sanitization, configuration data redaction, and
+  sensitive information protection throughout
+- **Performance Monitoring:** Include operation timing, success/failure metrics, retry attempt
+  tracking, and service health indicators
+- **Correlation Tracking:** Use correlation IDs for request tracing, context preservation across
+  service calls, and debugging facilitation
+- _Rationale:_ Comprehensive logging enables effective monitoring, debugging, and security
+  compliance for external service integrations
+
+### Pattern: Advanced Testing Strategies for External Dependencies
+
+- **Comprehensive Mock Architecture:** Create sophisticated SDK mocking with rate limit simulation,
+  timeout testing, and error scenario coverage
+- **Integration Workflow Testing:** Validate complete integration patterns including connection
+  management, retry logic, and error normalization
+- **Test Environment Isolation:** Implement proper test setup with mock hoisting, reference error
+  prevention, and environment-specific configurations
+- **Production Scenario Coverage:** Test network failures, authentication errors, rate limiting,
+  configuration errors, and audio processing failures
+- _Rationale:_ Thorough testing of external dependencies ensures reliable integration behavior and
+  reduces production issues
+
+### Pattern: TypeScript Integration for External Services
+
+- **Strict Type Safety:** Configure exactOptionalPropertyTypes for rigorous type checking with
+  proper undefined handling patterns
+- **Cross-Package Integration:** Implement clean type definitions that work across monorepo packages
+  (client, server, shared)
+- **SDK Type Integration:** Ensure external service SDKs integrate properly with strict TypeScript
+  configurations and monorepo architecture
+- **Production Build Validation:** Validate type declaration generation (.d.ts, .d.ts.map) for
+  proper package distribution and consumption
+- _Rationale:_ Strict TypeScript integration catches integration issues early while maintaining type
+  safety across complex service boundaries
