@@ -1,9 +1,9 @@
 # Consolidated Learnings - File 001
 
 **Created:** 2025-01-11 19:49 PST  
-**Last Updated:** 2025-01-12 07:23 PST  
-**Row Count:** 98  
-**Version:** 1.0.1
+**Last Updated:** 2025-08-17 13:20 PST  
+**Row Count:** 159  
+**Version:** 1.0.2
 
 ## TypeScript & Monorepo Architecture
 
@@ -314,3 +314,44 @@
   proper package distribution and consumption
 - _Rationale:_ Strict TypeScript integration catches integration issues early while maintaining type
   safety across complex service boundaries
+
+## Real-Time Communication Architecture
+
+### Pattern: Modern WebSocket Library Selection
+
+- **Enhanced Reliability:** Socket.IO v4.8.1 provides superior connection resilience and
+  reconnection logic compared to raw WebSocket implementations
+- **Built-in TypeScript Support:** Modern libraries provide comprehensive built-in type definitions,
+  eliminating need for separate @types packages
+- **Feature-Rich Communication:** Built-in room management, broadcasting, and automatic
+  reconnection handling
+- **Cross-Platform Compatibility:** Works seamlessly across different browsers and environments
+  with fallback mechanisms
+- _Rationale:_ Modern WebSocket libraries reduce implementation complexity while providing
+  production-ready reliability features
+
+### Pattern: Monorepo Dependency Installation
+
+- **Workspace Protocol Usage:** Use pnpm workspace protocol for seamless cross-package dependency
+  installation and version synchronization
+- **Type Definition Management:** Remove deprecated @types packages when libraries provide built-in
+  types to avoid conflicts
+- **Cross-Package Validation:** Verify TypeScript compilation compatibility across all packages
+  after dependency installation
+- **Development Tooling Compatibility:** Ensure new dependencies work with existing tooling
+  (Vite, Vitest, ESLint, Prettier)
+- _Rationale:_ Systematic dependency management in monorepo architecture prevents conflicts and
+  ensures consistent development experience
+
+### Pattern: Real-Time Communication Infrastructure
+
+- **Client-Server Foundation:** Establish robust Socket.IO integration between client and server
+  packages with proper React and Express.js compatibility
+- **Coexistence Strategy:** Allow new real-time libraries to coexist with existing WebSocket
+  implementations during transition periods
+- **Performance Optimization:** Minimize dependency overhead while maintaining lightweight client
+  library optimization
+- **Development Workflow:** Ensure fast installation, compilation, and smooth integration with
+  existing development processes
+- _Rationale:_ Gradual infrastructure enhancement maintains stability while enabling advanced
+  real-time communication capabilities

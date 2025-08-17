@@ -6,6 +6,8 @@
 import express, { type Application } from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import { createServer, type Server as HttpServer } from 'http';
+import { Server as SocketIOServer, type Socket } from 'socket.io';
 import {
   SERVER_CONFIG,
   API_ENDPOINTS,
@@ -19,9 +21,26 @@ import {
   isValidAudioFile,
   formatFileSize,
 } from '@critgenius/shared';
+import type { ServerToClientEvents, ClientToServerEvents, SocketConnectionEvents } from './types/socket-events.js';
 
 const app: Application = express();
 const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
+
+// Create HTTP server and integrate with Express
+const server: HttpServer = createServer(app);
+
+// Initialize Socket.IO server with CORS configuration
+const io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> = new SocketIOServer(server, {
+  cors: {
+    origin: [...SERVER_CONFIG.CORS_ORIGINS],
+    credentials: true,
+  },
+  // Add connection state recovery for better reliability
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+    skipMiddlewares: true,
+  },
+});
 
 // Configure multer for file uploads
 const upload = multer({
@@ -195,15 +214,89 @@ app.use('*', (_req, res) => {
     .json(createApiResponse(false, null, ERROR_MESSAGES.NOT_FOUND));
 });
 
+// Socket.IO connection handlers
+io.on('connection', (socket: Socket) => {
+  console.log(`📱 Socket.IO client connected: ${socket.id}`);
+  
+  // Send connection status to client
+  socket.emit('connectionStatus', 'connected');
+
+  // Handle session joining
+  socket.on('joinSession', (data) => {
+    const { sessionId } = data;
+    socket.join(sessionId);
+    console.log(`👥 Client ${socket.id} joined session: ${sessionId}`);
+    
+    // Notify client they've joined successfully
+    socket.emit('processingUpdate', {
+      uploadId: sessionId,
+      status: 'pending',
+      message: `Joined session ${sessionId}`
+    });
+  });
+
+  // Handle session leaving
+  socket.on('leaveSession', (data) => {
+    const { sessionId } = data;
+    socket.leave(sessionId);
+    console.log(`👋 Client ${socket.id} left session: ${sessionId}`);
+  });
+
+  // Handle recording start
+  socket.on('startRecording', (data) => {
+    const { sessionId } = data;
+    console.log(`⏺️ Recording started for session: ${sessionId}`);
+    
+    // Broadcast to room that recording started
+    socket.to(sessionId).emit('processingUpdate', {
+      uploadId: sessionId,
+      status: 'processing',
+      message: 'Recording started'
+    });
+  });
+
+  // Handle recording stop
+  socket.on('stopRecording', (data) => {
+    const { sessionId } = data;
+    console.log(`⏹️ Recording stopped for session: ${sessionId}`);
+    
+    // Broadcast to room that recording stopped
+    socket.to(sessionId).emit('processingUpdate', {
+      uploadId: sessionId,
+      status: 'completed',
+      message: 'Recording completed'
+    });
+  });
+
+  // Handle client disconnect
+  socket.on('disconnect', (reason) => {
+    console.log(`📴 Socket.IO client disconnected: ${socket.id} (reason: ${reason})`);
+    socket.emit('connectionStatus', 'disconnected');
+  });
+
+  // Handle socket errors
+  socket.on('error', (error) => {
+    console.error(`❌ Socket.IO error for client ${socket.id}:`, error);
+    socket.emit('error', {
+      code: 'SOCKET_ERROR',
+      message: 'Socket connection error occurred'
+    });
+  });
+});
+
 // Start server
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`🚀 CritGenius Listener server running on port ${PORT}`);
+    console.log(`🔌 Socket.IO server ready for real-time connections`);
     console.log(
       `📋 Health check: http://localhost:${PORT}${API_ENDPOINTS.HEALTH}`
     );
     console.log(
       `📁 Upload endpoint: http://localhost:${PORT}${API_ENDPOINTS.UPLOAD}`
+    );
+    console.log(
+      `📡 WebSocket endpoint: ws://localhost:${PORT}`
     );
   });
 }
