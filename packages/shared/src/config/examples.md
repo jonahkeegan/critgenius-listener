@@ -91,10 +91,7 @@ import { createAssemblyAILogger } from '@critgenius/shared/services/assemblyai-l
 
 // Create logger with file output for production
 const logger = createAssemblyAILogger({
-  fileLogging: {
-    enabled: true,
-    filePath: '/var/log/assemblyai.log',
-  },
+  fileLogging: { enabled: true, filePath: '/var/log/assemblyai.log' },
   defaultTags: {
     service: 'critgenius-listener',
     environment: process.env.NODE_ENV || 'development',
