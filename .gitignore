@@ -82,6 +82,7 @@ context-inputs/
 workflow-docs/
 task-completion-reports/
 task-plans-cline/
+/docs/
 
 # Database
 *.sqlite
