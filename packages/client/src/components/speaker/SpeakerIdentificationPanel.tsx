@@ -347,8 +347,4 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
   );
 };
 
-<<<<<<< HEAD
 export default SpeakerIdentificationPanel;
-=======
-export default SpeakerIdentificationPanel;
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e

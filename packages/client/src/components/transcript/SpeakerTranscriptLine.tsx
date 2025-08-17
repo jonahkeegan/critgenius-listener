@@ -43,11 +43,6 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
   isHighlighted = false,
   searchQuery = '',
   showTimestamp = true,
-<<<<<<< HEAD
-  sessionStartTime: _sessionStartTime = 0,
-=======
-  sessionStartTime = 0,
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
 }) => {
   const theme = useTheme();
 
@@ -288,8 +283,4 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
   );
 };
 
-<<<<<<< HEAD
 export default SpeakerTranscriptLine;
-=======
-export default SpeakerTranscriptLine;
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e

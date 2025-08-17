@@ -14,16 +14,9 @@ import {
   TextField,
   InputAdornment,
   Chip,
-<<<<<<< HEAD
-  Menu,
-  MenuItem,
-=======
-  Button,
-  Menu,
-  MenuItem,
-  Paper,
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
   Fab,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   Search,
@@ -105,6 +98,8 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
       container.addEventListener('scroll', handleScroll);
       return () => container.removeEventListener('scroll', handleScroll);
     }
+    
+    return undefined;
   }, [transcriptEntries.length]);
 
   const handleSearchSubmit = () => {
@@ -171,20 +166,14 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
 
   const getCharacterForSpeaker = (speakerId: string | null) => {
     if (!speakerId) return null;
-<<<<<<< HEAD
-    return characters.find(c => c.speakerId === speakerId) || null;
-=======
-    return characters.find(c => c.speakerId === speakerId);
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
+    const speaker = speakers.find(speaker => speaker.id === speakerId);
+    if (!speaker?.character) return null;
+    return characters.find(char => char.name === speaker.character) || null;
   };
 
   const getSpeaker = (speakerId: string | null) => {
     if (!speakerId) return null;
-<<<<<<< HEAD
-    return speakers.find(s => s.id === speakerId) || null;
-=======
-    return speakers.find(s => s.id === speakerId);
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
+    return speakers.find(speaker => speaker.id === speakerId) || null;
   };
 
   return (
@@ -334,11 +323,7 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
           </Box>
         ) : (
           <Box sx={{ pb: 2 }}>
-<<<<<<< HEAD
-            {filteredEntries.map((entry, _index) => {
-=======
-            {filteredEntries.map((entry, index) => {
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e
+            {filteredEntries.map((entry) => {
               const speaker = getSpeaker(entry.speakerId);
               const character = getCharacterForSpeaker(entry.speakerId);
               
@@ -436,8 +421,4 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   );
 };
 
-<<<<<<< HEAD
 export default TranscriptWindow;
-=======
-export default TranscriptWindow;
->>>>>>> 492103fe0d424e63a98e32822f2a9a58d826b93e

@@ -4,7 +4,7 @@
  */
 
 // Core theme configuration
-export { default as critgeniusTheme, responsiveSpacing } from './critgeniusTheme';
+export { critgeniusTheme, responsiveSpacing } from './critgeniusTheme';
 
 // Responsive layout hooks
 export {
@@ -28,16 +28,7 @@ export { default as TranscriptLayout } from './components/layouts/TranscriptLayo
 export type { TranscriptLayoutProps } from './components/layouts/TranscriptLayout';
 
 // Responsive audio components
-export {
-  AudioCapturePanel,
-  ResponsiveAudioLevelIndicator,
-  TouchOptimizedRecordButton,
-} from './components/ResponsiveAudioComponents';
-export type {
-  AudioCapturePanelProps,
-  ResponsiveAudioLevelIndicatorProps,
-  TouchOptimizedRecordButtonProps,
-} from './components/ResponsiveAudioComponents';
+export { AudioCapturePanel } from './components/ResponsiveAudioComponents';
 
 // Theme type definitions
 export interface ResponsiveSpacingConfig {
@@ -120,10 +111,13 @@ export const getResponsiveValue = <T>(
   return undefined;
 };
 
+// Import critgeniusTheme for use in helper function
+import { critgeniusTheme } from './critgeniusTheme';
+
 // Theme configuration helpers
 export const createResponsiveTheme = (customizations?: any) => {
   // Future: Allow theme customizations while maintaining responsive design system
   return critgeniusTheme;
 };
 
-export default critgeniusTheme;
+export { critgeniusTheme as default };
