@@ -59,7 +59,7 @@ CritGenius Listener Architecture:
 │   ├── Audio Capture Components (Web Audio API)
 │   ├── Real-time Transcript Display
 │   ├── Speaker-Character Mapping Interface
-│   └── WebSocket Client Communication
+│   └── Socket.IO Client Communication
 ├── Backend Services (Node.js + Express)
 │   ├── Audio Streaming Service
 │   ├── AssemblyAI Integration Service
@@ -71,7 +71,7 @@ CritGenius Listener Architecture:
 │   └── File Storage (Audio artifacts)
 └── Infrastructure
     ├── Docker Containerization
-    ├── WebSocket.io for real-time communication
+    ├── Socket.IO for real-time communication
     └── Cloud deployment with auto-scaling
 ```
 
