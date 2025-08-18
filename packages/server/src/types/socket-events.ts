@@ -24,16 +24,28 @@ export interface ServerToClientEvents {
     message?: string;
   }) => void;
   transcriptionUpdate: (data: {
-    uploadId: string;
+    // support either upload or session driven flows
+    sessionId?: string;
+    uploadId?: string;
     text: string;
     speaker?: string;
     timestamp: string;
+    confidence?: number;
+    isFinal?: boolean;
+    words?: Array<{
+      start: number; // ms
+      end: number; // ms
+      text: string;
+      confidence?: number;
+      speaker?: string;
+    }>;
   }) => void;
-  error: (error: {
-    code: string;
-    message: string;
-    uploadId?: string;
+  transcriptionStatus?: (data: {
+    sessionId: string;
+    status: 'starting' | 'running' | 'stopped' | 'error' | 'resumed';
+    message?: string;
   }) => void;
+  error: (error: { code: string; message: string; uploadId?: string }) => void;
 }
 
 /**
@@ -44,6 +56,21 @@ export interface ClientToServerEvents {
   leaveSession: (data: { sessionId: string }) => void;
   startRecording: (data: { sessionId: string }) => void;
   stopRecording: (data: { sessionId: string }) => void;
+  // Real-time transcription controls
+  startTranscription: (data: {
+    sessionId: string;
+    audioConfig?: {
+      sampleRate: number;
+      encoding?: 'pcm_s16le' | 'wav' | 'flac' | 'mp3';
+      language?: string;
+      diarization?: boolean;
+    };
+  }) => void;
+  stopTranscription: (data: { sessionId: string }) => void;
+  audioChunk: (data: {
+    sessionId: string;
+    chunk: ArrayBuffer | Uint8Array | string;
+  }) => void;
 }
 
 /**
