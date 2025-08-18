@@ -21,7 +21,7 @@ import {
   isValidAudioFile,
   formatFileSize,
 } from '@critgenius/shared';
-import type { ServerToClientEvents, ClientToServerEvents, SocketConnectionEvents } from './types/socket-events.js';
+import type { ServerToClientEvents, ClientToServerEvents } from './types/socket-events.js';
 
 const app: Application = express();
 const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
@@ -30,7 +30,7 @@ const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 const server: HttpServer = createServer(app);
 
 // Initialize Socket.IO server with CORS configuration
-const io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> = new SocketIOServer(server, {
+const io: SocketIOServer<ClientToClientEvents, ServerToServerEvents> = new SocketIOServer(server, {
   cors: {
     origin: [...SERVER_CONFIG.CORS_ORIGINS],
     credentials: true,
@@ -222,7 +222,7 @@ io.on('connection', (socket: Socket) => {
   socket.emit('connectionStatus', 'connected');
 
   // Handle session joining
-  socket.on('joinSession', (data) => {
+  socket.on('joinSession', (data: { sessionId: string }) => {
     const { sessionId } = data;
     socket.join(sessionId);
     console.log(`👥 Client ${socket.id} joined session: ${sessionId}`);
@@ -236,14 +236,14 @@ io.on('connection', (socket: Socket) => {
   });
 
   // Handle session leaving
-  socket.on('leaveSession', (data) => {
+  socket.on('leaveSession', (data: { sessionId: string }) => {
     const { sessionId } = data;
     socket.leave(sessionId);
     console.log(`👋 Client ${socket.id} left session: ${sessionId}`);
   });
 
   // Handle recording start
-  socket.on('startRecording', (data) => {
+  socket.on('startRecording', (data: { sessionId: string }) => {
     const { sessionId } = data;
     console.log(`⏺️ Recording started for session: ${sessionId}`);
     
@@ -256,7 +256,7 @@ io.on('connection', (socket: Socket) => {
   });
 
   // Handle recording stop
-  socket.on('stopRecording', (data) => {
+  socket.on('stopRecording', (data: { sessionId: string }) => {
     const { sessionId } = data;
     console.log(`⏹️ Recording stopped for session: ${sessionId}`);
     
@@ -269,18 +269,30 @@ io.on('connection', (socket: Socket) => {
   });
 
   // Handle client disconnect
-  socket.on('disconnect', (reason) => {
+  socket.on('disconnect', (reason: string) => {
     console.log(`📴 Socket.IO client disconnected: ${socket.id} (reason: ${reason})`);
     socket.emit('connectionStatus', 'disconnected');
   });
 
   // Handle socket errors
-  socket.on('error', (error) => {
+  socket.on('error', (error: Error) => {
     console.error(`❌ Socket.IO error for client ${socket.id}:`, error);
     socket.emit('error', {
       code: 'SOCKET_ERROR',
       message: 'Socket connection error occurred'
+    } as {
+      code: string;
+      message: string;
     });
+  });
+
+  // Handle ping for heartbeat monitoring
+  socket.on('ping', (callback: (err?: Error) => void) => {
+    console.log(`🏓 Ping received from client ${socket.id}`);
+    // Respond to ping
+    if (callback) {
+      callback();
+    }
   });
 });
 
