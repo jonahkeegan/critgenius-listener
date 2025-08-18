@@ -3,7 +3,8 @@
  * Provides the primary user interface for audio capture and processing with MUI theme
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSocket } from './hooks/useSocket';
 import {
   Container,
   Typography,
@@ -36,7 +37,67 @@ import { useTheme } from '@mui/material/styles';
 function App() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioFiles, setAudioFiles] = useState<File[]>([]);
+  const [sessionId, setSessionId] = useState<string>('');
   const theme = useTheme();
+  
+  // Initialize socket connection
+  const {
+    isConnected,
+    isConnecting,
+    error,
+    connect,
+    disconnect,
+    emit,
+    on
+  } = useSocket();
+
+  // Connect to socket on component mount
+  useEffect(() => {
+    connect();
+    
+    // Generate a unique session ID
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setSessionId(newSessionId);
+    
+    // Join the session
+    emit('joinSession', { sessionId: newSessionId });
+    
+    // Cleanup on unmount
+    return () => {
+      emit('leaveSession', { sessionId: newSessionId });
+      disconnect();
+    };
+  }, [connect, disconnect, emit]);
+
+  // Listen for processing updates
+  useEffect(() => {
+    const cleanup = on('processingUpdate', (data) => {
+      console.log('Processing update:', data);
+      // TODO: Update UI with processing status
+    });
+    
+    return cleanup;
+  }, [on]);
+
+  // Listen for transcription updates
+  useEffect(() => {
+    const cleanup = on('transcriptionUpdate', (data) => {
+      console.log('Transcription update:', data);
+      // TODO: Update UI with transcription data
+    });
+    
+    return cleanup;
+  }, [on]);
+
+  // Listen for errors
+  useEffect(() => {
+    const cleanup = on('error', (error) => {
+      console.error('Socket error:', error);
+      // TODO: Show error to user
+    });
+    
+    return cleanup;
+  }, [on]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -47,13 +108,17 @@ function App() {
 
   const handleStartRecording = () => {
     setIsRecording(true);
-    // TODO: Implement audio recording logic
+    if (sessionId) {
+      emit('startRecording', { sessionId });
+    }
     console.log('Starting audio recording...');
   };
 
   const handleStopRecording = () => {
     setIsRecording(false);
-    // TODO: Implement stop recording and save logic
+    if (sessionId) {
+      emit('stopRecording', { sessionId });
+    }
     console.log('Stopping audio recording...');
   };
 
@@ -226,14 +291,37 @@ function App() {
                     color='text.secondary'
                     gutterBottom
                   >
-                    System Status
+                    Connection Status
                   </Typography>
-                  <Chip
-                    label='Ready'
-                    color='success'
-                    size='small'
-                    icon={<Info />}
-                  />
+                  {isConnecting && (
+                    <Chip
+                      label='Connecting...'
+                      color='warning'
+                      size='small'
+                      icon={<Info />}
+                    />
+                  )}
+                  {isConnected && (
+                    <Chip
+                      label='Connected'
+                      color='success'
+                      size='small'
+                      icon={<Info />}
+                    />
+                  )}
+                  {!isConnected && !isConnecting && (
+                    <Chip
+                      label='Disconnected'
+                      color='error'
+                      size='small'
+                      icon={<Info />}
+                    />
+                  )}
+                  {error && (
+                    <Typography variant='caption' color='error' display='block' sx={{ mt: 1 }}>
+                      {error}
+                    </Typography>
+                  )}
                 </Box>
 
                 <Box sx={{ mb: 3 }}>
