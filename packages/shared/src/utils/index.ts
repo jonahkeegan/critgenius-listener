@@ -88,8 +88,7 @@ export function deepClone<T>(obj: T): T {
   try {
     return JSON.parse(JSON.stringify(obj)) as T;
   } catch {
-    // Last resort: return the original reference
     // Last resort: throw an error to avoid returning the original reference
-    throw new Error('deepClone failed: object could not be cloned using structuredClone or JSON serialization.');
+    throw new Error('deepClone failed: object contains non-serializable data (functions, symbols, or circular references). Use manual cloning for complex objects.');
   }
 }

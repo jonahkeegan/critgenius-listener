@@ -61,6 +61,16 @@ Technical Discoveries:
 - Startup validation timing and console output provides valuable debugging information for development and deployment troubleshooting
 - Environment loader utilities (isDevelopment, isProduction, etc.) simplify conditional logic throughout the application
 
+Date: 2025-08-19
+TaskRef: 2.6.10 — Validate AssemblyAI ↔ Socket.IO real-time integration (no live API key)
+Learnings:
+- We can validate ~90% of the realtime pipeline via mocks: control signals, transcript normalization, status events, and lifecycle.
+- Keeping normalization logic server-side (SessionManager) simplifies client responsibilities and typings.
+- Hoisted test mocks are essential when mocking imports consumed by module init side-effects.
+Technical Discoveries:
+- AssemblyAI realtime expects base64 PCM in JSON { audio_data }, and our connector handles Uint8Array/string seamlessly.
+- The WebSocket mock must set OPEN state (like ws.OPEN) to activate send path; adding static OPEN=1 in tests is sufficient.
+- Vitest’s vi.hoisted prevents TDZ errors when mocks are referenced during module load (used for SessionManager mock in server wiring test).
 Success Patterns:
 - Created 16 distinct configuration categories covering all major system aspects: node runtime, database connections, API integrations, security settings, feature flags, UI customization, logging, monitoring, caching, file operations, networking, messaging, authentication, privacy compliance, development tools, and error tracking
 - Implemented three-tier environment security model: development (relaxed, debug-friendly), staging (production-like testing), production (maximum security requirements)
