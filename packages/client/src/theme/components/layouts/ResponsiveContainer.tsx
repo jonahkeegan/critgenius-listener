@@ -4,13 +4,17 @@
  */
 
 import React from 'react';
-import { Box, Container, ContainerProps } from '@mui/material';
+import { Container, ContainerProps } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useResponsiveLayout, useFluidSpacing } from '../../hooks/useResponsiveLayout';
+import {
+  useResponsiveLayout,
+  useFluidSpacing,
+} from '../../hooks/useResponsiveLayout';
 
-export interface ResponsiveContainerProps extends Omit<ContainerProps, 'maxWidth'> {
+export interface ResponsiveContainerProps
+  extends Omit<ContainerProps, 'maxWidth'> {
   /** Maximum width configuration */
-  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | false | string;
+  maxWidth?: ContainerProps['maxWidth'] | 'xxl' | (string & {});
   /** Enable fluid padding that scales with screen size */
   fluidPadding?: boolean;
   /** Enable responsive margins */
@@ -29,7 +33,7 @@ export interface ResponsiveContainerProps extends Omit<ContainerProps, 'maxWidth
 
 /**
  * ResponsiveContainer - Foundation container with enhanced responsive capabilities
- * 
+ *
  * Features:
  * - Fluid padding that adapts to screen size and content type
  * - Custom breakpoint configurations for different use cases
@@ -51,30 +55,30 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
   ...props
 }) => {
   const theme = useTheme();
-  const { isMobile, isTablet, currentBreakpoint } = useResponsiveLayout();
+  const { isMobile } = useResponsiveLayout();
   const spacing = useFluidSpacing();
 
   // Determine container max width based on behavior and screen size
-  const getMaxWidth = () => {
-    if (typeof maxWidth === 'string' && maxWidth !== 'false') {
+  const getMaxWidth = (): Exclude<ContainerProps['maxWidth'], undefined> => {
+    if (typeof maxWidth === 'string') {
       switch (behavior) {
         case 'audio-focused':
           // Wider containers for audio interfaces
           if (maxWidth === 'lg') return 'xl';
           if (maxWidth === 'md') return 'lg';
-          return maxWidth;
-        
+          return maxWidth as Exclude<ContainerProps['maxWidth'], undefined>;
+
         case 'reading-optimized':
           // Narrower containers for better reading
           if (maxWidth === 'xl') return 'lg';
           if (maxWidth === 'lg') return 'md';
-          return maxWidth;
-        
+          return maxWidth as Exclude<ContainerProps['maxWidth'], undefined>;
+
         default:
-          return maxWidth;
+          return maxWidth as Exclude<ContainerProps['maxWidth'], undefined>;
       }
     }
-    return maxWidth;
+    return maxWidth as Exclude<ContainerProps['maxWidth'], undefined>;
   };
 
   // Calculate responsive padding
@@ -86,11 +90,11 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
       case 'audio-focused':
         // More generous padding for touch interfaces
         return isMobile ? theme.spacing(3) : theme.spacing(4);
-      
+
       case 'reading-optimized':
         // Optimized for text content
         return isMobile ? theme.spacing(2, 3) : theme.spacing(4, 6);
-      
+
       default:
         return spacing.containerPadding;
     }
@@ -99,18 +103,18 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
   // Calculate responsive margins
   const getResponsiveMargins = () => {
     if (!responsiveMargins) return {};
-    
+
     switch (behavior) {
       case 'audio-focused':
         return {
           my: isMobile ? 1 : 2,
         };
-      
+
       case 'reading-optimized':
         return {
           my: isMobile ? 2 : 4,
         };
-      
+
       default:
         return {
           my: spacing.componentSpacing,
@@ -118,7 +122,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     }
   };
 
-  const containerSx = {
+  const containerSx: NonNullable<ContainerProps['sx']> = {
     ...(fullHeight && { minHeight: '100vh' }),
     ...(minHeight && { minHeight }),
     ...(centerVertically && {
@@ -130,29 +134,37 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     ...sx,
   };
 
-  // Handle custom maxWidth values (like 'xxl' or pixel values)
-  if (typeof maxWidth === 'string' && !['xs', 'sm', 'md', 'lg', 'xl', 'false'].includes(maxWidth)) {
+  // Handle custom maxWidth values (like 'xxl' or pixel values) by using Container with maxWidth=false
+  const standardBreakpoints = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+  type StandardBreakpoint = (typeof standardBreakpoints)[number];
+  const isStandardBreakpoint = (v: string): v is StandardBreakpoint =>
+    (standardBreakpoints as readonly string[]).includes(v);
+  const isCustomMaxWidth =
+    typeof maxWidth === 'string' && !isStandardBreakpoint(maxWidth);
+  if (isCustomMaxWidth) {
     return (
-      <Box
+      <Container
+        maxWidth={false}
         sx={{
-          width: '100%',
-          maxWidth: maxWidth === 'xxl' ? '1920px' : maxWidth,
-          mx: 'auto',
-          px: getContainerPadding(),
+          px: getContainerPadding() as string | number,
           ...containerSx,
+          '& > *': {
+            width: '100%',
+            maxWidth: maxWidth === 'xxl' ? '1920px' : (maxWidth as string),
+            mx: 'auto',
+          },
         }}
-        {...props}
       >
         {children}
-      </Box>
+      </Container>
     );
   }
 
   return (
     <Container
-      maxWidth={getMaxWidth() as ContainerProps['maxWidth']}
+      maxWidth={getMaxWidth()}
       sx={{
-        px: getContainerPadding(),
+        px: getContainerPadding() as string | number,
         ...containerSx,
       }}
       {...props}

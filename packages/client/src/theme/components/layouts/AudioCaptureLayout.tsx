@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { Box, Paper, Stack } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useResponsiveLayout, useFluidSpacing } from '../../hooks/useResponsiveLayout';
+import { useResponsiveLayout } from '../../hooks/useResponsiveLayout';
 
 export interface AudioCaptureLayoutProps {
   /** Recording controls component */
@@ -31,7 +31,7 @@ export interface AudioCaptureLayoutProps {
 
 /**
  * AudioCaptureLayout - Specialized layout for recording interface
- * 
+ *
  * Features:
  * - Responsive recording controls with mobile-first design
  * - Optimized layout for audio visualization and level monitoring
@@ -52,7 +52,6 @@ export const AudioCaptureLayout: React.FC<AudioCaptureLayoutProps> = ({
 }) => {
   const theme = useTheme();
   const { isMobile, isTablet } = useResponsiveLayout();
-  const { sectionSpacing } = useFluidSpacing();
 
   // Determine layout orientation based on screen size and compact mode
   const isVerticalLayout = isMobile || compact;
@@ -170,11 +169,7 @@ export const AudioCaptureLayout: React.FC<AudioCaptureLayoutProps> = ({
     );
   }
 
-  return (
-    <Box sx={containerSx}>
-      {content}
-    </Box>
-  );
+  return <Box sx={containerSx}>{content}</Box>;
 };
 
 export default AudioCaptureLayout;

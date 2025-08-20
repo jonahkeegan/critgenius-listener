@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import { Box, Grid, Paper, PaperProps } from '@mui/material';
+import { Box, Paper, PaperProps } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useResponsiveLayout, useFluidSpacing } from '../../hooks/useResponsiveLayout';
+import { useFluidSpacing } from '../../hooks/useResponsiveLayout';
 
 export interface TwoColumnLayoutProps {
   /** Left column content */
@@ -39,7 +39,7 @@ export interface TwoColumnLayoutProps {
 
 /**
  * TwoColumnLayout - Flexible desktop/mobile layout switcher
- * 
+ *
  * Features:
  * - Configurable column ratios (e.g., 60/40, 70/30)
  * - Responsive breakpoint switching
@@ -64,12 +64,12 @@ export const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
 }) => {
   const theme = useTheme();
   const { sectionSpacing } = useFluidSpacing();
-  
+
   // Calculate if we should stack columns based on current breakpoint
   const shouldStack = React.useMemo(() => {
     const breakpoints = theme.breakpoints.values;
     const currentBreakpoint = window.innerWidth;
-    
+
     switch (stackBreakpoint) {
       case 'xs':
         return currentBreakpoint < breakpoints.xs;
@@ -85,33 +85,36 @@ export const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
   }, [theme.breakpoints, stackBreakpoint]);
 
   // Calculate column widths for Grid system (out of 12)
-  const leftWidth = Math.round((columnRatio[0] / (columnRatio[0] + columnRatio[1])) * 12);
+  const leftWidth = Math.round(
+    (columnRatio[0] / (columnRatio[0] + columnRatio[1])) * 12
+  );
   const rightWidth = 12 - leftWidth;
 
   // Column content with conditional wrapper
   const leftContent = paperWrapper ? (
     <Paper elevation={elevation} {...paperProps}>
-      <Box sx={{ p: sectionSpacing }}>
-        {leftColumn}
-      </Box>
+      <Box sx={{ p: sectionSpacing }}>{leftColumn}</Box>
     </Paper>
-  ) : leftColumn;
+  ) : (
+    leftColumn
+  );
 
   const rightContent = paperWrapper ? (
     <Paper elevation={elevation} {...paperProps}>
-      <Box sx={{ p: sectionSpacing }}>
-        {rightColumn}
-      </Box>
+      <Box sx={{ p: sectionSpacing }}>{rightColumn}</Box>
     </Paper>
-  ) : rightColumn;
+  ) : (
+    rightColumn
+  );
 
   // Sticky positioning styles
   const getStickyStyles = (isSticky: boolean) => ({
-    ...(isSticky && !shouldStack && {
-      position: 'sticky' as const,
-      top: theme.spacing(2),
-      alignSelf: 'flex-start',
-    }),
+    ...(isSticky &&
+      !shouldStack && {
+        position: 'sticky' as const,
+        top: theme.spacing(2),
+        alignSelf: 'flex-start',
+      }),
   });
 
   return (
@@ -120,7 +123,12 @@ export const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
         width: '100%',
         ...(height && { height }),
         display: 'flex',
-        flexDirection: shouldStack && reverseOnMobile ? 'column-reverse' : shouldStack ? 'column' : 'row',
+        flexDirection:
+          shouldStack && reverseOnMobile
+            ? 'column-reverse'
+            : shouldStack
+              ? 'column'
+              : 'row',
         gap: theme.spacing(spacing),
         ...sx,
       }}

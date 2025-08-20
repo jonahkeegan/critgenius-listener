@@ -20,7 +20,7 @@ export interface SocketConnectionState {
 
 export interface SocketContextType {
   isConnected: boolean;
-  socket: any; // Will be properly typed in the service
+  socket: unknown; // Service exposes getters for typed emits/listeners
   connect: () => void;
   disconnect: () => void;
 }

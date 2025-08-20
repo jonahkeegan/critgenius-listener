@@ -8,7 +8,7 @@ export type AssemblyAIEventHandlers = {
   onOpen?: () => void;
   onError?: (err: Error) => void;
   onClose?: (code: number, reason: string) => void;
-  onTranscription?: (payload: any) => void;
+  onTranscription?: (payload: unknown) => void;
   onStatus?: (status: { status: string; message?: string }) => void;
 };
 
@@ -52,15 +52,16 @@ export class AssemblyAIConnector {
     this.ws.on('message', (data: WebSocket.RawData) => {
       try {
         const msg = typeof data === 'string' ? data : data.toString('utf8');
-        const json = JSON.parse(msg);
+        const json: unknown = JSON.parse(msg);
         this.handlers.onTranscription?.(json);
-      } catch (e: any) {
-        this.handlers.onError?.(e);
+      } catch (e: unknown) {
+        const err = e instanceof Error ? e : new Error(String(e));
+        this.handlers.onError?.(err);
       }
     });
 
-    this.ws.on('error', err => {
-      this.handlers.onError?.(err as any);
+    this.ws.on('error', (err: Error) => {
+      this.handlers.onError?.(err);
     });
 
     this.ws.on('close', (code, reasonBuf) => {
@@ -82,7 +83,7 @@ export class AssemblyAIConnector {
     this.sendJSON({ audio_data: base64 });
   }
 
-  private sendJSON(obj: any) {
+  private sendJSON(obj: unknown) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
     this.ws.send(JSON.stringify(obj));
   }

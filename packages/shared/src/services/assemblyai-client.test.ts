@@ -3,7 +3,7 @@
  * Tests comprehensive client with error handling, retry logic, and connection resilience
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   AssemblyAIClient,
   AssemblyAIClientError,
@@ -13,7 +13,10 @@ import {
   ConnectionState,
   createAssemblyAIClient,
 } from './assemblyai-client.js';
-import { AssemblyAIConfig, DEFAULT_ASSEMBLYAI_CONFIG } from '../config/assemblyai.js';
+import {
+  AssemblyAIConfig,
+  DEFAULT_ASSEMBLYAI_CONFIG,
+} from '../config/assemblyai.js';
 
 // Create mock functions that can be accessed globally
 const mockTranscriberConnect = vi.fn();
@@ -54,7 +57,13 @@ describe('AssemblyAI Client Implementation', () => {
   };
 
   beforeEach(() => {
+    // Clear call history without removing module mock implementations
     vi.clearAllMocks();
+    // Reset specific transcriber function mocks to remove prior implementations
+    mockTranscriberConnect.mockReset();
+    mockTranscriberSendAudio.mockReset();
+    mockTranscriberClose.mockReset();
+    mockTranscriberOn.mockReset();
     process.env = {
       ...originalEnv,
       ASSEMBLYAI_API_KEY: validConfig.apiKey,
@@ -87,8 +96,9 @@ describe('AssemblyAI Client Implementation', () => {
     it('should throw error with invalid configuration', () => {
       process.env = {};
 
-      expect(() => new AssemblyAIClient())
-        .toThrow(/Failed to initialize AssemblyAI client/);
+      expect(() => new AssemblyAIClient()).toThrow(
+        /Failed to initialize AssemblyAI client/
+      );
     });
 
     it('should initialize retry configuration correctly', () => {
@@ -110,7 +120,12 @@ describe('AssemblyAI Client Implementation', () => {
 
   describe('Error Classes', () => {
     it('should create AssemblyAIClientError correctly', () => {
-      const error = new AssemblyAIClientError('Test error', 'TEST_CODE', 500, true);
+      const error = new AssemblyAIClientError(
+        'Test error',
+        'TEST_CODE',
+        500,
+        true
+      );
 
       expect(error.message).toBe('Test error');
       expect(error.code).toBe('TEST_CODE');
@@ -120,7 +135,10 @@ describe('AssemblyAI Client Implementation', () => {
     });
 
     it('should create AssemblyAIConnectionError correctly', () => {
-      const error = new AssemblyAIConnectionError('Connection failed', 'CONN_ERROR');
+      const error = new AssemblyAIConnectionError(
+        'Connection failed',
+        'CONN_ERROR'
+      );
 
       expect(error.message).toBe('Connection failed');
       expect(error.code).toBe('CONN_ERROR');
@@ -163,7 +181,7 @@ describe('AssemblyAI Client Implementation', () => {
 
     it('should connect successfully', async () => {
       const connectionStateChanges: ConnectionState[] = [];
-      client.on('connection-state', (state) => {
+      client.on('connection-state', state => {
         connectionStateChanges.push(state);
       });
 
@@ -198,9 +216,9 @@ describe('AssemblyAI Client Implementation', () => {
         return new Promise(() => {});
       });
 
-      await expect(timeoutClient.connect())
-        .rejects
-        .toThrow(AssemblyAIConnectionError);
+      await expect(timeoutClient.connect()).rejects.toThrow(
+        AssemblyAIConnectionError
+      );
 
       expect(timeoutClient.getConnectionState()).toBe(ConnectionState.ERROR);
     }, 10000);
@@ -223,7 +241,7 @@ describe('AssemblyAI Client Implementation', () => {
       });
 
       const retryAttempts: number[] = [];
-      retryClient.on('retry-attempt', (attempt) => {
+      retryClient.on('retry-attempt', attempt => {
         retryAttempts.push(attempt);
         attemptCount++;
       });
@@ -241,9 +259,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect())
-        .rejects
-        .toThrow(AssemblyAIAuthError);
+      await expect(client.connect()).rejects.toThrow(AssemblyAIAuthError);
 
       expect(client.getConnectionState()).toBe(ConnectionState.ERROR);
     });
@@ -252,16 +268,18 @@ describe('AssemblyAI Client Implementation', () => {
       const rateLimitClient = new AssemblyAIClient(validConfig);
 
       // Mock the transcriber connect method to reject with rate limit error
-      mockTranscriberConnect.mockRejectedValue(new Error('429 too many requests'));
+      mockTranscriberConnect.mockRejectedValue(
+        new Error('429 too many requests')
+      );
 
       const rateLimitEvents: number[] = [];
-      rateLimitClient.on('rate-limit', (retryAfter) => {
+      rateLimitClient.on('rate-limit', retryAfter => {
         rateLimitEvents.push(retryAfter);
       });
 
-      await expect(rateLimitClient.connect())
-        .rejects
-        .toThrow(AssemblyAIRateLimitError);
+      await expect(rateLimitClient.connect()).rejects.toThrow(
+        AssemblyAIRateLimitError
+      );
 
       expect(rateLimitEvents.length).toBeGreaterThan(0);
     }, 3000);
@@ -270,7 +288,10 @@ describe('AssemblyAI Client Implementation', () => {
       // Mock successful connection first
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'open') {
-          setTimeout(() => callback({ sessionId: 'test-session-disconnect' }), 10);
+          setTimeout(
+            () => callback({ sessionId: 'test-session-disconnect' }),
+            10
+          );
         }
       });
 
@@ -295,7 +316,11 @@ describe('AssemblyAI Client Implementation', () => {
       const connectionPromise2 = client.connect();
       const connectionPromise3 = client.connect();
 
-      await Promise.all([connectionPromise1, connectionPromise2, connectionPromise3]);
+      await Promise.all([
+        connectionPromise1,
+        connectionPromise2,
+        connectionPromise3,
+      ]);
 
       // Should only connect once
       expect(mockTranscriber.connect).toHaveBeenCalledTimes(1);
@@ -308,14 +333,14 @@ describe('AssemblyAI Client Implementation', () => {
 
     beforeEach(async () => {
       client = new AssemblyAIClient(validConfig);
-      
+
       // Mock successful connection
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'open') {
           setTimeout(() => callback({ sessionId: 'test-audio-session' }), 10);
         }
       });
-      
+
       await client.connect();
     });
 
@@ -329,7 +354,7 @@ describe('AssemblyAI Client Implementation', () => {
       await client.sendAudio(audioBuffer);
 
       expect(mockTranscriberSendAudio).toHaveBeenCalled();
-      
+
       // Verify ArrayBuffer conversion
       const sentData = mockTranscriberSendAudio.mock.calls[0]?.[0];
       expect(sentData).toBeInstanceOf(ArrayBuffer);
@@ -344,14 +369,14 @@ describe('AssemblyAI Client Implementation', () => {
           maxQueueSize: 10,
         },
       };
-      
+
       const batchingClient = new AssemblyAIClient(batchingConfig);
       const audioBuffer = Buffer.from([1, 2, 3, 4, 5]);
 
       // Should not throw error when disconnected with batching
-      await expect(batchingClient.sendAudio(audioBuffer))
-        .resolves
-        .toBeUndefined();
+      await expect(
+        batchingClient.sendAudio(audioBuffer)
+      ).resolves.toBeUndefined();
     });
 
     it('should throw error when sending audio while disconnected without batching', async () => {
@@ -359,9 +384,9 @@ describe('AssemblyAI Client Implementation', () => {
 
       const audioBuffer = Buffer.from([1, 2, 3, 4, 5]);
 
-      await expect(client.sendAudio(audioBuffer))
-        .rejects
-        .toThrow(AssemblyAIClientError);
+      await expect(client.sendAudio(audioBuffer)).rejects.toThrow(
+        AssemblyAIClientError
+      );
     });
 
     it('should handle audio sending errors gracefully', async () => {
@@ -370,15 +395,15 @@ describe('AssemblyAI Client Implementation', () => {
       });
 
       const errorEvents: AssemblyAIClientError[] = [];
-      client.on('error', (error) => {
+      client.on('error', error => {
         errorEvents.push(error);
       });
 
       const audioBuffer = Buffer.from([1, 2, 3, 4, 5]);
 
-      await expect(client.sendAudio(audioBuffer))
-        .rejects
-        .toThrow(AssemblyAIClientError);
+      await expect(client.sendAudio(audioBuffer)).rejects.toThrow(
+        AssemblyAIClientError
+      );
 
       expect(errorEvents.length).toBe(1);
     });
@@ -387,7 +412,7 @@ describe('AssemblyAI Client Implementation', () => {
       // Reset mock to not throw error for this test
       mockTranscriberSendAudio.mockReset();
       mockTranscriberSendAudio.mockResolvedValue(undefined);
-      
+
       const audioBuffer = Buffer.from([1, 2, 3, 4, 5]);
 
       await client.sendAudio(audioBuffer);
@@ -421,7 +446,7 @@ describe('AssemblyAI Client Implementation', () => {
 
     it('should emit transcript events', async () => {
       const transcripts: any[] = [];
-      client.on('transcript', (transcript) => {
+      client.on('transcript', transcript => {
         transcripts.push(transcript);
       });
 
@@ -430,11 +455,15 @@ describe('AssemblyAI Client Implementation', () => {
         if (event === 'open') {
           setTimeout(() => callback({ sessionId: 'test-transcript' }), 10);
         } else if (event === 'transcript') {
-          setTimeout(() => callback({
-            message_type: 'PartialTranscript',
-            text: 'Hello world',
-            confidence: 0.95,
-          }), 20);
+          setTimeout(
+            () =>
+              callback({
+                message_type: 'PartialTranscript',
+                text: 'Hello world',
+                confidence: 0.95,
+              }),
+            20
+          );
         }
       });
 
@@ -448,7 +477,7 @@ describe('AssemblyAI Client Implementation', () => {
 
     it('should emit session events', async () => {
       const sessions: string[] = [];
-      client.on('session-begins', (sessionId) => {
+      client.on('session-begins', sessionId => {
         sessions.push(sessionId);
       });
 
@@ -650,22 +679,20 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect())
-        .rejects
-        .toThrow(AssemblyAIClientError);
+      await expect(client.connect()).rejects.toThrow(AssemblyAIClientError);
     }, 10000);
 
     it('should detect authentication errors from messages', async () => {
-      mockTranscriberConnect.mockRejectedValue(new Error('401 unauthorized access'));
+      mockTranscriberConnect.mockRejectedValue(
+        new Error('401 unauthorized access')
+      );
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'error') {
           setTimeout(() => callback(new Error('401 unauthorized access')), 10);
         }
       });
 
-      await expect(client.connect())
-        .rejects
-        .toThrow(AssemblyAIAuthError);
+      await expect(client.connect()).rejects.toThrow(AssemblyAIAuthError);
     }, 10000);
 
     it('should detect rate limit errors from messages', async () => {
@@ -674,22 +701,23 @@ describe('AssemblyAI Client Implementation', () => {
         return Promise.reject(new Error('429 too many requests'));
       });
 
-      await expect(client.connect())
-        .rejects
-        .toThrow(AssemblyAIRateLimitError);
+      await expect(client.connect()).rejects.toThrow(AssemblyAIRateLimitError);
     }, 5000);
 
     it('should detect connection errors from messages', async () => {
-      mockTranscriberConnect.mockRejectedValue(new Error('network connection failed'));
+      mockTranscriberConnect.mockRejectedValue(
+        new Error('network connection failed')
+      );
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'error') {
-          setTimeout(() => callback(new Error('network connection failed')), 10);
+          setTimeout(
+            () => callback(new Error('network connection failed')),
+            10
+          );
         }
       });
 
-      await expect(client.connect())
-        .rejects
-        .toThrow(AssemblyAIConnectionError);
+      await expect(client.connect()).rejects.toThrow(AssemblyAIConnectionError);
     }, 10000);
   });
 
@@ -735,7 +763,7 @@ describe('AssemblyAI Client Implementation', () => {
     });
 
     it('should handle connection close events gracefully', async () => {
-      let closeCallback: Function | null = null;
+      let closeCallback: (() => void) | null = null;
 
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'open') {
@@ -780,9 +808,9 @@ describe('AssemblyAI Client Implementation', () => {
       await queueClient.sendAudio(audioBuffer);
 
       // Should handle overflow gracefully
-      await expect(queueClient.sendAudio(audioBuffer))
-        .rejects
-        .toThrow(AssemblyAIClientError);
+      await expect(queueClient.sendAudio(audioBuffer)).rejects.toThrow(
+        AssemblyAIClientError
+      );
     });
 
     it('should handle configuration with debug logging', () => {

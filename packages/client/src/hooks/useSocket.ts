@@ -5,14 +5,20 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import SocketService from '../services/socketService';
-import type { SocketConnectionState, ServerToClientEvents, ClientToServerEvents } from '../types/socket';
+import type {
+  SocketConnectionState,
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from '../types/socket';
 
 export const useSocket = () => {
-  const [connectionState, setConnectionState] = useState<SocketConnectionState>({
-    isConnected: false,
-    isConnecting: false,
-    error: null
-  });
+  const [connectionState, setConnectionState] = useState<SocketConnectionState>(
+    {
+      isConnected: false,
+      isConnecting: false,
+      error: null,
+    }
+  );
 
   // Connect to socket
   const connect = useCallback(() => {
@@ -25,36 +31,48 @@ export const useSocket = () => {
   }, []);
 
   // Emit events to server
-  const emit = useCallback(<K extends keyof ClientToServerEvents>(
-    event: K,
-    ...args: Parameters<ClientToServerEvents[K]>
-  ) => {
-    SocketService.emit(event, ...args);
-  }, []);
+  const emit = useCallback(
+    <K extends keyof ClientToServerEvents>(
+      event: K,
+      ...args: Parameters<ClientToServerEvents[K]>
+    ) => {
+      SocketService.emit(event, ...args);
+    },
+    []
+  );
 
   // Listen to server events
-  const on = useCallback(<K extends keyof ServerToClientEvents>(
-    event: K,
-    listener: ServerToClientEvents[K]
-  ) => {
-    SocketService.on(event, listener as any);
-    
-    // Return cleanup function
-    return () => {
-      SocketService.off(event, listener as any);
-    };
-  }, []);
+  const on = useCallback(
+    <K extends keyof ServerToClientEvents>(
+      event: K,
+      listener: ServerToClientEvents[K]
+    ) => {
+      SocketService.on(event, listener as NonNullable<ServerToClientEvents[K]>);
+
+      // Return cleanup function
+      return () => {
+        SocketService.off(
+          event,
+          listener as NonNullable<ServerToClientEvents[K]>
+        );
+      };
+    },
+    []
+  );
 
   // Set up connection state listener
   useEffect(() => {
-    const cleanup = on('connectionStatus', (status: 'connected' | 'disconnected') => {
-      setConnectionState(prev => ({
-        ...prev,
-        isConnected: status === 'connected',
-        isConnecting: status === 'connected' ? false : prev.isConnecting,
-        error: status === 'disconnected' ? prev.error : null
-      }));
-    });
+    const cleanup = on(
+      'connectionStatus',
+      (status: 'connected' | 'disconnected') => {
+        setConnectionState(prev => ({
+          ...prev,
+          isConnected: status === 'connected',
+          isConnecting: status === 'connected' ? false : prev.isConnecting,
+          error: status === 'disconnected' ? prev.error : null,
+        }));
+      }
+    );
 
     // Initialize connection state
     const initialState = SocketService.getConnectionState();
@@ -70,6 +88,6 @@ export const useSocket = () => {
     connect,
     disconnect,
     emit,
-    on
+    on,
   };
 };

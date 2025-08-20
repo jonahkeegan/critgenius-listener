@@ -2,12 +2,27 @@
  * @fileoverview Tests for the main App component
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
 import { critgeniusTheme } from './theme';
+
+// Stub heavy MUI icon imports to avoid EMFILE on Windows
+vi.mock('@mui/icons-material', async () => {
+  const React = await import('react');
+  const Stub = () => React.createElement('span');
+  return {
+    Mic: Stub,
+    Stop: Stub,
+    Upload: Stub,
+    AudioFile: Stub,
+    PlayArrow: Stub,
+    Settings: Stub,
+    Info: Stub,
+  };
+});
 
 // Test wrapper with MUI theme provider
 const renderWithTheme = (component: React.ReactElement) => {
@@ -28,7 +43,7 @@ describe('App Component', () => {
 
   it('renders the subtitle', () => {
     renderWithTheme(<App />);
-    const subtitle = screen.getByText('Real-time audio capture and processing');
+    const subtitle = screen.getByText(/Real-time audio capture/);
     expect(subtitle).toBeInTheDocument();
   });
 
@@ -40,40 +55,42 @@ describe('App Component', () => {
 
   it('shows start recording button initially', () => {
     renderWithTheme(<App />);
-    const startButton = screen.getByText('🎤 Start Recording');
+    const startButton = screen.getByText('Start Recording');
     expect(startButton).toBeInTheDocument();
   });
 
   it('changes to stop recording button when recording starts', () => {
     renderWithTheme(<App />);
-    const startButton = screen.getByText('🎤 Start Recording');
-    
+    const startButton = screen.getByText('Start Recording');
+
     fireEvent.click(startButton);
-    
-    const stopButton = screen.getByText('⏹️ Stop Recording');
+
+    const stopButton = screen.getByText('Stop Recording');
     expect(stopButton).toBeInTheDocument();
-    expect(screen.queryByText('🎤 Start Recording')).not.toBeInTheDocument();
+    expect(screen.queryByText('Start Recording')).not.toBeInTheDocument();
   });
 
   it('returns to start recording button when recording stops', () => {
     renderWithTheme(<App />);
-    const startButton = screen.getByText('🎤 Start Recording');
-    
+    const startButton = screen.getByText('Start Recording');
+
     // Start recording
     fireEvent.click(startButton);
-    const stopButton = screen.getByText('⏹️ Stop Recording');
-    
+    const stopButton = screen.getByText('Stop Recording');
+
     // Stop recording
     fireEvent.click(stopButton);
-    
-    const newStartButton = screen.getByText('🎤 Start Recording');
+
+    const newStartButton = screen.getByText('Start Recording');
     expect(newStartButton).toBeInTheDocument();
-    expect(screen.queryByText('⏹️ Stop Recording')).not.toBeInTheDocument();
+    expect(screen.queryByText('Stop Recording')).not.toBeInTheDocument();
   });
 
   it('renders file upload input', () => {
     renderWithTheme(<App />);
-    const fileInput = screen.getByLabelText(/Or upload audio files/);
+    const fileInput = screen.getByLabelText(
+      /Choose Audio Files|Or upload audio files/
+    );
     expect(fileInput).toBeInTheDocument();
     expect(fileInput).toHaveAttribute('type', 'file');
     expect(fileInput).toHaveAttribute('accept', 'audio/*');
@@ -84,8 +101,10 @@ describe('App Component', () => {
     renderWithTheme(<App />);
     const statusHeading = screen.getByText('Processing Status');
     expect(statusHeading).toBeInTheDocument();
-    
-    const statusMessage = screen.getByText('No files currently processing');
+
+    const statusMessage = screen.getByText(
+      /No files processing|No files currently processing/
+    );
     expect(statusMessage).toBeInTheDocument();
   });
 

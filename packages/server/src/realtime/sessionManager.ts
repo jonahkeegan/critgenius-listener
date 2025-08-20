@@ -17,6 +17,14 @@ type SessionState = {
   };
 };
 
+type AssemblyAIWord = {
+  start: number;
+  end: number;
+  text: string;
+  confidence?: number;
+  speaker?: string;
+};
+
 export class SessionManager {
   private sessions = new Map<string, SessionState>();
   constructor(private io: SocketIOServer) {}
@@ -79,49 +87,80 @@ export class SessionManager {
     }
     const connector = new AssemblyAIConnector(
       sessionId,
-      {
-        apiKey,
-        sampleRate: state.options.sampleRate,
-        language: state.options.language as any,
-        diarization: state.options.diarization as any,
-      },
+      (() => {
+        const cfg: {
+          apiKey: string;
+          sampleRate: number;
+          language?: string;
+          diarization?: boolean;
+        } = {
+          apiKey,
+          sampleRate: state.options.sampleRate,
+        };
+        if (typeof state.options.language === 'string')
+          cfg.language = state.options.language;
+        if (typeof state.options.diarization === 'boolean')
+          cfg.diarization = state.options.diarization;
+        return cfg;
+      })(),
       {
         onOpen: () =>
           this.io
             .to(sessionId)
             .emit('transcriptionStatus', { sessionId, status: 'running' }),
         onStatus: s =>
-          this.io
-            .to(sessionId)
-            .emit('transcriptionStatus', {
-              sessionId,
-              status: s.status as any,
-              message: s.message,
-            }),
+          this.io.to(sessionId).emit('transcriptionStatus', {
+            sessionId,
+            status: s.status as
+              | 'starting'
+              | 'running'
+              | 'stopped'
+              | 'error'
+              | 'resumed',
+            message: s.message,
+          }),
         onError: err =>
-          this.io
-            .to(sessionId)
-            .emit('error', {
-              code: 'TRANSCRIPTION_ERROR',
-              message: String(err?.message || err),
-            }),
-        onTranscription: payload => {
+          this.io.to(sessionId).emit('error', {
+            code: 'TRANSCRIPTION_ERROR',
+            message: String(err?.message || err),
+          }),
+        onTranscription: (payload: unknown) => {
+          const isRecord = (v: unknown): v is Record<string, unknown> =>
+            typeof v === 'object' && v !== null;
+          const isWord = (w: unknown): w is AssemblyAIWord =>
+            isRecord(w) &&
+            typeof w.start === 'number' &&
+            typeof w.end === 'number' &&
+            typeof w.text === 'string';
+          const isAAIPayload = (
+            p: unknown
+          ): p is {
+            message_type?: 'partial' | 'final';
+            text?: string;
+            transcript?: string;
+            confidence?: number;
+            words?: AssemblyAIWord[];
+          } =>
+            isRecord(p) &&
+            (typeof p.text === 'string' ||
+              typeof p.transcript === 'string' ||
+              p.message_type === 'final' ||
+              p.message_type === 'partial');
+
           // Normalize common fields
-          if (
-            payload?.text ||
-            payload?.message_type === 'final' ||
-            payload?.message_type === 'partial'
-          ) {
+          if (isAAIPayload(payload)) {
             const isFinal = payload.message_type === 'final';
             const text = payload.text ?? payload.transcript ?? '';
             const confidence = payload.confidence;
-            const words = payload.words?.map((w: any) => ({
-              start: w.start,
-              end: w.end,
-              text: w.text,
-              confidence: w.confidence,
-              speaker: w.speaker,
-            }));
+            const words = Array.isArray(payload.words)
+              ? payload.words.filter(isWord).map(w => ({
+                  start: w.start,
+                  end: w.end,
+                  text: w.text,
+                  confidence: w.confidence,
+                  speaker: w.speaker,
+                }))
+              : undefined;
             this.io.to(sessionId).emit('transcriptionUpdate', {
               sessionId,
               text,

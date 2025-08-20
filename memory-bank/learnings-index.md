@@ -1,11 +1,11 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-08-17 13:34 PST **Version:** 1.1.1 **System Status:** Active
+**Last Updated:** 2025-08-18 15:09 PST **Version:** 1.2.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-002.md` **Status:** Active with content **Current Row
-Count:** 28 **Last Updated:** 2025-08-17 14:38 PST
+**Currently Active:** `consolidated-learnings-004.md` **Status:** Active - Socket.IO Resilience
+Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 
 ## File Registry
 
@@ -16,7 +16,8 @@ Count:** 28 **Last Updated:** 2025-08-17 14:38 PST
 - **Created:** 2025-01-11 19:49 PST
 - **Last Updated:** 2025-08-17 13:20 PST
 - **Primary Topics:** TypeScript, Security, Testing, Development Tooling, Git Workflow, MCP
-  Integration, Material UI, Responsive Design, Component Architecture, External Service Integration, Real-Time Communication
+  Integration, Material UI, Responsive Design, Component Architecture, External Service Integration,
+  Real-Time Communication
 - **Description:** Comprehensive learnings covering infrastructure setup patterns, security
   management, testing frameworks, development workflow automation, Material UI theme development,
   responsive design systems, component architecture patterns, enterprise external service
@@ -24,12 +25,46 @@ Count:** 28 **Last Updated:** 2025-08-17 14:38 PST
 
 ### consolidated-learnings-002.md
 
-- **Status:** Active with content
+- **Status:** Completed/Archived
 - **Row Count:** 28
 - **Created:** 2025-08-17 13:33 PST
 - **Last Updated:** 2025-08-17 14:38 PST
-- **Primary Topics:** Socket.IO Integration Pattern, Real-Time Communication Event Architecture, TypeScript Type Safety, Session-Based Room Management, Connection State Recovery Patterns, Structured Error Handling for WebSocket Communication
-- **Description:** Consolidated learnings from Socket.IO server implementation for real-time communication capabilities including integration patterns, event architecture, type safety, session management, connection recovery, and error handling patterns
+- **Primary Topics:** Socket.IO Integration Pattern, Real-Time Communication Event Architecture,
+  TypeScript Type Safety, Session-Based Room Management, Connection State Recovery Patterns,
+  Structured Error Handling for WebSocket Communication
+- **Description:** Consolidated learnings from Socket.IO server implementation for real-time
+  communication capabilities including integration patterns, event architecture, type safety,
+  session management, connection recovery, and error handling patterns
+
+### consolidated-learnings-003.md
+
+- **Status:** Completed/Archived
+- **Row Count:** 287
+- **Created:** 2025-08-18 15:05 PST
+- **Last Updated:** 2025-08-18 15:05 PST
+- **Primary Topics:** Client-Side Socket.IO Implementation, Server-Side Real-Time Patterns,
+  AssemblyAI Integration, Context Recovery, Type Management, Documentation Workflows, WebSocket
+  Testing
+- **Description:** Comprehensive learnings covering client-side Socket.IO service architecture,
+  server-side real-time communication patterns, AssemblyAI WebSocket integration, context corruption
+  recovery procedures, TypeScript type management in monorepos, memory bank documentation workflows,
+  and advanced WebSocket testing strategies
+
+### consolidated-learnings-004.md
+
+- **Status:** Active - Socket.IO Resilience Patterns
+- **Row Count:** 248
+- **Created:** 2025-08-18 15:09 PST
+- **Last Updated:** 2025-08-18 15:32 PST
+- **Primary Topics:** Socket.IO Production Resilience Architecture, Smart Reconnection Strategies,
+  Message Queue Management, Network Status Monitoring, Heartbeat Systems, Advanced Configuration
+  Management, Error Handling and Recovery Systems, Performance Optimization Patterns,
+  Security-Enhanced Resilience, Comprehensive Resilience Testing Framework
+- **Description:** Comprehensive production-grade Socket.IO resilience patterns including
+  exponential backoff reconnection, message queuing for offline resilience, network monitoring with
+  health checks, heartbeat systems, error recovery strategies, session state preservation,
+  performance optimization, security enhancements, and testing frameworks - optimized for gaming/D&D
+  session reliability requirements
 
 ## Topic Index
 
@@ -93,9 +128,9 @@ Count:** 28 **Last Updated:** 2025-08-17 14:38 PST
 
 ## Pagination Status
 
-- **Total Files:** 2 (active)
-- **Active File Capacity:** 300 remaining rows (300 max)
-- **Next File Number:** 003
+- **Total Files:** 4 (1 active, 3 archived)
+- **Active File Capacity:** 285 remaining rows (300 max)
+- **Next File Number:** 005
 
 ## System Notes
 

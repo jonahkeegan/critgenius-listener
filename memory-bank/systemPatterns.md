@@ -140,6 +140,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 4. **Monitoring Integration**: Real-time error tracking and alerting
 5. **Graceful Recovery**: State preservation during service interruptions
 
+## Validation Patterns (Aug 19, 2025)
+
+- **Mock-first Realtime Validation**: Use module and WebSocket mocks to validate ~90% of integration
+  surface without live API keys.
+- **Server-side Normalization**: Normalize transcription payloads (text, confidence, words, isFinal)
+  in the Session Manager before broadcasting to clients.
+- **Lifecycle-driven Cleanup**: Tie connector lifecycle to room participants; last participant leave
+  triggers connector close and session deletion.
+- **Error Signaling Contracts**: Emit structured error codes across Socket.IO boundary (e.g.,
+  ASSEMBLYAI_CONFIG_MISSING, TRANSCRIPTION_ERROR) to simplify client handling.
+
 ## Integration Patterns
 
 ### CritGenius Ecosystem APIs

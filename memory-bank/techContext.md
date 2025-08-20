@@ -272,6 +272,18 @@ describe('Latency Requirements', () => {
 });
 ```
 
+### Realtime Integration Validation (2025-08-19)
+
+- Implemented mock-first validation for Socket.IO ↔ AssemblyAI integration using Vitest and
+  module/WebSocket mocks.
+- Coverage includes control flow (start/stop/audioChunk), transcript normalization, status updates,
+  error propagation, and session lifecycle.
+- No live API key required; tests run fully offline.
+- Key test files:
+  - `packages/server/src/realtime/sessionManager.test.ts`
+  - `packages/server/src/realtime/assemblyaiConnector.test.ts`
+  - `packages/server/src/realtime/socketio-integration.test.ts`
+
 ## Build and CI/CD
 
 **GitHub Actions Workflow:**

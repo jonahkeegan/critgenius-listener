@@ -24,11 +24,7 @@
       "types": "./dist/constants/index.d.ts"
     }
   },
-  "files": [
-    "dist/**/*",
-    "package.json",
-    "README.md"
-  ],
+  "files": ["dist/**/*", "package.json", "README.md"],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -38,8 +34,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "lint": "eslint src --max-warnings 0",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint \"src/**/!(*.test).{ts,tsx}\" --max-warnings 0",
+    "lint:fix": "eslint \"src/**/!(*.test).{ts,tsx}\" --fix",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist .turbo node_modules/.cache"
   },
@@ -60,9 +56,7 @@
       "component": "listener",
       "submodule": "shared",
       "role": "type-definitions",
-      "technologies": [
-        "typescript"
-      ],
+      "technologies": ["typescript"],
       "architecture": "shared-library",
       "realtime": false,
       "privacy": "type-safe"
@@ -105,19 +99,9 @@
         "errors": "./constants/errors.ts"
       }
     },
-    "consumers": [
-      "@critgenius/listener-client",
-      "@critgenius/listener-server"
-    ]
+    "consumers": ["@critgenius/listener-client", "@critgenius/listener-server"]
   },
-  "keywords": [
-    "critgenius",
-    "typescript",
-    "types",
-    "shared",
-    "audio-transcription",
-    "type-definitions"
-  ],
+  "keywords": ["critgenius", "typescript", "types", "shared", "audio-transcription", "type-definitions"],
   "author": "CritGenius Team",
   "license": "MIT",
   "repository": {

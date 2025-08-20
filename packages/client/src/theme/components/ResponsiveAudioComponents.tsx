@@ -11,18 +11,10 @@ import {
   CardContent,
   IconButton,
   Typography,
-  Chip,
   LinearProgress,
-  Container,
   useTheme,
 } from '@mui/material';
-import {
-  Mic,
-  VolumeUp,
-  Pause,
-  Stop,
-  Settings,
-} from '@mui/icons-material';
+import { Mic, Pause, Stop, Settings } from '@mui/icons-material';
 import {
   useResponsiveLayout,
   useFluidSpacing,
@@ -54,7 +46,7 @@ export const AudioCapturePanel: React.FC = () => {
     >
       <CardContent>
         <Typography
-          variant="h5"
+          variant='h5'
           sx={{
             ...typographyUtilities.audioControls,
             mb: spacing.componentSpacing,
@@ -75,7 +67,7 @@ export const AudioCapturePanel: React.FC = () => {
         >
           {/* Primary recording button */}
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<Mic />}
             sx={{
               minHeight: buttonMinHeight,
@@ -130,7 +122,7 @@ export const AudioCapturePanel: React.FC = () => {
         {/* Audio level indicator */}
         <Box sx={{ mt: spacing.componentSpacing }}>
           <Typography
-            variant="body2"
+            variant='body2'
             sx={{
               ...typographyUtilities.timestamp,
               mb: 1,
@@ -140,7 +132,7 @@ export const AudioCapturePanel: React.FC = () => {
             Audio Level
           </Typography>
           <LinearProgress
-            variant="determinate"
+            variant='determinate'
             value={75}
             sx={{
               height: isMobile ? 8 : 6,

@@ -80,24 +80,15 @@ export function generateId(): string {
  * Deep clone an object
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
+  // Prefer native structuredClone when available
+  if (typeof globalThis.structuredClone === 'function') {
+    return globalThis.structuredClone(obj);
+  }
+  // Fallback for JSON-serializable data
+  try {
+    return JSON.parse(JSON.stringify(obj)) as T;
+  } catch {
+    // Last resort: return the original reference
     return obj;
   }
-
-  if (obj instanceof Date) {
-    return new Date(obj.getTime()) as T;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(item => deepClone(item)) as T;
-  }
-
-  const cloned = {} as T;
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepClone(obj[key]);
-    }
-  }
-
-  return cloned;
 }

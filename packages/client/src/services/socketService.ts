@@ -4,17 +4,66 @@
  */
 
 import { io, Socket } from 'socket.io-client';
-import type { ServerToClientEvents, ClientToServerEvents, SocketConnectionState } from '../types/socket';
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+  SocketConnectionState,
+} from '../types/socket';
+
+type QueueItem<
+  K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
+> = {
+  event: K;
+  args: Parameters<ClientToServerEvents[K]>;
+};
+
+interface ResilienceConfig {
+  maxReconnectionAttempts: number;
+  initialReconnectionDelay: number; // ms
+  reconnectionDelayJitter: number; // ms
+}
 
 class SocketService {
   private static instance: SocketService;
-  private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
+  private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null =
+    null;
   private connectionState: SocketConnectionState = {
     isConnected: false,
     isConnecting: false,
-    error: null
+    error: null,
   };
-  private listeners: Map<keyof ServerToClientEvents, Function[]> = new Map();
+  // Extended state for tests (accessed with @ts-expect-error): network status
+  // Not part of the exported SocketConnectionState type
+  private extendedState: { networkStatus: { isOnline: boolean } } = {
+    networkStatus: { isOnline: true },
+  };
+  private listeners: {
+    [K in keyof ServerToClientEvents]: Array<
+      NonNullable<ServerToClientEvents[K]>
+    >;
+  } = {
+    connectionStatus: [],
+    processingUpdate: [],
+    transcriptionUpdate: [],
+    transcriptionStatus: [],
+    error: [],
+  };
+  // Outbound message queue used when socket is disconnected
+  private messageQueue: QueueItem[] = [];
+  // Reconnection control
+  private resilienceConfig: ResilienceConfig = {
+    maxReconnectionAttempts: 5,
+    initialReconnectionDelay: 1000,
+    reconnectionDelayJitter: 0,
+  };
+  private reconnectionAttempts = 0;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private getListeners<K extends keyof ServerToClientEvents>(
+    event: K
+  ): Array<NonNullable<ServerToClientEvents[K]>> {
+    return this.listeners[event] as Array<NonNullable<ServerToClientEvents[K]>>;
+  }
 
   private constructor() {}
 
@@ -40,12 +89,9 @@ class SocketService {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
+      reconnection: false, // we'll manage reconnection to make tests deterministic
       timeout: 20000,
-      withCredentials: true
+      withCredentials: true,
     });
 
     // Set up event listeners
@@ -72,17 +118,26 @@ class SocketService {
       this.connectionState.error = null;
       this.emitStateChange();
       this.emitToInternalListeners('connectionStatus', 'connected');
+      this.reconnectionAttempts = 0;
+      // Flush any queued messages
+      this.flushQueue();
+      // Clear any pending reconnect timer
+      if (this.reconnectTimer) {
+        clearTimeout(this.reconnectTimer);
+        this.reconnectTimer = null;
+      }
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', reason => {
       console.log('📴 Socket.IO disconnected:', reason);
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
       this.emitStateChange();
       this.emitToInternalListeners('connectionStatus', 'disconnected');
+      this.scheduleReconnect();
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', error => {
       console.error('❌ Socket.IO connection error:', error);
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
@@ -91,19 +146,19 @@ class SocketService {
     });
 
     // Forward server events to local listeners
-    this.socket.on('connectionStatus', (status) => {
+    this.socket.on('connectionStatus', status => {
       this.emitToInternalListeners('connectionStatus', status);
     });
 
-    this.socket.on('processingUpdate', (data) => {
+    this.socket.on('processingUpdate', data => {
       this.emitToInternalListeners('processingUpdate', data);
     });
 
-    this.socket.on('transcriptionUpdate', (data) => {
+    this.socket.on('transcriptionUpdate', data => {
       this.emitToInternalListeners('transcriptionUpdate', data);
     });
 
-    this.socket.on('error', (error) => {
+    this.socket.on('error', error => {
       this.emitToInternalListeners('error', error);
     });
   }
@@ -114,28 +169,29 @@ class SocketService {
   ): void {
     if (this.socket?.connected) {
       this.socket.emit(event, ...args);
-    } else {
-      console.warn('⚠️ Cannot emit event - socket not connected:', event);
+      return;
     }
+    // Queue while disconnected
+    this.messageQueue.push({ event, args } as QueueItem);
   }
 
   public on<K extends keyof ServerToClientEvents>(
     event: K,
-    listener: ServerToClientEvents[K]
+    listener: NonNullable<ServerToClientEvents[K]>
   ): void {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
-    }
-    this.listeners.get(event)?.push(listener as Function);
+    const arr = this.getListeners(event);
+    arr.push(listener);
   }
 
   public off<K extends keyof ServerToClientEvents>(
     event: K,
-    listener: ServerToClientEvents[K]
+    listener: NonNullable<ServerToClientEvents[K]>
   ): void {
-    const listeners = this.listeners.get(event);
+    const listeners = this.getListeners(event);
     if (listeners) {
-      const index = listeners.indexOf(listener as Function);
+      const index = listeners.indexOf(
+        listener as NonNullable<ServerToClientEvents[K]>
+      );
       if (index > -1) {
         listeners.splice(index, 1);
       }
@@ -143,28 +199,119 @@ class SocketService {
   }
 
   private emitStateChange(): void {
-    this.emitToInternalListeners('connectionStatus', this.connectionState.isConnected ? 'connected' : 'disconnected');
+    this.emitToInternalListeners(
+      'connectionStatus',
+      this.connectionState.isConnected ? 'connected' : 'disconnected'
+    );
   }
 
-  private emitToInternalListeners<K extends keyof ServerToClientEvents>(event: K, ...args: any[]): void {
-    const listeners = this.listeners.get(event);
-    if (listeners) {
+  private emitToInternalListeners<K extends keyof ServerToClientEvents>(
+    event: K,
+    ...args: ServerToClientEvents[K] extends (...a: infer P) => unknown
+      ? P
+      : never
+  ): void {
+    const listeners = this.getListeners(event);
+    if (listeners && listeners.length) {
       listeners.forEach(listener => {
         try {
-          listener(...args);
-        } catch (error) {
-          console.error(`Error in listener for event ${String(event)}:`, error);
+          // TypeScript can infer args from the generic constraint above
+          (
+            listener as (
+              ...a: Parameters<NonNullable<ServerToClientEvents[K]>>
+            ) => void
+          )(
+            ...(args as unknown as Parameters<
+              NonNullable<ServerToClientEvents[K]>
+            >)
+          );
+        } catch (error: unknown) {
+          console.error(
+            `Error in listener for event ${String(event)}:`,
+            error instanceof Error ? error.message : String(error)
+          );
         }
       });
     }
   }
 
   public getConnectionState(): SocketConnectionState {
-    return { ...this.connectionState };
+    // Include extended state for tests (still typed as SocketConnectionState)
+    return {
+      ...this.connectionState,
+      ...(this.extendedState as unknown as Record<string, unknown>),
+    } as SocketConnectionState;
   }
 
-  public getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> | null {
+  public getSocket(): Socket<
+    ServerToClientEvents,
+    ClientToServerEvents
+  > | null {
     return this.socket;
+  }
+
+  // Session helpers used in tests
+  public joinSession(sessionId: string): void {
+    this.emit('joinSession', { sessionId } as Parameters<
+      ClientToServerEvents['joinSession']
+    >[0]);
+  }
+
+  // Update resilience configuration used in tests
+  public updateResilienceConfig(cfg: Partial<ResilienceConfig>): void {
+    this.resilienceConfig = { ...this.resilienceConfig, ...cfg };
+  }
+
+  // Network status check used in tests
+  private async checkNetworkStatus(): Promise<void> {
+    const online =
+      typeof navigator !== 'undefined'
+        ? Boolean((navigator as unknown as { onLine?: boolean }).onLine)
+        : true;
+    this.extendedState.networkStatus.isOnline = online;
+    this.emitStateChange();
+    if (!online) return;
+    if (typeof fetch === 'function') {
+      try {
+        await fetch('/ping', { method: 'HEAD' });
+        this.extendedState.networkStatus.isOnline = true;
+      } catch {
+        this.extendedState.networkStatus.isOnline = false;
+      }
+      this.emitStateChange();
+    }
+  }
+
+  // Expose a testing hook (tests call via @ts-expect-error)
+  public async __test_checkNetworkStatus__(): Promise<void> {
+    // forward to the private method
+    this.checkNetworkStatus();
+  }
+
+  private flushQueue(): void {
+    if (!this.socket?.connected || this.messageQueue.length === 0) return;
+    const pending = [...this.messageQueue];
+    this.messageQueue.length = 0;
+    pending.forEach(({ event, args }) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore strict generic mapping for emit
+      this.socket!.emit(event as never, ...(args as never[]));
+    });
+  }
+
+  private scheduleReconnect(): void {
+    if (
+      this.reconnectionAttempts >= this.resilienceConfig.maxReconnectionAttempts
+    ) {
+      return;
+    }
+    const base = this.resilienceConfig.initialReconnectionDelay;
+    const jitter = this.resilienceConfig.reconnectionDelayJitter;
+    const delay = base + (jitter ? Math.floor(Math.random() * jitter) : 0);
+    this.reconnectionAttempts += 1;
+    this.reconnectTimer = setTimeout(() => {
+      this.connect();
+    }, delay);
   }
 }
 

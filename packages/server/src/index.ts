@@ -319,14 +319,20 @@ io.on('connection', (socket: Socket) => {
     }) => {
       const { sessionId, audioConfig } = data;
       console.log(`🟢 startTranscription for session ${sessionId}`);
-      const opts: any = {};
-      if (typeof audioConfig?.sampleRate === 'number')
-        opts.sampleRate = audioConfig.sampleRate;
-      if (typeof audioConfig?.language === 'string')
-        opts.language = audioConfig.language;
-      if (typeof audioConfig?.diarization === 'boolean')
-        opts.diarization = audioConfig.diarization;
-      if (opts.sampleRate === undefined) opts.sampleRate = 16000;
+      const a: {
+        sampleRate?: number;
+        language?: string;
+        diarization?: boolean;
+      } = audioConfig ?? {};
+      const opts: {
+        sampleRate: number;
+        language?: string;
+        diarization?: boolean;
+      } = {
+        sampleRate: typeof a.sampleRate === 'number' ? a.sampleRate : 16000,
+      };
+      if (typeof a.language === 'string') opts.language = a.language;
+      if (typeof a.diarization === 'boolean') opts.diarization = a.diarization;
       sessions.startTranscription(sessionId, opts);
     }
   );
