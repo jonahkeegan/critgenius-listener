@@ -81,6 +81,8 @@ describe('SessionManager', () => {
     vi.clearAllMocks();
   });
 
+  const VALID_KEY = '0123456789abcdef0123456789abcdef';
+
   it('emits error when API key missing on startTranscription', () => {
     const { io, roomEmit } = createMockIO();
     const mgr = new SessionManager(io);
@@ -103,12 +105,34 @@ describe('SessionManager', () => {
     expect(payload).toMatchObject({ code: 'ASSEMBLYAI_CONFIG_MISSING' });
   });
 
+  it('emits error when API key invalid format on startTranscription', () => {
+    const { io, roomEmit } = createMockIO();
+    const mgr = new SessionManager(io);
+    const sessionId = 's-1b';
+
+    const prev = process.env.ASSEMBLYAI_API_KEY;
+    delete (process.env as any).ASSEMBLYAI_API_KEY;
+
+    mgr.startTranscription(sessionId, { sampleRate: 16000 }, 'fake-key');
+
+    process.env.ASSEMBLYAI_API_KEY = prev;
+
+    expect(roomEmit).toHaveBeenCalled();
+    const first = roomEmit.mock.calls[0] as any[];
+    expect(first).toBeTruthy();
+    const [event, payload] = first;
+    expect(event).toBe('error');
+    expect(payload).toMatchObject({ code: 'ASSEMBLYAI_CONFIG_INVALID' });
+    // Ensure no connector was created for this session
+    expect(connectorSpies[sessionId]).toBeUndefined();
+  });
+
   it('connects a connector and emits running status on onOpen', () => {
     const { io, roomEmit } = createMockIO();
     const mgr = new SessionManager(io);
     const sessionId = 's-2';
 
-    mgr.startTranscription(sessionId, { sampleRate: 16000 }, 'fake-key');
+    mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
 
     // connector.connect should be called
     expect(connectorSpies[sessionId]!.connect).toHaveBeenCalledTimes(1);
@@ -126,7 +150,7 @@ describe('SessionManager', () => {
     const { io } = createMockIO();
     const mgr = new SessionManager(io);
     const sessionId = 's-3';
-    mgr.startTranscription(sessionId, { sampleRate: 16000 }, 'k');
+    mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
 
     mgr.pushAudio(sessionId, 'base64audio');
     expect(connectorSpies[sessionId]!.sendAudioChunk).toHaveBeenCalledWith(
@@ -138,7 +162,7 @@ describe('SessionManager', () => {
     const { io, roomEmit } = createMockIO();
     const mgr = new SessionManager(io);
     const sessionId = 's-4';
-    mgr.startTranscription(sessionId, {}, 'k');
+    mgr.startTranscription(sessionId, {}, VALID_KEY);
 
     const payload = {
       message_type: 'final',
@@ -193,7 +217,7 @@ describe('SessionManager', () => {
     const { io, roomEmit } = createMockIO();
     const mgr = new SessionManager(io);
     const sessionId = 's-5';
-    mgr.startTranscription(sessionId, {}, 'k');
+    mgr.startTranscription(sessionId, {}, VALID_KEY);
 
     handlerStore[sessionId]!.onError?.(new Error('boom'));
 
@@ -206,7 +230,7 @@ describe('SessionManager', () => {
     const { io, roomEmit } = createMockIO();
     const mgr = new SessionManager(io);
     const sessionId = 's-6';
-    mgr.startTranscription(sessionId, {}, 'k');
+    mgr.startTranscription(sessionId, {}, VALID_KEY);
 
     // Close from connector
     handlerStore[sessionId]!.onClose?.(1000, 'done');
@@ -236,7 +260,7 @@ describe('SessionManager', () => {
     expect(s2.join).toHaveBeenCalledWith(sessionId);
 
     // Start and then remove one participant
-    mgr.startTranscription(sessionId, {}, 'k');
+    mgr.startTranscription(sessionId, {}, VALID_KEY);
     mgr.leave(s1, sessionId);
     expect(s1.leave).toHaveBeenCalledWith(sessionId);
 

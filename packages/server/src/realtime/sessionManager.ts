@@ -74,14 +74,25 @@ export class SessionManager {
     if (typeof opts.language === 'string') next.language = opts.language;
     state.options = next;
     if (state.connector) return; // already running
-    if (!apiKey) {
-      // Prefer env var for security
-      apiKey = process.env.ASSEMBLYAI_API_KEY;
-    }
-    if (!apiKey) {
+
+    // Prefer env var for security; trim to avoid whitespace-only values
+    const resolvedKey = (apiKey ?? process.env.ASSEMBLYAI_API_KEY ?? '').trim();
+    if (!resolvedKey) {
       this.io.to(sessionId).emit('error', {
         code: 'ASSEMBLYAI_CONFIG_MISSING',
         message: 'AssemblyAI API key not configured',
+      });
+      return;
+    }
+
+    // Basic format validation to fail fast on obviously invalid keys
+    const looksValid =
+      resolvedKey.length >= 32 && /^[a-f0-9]{32,}$/i.test(resolvedKey);
+    if (!looksValid) {
+      this.io.to(sessionId).emit('error', {
+        code: 'ASSEMBLYAI_CONFIG_INVALID',
+        message:
+          'AssemblyAI API key appears invalid. Please check your configuration.',
       });
       return;
     }
@@ -94,7 +105,7 @@ export class SessionManager {
           language?: string;
           diarization?: boolean;
         } = {
-          apiKey,
+          apiKey: resolvedKey,
           sampleRate: state.options.sampleRate,
         };
         if (typeof state.options.language === 'string')
