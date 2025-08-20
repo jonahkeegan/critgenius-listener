@@ -66,6 +66,15 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
   performance optimization, security enhancements, and testing frameworks - optimized for gaming/D&D
   session reliability requirements
 
+### consolidated-learnings-003.md
+
+- **Status:** Active with content
+- **Row Count:** 149
+- **Created:** 2025-08-17 16:04 PST
+- **Last Updated:** 2025-08-17 16:04 PST
+- **Primary Topics:** Client-Side Socket.IO Implementation, Context Recovery Patterns, Type Management, Documentation Workflows, Version Control Coordination, Real-Time UI Integration
+- **Description:** Advanced development patterns for client-side Socket.IO implementation with React, context corruption recovery strategies, monorepo type management, Memory Bank documentation workflows, and real-time UI integration patterns
+
 ## Topic Index
 
 ### Architecture & Design Patterns

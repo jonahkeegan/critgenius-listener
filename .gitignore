@@ -79,10 +79,17 @@ exported-transcripts/
 speaker-profiles/temp/
 /packages/server/uploads/
 /memory-bank/raw_reflection_log.md
+memory-bank/raw_reflection_log.md
+memory-bank/progress.md
+memory-bank/systemPatterns.md
+memory-bank/activeContext.md
+memory-bank/techContext.md
 context-inputs/
 workflow-docs/
 task-completion-reports/
 task-plans-cline/
+tasks/infrastructure-setup-task-list.md
+/docs/
 
 # Database
 *.sqlite
