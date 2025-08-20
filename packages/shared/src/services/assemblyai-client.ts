@@ -14,6 +14,7 @@ import {
   loadAssemblyAIConfig,
   AssemblyAIConfigError,
   getConfigSummary,
+  sanitizeConfig,
 } from '../config/assemblyai.js';
 
 /**
@@ -601,7 +602,7 @@ export class AssemblyAIClient {
     if (this.config.debug) {
       console.log(
         '[AssemblyAI Client] Configuration updated:',
-        getConfigSummary(this.config)
+        sanitizeConfig(this.config)
       );
     }
   }
