@@ -17,6 +17,11 @@ type QueueItem<
   args: Parameters<ClientToServerEvents[K]>;
 };
 
+// Discriminated union of all possible queued items for safe replay
+type AnyQueueItem = {
+  [K in keyof ClientToServerEvents]: QueueItem<K>;
+}[keyof ClientToServerEvents];
+
 interface ResilienceConfig {
   maxReconnectionAttempts: number;
   initialReconnectionDelay: number; // ms
@@ -49,7 +54,7 @@ class SocketService {
     error: [],
   };
   // Outbound message queue used when socket is disconnected
-  private messageQueue: QueueItem[] = [];
+  private messageQueue: AnyQueueItem[] = [];
   // Reconnection control
   private resilienceConfig: ResilienceConfig = {
     maxReconnectionAttempts: 5,
@@ -172,7 +177,7 @@ class SocketService {
       return;
     }
     // Queue while disconnected
-    this.messageQueue.push({ event, args } as QueueItem);
+    this.messageQueue.push({ event, args } as AnyQueueItem);
   }
 
   public on<K extends keyof ServerToClientEvents>(
@@ -290,13 +295,17 @@ class SocketService {
 
   private flushQueue(): void {
     if (!this.socket?.connected || this.messageQueue.length === 0) return;
-    const pending = [...this.messageQueue];
+    const pending = [...this.messageQueue] as AnyQueueItem[];
     this.messageQueue.length = 0;
-    pending.forEach(({ event, args }) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore strict generic mapping for emit
-      this.socket!.emit(event as never, ...(args as never[]));
-    });
+    pending.forEach(item => this.emitQueued(item));
+  }
+
+  // Typed re-emitter to preserve event-args correlation without suppressions
+  private emitQueued<K extends keyof ClientToServerEvents>(
+    item: QueueItem<K>
+  ): void {
+    if (!this.socket) return;
+    this.socket.emit(item.event, ...item.args);
   }
 
   private scheduleReconnect(): void {
