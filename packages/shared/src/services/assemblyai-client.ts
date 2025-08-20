@@ -433,7 +433,7 @@ export class AssemblyAIClient {
           });
         }
 
-        // Register listeners after initiating connection
+        // Register listeners before initiating connection
         this.transcriber.on('open', ({ sessionId }) => {
           clearTimeout(timeout);
           this.emit('session-begins', sessionId);
