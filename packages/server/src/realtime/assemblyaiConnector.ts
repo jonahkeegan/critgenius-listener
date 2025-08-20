@@ -39,8 +39,12 @@ export class AssemblyAIConnector {
     });
 
     this.ws.on('open', () => {
-      // reference session id to avoid unused warning and helpful for debugging
-      void this.sessionId;
+      // Trace WS open for this session (avoid spam in tests)
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(
+          `[AssemblyAIConnector] WebSocket opened for sessionId: ${this.sessionId}`
+        );
+      }
       this.handlers.onOpen?.();
       if (this.cfg.diarization) {
         // Best-effort enable diarization
