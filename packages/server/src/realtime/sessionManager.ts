@@ -87,7 +87,7 @@ export class SessionManager {
 
     // Basic format validation to fail fast on obviously invalid keys
     const looksValid =
-      resolvedKey.length >= 32 && /^[a-f0-9]{32,}$/i.test(resolvedKey);
+      resolvedKey.length >= 32 && !/\s/.test(resolvedKey);
     if (!looksValid) {
       this.io.to(sessionId).emit('error', {
         code: 'ASSEMBLYAI_CONFIG_INVALID',
