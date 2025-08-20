@@ -352,7 +352,8 @@ export class AssemblyAIClient {
         // Handle rate limiting — policy: wait, then surface to caller (no auto-retry)
         // Rationale:
         // Handle rate limiting — policy: respect server backoff, then fail fast (no auto-retry)
-        // Rationale:
+        // Rate limiting policy: respect server-provided backoff by waiting for the advised period before surfacing the error (no auto-retry).
+        // Rationale: keep client behavior deterministic, let the caller orchestrate retries, and communicate the cooling-off window via 'rate-limit' event.
         // 1) Respect server-provided backoff by waiting for the advised period before surfacing the error.
         // 2) Keep client behavior deterministic; let the caller orchestrate when to retry.
         // 3) Communicate the cooling-off window via 'rate-limit' event so upstream can schedule.
