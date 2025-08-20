@@ -349,7 +349,11 @@ export class AssemblyAIClient {
           );
         }
 
-        // Handle rate limiting: respect retry-after delay, then fail fast (no auto-retry)
+        // Handle rate limiting — policy: wait, then surface to caller (no auto-retry)
+        // Rationale:
+        // 1) Respect server-provided backoff to avoid immediate hammering.
+        // 2) Keep client behavior deterministic; let the caller orchestrate when to retry.
+        // 3) Communicate the cooling-off window via 'rate-limit' event so upstream can schedule.
         if (lastError instanceof AssemblyAIRateLimitError) {
           const retryAfter =
             lastError.retryAfter || this.calculateRetryDelay(attempt);
