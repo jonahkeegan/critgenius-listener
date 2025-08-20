@@ -349,13 +349,23 @@ export class AssemblyAIClient {
           );
         }
 
-        // Handle rate limiting: emit and fail fast (do not retry)
+        // Handle rate limiting: respect retry-after delay, then fail fast (no auto-retry)
         if (lastError instanceof AssemblyAIRateLimitError) {
           const retryAfter =
             lastError.retryAfter || this.calculateRetryDelay(attempt);
           this.emit('rate-limit', retryAfter);
 
-          // Update error state and surface immediately as tests expect immediate classification
+          // Optionally log for debugging
+          if (this.config.debug) {
+            console.warn(
+              `[AssemblyAI Client] Rate limited. Respecting backoff for ${retryAfter}ms before failing`
+            );
+          }
+
+          // Wait for the advised backoff window before surfacing the error
+          await this.sleep(retryAfter);
+
+          // Update error state and surface
           this.updateConnectionState(ConnectionState.ERROR);
           this.stats.lastError = lastError;
           this.emit('error', lastError);
