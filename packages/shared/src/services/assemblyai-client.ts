@@ -602,7 +602,7 @@ export class AssemblyAIClient {
     if (this.config.debug) {
       console.log(
         '[AssemblyAI Client] Configuration updated:',
-        sanitizeConfig(this.config)
+        getConfigSummary(this.config)
       );
     }
   }
