@@ -31,6 +31,20 @@ export interface ResponsiveContainerProps
   behavior?: 'standard' | 'audio-focused' | 'reading-optimized';
 }
 
+// Utility helpers for breakpoint and maxWidth handling
+const standardBreakpoints = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+type StandardBreakpoint = (typeof standardBreakpoints)[number];
+
+function isStandardBreakpointName(v: string): v is StandardBreakpoint {
+  return (standardBreakpoints as readonly string[]).includes(v);
+}
+
+function isCustomMaxWidthValue(
+  v: ResponsiveContainerProps['maxWidth']
+): v is string {
+  return typeof v === 'string' && !isStandardBreakpointName(v);
+}
+
 /**
  * ResponsiveContainer - Foundation container with enhanced responsive capabilities
  *
@@ -135,13 +149,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
   };
 
   // Handle custom maxWidth values (like 'xxl' or pixel values) by using Container with maxWidth=false
-  const standardBreakpoints = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
-  type StandardBreakpoint = (typeof standardBreakpoints)[number];
-  const isStandardBreakpoint = (v: string): v is StandardBreakpoint =>
-    (standardBreakpoints as readonly string[]).includes(v);
-  const isCustomMaxWidth =
-    typeof maxWidth === 'string' && !isStandardBreakpoint(maxWidth);
-  if (isCustomMaxWidth) {
+  if (isCustomMaxWidthValue(maxWidth)) {
     return (
       <Container
         maxWidth={false}
@@ -150,7 +158,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
           ...containerSx,
           '& > *': {
             width: '100%',
-            maxWidth: maxWidth === 'xxl' ? '1920px' : (maxWidth as string),
+            maxWidth: maxWidth === 'xxl' ? '1920px' : maxWidth,
             mx: 'auto',
           },
         }}
