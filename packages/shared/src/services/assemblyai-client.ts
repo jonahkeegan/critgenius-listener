@@ -202,8 +202,8 @@ export class AssemblyAIClient {
    */
   private logConfigSummary(): void {
     if (this.config.debug) {
-      const summary = getConfigSummary(this.config);
-      console.log('[AssemblyAI Client] Configuration loaded:', summary);
+      const sanitized = sanitizeConfig(this.config);
+      console.log('[AssemblyAI Client] Configuration loaded:', sanitized);
     }
   }
 
