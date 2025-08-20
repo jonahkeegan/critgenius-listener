@@ -77,6 +77,7 @@ session-recordings/
 temp-audio-files/
 exported-transcripts/
 speaker-profiles/temp/
+/packages/server/uploads/
 /memory-bank/raw_reflection_log.md
 context-inputs/
 workflow-docs/
