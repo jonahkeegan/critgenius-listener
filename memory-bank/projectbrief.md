@@ -195,6 +195,8 @@ Masters, and content creators with seamless audio documentation and transcriptio
 - Technology stack strategy prepared for detailed specification in techContext.md
 - Market positioning and user requirements clearly defined for development guidance
 - Risk assessment framework established for ongoing project management
+- Milestone (2025-08-19): Socket.IO ↔ AssemblyAI realtime integration validated via mock-based
+  tests; ready for optional live E2E smoke when API key available
 
 ## Reference Links
 

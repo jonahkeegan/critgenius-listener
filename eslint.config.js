@@ -8,10 +8,10 @@ import prettierConfig from 'eslint-config-prettier';
 export default tseslint.config(
   // Base ESLint recommended rules
   js.configs.recommended,
-  
+
   // TypeScript ESLint recommended rules (includes type-checked rules)
   ...tseslint.configs.recommended,
-  
+
   // Configuration for all files
   {
     languageOptions: {
@@ -70,6 +70,24 @@ export default tseslint.config(
     },
   },
 
+  // Test files: relax strict unsafe/any rules to keep tests ergonomic
+  {
+    files: [
+      '**/*.test.{ts,tsx,js,jsx}',
+      '**/__tests__/**/*.{ts,tsx,js,jsx}',
+      '**/test-setup.{ts,js}',
+    ],
+    ignores: [],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
+  },
+
   // React configuration
   {
     files: ['**/*.{jsx,tsx}'],
@@ -95,10 +113,14 @@ export default tseslint.config(
       'dist/**',
       'build/**',
       'coverage/**',
+      '**/*.d.ts',
+      '**/*.js',
+      // Exclude shared tests from typed linting due to tsconfig excludes
+      'packages/shared/src/**/*.test.ts',
       '*.config.js',
       '*.config.mjs',
       '.husky/**',
       'pnpm-lock.yaml',
     ],
-  },
+  }
 );

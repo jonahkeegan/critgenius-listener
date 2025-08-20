@@ -220,14 +220,14 @@ const typographyUtilities = {
     lineHeight: 'clamp(1.6, 1.7, 1.8)',
     letterSpacing: '0.01em',
   },
-  
+
   speakerLabel: {
     fontSize: 'clamp(0.75rem, 2vw, 1rem)', // Speaker identification labels
     lineHeight: 'clamp(1.4, 1.5, 1.6)',
     fontWeight: 600,
     letterSpacing: '0.02em',
   },
-  
+
   timestamp: {
     fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', // Session timestamps
     lineHeight: 'clamp(1.3, 1.4, 1.5)',
@@ -235,21 +235,21 @@ const typographyUtilities = {
     letterSpacing: '0.04em',
     fontVariantNumeric: 'tabular-nums' as const, // Monospace numbers for alignment
   },
-  
+
   audioControls: {
     fontSize: 'clamp(0.875rem, 2.2vw, 1.125rem)', // Audio control labels
     lineHeight: 'clamp(1.5, 1.6, 1.7)',
     fontWeight: 500,
     letterSpacing: '0.01em',
   },
-  
+
   characterName: {
     fontSize: 'clamp(0.875rem, 2.5vw, 1.25rem)', // D&D character names
     lineHeight: 'clamp(1.4, 1.5, 1.6)',
     fontWeight: 600,
     letterSpacing: '0.015em',
   },
-  
+
   errorMessage: {
     fontSize: 'clamp(0.75rem, 2vw, 0.875rem)', // Error and warning messages
     lineHeight: 'clamp(1.4, 1.5, 1.6)',
@@ -267,7 +267,7 @@ const typographyHelpers = {
       transition: 'none', // Disable transitions for reduced motion preference
     },
   }),
-  
+
   // High contrast mode support
   highContrastMode: {
     '@media (prefers-contrast: high)': {
@@ -275,14 +275,14 @@ const typographyHelpers = {
       textShadow: 'none', // Remove decorative shadows
     },
   },
-  
+
   // Large text mode support
   largeTextMode: {
     '@media (min-resolution: 1.25dppx)': {
       fontSize: '110%', // Slight increase for high-DPI displays
     },
   },
-  
+
   // Reading mode optimizations
   readingOptimization: {
     textRendering: 'optimizeLegibility' as const,
@@ -295,12 +295,12 @@ const typographyHelpers = {
 // Enhanced breakpoints optimized for audio interface and D&D gaming sessions
 const breakpoints = {
   values: {
-    xs: 0,      // Mobile portrait (phones) - minimal audio controls
-    sm: 480,    // Mobile landscape / small tablets - compact speaker mapping
-    md: 768,    // Tablet portrait - audio controls need adequate space
-    lg: 1024,   // Tablet landscape / small desktop - two-column layouts
-    xl: 1440,   // Desktop - optimal for speaker mapping UI
-    xxl: 1920,  // Large desktop - full feature display with sidebars
+    xs: 0, // Mobile portrait (phones) - minimal audio controls
+    sm: 480, // Mobile landscape / small tablets - compact speaker mapping
+    md: 768, // Tablet portrait - audio controls need adequate space
+    lg: 1024, // Tablet landscape / small desktop - two-column layouts
+    xl: 1440, // Desktop - optimal for speaker mapping UI
+    xxl: 1920, // Large desktop - full feature display with sidebars
   },
 } as const;
 
@@ -311,54 +311,54 @@ const spacing = (factor: number) => `${8 * factor}px`; // Base 8px unit
 const responsiveSpacing = {
   // Container padding that scales with screen size
   containerPadding: {
-    xs: spacing(2),    // 16px on mobile
-    sm: spacing(3),    // 24px on small tablets
-    md: spacing(4),    // 32px on tablets
-    lg: spacing(5),    // 40px on desktop
-    xl: spacing(6),    // 48px on large desktop
-    xxl: spacing(8),   // 64px on ultra-wide
+    xs: spacing(2), // 16px on mobile
+    sm: spacing(3), // 24px on small tablets
+    md: spacing(4), // 32px on tablets
+    lg: spacing(5), // 40px on desktop
+    xl: spacing(6), // 48px on large desktop
+    xxl: spacing(8), // 64px on ultra-wide
   },
-  
+
   // Section spacing for consistent layout rhythm
   sectionSpacing: {
-    xs: spacing(3),    // 24px between sections on mobile
-    sm: spacing(4),    // 32px on small tablets  
-    md: spacing(5),    // 40px on tablets
-    lg: spacing(6),    // 48px on desktop
-    xl: spacing(8),    // 64px on large desktop
-    xxl: spacing(10),  // 80px on ultra-wide
+    xs: spacing(3), // 24px between sections on mobile
+    sm: spacing(4), // 32px on small tablets
+    md: spacing(5), // 40px on tablets
+    lg: spacing(6), // 48px on desktop
+    xl: spacing(8), // 64px on large desktop
+    xxl: spacing(10), // 80px on ultra-wide
   },
-  
+
   // Component spacing for UI elements
   componentSpacing: {
-    xs: spacing(1),    // 8px tight spacing on mobile
-    sm: spacing(1.5),  // 12px 
-    md: spacing(2),    // 16px standard spacing
-    lg: spacing(2.5),  // 20px
-    xl: spacing(3),    // 24px generous spacing on desktop
-    xxl: spacing(4),   // 32px ultra-wide spacing
+    xs: spacing(1), // 8px tight spacing on mobile
+    sm: spacing(1.5), // 12px
+    md: spacing(2), // 16px standard spacing
+    lg: spacing(2.5), // 20px
+    xl: spacing(3), // 24px generous spacing on desktop
+    xxl: spacing(4), // 32px ultra-wide spacing
   },
-  
+
   // Touch target sizes for mobile optimization
   touchTargets: {
-    minimum: spacing(6),    // 48px minimum touch target
+    minimum: spacing(6), // 48px minimum touch target
     comfortable: spacing(7), // 56px comfortable touch target
-    large: spacing(8),      // 64px large touch target for primary actions
+    large: spacing(8), // 64px large touch target for primary actions
   },
-  
+
   // Audio interface specific spacing
   audioInterface: {
     controlSpacing: {
-      xs: spacing(1),    // Tight spacing on mobile
-      sm: spacing(2),    // 16px
-      md: spacing(3),    // 24px  
-      lg: spacing(4),    // 32px generous desktop spacing
+      xs: spacing(1), // Tight spacing on mobile
+      sm: spacing(2), // 16px
+      md: spacing(3), // 24px
+      lg: spacing(4), // 32px generous desktop spacing
     },
     visualizerHeight: {
-      xs: spacing(6),    // 48px compact visualizer
-      sm: spacing(8),    // 64px
-      md: spacing(10),   // 80px
-      lg: spacing(12),   // 96px full-featured visualizer
+      xs: spacing(6), // 48px compact visualizer
+      sm: spacing(8), // 64px
+      md: spacing(10), // 80px
+      lg: spacing(12), // 96px full-featured visualizer
     },
   },
 } as const;
@@ -366,19 +366,27 @@ const responsiveSpacing = {
 // Breakpoint helper utilities
 const breakpointHelpers = {
   // Check if current screen is mobile (xs, sm)
-  isMobile: (theme: any) => theme.breakpoints.down('md'),
-  
-  // Check if current screen is tablet (md, lg)  
-  isTablet: (theme: any) => theme.breakpoints.between('md', 'xl'),
-  
+  isMobile: (theme: { breakpoints: { down: (bp: string) => unknown } }) =>
+    theme.breakpoints.down('md'),
+
+  // Check if current screen is tablet (md, lg)
+  isTablet: (theme: {
+    breakpoints: { between: (a: string, b: string) => unknown };
+  }) => theme.breakpoints.between('md', 'xl'),
+
   // Check if current screen is desktop (xl+)
-  isDesktop: (theme: any) => theme.breakpoints.up('xl'),
-  
+  isDesktop: (theme: { breakpoints: { up: (bp: string) => unknown } }) =>
+    theme.breakpoints.up('xl'),
+
   // Get responsive value based on breakpoint
-  getResponsiveValue: (values: Record<string, any>, breakpoint: string) => {
-    return values[breakpoint] || values.md || values.xs;
+  getResponsiveValue: (values: Record<string, unknown>, breakpoint: string) => {
+    return (
+      (values as Record<string, unknown>)[breakpoint] ||
+      (values as Record<string, unknown>).md ||
+      (values as Record<string, unknown>).xs
+    );
   },
-  
+
   // Generate media queries for custom breakpoints
   customMediaQuery: (minWidth: number, maxWidth?: number) => {
     if (maxWidth) {
@@ -386,12 +394,21 @@ const breakpointHelpers = {
     }
     return `@media (min-width: ${minWidth}px)`;
   },
-  
+
   // Touch-friendly sizing utilities
   touchTarget: {
-    minimum: { minHeight: responsiveSpacing.touchTargets.minimum, minWidth: responsiveSpacing.touchTargets.minimum },
-    comfortable: { minHeight: responsiveSpacing.touchTargets.comfortable, minWidth: responsiveSpacing.touchTargets.comfortable },
-    large: { minHeight: responsiveSpacing.touchTargets.large, minWidth: responsiveSpacing.touchTargets.large },
+    minimum: {
+      minHeight: responsiveSpacing.touchTargets.minimum,
+      minWidth: responsiveSpacing.touchTargets.minimum,
+    },
+    comfortable: {
+      minHeight: responsiveSpacing.touchTargets.comfortable,
+      minWidth: responsiveSpacing.touchTargets.comfortable,
+    },
+    large: {
+      minHeight: responsiveSpacing.touchTargets.large,
+      minWidth: responsiveSpacing.touchTargets.large,
+    },
   },
 } as const;
 
@@ -618,7 +635,13 @@ const themeOptions: ThemeOptions = {
 export const critgeniusTheme = createTheme(themeOptions);
 
 // Export additional theme utilities
-export { colors, responsiveSpacing, breakpointHelpers, typographyUtilities, typographyHelpers };
+export {
+  colors,
+  responsiveSpacing,
+  breakpointHelpers,
+  typographyUtilities,
+  typographyHelpers,
+};
 export type CritGeniusTheme = typeof critgeniusTheme;
 export type ResponsiveSpacing = typeof responsiveSpacing;
 export type BreakpointHelpers = typeof breakpointHelpers;

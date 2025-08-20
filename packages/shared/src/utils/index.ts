@@ -80,24 +80,15 @@ export function generateId(): string {
  * Deep clone an object
  */
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
+  // Prefer native structuredClone when available
+  if (typeof globalThis.structuredClone === 'function') {
+    return globalThis.structuredClone(obj);
   }
-
-  if (obj instanceof Date) {
-    return new Date(obj.getTime()) as T;
+  // Fallback for JSON-serializable data
+  try {
+    return JSON.parse(JSON.stringify(obj)) as T;
+  } catch {
+    // Last resort: throw an error to avoid returning the original reference
+    throw new Error('deepClone failed: object contains non-serializable data (functions, symbols, or circular references). Use manual cloning for complex objects.');
   }
-
-  if (Array.isArray(obj)) {
-    return obj.map(item => deepClone(item)) as T;
-  }
-
-  const cloned = {} as T;
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      cloned[key] = deepClone(obj[key]);
-    }
-  }
-
-  return cloned;
 }

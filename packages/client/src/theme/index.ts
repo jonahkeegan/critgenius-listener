@@ -100,14 +100,14 @@ export const getResponsiveValue = <T>(
 ): T | undefined => {
   const breakpointOrder = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'] as const;
   const currentIndex = breakpointOrder.indexOf(currentBreakpoint);
-  
+
   for (let i = currentIndex; i < breakpointOrder.length; i++) {
-    const bp = breakpointOrder[i];
+    const bp = breakpointOrder[i] as keyof typeof values;
     if (values[bp] !== undefined) {
-      return values[bp];
+      return values[bp] as T;
     }
   }
-  
+
   return undefined;
 };
 
@@ -115,7 +115,9 @@ export const getResponsiveValue = <T>(
 import { critgeniusTheme } from './critgeniusTheme';
 
 // Theme configuration helpers
-export const createResponsiveTheme = (customizations?: any) => {
+export const createResponsiveTheme = (
+  _customizations?: Record<string, unknown>
+) => {
   // Future: Allow theme customizations while maintaining responsive design system
   return critgeniusTheme;
 };

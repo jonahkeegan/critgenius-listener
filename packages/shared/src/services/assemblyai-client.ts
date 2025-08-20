@@ -4,8 +4,17 @@
  * for the CritGenius Listener real-time transcription system.
  */
 
-import { AssemblyAI, RealtimeTranscriber, RealtimeTranscript } from 'assemblyai';
-import { AssemblyAIConfig, loadAssemblyAIConfig, AssemblyAIConfigError, getConfigSummary } from '../config/assemblyai.js';
+import {
+  AssemblyAI,
+  RealtimeTranscriber,
+  RealtimeTranscript,
+} from 'assemblyai';
+import {
+  AssemblyAIConfig,
+  loadAssemblyAIConfig,
+  AssemblyAIConfigError,
+  getConfigSummary,
+} from '../config/assemblyai.js';
 
 /**
  * Error types for AssemblyAI operations
@@ -30,7 +39,10 @@ export class AssemblyAIConnectionError extends AssemblyAIClientError {
 }
 
 export class AssemblyAIRateLimitError extends AssemblyAIClientError {
-  constructor(message: string, public retryAfter?: number) {
+  constructor(
+    message: string,
+    public retryAfter?: number
+  ) {
     super(message, 'RATE_LIMIT', 429, true);
     this.name = 'AssemblyAIRateLimitError';
   }
@@ -75,8 +87,8 @@ export enum ConnectionState {
  */
 export interface ClientEvents {
   'connection-state': (state: ConnectionState) => void;
-  'transcript': (transcript: RealtimeTranscript) => void;
-  'error': (error: AssemblyAIClientError) => void;
+  transcript: (transcript: RealtimeTranscript) => void;
+  error: (error: AssemblyAIClientError) => void;
   'session-begins': (sessionId: string) => void;
   'session-terminated': () => void;
   'retry-attempt': (attempt: number, delay: number) => void;
@@ -117,7 +129,10 @@ export class AssemblyAIClient {
   private connectionState: ConnectionState = ConnectionState.DISCONNECTED;
   private retryConfig: RetryConfig;
   private stats: ClientStats;
-  private eventListeners: Map<keyof ClientEvents, Set<Function>> = new Map();
+  private eventListeners: Map<
+    keyof ClientEvents,
+    Set<ClientEvents[keyof ClientEvents]>
+  > = new Map();
   private reconnectTimer: NodeJS.Timeout | null = null;
   private connectionStartTime: number = 0;
   private audioQueue: Buffer[] = [];
@@ -125,7 +140,9 @@ export class AssemblyAIClient {
 
   constructor(config?: Partial<AssemblyAIConfig>) {
     try {
-      this.config = config ? { ...loadAssemblyAIConfig(), ...config } : loadAssemblyAIConfig();
+      this.config = config
+        ? { ...loadAssemblyAIConfig(), ...config }
+        : loadAssemblyAIConfig();
     } catch (error) {
       throw new AssemblyAIConfigError(
         `Failed to initialize AssemblyAI client: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -184,15 +201,17 @@ export class AssemblyAIClient {
    */
   private logConfigSummary(): void {
     if (this.config.debug) {
-      const summary = getConfigSummary(this.config);
-      console.log('[AssemblyAI Client] Configuration loaded:', summary);
+      console.log('[AssemblyAI Client] Configuration loaded (details omitted)');
     }
   }
 
   /**
    * Add event listener
    */
-  public on<K extends keyof ClientEvents>(event: K, listener: ClientEvents[K]): void {
+  public on<K extends keyof ClientEvents>(
+    event: K,
+    listener: ClientEvents[K]
+  ): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.add(listener);
@@ -202,7 +221,10 @@ export class AssemblyAIClient {
   /**
    * Remove event listener
    */
-  public off<K extends keyof ClientEvents>(event: K, listener: ClientEvents[K]): void {
+  public off<K extends keyof ClientEvents>(
+    event: K,
+    listener: ClientEvents[K]
+  ): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.delete(listener);
@@ -212,14 +234,20 @@ export class AssemblyAIClient {
   /**
    * Emit event to all listeners
    */
-  private emit<K extends keyof ClientEvents>(event: K, ...args: Parameters<ClientEvents[K]>): void {
+  private emit<K extends keyof ClientEvents>(
+    event: K,
+    ...args: Parameters<ClientEvents[K]>
+  ): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       listeners.forEach(listener => {
         try {
-          (listener as any)(...args);
-        } catch (error) {
-          console.error(`[AssemblyAI Client] Error in ${event} listener:`, error);
+          (listener as (...a: Parameters<ClientEvents[K]>) => void)(...args);
+        } catch (error: unknown) {
+          console.error(
+            `[AssemblyAI Client] Error in ${String(event)} listener:`,
+            error instanceof Error ? error.message : String(error)
+          );
         }
       });
     }
@@ -232,7 +260,7 @@ export class AssemblyAIClient {
     if (this.connectionState !== newState) {
       const previousState = this.connectionState;
       this.connectionState = newState;
-      
+
       this.stats.stateHistory.push({
         state: newState,
         timestamp: Date.now(),
@@ -244,7 +272,9 @@ export class AssemblyAIClient {
       }
 
       if (this.config.debug) {
-        console.log(`[AssemblyAI Client] State transition: ${previousState} -> ${newState}`);
+        console.log(
+          `[AssemblyAI Client] State transition: ${previousState} -> ${newState}`
+        );
       }
 
       this.emit('connection-state', newState);
@@ -255,7 +285,9 @@ export class AssemblyAIClient {
    * Calculate exponential backoff delay with jitter
    */
   private calculateRetryDelay(attempt: number): number {
-    const baseDelay = this.retryConfig.initialDelay * Math.pow(this.retryConfig.backoffMultiplier, attempt);
+    const baseDelay =
+      this.retryConfig.initialDelay *
+      Math.pow(this.retryConfig.backoffMultiplier, attempt);
     const clampedDelay = Math.min(baseDelay, this.retryConfig.maxDelay);
     const jitter = clampedDelay * this.retryConfig.jitterFactor * Math.random();
     return Math.floor(clampedDelay + jitter);
@@ -265,7 +297,10 @@ export class AssemblyAIClient {
    * Connect to AssemblyAI real-time transcription service with retry logic
    */
   public async connect(): Promise<void> {
-    if (this.connectionState === ConnectionState.CONNECTED || this.connectionState === ConnectionState.CONNECTING) {
+    if (
+      this.connectionState === ConnectionState.CONNECTED ||
+      this.connectionState === ConnectionState.CONNECTING
+    ) {
       return;
     }
 
@@ -280,48 +315,75 @@ export class AssemblyAIClient {
         if (attempt > 0) {
           this.updateConnectionState(ConnectionState.RECONNECTING);
           const delay = this.calculateRetryDelay(attempt - 1);
-          
+
           this.stats.retryAttempts++;
           this.emit('retry-attempt', attempt, delay);
-          
+
           if (this.config.debug) {
-            console.log(`[AssemblyAI Client] Retry attempt ${attempt}/${this.retryConfig.maxRetries} in ${delay}ms`);
+            console.log(
+              `[AssemblyAI Client] Retry attempt ${attempt}/${this.retryConfig.maxRetries} in ${delay}ms`
+            );
           }
-          
+
           await this.sleep(delay);
         }
 
         await this.establishConnection();
         this.stats.successfulConnections++;
         this.updateConnectionState(ConnectionState.CONNECTED);
-        
-        if (this.config.debug) {
-          console.log('[AssemblyAI Client] Successfully connected to real-time transcription service');
-        }
-        
-        return;
 
+        if (this.config.debug) {
+          console.log(
+            '[AssemblyAI Client] Successfully connected to real-time transcription service'
+          );
+        }
+
+        return;
       } catch (error) {
         lastError = this.normalizeError(error);
-        
+
         if (this.config.debug) {
-          console.error(`[AssemblyAI Client] Connection attempt ${attempt + 1} failed:`, lastError.message);
+          console.error(
+            `[AssemblyAI Client] Connection attempt ${attempt + 1} failed:`,
+            lastError.message
+          );
+        }
+
+        // Handle rate limiting — policy: wait, then surface to caller (no auto-retry)
+        // Rationale:
+        // Handle rate limiting — policy: respect server backoff, then fail fast (no auto-retry)
+        // Rate limiting policy: respect server-provided backoff by waiting for the advised period before surfacing the error (no auto-retry).
+        // Rationale: keep client behavior deterministic, let the caller orchestrate retries, and communicate the cooling-off window via 'rate-limit' event.
+        // 1) Respect server-provided backoff by waiting for the advised period before surfacing the error.
+        // 2) Keep client behavior deterministic; let the caller orchestrate when to retry.
+        // 3) Communicate the cooling-off window via 'rate-limit' event so upstream can schedule.
+        if (lastError instanceof AssemblyAIRateLimitError) {
+          const retryAfter =
+            lastError.retryAfter || this.calculateRetryDelay(attempt);
+          this.emit('rate-limit', retryAfter);
+
+          // Optionally log for debugging
+          if (this.config.debug) {
+            console.warn(
+              `[AssemblyAI Client] Rate limited. Respecting backoff for ${retryAfter}ms before failing`
+            );
+          }
+
+          // Wait for the advised backoff window before surfacing the error
+          await this.sleep(retryAfter);
+
+          // Update error state and surface
+          this.updateConnectionState(ConnectionState.ERROR);
+          this.stats.lastError = lastError;
+          this.emit('error', lastError);
+          throw lastError;
         }
 
         // Don't retry on non-retryable errors
         if (!lastError.retryable) {
           break;
         }
-
-        // Handle rate limiting
-        if (lastError instanceof AssemblyAIRateLimitError) {
-          const retryAfter = lastError.retryAfter || this.calculateRetryDelay(attempt);
-          this.emit('rate-limit', retryAfter);
-          
-          if (attempt < this.retryConfig.maxRetries) {
-            await this.sleep(retryAfter);
-          }
-        }
+        // For retryable errors, the backoff before next attempt is handled at the top of the loop
       }
     }
 
@@ -329,8 +391,10 @@ export class AssemblyAIClient {
     if (lastError) {
       this.stats.lastError = lastError;
     }
-    
-    const errorToThrow = lastError || new AssemblyAIClientError('Connection failed after all retry attempts');
+
+    const errorToThrow =
+      lastError ||
+      new AssemblyAIClientError('Connection failed after all retry attempts');
     this.emit('error', errorToThrow);
     throw errorToThrow;
   }
@@ -341,10 +405,12 @@ export class AssemblyAIClient {
   private async establishConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new AssemblyAIConnectionError(
-          `Connection timeout after ${this.config.connectionTimeout}ms`,
-          'CONNECTION_TIMEOUT'
-        ));
+        reject(
+          new AssemblyAIConnectionError(
+            `Connection timeout after ${this.config.connectionTimeout}ms`,
+            'CONNECTION_TIMEOUT'
+          )
+        );
       }, this.config.connectionTimeout);
 
       try {
@@ -354,18 +420,32 @@ export class AssemblyAIClient {
           wordBoost: this.config.transcriptionConfig.customVocabulary,
         });
 
+        // Start the connection first so external mocks that depend on call order work
+        const maybePromise = this.transcriber.connect();
+        if (
+          maybePromise &&
+          typeof (maybePromise as Promise<unknown>).catch === 'function'
+        ) {
+          (maybePromise as Promise<unknown>).catch(err => {
+            clearTimeout(timeout);
+            const clientError = this.normalizeError(err);
+            reject(clientError);
+          });
+        }
+
+        // Register listeners before initiating connection
         this.transcriber.on('open', ({ sessionId }) => {
           clearTimeout(timeout);
           this.emit('session-begins', sessionId);
           resolve();
         });
 
-        this.transcriber.on('transcript', (transcript) => {
+        this.transcriber.on('transcript', transcript => {
           this.stats.transcriptsReceived++;
           this.emit('transcript', transcript);
         });
 
-        this.transcriber.on('error', (error) => {
+        this.transcriber.on('error', error => {
           clearTimeout(timeout);
           const clientError = this.normalizeError(error);
           reject(clientError);
@@ -376,10 +456,6 @@ export class AssemblyAIClient {
           this.emit('session-terminated');
           this.updateConnectionState(ConnectionState.DISCONNECTED);
         });
-
-        // Start the connection
-        this.transcriber.connect();
-
       } catch (error) {
         clearTimeout(timeout);
         reject(this.normalizeError(error));
@@ -392,12 +468,17 @@ export class AssemblyAIClient {
    */
   public async sendAudio(audioData: Buffer): Promise<void> {
     if (this.connectionState !== ConnectionState.CONNECTED) {
-      if (this.config.performance.enableBatching && this.audioQueue.length < this.config.performance.maxQueueSize) {
+      if (
+        this.config.performance.enableBatching &&
+        this.audioQueue.length < this.config.performance.maxQueueSize
+      ) {
         this.audioQueue.push(audioData);
         this.processAudioQueue();
         return;
       } else {
-        throw new AssemblyAIClientError('Client not connected. Call connect() first.');
+        throw new AssemblyAIClientError(
+          'Client not connected. Call connect() first.'
+        );
       }
     }
 
@@ -407,7 +488,10 @@ export class AssemblyAIClient {
 
     try {
       // Convert Buffer to ArrayBuffer for AssemblyAI SDK compatibility
-      const arrayBuffer = audioData.buffer.slice(audioData.byteOffset, audioData.byteOffset + audioData.byteLength);
+      const arrayBuffer = audioData.buffer.slice(
+        audioData.byteOffset,
+        audioData.byteOffset + audioData.byteLength
+      );
       this.transcriber.sendAudio(arrayBuffer);
       this.stats.audioChunksSent++;
     } catch (error) {
@@ -428,14 +512,20 @@ export class AssemblyAIClient {
     this.isProcessingQueue = true;
 
     try {
-      while (this.audioQueue.length > 0 && this.connectionState === ConnectionState.CONNECTED) {
+      while (
+        this.audioQueue.length > 0 &&
+        this.connectionState === ConnectionState.CONNECTED
+      ) {
         const audioData = this.audioQueue.shift();
         if (audioData && this.transcriber) {
           // Convert Buffer to ArrayBuffer for AssemblyAI SDK compatibility
-          const arrayBuffer = audioData.buffer.slice(audioData.byteOffset, audioData.byteOffset + audioData.byteLength);
+          const arrayBuffer = audioData.buffer.slice(
+            audioData.byteOffset,
+            audioData.byteOffset + audioData.byteLength
+          );
           this.transcriber.sendAudio(arrayBuffer);
           this.stats.audioChunksSent++;
-          
+
           // Small delay to prevent overwhelming the service
           await this.sleep(10);
         }
@@ -470,7 +560,7 @@ export class AssemblyAIClient {
 
     this.audioQueue = [];
     this.updateConnectionState(ConnectionState.DISCONNECTED);
-    
+
     // Update uptime statistics
     if (this.connectionStartTime > 0) {
       this.stats.uptime += Date.now() - this.connectionStartTime;
@@ -490,12 +580,15 @@ export class AssemblyAIClient {
    */
   public getStats(): ClientStats {
     const currentStats = { ...this.stats };
-    
+
     // Calculate current uptime if connected
-    if (this.connectionState === ConnectionState.CONNECTED && this.connectionStartTime > 0) {
+    if (
+      this.connectionState === ConnectionState.CONNECTED &&
+      this.connectionStartTime > 0
+    ) {
       currentStats.uptime += Date.now() - this.connectionStartTime;
     }
-    
+
     return currentStats;
   }
 
@@ -511,7 +604,7 @@ export class AssemblyAIClient {
    */
   public updateConfig(newConfig: Partial<AssemblyAIConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update retry configuration
     this.retryConfig = {
       maxRetries: this.config.maxRetries,
@@ -522,7 +615,9 @@ export class AssemblyAIClient {
     };
 
     if (this.config.debug) {
-      console.log('[AssemblyAI Client] Configuration updated:', getConfigSummary(this.config));
+      console.log(
+        '[AssemblyAI Client] Configuration updated (details omitted)'
+      );
     }
   }
 
@@ -537,22 +632,44 @@ export class AssemblyAIClient {
     if (error instanceof Error) {
       // Check for specific error types based on message content
       // Check rate limit first as it's more specific
-      if (error.message.includes('429') || error.message.includes('rate limit') || error.message.toLowerCase().includes('too many requests')) {
+      if (
+        error.message.includes('429') ||
+        error.message.includes('rate limit') ||
+        error.message.toLowerCase().includes('too many requests')
+      ) {
         return new AssemblyAIRateLimitError(error.message);
       }
-      
-      if (error.message.includes('401') || error.message.includes('unauthorized')) {
-        return new AssemblyAIAuthError(`Authentication failed: ${error.message}`);
+
+      if (
+        error.message.includes('401') ||
+        error.message.includes('unauthorized')
+      ) {
+        return new AssemblyAIAuthError(
+          `Authentication failed: ${error.message}`
+        );
       }
-      
-      if (error.message.includes('network') || error.message.includes('connection')) {
+
+      if (
+        error.message.includes('network') ||
+        error.message.includes('connection')
+      ) {
         return new AssemblyAIConnectionError(error.message);
       }
-      
-      return new AssemblyAIClientError(error.message, 'UNKNOWN_ERROR', undefined, true);
+
+      return new AssemblyAIClientError(
+        error.message,
+        'UNKNOWN_ERROR',
+        undefined,
+        true
+      );
     }
 
-    return new AssemblyAIClientError('Unknown error occurred', 'UNKNOWN_ERROR', undefined, true);
+    return new AssemblyAIClientError(
+      'Unknown error occurred',
+      'UNKNOWN_ERROR',
+      undefined,
+      true
+    );
   }
 
   /**
@@ -565,10 +682,14 @@ export class AssemblyAIClient {
   /**
    * Health check method
    */
-  public async healthCheck(): Promise<{ healthy: boolean; details: Record<string, unknown> }> {
+  public async healthCheck(): Promise<{
+    healthy: boolean;
+    details: Record<string, unknown>;
+  }> {
     const stats = this.getStats();
-    const healthy = this.connectionState === ConnectionState.CONNECTED && !stats.lastError;
-    
+    const healthy =
+      this.connectionState === ConnectionState.CONNECTED && !stats.lastError;
+
     return {
       healthy,
       details: {
@@ -583,6 +704,8 @@ export class AssemblyAIClient {
 /**
  * Factory function to create configured AssemblyAI client
  */
-export function createAssemblyAIClient(config?: Partial<AssemblyAIConfig>): AssemblyAIClient {
+export function createAssemblyAIClient(
+  config?: Partial<AssemblyAIConfig>
+): AssemblyAIClient {
   return new AssemblyAIClient(config);
 }

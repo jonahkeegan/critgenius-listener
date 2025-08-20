@@ -8,6 +8,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { createServer, type Server as HttpServer } from 'http';
 import { Server as SocketIOServer, type Socket } from 'socket.io';
+import { SessionManager } from './realtime/sessionManager.js';
 import {
   SERVER_CONFIG,
   API_ENDPOINTS,
@@ -21,7 +22,10 @@ import {
   isValidAudioFile,
   formatFileSize,
 } from '@critgenius/shared';
-import type { ServerToClientEvents, ClientToServerEvents } from './types/socket-events.js';
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from './types/socket-events.js';
 
 const app: Application = express();
 const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
@@ -30,17 +34,21 @@ const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 const server: HttpServer = createServer(app);
 
 // Initialize Socket.IO server with CORS configuration
-const io: SocketIOServer<ClientToClientEvents, ServerToServerEvents> = new SocketIOServer(server, {
-  cors: {
-    origin: [...SERVER_CONFIG.CORS_ORIGINS],
-    credentials: true,
-  },
-  // Add connection state recovery for better reliability
-  connectionStateRecovery: {
-    maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
-    skipMiddlewares: true,
-  },
-});
+const io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> =
+  new SocketIOServer(server, {
+    cors: {
+      origin: [...SERVER_CONFIG.CORS_ORIGINS],
+      credentials: true,
+    },
+    // Add connection state recovery for better reliability
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 2 * 60 * 1000, // 2 minutes
+      skipMiddlewares: true,
+    },
+  });
+
+// Initialize session manager
+const sessions = new SessionManager(io);
 
 // Configure multer for file uploads
 const upload = multer({
@@ -217,28 +225,28 @@ app.use('*', (_req, res) => {
 // Socket.IO connection handlers
 io.on('connection', (socket: Socket) => {
   console.log(`📱 Socket.IO client connected: ${socket.id}`);
-  
+
   // Send connection status to client
   socket.emit('connectionStatus', 'connected');
 
   // Handle session joining
   socket.on('joinSession', (data: { sessionId: string }) => {
     const { sessionId } = data;
-    socket.join(sessionId);
+    sessions.join(socket, sessionId);
     console.log(`👥 Client ${socket.id} joined session: ${sessionId}`);
-    
+
     // Notify client they've joined successfully
     socket.emit('processingUpdate', {
       uploadId: sessionId,
       status: 'pending',
-      message: `Joined session ${sessionId}`
+      message: `Joined session ${sessionId}`,
     });
   });
 
   // Handle session leaving
   socket.on('leaveSession', (data: { sessionId: string }) => {
     const { sessionId } = data;
-    socket.leave(sessionId);
+    sessions.leave(socket, sessionId);
     console.log(`👋 Client ${socket.id} left session: ${sessionId}`);
   });
 
@@ -246,12 +254,12 @@ io.on('connection', (socket: Socket) => {
   socket.on('startRecording', (data: { sessionId: string }) => {
     const { sessionId } = data;
     console.log(`⏺️ Recording started for session: ${sessionId}`);
-    
+
     // Broadcast to room that recording started
     socket.to(sessionId).emit('processingUpdate', {
       uploadId: sessionId,
       status: 'processing',
-      message: 'Recording started'
+      message: 'Recording started',
     });
   });
 
@@ -259,18 +267,20 @@ io.on('connection', (socket: Socket) => {
   socket.on('stopRecording', (data: { sessionId: string }) => {
     const { sessionId } = data;
     console.log(`⏹️ Recording stopped for session: ${sessionId}`);
-    
+
     // Broadcast to room that recording stopped
     socket.to(sessionId).emit('processingUpdate', {
       uploadId: sessionId,
       status: 'completed',
-      message: 'Recording completed'
+      message: 'Recording completed',
     });
   });
 
   // Handle client disconnect
   socket.on('disconnect', (reason: string) => {
-    console.log(`📴 Socket.IO client disconnected: ${socket.id} (reason: ${reason})`);
+    console.log(
+      `📴 Socket.IO client disconnected: ${socket.id} (reason: ${reason})`
+    );
     socket.emit('connectionStatus', 'disconnected');
   });
 
@@ -279,7 +289,7 @@ io.on('connection', (socket: Socket) => {
     console.error(`❌ Socket.IO error for client ${socket.id}:`, error);
     socket.emit('error', {
       code: 'SOCKET_ERROR',
-      message: 'Socket connection error occurred'
+      message: 'Socket connection error occurred',
     } as {
       code: string;
       message: string;
@@ -294,6 +304,54 @@ io.on('connection', (socket: Socket) => {
       callback();
     }
   });
+
+  // Real-time transcription: start
+  socket.on(
+    'startTranscription',
+    (data: {
+      sessionId: string;
+      audioConfig?: {
+        sampleRate?: number;
+        encoding?: string;
+        language?: string;
+        diarization?: boolean;
+      };
+    }) => {
+      const { sessionId, audioConfig } = data;
+      console.log(`🟢 startTranscription for session ${sessionId}`);
+      const a: {
+        sampleRate?: number;
+        language?: string;
+        diarization?: boolean;
+      } = audioConfig ?? {};
+      const opts: {
+        sampleRate: number;
+        language?: string;
+        diarization?: boolean;
+      } = {
+        sampleRate: typeof a.sampleRate === 'number' ? a.sampleRate : 16000,
+      };
+      if (typeof a.language === 'string') opts.language = a.language;
+      if (typeof a.diarization === 'boolean') opts.diarization = a.diarization;
+      sessions.startTranscription(sessionId, opts);
+    }
+  );
+
+  // Real-time transcription: stop
+  socket.on('stopTranscription', (data: { sessionId: string }) => {
+    const { sessionId } = data;
+    console.log(`🔴 stopTranscription for session ${sessionId}`);
+    sessions.stopTranscription(sessionId);
+  });
+
+  // Real-time transcription: audio chunk
+  socket.on(
+    'audioChunk',
+    (data: { sessionId: string; chunk: ArrayBuffer | Uint8Array | string }) => {
+      const { sessionId, chunk } = data;
+      sessions.pushAudio(sessionId, chunk);
+    }
+  );
 });
 
 // Start server
@@ -307,9 +365,7 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(
       `📁 Upload endpoint: http://localhost:${PORT}${API_ENDPOINTS.UPLOAD}`
     );
-    console.log(
-      `📡 WebSocket endpoint: ws://localhost:${PORT}`
-    );
+    console.log(`📡 WebSocket endpoint: ws://localhost:${PORT}`);
   });
 }
 

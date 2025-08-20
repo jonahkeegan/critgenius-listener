@@ -9,7 +9,7 @@ import type { AudioProcessingResult } from '../types/index.js';
  * Interface for audio upload request
  */
 export interface AudioUploadRequest {
-  files: File[] | any[]; // Support both browser File and server-side files
+  files: File[] | unknown[]; // Support both browser File and server-side files
   metadata?: {
     userId?: string;
     sessionId?: string;
