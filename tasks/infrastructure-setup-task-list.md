@@ -178,6 +178,22 @@
     - [x] 2.6.10 Validate integration with existing AssemblyAI real-time transcription
   - [ ] 2.7 Set up environment variable management with validation and development/production
         configurations
+    - [x] 2.7.1 Create environment variable schema and template system - Design comprehensive
+          .env structure with .env.example templates, define variable categories (API keys,
+          database, feature flags), and establish naming conventions for development, staging,
+          and production environments
+    - [ ] 2.7.2 Implement environment variable validation and runtime management - Build
+          TypeScript-based validation system with joi or zod, create environment loading utilities
+          with error handling, and implement startup validation checks with descriptive error
+          messages
+    - [ ] 2.7.3 Configure environment-specific configuration management - Set up separate
+          configuration files for development/production environments, implement secure API key
+          management for AssemblyAI integration, and configure database connection variables with
+          fallback defaults
+    - [ ] 2.7.4 Integrate environment management with project architecture - Update existing
+          packages (client/server/shared) to use centralized environment management, configure
+          build processes to handle environment-specific builds, and ensure compatibility with
+          existing TypeScript and testing infrastructure
   - [ ] 2.8 Create development scripts for linting, formatting, and pre-commit hooks using Husky
   - [ ] 2.9 Configure hot-reload development server with proxy settings for API integration
   - [ ] 2.10 Set up local HTTPS development server for Web Audio API testing requirements
