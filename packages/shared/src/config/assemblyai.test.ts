@@ -15,7 +15,8 @@ import {
 } from './assemblyai.js';
 
 describe('AssemblyAI Configuration Management', () => {
-  const validApiKey = 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6';
+  const validApiKey =
+    'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6';
   const invalidApiKeys = [
     '', // empty
     'short', // too short
@@ -27,7 +28,8 @@ describe('AssemblyAI Configuration Management', () => {
   const validEnv = {
     [ASSEMBLYAI_ENV_VARS.API_KEY]: validApiKey,
     [ASSEMBLYAI_ENV_VARS.BASE_URL]: 'https://api.assemblyai.com',
-    [ASSEMBLYAI_ENV_VARS.REALTIME_URL]: 'wss://api.assemblyai.com/v2/realtime/ws',
+    [ASSEMBLYAI_ENV_VARS.REALTIME_URL]:
+      'wss://api.assemblyai.com/v2/realtime/ws',
     [ASSEMBLYAI_ENV_VARS.CONNECTION_TIMEOUT]: '30000',
     [ASSEMBLYAI_ENV_VARS.MAX_RETRIES]: '3',
     [ASSEMBLYAI_ENV_VARS.RETRY_DELAY]: '1000',
@@ -79,9 +81,17 @@ describe('AssemblyAI Configuration Management', () => {
           confidenceThreshold: 0.8,
           filterProfanity: false,
           customVocabulary: expect.arrayContaining([
-            'dungeon master', 'DM', 'GM', 'game master',
-            'initiative', 'perception check', 'saving throw',
-            'armor class', 'AC', 'hit points', 'HP',
+            'dungeon master',
+            'DM',
+            'GM',
+            'game master',
+            'initiative',
+            'perception check',
+            'saving throw',
+            'armor class',
+            'AC',
+            'hit points',
+            'HP',
           ]),
         },
         performance: {
@@ -95,20 +105,21 @@ describe('AssemblyAI Configuration Management', () => {
     });
 
     it('should include D&D-specific custom vocabulary', () => {
-      const vocabulary = DEFAULT_ASSEMBLYAI_CONFIG.transcriptionConfig.customVocabulary;
-      
+      const vocabulary =
+        DEFAULT_ASSEMBLYAI_CONFIG.transcriptionConfig.customVocabulary;
+
       // Test for essential D&D terms
       expect(vocabulary).toContain('dungeon master');
       expect(vocabulary).toContain('DM');
       expect(vocabulary).toContain('initiative');
       expect(vocabulary).toContain('critical hit');
       expect(vocabulary).toContain('nat 20');
-      
+
       // Test for character classes
       expect(vocabulary).toContain('barbarian');
       expect(vocabulary).toContain('wizard');
       expect(vocabulary).toContain('paladin');
-      
+
       // Should have reasonable vocabulary size
       expect(vocabulary.length).toBeGreaterThan(20);
     });
@@ -117,19 +128,35 @@ describe('AssemblyAI Configuration Management', () => {
   describe('Environment Variable Names', () => {
     it('should define all required environment variable names', () => {
       const requiredEnvVars = [
-        'API_KEY', 'BASE_URL', 'REALTIME_URL', 'CONNECTION_TIMEOUT',
-        'MAX_RETRIES', 'RETRY_DELAY', 'MAX_RETRY_DELAY', 'DEBUG',
-        'SAMPLE_RATE', 'ENCODING', 'CHANNELS', 'LANGUAGE',
-        'PUNCTUATE', 'FORMAT_TEXT', 'SPEAKER_LABELS',
-        'CONFIDENCE_THRESHOLD', 'FILTER_PROFANITY',
-        'BUFFER_SIZE', 'MAX_QUEUE_SIZE', 'ENABLE_BATCHING',
-        'BATCH_SIZE', 'BATCH_TIMEOUT',
+        'API_KEY',
+        'BASE_URL',
+        'REALTIME_URL',
+        'CONNECTION_TIMEOUT',
+        'MAX_RETRIES',
+        'RETRY_DELAY',
+        'MAX_RETRY_DELAY',
+        'DEBUG',
+        'SAMPLE_RATE',
+        'ENCODING',
+        'CHANNELS',
+        'LANGUAGE',
+        'PUNCTUATE',
+        'FORMAT_TEXT',
+        'SPEAKER_LABELS',
+        'CONFIDENCE_THRESHOLD',
+        'FILTER_PROFANITY',
+        'BUFFER_SIZE',
+        'MAX_QUEUE_SIZE',
+        'ENABLE_BATCHING',
+        'BATCH_SIZE',
+        'BATCH_TIMEOUT',
       ];
 
       requiredEnvVars.forEach(envVar => {
         expect(ASSEMBLYAI_ENV_VARS).toHaveProperty(envVar);
-        expect(ASSEMBLYAI_ENV_VARS[envVar as keyof typeof ASSEMBLYAI_ENV_VARS])
-          .toBe(`ASSEMBLYAI_${envVar}`);
+        expect(
+          ASSEMBLYAI_ENV_VARS[envVar as keyof typeof ASSEMBLYAI_ENV_VARS]
+        ).toBe(`ASSEMBLYAI_${envVar}`);
       });
     });
   });
@@ -178,8 +205,12 @@ describe('AssemblyAI Configuration Management', () => {
       const config = loadAssemblyAIConfig(minimalEnv);
 
       expect(config.baseUrl).toBe(DEFAULT_ASSEMBLYAI_CONFIG.baseUrl);
-      expect(config.connectionTimeout).toBe(DEFAULT_ASSEMBLYAI_CONFIG.connectionTimeout);
-      expect(config.audioConfig.sampleRate).toBe(DEFAULT_ASSEMBLYAI_CONFIG.audioConfig.sampleRate);
+      expect(config.connectionTimeout).toBe(
+        DEFAULT_ASSEMBLYAI_CONFIG.connectionTimeout
+      );
+      expect(config.audioConfig.sampleRate).toBe(
+        DEFAULT_ASSEMBLYAI_CONFIG.audioConfig.sampleRate
+      );
     });
 
     it('should parse boolean environment variables correctly', () => {
@@ -217,11 +248,14 @@ describe('AssemblyAI Configuration Management', () => {
 
   describe('Configuration Validation', () => {
     it('should throw error when API key is missing', () => {
-      const envWithoutApiKey: Record<string, string | undefined> = { ...validEnv };
+      const envWithoutApiKey: Record<string, string | undefined> = {
+        ...validEnv,
+      };
       delete envWithoutApiKey[ASSEMBLYAI_ENV_VARS.API_KEY];
 
-      expect(() => loadAssemblyAIConfig(envWithoutApiKey))
-        .toThrow(AssemblyAIConfigError);
+      expect(() => loadAssemblyAIConfig(envWithoutApiKey)).toThrow(
+        AssemblyAIConfigError
+      );
     });
 
     it('should validate API key format', () => {
@@ -231,8 +265,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.API_KEY]: apiKey,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -245,8 +278,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.CONNECTION_TIMEOUT]: timeout,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -259,8 +291,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.MAX_RETRIES]: retries,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -273,8 +304,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.SAMPLE_RATE]: sampleRate,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -287,8 +317,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.CHANNELS]: channels,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -301,8 +330,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.CONFIDENCE_THRESHOLD]: threshold,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -315,8 +343,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.BUFFER_SIZE]: bufferSize,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
 
@@ -329,8 +356,7 @@ describe('AssemblyAI Configuration Management', () => {
           [ASSEMBLYAI_ENV_VARS.MAX_QUEUE_SIZE]: queueSize,
         };
 
-        expect(() => loadAssemblyAIConfig(env))
-          .toThrow(AssemblyAIConfigError);
+        expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
       });
     });
   });
@@ -384,9 +410,12 @@ describe('AssemblyAI Configuration Management', () => {
       const config = loadAssemblyAIConfig(validEnv);
       const summary = getConfigSummary(config);
 
-      expect(summary.transcriptionConfig).toHaveProperty('customVocabularyCount');
-      expect((summary.transcriptionConfig as any).customVocabularyCount)
-        .toBeGreaterThan(0);
+      expect(summary.transcriptionConfig).toHaveProperty(
+        'customVocabularyCount'
+      );
+      expect(
+        (summary.transcriptionConfig as any).customVocabularyCount
+      ).toBeGreaterThan(0);
     });
   });
 
@@ -394,9 +423,8 @@ describe('AssemblyAI Configuration Management', () => {
     it('should sanitize API key in configuration', () => {
       const config = loadAssemblyAIConfig(validEnv);
       const sanitized = sanitizeConfig(config);
-
-      expect(sanitized.apiKey).toMatch(/^[a-f0-9]{4}\*{4}[a-f0-9]{4}$/);
-      expect(sanitized.apiKey).not.toBe(config.apiKey);
+      // apiKey should not be present in sanitized output
+      expect((sanitized as any).apiKey).toBeUndefined();
       expect(sanitized.baseUrl).toBe(config.baseUrl);
     });
 
@@ -407,16 +435,14 @@ describe('AssemblyAI Configuration Management', () => {
       };
 
       const sanitized = sanitizeConfig(shortKeyConfig);
-
-      expect(sanitized.apiKey).toContain('*');
-      expect(sanitized.apiKey).not.toBe('short');
+      // apiKey should be omitted regardless of original length
+      expect((sanitized as any).apiKey).toBeUndefined();
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle empty environment object', () => {
-      expect(() => loadAssemblyAIConfig({}))
-        .toThrow(AssemblyAIConfigError);
+      expect(() => loadAssemblyAIConfig({})).toThrow(AssemblyAIConfigError);
     });
 
     it('should handle undefined environment values', () => {
@@ -428,7 +454,9 @@ describe('AssemblyAI Configuration Management', () => {
 
       const config = loadAssemblyAIConfig(envWithUndefined);
 
-      expect(config.connectionTimeout).toBe(DEFAULT_ASSEMBLYAI_CONFIG.connectionTimeout);
+      expect(config.connectionTimeout).toBe(
+        DEFAULT_ASSEMBLYAI_CONFIG.connectionTimeout
+      );
       expect(config.debug).toBe(DEFAULT_ASSEMBLYAI_CONFIG.debug);
     });
 
@@ -440,13 +468,11 @@ describe('AssemblyAI Configuration Management', () => {
       };
 
       // Configuration validation should catch these invalid values
-      expect(() => loadAssemblyAIConfig(env))
-        .toThrow(AssemblyAIConfigError);
+      expect(() => loadAssemblyAIConfig(env)).toThrow(AssemblyAIConfigError);
     });
 
     it('should validate audio encoding values', () => {
       const validEncodings = ['pcm_s16le', 'pcm_mulaw', 'pcm_alaw'];
-      const invalidEncoding = 'invalid-encoding';
 
       validEncodings.forEach(encoding => {
         const env = {

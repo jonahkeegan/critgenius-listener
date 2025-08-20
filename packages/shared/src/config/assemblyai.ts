@@ -124,14 +124,39 @@ export const DEFAULT_ASSEMBLYAI_CONFIG: Omit<AssemblyAIConfig, 'apiKey'> = {
     filterProfanity: false,
     customVocabulary: [
       // D&D specific terms for improved accuracy
-      'dungeon master', 'DM', 'GM', 'game master',
-      'initiative', 'perception check', 'saving throw',
-      'armor class', 'AC', 'hit points', 'HP',
-      'spell slot', 'cantrip', 'advantage', 'disadvantage',
-      'critical hit', 'nat 20', 'natural 20', 'nat 1', 'natural 1',
-      'barbarian', 'bard', 'cleric', 'druid', 'fighter',
-      'monk', 'paladin', 'ranger', 'rogue', 'sorcerer',
-      'warlock', 'wizard', 'artificer',
+      'dungeon master',
+      'DM',
+      'GM',
+      'game master',
+      'initiative',
+      'perception check',
+      'saving throw',
+      'armor class',
+      'AC',
+      'hit points',
+      'HP',
+      'spell slot',
+      'cantrip',
+      'advantage',
+      'disadvantage',
+      'critical hit',
+      'nat 20',
+      'natural 20',
+      'nat 1',
+      'natural 1',
+      'barbarian',
+      'bard',
+      'cleric',
+      'druid',
+      'fighter',
+      'monk',
+      'paladin',
+      'ranger',
+      'rogue',
+      'sorcerer',
+      'warlock',
+      'wizard',
+      'artificer',
     ],
   },
   performance: {
@@ -147,7 +172,10 @@ export const DEFAULT_ASSEMBLYAI_CONFIG: Omit<AssemblyAIConfig, 'apiKey'> = {
  * Configuration validation error types
  */
 export class AssemblyAIConfigError extends Error {
-  constructor(message: string, public field?: string) {
+  constructor(
+    message: string,
+    public field?: string
+  ) {
     super(message);
     this.name = 'AssemblyAIConfigError';
   }
@@ -160,18 +188,24 @@ function validateApiKey(apiKey: string): void {
   if (!apiKey) {
     throw new AssemblyAIConfigError('API key is required', 'apiKey');
   }
-  
+
   if (typeof apiKey !== 'string') {
     throw new AssemblyAIConfigError('API key must be a string', 'apiKey');
   }
-  
+
   if (apiKey.length < 32) {
-    throw new AssemblyAIConfigError('API key appears to be invalid (too short)', 'apiKey');
+    throw new AssemblyAIConfigError(
+      'API key appears to be invalid (too short)',
+      'apiKey'
+    );
   }
-  
+
   // AssemblyAI API keys typically start with a specific pattern
   if (!/^[a-f0-9]{32,}$/i.test(apiKey)) {
-    throw new AssemblyAIConfigError('API key format appears to be invalid', 'apiKey');
+    throw new AssemblyAIConfigError(
+      'API key format appears to be invalid',
+      'apiKey'
+    );
   }
 }
 
@@ -180,7 +214,7 @@ function validateApiKey(apiKey: string): void {
  */
 function validateConfig(config: AssemblyAIConfig): void {
   validateApiKey(config.apiKey);
-  
+
   // Check for NaN values from invalid parsing
   if (isNaN(config.connectionTimeout)) {
     throw new AssemblyAIConfigError(
@@ -248,7 +282,7 @@ function validateConfig(config: AssemblyAIConfig): void {
       'performance.batchTimeout'
     );
   }
-  
+
   // Range validations
   if (config.connectionTimeout < 1000 || config.connectionTimeout > 300000) {
     throw new AssemblyAIConfigError(
@@ -256,50 +290,62 @@ function validateConfig(config: AssemblyAIConfig): void {
       'connectionTimeout'
     );
   }
-  
+
   if (config.maxRetries < 0 || config.maxRetries > 10) {
     throw new AssemblyAIConfigError(
       'Max retries must be between 0 and 10',
       'maxRetries'
     );
   }
-  
+
   if (config.retryDelay < 100 || config.retryDelay > 30000) {
     throw new AssemblyAIConfigError(
       'Retry delay must be between 100ms and 30000ms',
       'retryDelay'
     );
   }
-  
-  if (config.audioConfig.sampleRate < 8000 || config.audioConfig.sampleRate > 48000) {
+
+  if (
+    config.audioConfig.sampleRate < 8000 ||
+    config.audioConfig.sampleRate > 48000
+  ) {
     throw new AssemblyAIConfigError(
       'Sample rate must be between 8000Hz and 48000Hz',
       'audioConfig.sampleRate'
     );
   }
-  
+
   if (config.audioConfig.channels < 1 || config.audioConfig.channels > 2) {
     throw new AssemblyAIConfigError(
       'Audio channels must be 1 (mono) or 2 (stereo)',
       'audioConfig.channels'
     );
   }
-  
-  if (config.transcriptionConfig.confidenceThreshold < 0 || config.transcriptionConfig.confidenceThreshold > 1) {
+
+  if (
+    config.transcriptionConfig.confidenceThreshold < 0 ||
+    config.transcriptionConfig.confidenceThreshold > 1
+  ) {
     throw new AssemblyAIConfigError(
       'Confidence threshold must be between 0.0 and 1.0',
       'transcriptionConfig.confidenceThreshold'
     );
   }
-  
-  if (config.performance.bufferSize < 1024 || config.performance.bufferSize > 32768) {
+
+  if (
+    config.performance.bufferSize < 1024 ||
+    config.performance.bufferSize > 32768
+  ) {
     throw new AssemblyAIConfigError(
       'Buffer size must be between 1024 and 32768 bytes',
       'performance.bufferSize'
     );
   }
-  
-  if (config.performance.maxQueueSize < 1 || config.performance.maxQueueSize > 1000) {
+
+  if (
+    config.performance.maxQueueSize < 1 ||
+    config.performance.maxQueueSize > 1000
+  ) {
     throw new AssemblyAIConfigError(
       'Max queue size must be between 1 and 1000',
       'performance.maxQueueSize'
@@ -310,27 +356,39 @@ function validateConfig(config: AssemblyAIConfig): void {
 /**
  * Loads and validates AssemblyAI configuration from environment variables
  */
-export function loadAssemblyAIConfig(env: Record<string, string | undefined> = process.env): AssemblyAIConfig {
+export function loadAssemblyAIConfig(
+  env: Record<string, string | undefined> = process.env
+): AssemblyAIConfig {
   const apiKey = env[ASSEMBLYAI_ENV_VARS.API_KEY];
-  
+
   if (!apiKey) {
     throw new AssemblyAIConfigError(
       `Missing required environment variable: ${ASSEMBLYAI_ENV_VARS.API_KEY}`
     );
   }
-  
+
   const config: AssemblyAIConfig = {
     apiKey,
-    baseUrl: env[ASSEMBLYAI_ENV_VARS.BASE_URL] || DEFAULT_ASSEMBLYAI_CONFIG.baseUrl,
-    realtimeUrl: env[ASSEMBLYAI_ENV_VARS.REALTIME_URL] || DEFAULT_ASSEMBLYAI_CONFIG.realtimeUrl,
-    connectionTimeout: parseInt(env[ASSEMBLYAI_ENV_VARS.CONNECTION_TIMEOUT] || '30000'),
+    baseUrl:
+      env[ASSEMBLYAI_ENV_VARS.BASE_URL] || DEFAULT_ASSEMBLYAI_CONFIG.baseUrl,
+    realtimeUrl:
+      env[ASSEMBLYAI_ENV_VARS.REALTIME_URL] ||
+      DEFAULT_ASSEMBLYAI_CONFIG.realtimeUrl,
+    connectionTimeout: parseInt(
+      env[ASSEMBLYAI_ENV_VARS.CONNECTION_TIMEOUT] || '30000'
+    ),
     maxRetries: parseInt(env[ASSEMBLYAI_ENV_VARS.MAX_RETRIES] || '3'),
     retryDelay: parseInt(env[ASSEMBLYAI_ENV_VARS.RETRY_DELAY] || '1000'),
-    maxRetryDelay: parseInt(env[ASSEMBLYAI_ENV_VARS.MAX_RETRY_DELAY] || '10000'),
+    maxRetryDelay: parseInt(
+      env[ASSEMBLYAI_ENV_VARS.MAX_RETRY_DELAY] || '10000'
+    ),
     debug: env[ASSEMBLYAI_ENV_VARS.DEBUG] === 'true',
     audioConfig: {
       sampleRate: parseInt(env[ASSEMBLYAI_ENV_VARS.SAMPLE_RATE] || '16000'),
-      encoding: (env[ASSEMBLYAI_ENV_VARS.ENCODING] as AssemblyAIConfig['audioConfig']['encoding']) || 'pcm_s16le',
+      encoding:
+        (env[
+          ASSEMBLYAI_ENV_VARS.ENCODING
+        ] as AssemblyAIConfig['audioConfig']['encoding']) || 'pcm_s16le',
       channels: parseInt(env[ASSEMBLYAI_ENV_VARS.CHANNELS] || '1'),
       autoGainControl: env.ASSEMBLYAI_AUTO_GAIN_CONTROL !== 'false',
       noiseSuppression: env.ASSEMBLYAI_NOISE_SUPPRESSION !== 'false',
@@ -341,9 +399,12 @@ export function loadAssemblyAIConfig(env: Record<string, string | undefined> = p
       punctuate: env[ASSEMBLYAI_ENV_VARS.PUNCTUATE] !== 'false',
       formatText: env[ASSEMBLYAI_ENV_VARS.FORMAT_TEXT] !== 'false',
       speakerLabels: env[ASSEMBLYAI_ENV_VARS.SPEAKER_LABELS] !== 'false',
-      confidenceThreshold: parseFloat(env[ASSEMBLYAI_ENV_VARS.CONFIDENCE_THRESHOLD] || '0.8'),
+      confidenceThreshold: parseFloat(
+        env[ASSEMBLYAI_ENV_VARS.CONFIDENCE_THRESHOLD] || '0.8'
+      ),
       filterProfanity: env[ASSEMBLYAI_ENV_VARS.FILTER_PROFANITY] === 'true',
-      customVocabulary: DEFAULT_ASSEMBLYAI_CONFIG.transcriptionConfig.customVocabulary,
+      customVocabulary:
+        DEFAULT_ASSEMBLYAI_CONFIG.transcriptionConfig.customVocabulary,
     },
     performance: {
       bufferSize: parseInt(env[ASSEMBLYAI_ENV_VARS.BUFFER_SIZE] || '4096'),
@@ -353,7 +414,7 @@ export function loadAssemblyAIConfig(env: Record<string, string | undefined> = p
       batchTimeout: parseInt(env[ASSEMBLYAI_ENV_VARS.BATCH_TIMEOUT] || '100'),
     },
   };
-  
+
   validateConfig(config);
   return config;
 }
@@ -361,7 +422,9 @@ export function loadAssemblyAIConfig(env: Record<string, string | undefined> = p
 /**
  * Creates a configuration summary for debugging and logging
  */
-export function getConfigSummary(config: AssemblyAIConfig): Record<string, unknown> {
+export function getConfigSummary(
+  config: AssemblyAIConfig
+): Record<string, unknown> {
   return {
     hasApiKey: !!config.apiKey,
     apiKeyLength: config.apiKey.length,
@@ -396,9 +459,11 @@ export function getConfigSummary(config: AssemblyAIConfig): Record<string, unkno
 /**
  * Sanitizes configuration for logging by removing sensitive information
  */
-export function sanitizeConfig(config: AssemblyAIConfig): Partial<AssemblyAIConfig> {
-  const sanitized = { ...config };
-  // Replace API key with masked version for logging
-  sanitized.apiKey = `${config.apiKey.substring(0, 4)}****${config.apiKey.substring(config.apiKey.length - 4)}`;
-  return sanitized;
+export function sanitizeConfig(
+  config: AssemblyAIConfig
+): Partial<AssemblyAIConfig> {
+  // Omit apiKey entirely to avoid any leakage in logs
+  const rest: Partial<AssemblyAIConfig> = { ...config };
+  delete (rest as { apiKey?: string }).apiKey;
+  return rest;
 }
