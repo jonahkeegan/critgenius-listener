@@ -31,7 +31,8 @@ export class EnvironmentValidationError extends Error {
 }
 
 export class EnvironmentLoadError extends Error {
-  constructor(message: string, cause?: Error) {
+  public readonly cause?: unknown;
+  constructor(message: string, cause?: unknown) {
     super(message);
     this.name = 'EnvironmentLoadError';
     this.cause = cause;
@@ -83,21 +84,22 @@ function createValidationErrorMessage(
 
   const errorMessages = Array.from(errorsByPath.entries()).map(
     ([path, pathIssues]) => {
-      const messages = pathIssues.map(issue => {
-        // Simplified error message handling to avoid TypeScript issues with Zod internal types
-        if (issue.code === 'invalid_type') {
-          return `Expected ${(issue as any).expected}, received ${(issue as any).received}`;
+      const messages = pathIssues.map(i => {
+        const issue = i as any; // keep formatting robust across Zod versions
+        switch (issue.code) {
+          case 'invalid_type':
+            return `Expected ${issue.expected}, received ${issue.received}`;
+          case 'too_small':
+            return `Must be at least ${issue.minimum}${issue.inclusive ? ' (inclusive)' : ''}`;
+          case 'too_big':
+            return `Must be at most ${issue.maximum}${issue.inclusive ? ' (inclusive)' : ''}`;
+          case 'invalid_string':
+            return issue.validation
+              ? `Invalid string: must be ${issue.validation}`
+              : 'Invalid string';
+          default:
+            return i.message || 'Invalid value';
         }
-        if (issue.code === 'too_small') {
-          return `Must be at least ${(issue as any).minimum}`;
-        }
-        if (issue.code === 'too_big') {
-          return `Must be at most ${(issue as any).maximum}`;
-        }
-        if (issue.code === 'custom') {
-          return issue.message || 'Custom validation failed';
-        }
-        return issue.message;
       });
       return `  ${path}: ${messages.join(', ')}`;
     }
