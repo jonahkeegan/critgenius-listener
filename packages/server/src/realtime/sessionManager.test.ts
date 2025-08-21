@@ -64,7 +64,7 @@ const mockEnvConfig = {
   PORT: 3100,
   CLIENT_PORT: 3101,
   HOST: 'localhost',
-  ASSEMBLYAI_API_KEY: 'test-key-12345678901234567890123456789012',
+  ASSEMBLYAI_API_KEY: 'assemblyai-testkey-abcdefghijklmnopqrstuvwxyz123456',
   MONGODB_URI: 'mongodb://localhost:27017/test',
   MONGODB_DB_NAME: 'critgenius-listener',
   REDIS_URL: 'redis://localhost:6379',
