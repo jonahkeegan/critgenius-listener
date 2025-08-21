@@ -39,29 +39,51 @@ function App() {
   const [audioFiles, setAudioFiles] = useState<File[]>([]);
   const [sessionId, setSessionId] = useState<string>('');
   const theme = useTheme();
-  
+
+  // Secure session ID generator using Web Crypto API (falls back to time-only if unavailable)
+  const generateSecureSessionId = (): string => {
+    const prefix = 'session_';
+    const c = globalThis?.crypto as Crypto | undefined;
+    // Prefer native UUID if available
+    if (c?.randomUUID) {
+      return `${prefix}${c.randomUUID()}`;
+    }
+    // Fallback: generate RFC4122 v4 UUID from CSPRNG
+    if (c?.getRandomValues) {
+      const bytes = new Uint8Array(16);
+      c.getRandomValues(bytes);
+      // Per RFC 4122: set version and variant bits
+      const b6 = bytes[6]!;
+      const b8 = bytes[8]!;
+      bytes[6] = (b6 & 0x0f) | 0x40; // version 4
+      bytes[8] = (b8 & 0x3f) | 0x80; // variant 10xx
+      const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0'));
+      const uuid = `${hex.slice(0, 4).join('')}-${hex
+        .slice(4, 6)
+        .join('')}-${hex.slice(6, 8).join('')}-${hex
+        .slice(8, 10)
+        .join('')}-${hex.slice(10, 16).join('')}`;
+      return `${prefix}${uuid}`;
+    }
+    // Last-resort fallback without Math.random to avoid insecure PRNG
+    return `${prefix}${Date.now().toString(36)}`;
+  };
+
   // Initialize socket connection
-  const {
-    isConnected,
-    isConnecting,
-    error,
-    connect,
-    disconnect,
-    emit,
-    on
-  } = useSocket();
+  const { isConnected, isConnecting, error, connect, disconnect, emit, on } =
+    useSocket();
 
   // Connect to socket on component mount
   useEffect(() => {
     connect();
-    
-    // Generate a unique session ID
-    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Generate a unique session ID (cryptographically secure)
+    const newSessionId = generateSecureSessionId();
     setSessionId(newSessionId);
-    
+
     // Join the session
     emit('joinSession', { sessionId: newSessionId });
-    
+
     // Cleanup on unmount
     return () => {
       emit('leaveSession', { sessionId: newSessionId });
@@ -71,31 +93,31 @@ function App() {
 
   // Listen for processing updates
   useEffect(() => {
-    const cleanup = on('processingUpdate', (data) => {
+    const cleanup = on('processingUpdate', data => {
       console.log('Processing update:', data);
       // TODO: Update UI with processing status
     });
-    
+
     return cleanup;
   }, [on]);
 
   // Listen for transcription updates
   useEffect(() => {
-    const cleanup = on('transcriptionUpdate', (data) => {
+    const cleanup = on('transcriptionUpdate', data => {
       console.log('Transcription update:', data);
       // TODO: Update UI with transcription data
     });
-    
+
     return cleanup;
   }, [on]);
 
   // Listen for errors
   useEffect(() => {
-    const cleanup = on('error', (error) => {
+    const cleanup = on('error', error => {
       console.error('Socket error:', error);
       // TODO: Show error to user
     });
-    
+
     return cleanup;
   }, [on]);
 
@@ -318,7 +340,12 @@ function App() {
                     />
                   )}
                   {error && (
-                    <Typography variant='caption' color='error' display='block' sx={{ mt: 1 }}>
+                    <Typography
+                      variant='caption'
+                      color='error'
+                      display='block'
+                      sx={{ mt: 1 }}
+                    >
                       {error}
                     </Typography>
                   )}

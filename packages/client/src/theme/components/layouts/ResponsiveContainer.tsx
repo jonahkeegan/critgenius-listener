@@ -148,24 +148,27 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     ...sx,
   };
 
+  // Render helper for custom maxWidth handling (e.g., 'xxl' or raw pixel values)
+  const renderCustomMaxWidthContainer = () => (
+    <Container
+      maxWidth={false}
+      sx={{
+        px: getContainerPadding() as string | number,
+        ...containerSx,
+        '& > *': {
+          width: '100%',
+          maxWidth: maxWidth === 'xxl' ? '1920px' : (maxWidth as string),
+          mx: 'auto',
+        },
+      }}
+    >
+      {children}
+    </Container>
+  );
+
   // Handle custom maxWidth values (like 'xxl' or pixel values) by using Container with maxWidth=false
   if (isCustomMaxWidthValue(maxWidth)) {
-    return (
-      <Container
-        maxWidth={false}
-        sx={{
-          px: getContainerPadding() as string | number,
-          ...containerSx,
-          '& > *': {
-            width: '100%',
-            maxWidth: maxWidth === 'xxl' ? '1920px' : maxWidth,
-            mx: 'auto',
-          },
-        }}
-      >
-        {children}
-      </Container>
-    );
+    return renderCustomMaxWidthContainer();
   }
 
   return (

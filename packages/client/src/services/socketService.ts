@@ -85,12 +85,6 @@ class SocketService {
       return;
     }
 
-    // Reference private test-only helper to satisfy TS unused-private check without exposing it
-    if (process.env.NODE_ENV === 'test') {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      this.checkNetworkStatus;
-    }
-
     console.log('Attempting to connect to Socket.IO server...');
     this.connectionState.isConnecting = true;
     this.emitStateChange();
@@ -145,6 +139,8 @@ class SocketService {
       this.connectionState.isConnecting = false;
       this.emitStateChange();
       this.emitToInternalListeners('connectionStatus', 'disconnected');
+      // Probe network status to update extended state for UI/telemetry
+      void this.checkNetworkStatus();
       this.scheduleReconnect();
     });
 

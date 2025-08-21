@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-01-08 20:31 PST **Version:** 2.0.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-20 15:42 PST **Version:** 2.1.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -197,3 +197,85 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 - **Dependencies:** ../memory-bank/projectbrief.md, ../memory-bank/productContext.md
 - **Next Dependencies:** techContext.md
 - **Architecture Strategy:** ../architecture-strategy-evaluation-critgenius-listener.md
+
+### ADR-004: Comprehensive Environment Variable Management System
+
+**Status:** Accepted (Aug 20, 2025)  
+**Context:** Need robust environment configuration management across development/staging/production with validation and error handling  
+**Decision:** Implement Zod-based schema validation with environment-specific templates and centralized management  
+**Rationale:** TypeScript compile-time safety combined with runtime validation prevents configuration errors, improves developer experience, and enables secure deployment patterns  
+**Consequences:** Centralized configuration management enables consistent validation, reduces misconfiguration risks, and provides clear error messaging at startup
+
+## Environment Configuration Patterns
+
+### Comprehensive Environment Variable Architecture
+
+**Schema-Driven Configuration Management:**
+```
+packages/shared/src/config/
+├── environment.ts          # Zod schemas with 16 categorized groups
+├── environmentLoader.ts    # Runtime validation and loading utilities  
+└── index.ts               # Centralized exports with type safety
+```
+
+**16 Configuration Categories:**
+1. **Node Runtime**: PORT, NODE_ENV, application lifecycle variables
+2. **Database**: MongoDB/Redis connection strings with connection pooling settings
+3. **AssemblyAI**: API keys, real-time transcription configuration, timeout settings
+4. **Security**: JWT secrets, API keys, encryption settings with length validation
+5. **UI Configuration**: Theme settings, feature toggles, responsive breakpoints
+6. **Logging**: Log levels, structured logging configuration, output destinations
+7. **Monitoring**: APM tokens, error tracking, performance monitoring settings
+8. **Caching**: Redis caching strategies, TTL configuration, cache invalidation
+9. **File Operations**: Upload paths, file size limits, storage configuration
+10. **Networking**: CORS settings, rate limiting, timeout configurations
+11. **Messaging**: Real-time communication, WebSocket configuration
+12. **Authentication**: OAuth settings, session management, token validation
+13. **Privacy Compliance**: GDPR settings, data retention policies, consent management
+14. **Development Tools**: Debug settings, hot reload configuration, development utilities
+15. **Error Tracking**: Sentry configuration, error aggregation settings
+16. **Performance**: Resource limits, optimization flags, scaling thresholds
+
+### Environment-Specific Security Tiers
+
+**Development (.env.development.example):**
+- Relaxed security requirements for rapid development
+- Debug features enabled, verbose logging
+- Local service URLs and extended timeouts
+- Development-friendly API key validation (shorter minimums)
+
+**Staging (.env.staging.example):**  
+- Production-like configuration with testing flexibility
+- SSL/TLS requirements enabled for security testing
+- Structured logging for monitoring validation
+- Privacy compliance features enabled for integration testing
+
+**Production (.env.production.example):**
+- Maximum security configuration with strict validation
+- Mandatory SSL/TLS with certificate management
+- 32+ character minimum for JWT secrets and encryption keys
+- Comprehensive security headers and compliance requirements
+
+### Runtime Validation Architecture
+
+**Startup Validation Flow:**
+```
+Application Boot → validateEnvironmentOnStartup() → 
+Parse Environment → Zod Schema Validation → 
+Type Generation → Error Reporting → Application Ready
+```
+
+**Validation Features:**
+- Performance timing (startup validation duration tracking)
+- Detailed error messages with specific variable names and expected formats
+- Environment utility functions (isDevelopment, isProduction, isStaging)
+- TypeScript type generation from Zod schemas for compile-time safety
+- Graceful error handling with actionable developer guidance
+
+### Implementation Benefits
+
+- **Developer Experience**: Clear error messages and comprehensive documentation
+- **Type Safety**: Compile-time TypeScript checking combined with runtime validation  
+- **Security**: Environment-specific security requirements and validation
+- **Maintainability**: Centralized configuration management across monorepo
+- **Deployment Safety**: Startup validation prevents misconfigured deployments
