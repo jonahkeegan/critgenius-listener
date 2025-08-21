@@ -21,14 +21,22 @@ import {
   createApiResponse,
   isValidAudioFile,
   formatFileSize,
+  validateEnvironmentOnStartup,
+  type EnvironmentConfig,
 } from '@critgenius/shared';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from './types/socket-events.js';
 
+// Validate environment variables on startup with detailed error reporting
+const envConfig: EnvironmentConfig = validateEnvironmentOnStartup();
+
+// Use validated configuration instead of raw environment access
+const PORT = envConfig.PORT;
+
+// Create Express application
 const app: Application = express();
-const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 
 // Create HTTP server and integrate with Express
 const server: HttpServer = createServer(app);
@@ -47,8 +55,8 @@ const io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> =
     },
   });
 
-// Initialize session manager
-const sessions = new SessionManager(io);
+// Initialize session manager with validated environment configuration
+const sessions = new SessionManager(io, envConfig);
 
 // Configure multer for file uploads
 const upload = multer({

@@ -58,6 +58,59 @@ vi.mock('./assemblyaiConnector.js', () => {
   return { AssemblyAIConnector: AssemblyAIConnectorMock };
 });
 
+// Mock environment config for tests
+const mockEnvConfig = {
+  NODE_ENV: 'test' as const,
+  PORT: 3100,
+  CLIENT_PORT: 3101,
+  HOST: 'localhost',
+  ASSEMBLYAI_API_KEY: 'test-key-12345678901234567890123456789012',
+  MONGODB_URI: 'mongodb://localhost:27017/test',
+  MONGODB_DB_NAME: 'critgenius-listener',
+  REDIS_URL: 'redis://localhost:6379',
+  REDIS_PASSWORD: undefined,
+  REDIS_DB: 0,
+  JWT_SECRET: 'test-jwt-secret',
+  CORS_ORIGINS: 'http://localhost:3101',
+  JWT_EXPIRES_IN: '7d',
+  CSP_ENABLED: true,
+  HELMET_ENABLED: true,
+  RATE_LIMIT_ENABLED: true,
+  RATE_LIMIT_WINDOW_MS: 900000,
+  RATE_LIMIT_MAX_REQUESTS: 100,
+  MAX_AUDIO_FILE_SIZE: 52428800,
+  MAX_AUDIO_DURATION: 3600,
+  SUPPORTED_AUDIO_FORMATS: 'wav,mp3,m4a,flac,ogg',
+  SESSION_TIMEOUT: 60,
+  MAX_CONCURRENT_SESSIONS: 10,
+  EXPORT_TEMP_DIR: './temp-exports',
+  EXPORT_MAX_SIZE: 104857600,
+  AUTO_CLEANUP_ENABLED: true,
+  CLEANUP_INTERVAL_HOURS: 24,
+  DEFAULT_RETENTION_DAYS: 30,
+  GDPR_ENABLED: true,
+  DATA_ANONYMIZATION_ENABLED: true,
+  CONSENT_REQUIRED: true,
+  LOG_LEVEL: 'info' as const,
+  LOG_FORMAT: 'json' as const,
+  LOG_FILE_PATH: './logs/app.log',
+  WS_HEARTBEAT_INTERVAL: 30000,
+  WS_MAX_CONNECTIONS: 100,
+  CACHE_TTL: 300,
+  CACHE_MAX_SIZE: 1000,
+  HEALTH_CHECK_ENABLED: true,
+  METRICS_ENABLED: true,
+  SSL_ENABLED: false,
+  CSP_REPORT_URI: '/api/csp-report',
+  MOCK_ASSEMBLYAI: true,
+  MOCK_ECOSYSTEM_SERVICES: true,
+  DEBUG: 'critgenius:*',
+  DEBUG_SQL: false,
+  DEBUG_REDIS: false,
+  HOT_RELOAD: true,
+  WATCH_FILES: true,
+};
+
 import { SessionManager } from './sessionManager.js';
 
 // Simple mock for Socket.IO server room emitter
@@ -85,17 +138,11 @@ describe('SessionManager', () => {
 
   it('emits error when API key missing on startTranscription', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const testEnvConfig = { ...mockEnvConfig, ASSEMBLYAI_API_KEY: '' };
+    const mgr = new SessionManager(io, testEnvConfig);
     const sessionId = 's-1';
 
-    // Ensure env is not used for this test
-    const prev = process.env.ASSEMBLYAI_API_KEY;
-    delete (process.env as any).ASSEMBLYAI_API_KEY;
-
     mgr.startTranscription(sessionId, { sampleRate: 16000 });
-
-    // Restore env
-    process.env.ASSEMBLYAI_API_KEY = prev;
 
     expect(roomEmit).toHaveBeenCalled();
     const first = roomEmit.mock.calls[0] as any[];
@@ -107,15 +154,11 @@ describe('SessionManager', () => {
 
   it('emits error when API key invalid format on startTranscription', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const testEnvConfig = { ...mockEnvConfig, ASSEMBLYAI_API_KEY: '' };
+    const mgr = new SessionManager(io, testEnvConfig);
     const sessionId = 's-1b';
 
-    const prev = process.env.ASSEMBLYAI_API_KEY;
-    delete (process.env as any).ASSEMBLYAI_API_KEY;
-
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, 'fake-key');
-
-    process.env.ASSEMBLYAI_API_KEY = prev;
 
     expect(roomEmit).toHaveBeenCalled();
     const first = roomEmit.mock.calls[0] as any[];
@@ -129,7 +172,7 @@ describe('SessionManager', () => {
 
   it('connects a connector and emits running status on onOpen', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-2';
 
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
@@ -148,7 +191,7 @@ describe('SessionManager', () => {
 
   it('forwards audio chunks to connector', () => {
     const { io } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-3';
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
 
@@ -160,7 +203,7 @@ describe('SessionManager', () => {
 
   it('normalizes transcription payloads and emits transcriptionUpdate', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-4';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -215,7 +258,7 @@ describe('SessionManager', () => {
 
   it('propagates connector error via error event', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-5';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -228,7 +271,7 @@ describe('SessionManager', () => {
 
   it('emits stopped on connector close and on stopTranscription()', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-6';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -249,7 +292,7 @@ describe('SessionManager', () => {
 
   it('manages participants and cleans up session on last leave', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const s1 = createMockSocket('a');
     const s2 = createMockSocket('b');
     const sessionId = 's-7';

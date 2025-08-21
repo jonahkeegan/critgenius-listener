@@ -5,6 +5,7 @@
 
 import type { Server as SocketIOServer, Socket } from 'socket.io';
 import { AssemblyAIConnector } from './assemblyaiConnector.js';
+import type { EnvironmentConfig } from '@critgenius/shared';
 
 type SessionState = {
   sessionId: string;
@@ -27,7 +28,10 @@ type AssemblyAIWord = {
 
 export class SessionManager {
   private sessions = new Map<string, SessionState>();
-  constructor(private io: SocketIOServer) {}
+  constructor(
+    private io: SocketIOServer,
+    private envConfig: EnvironmentConfig
+  ) {}
 
   getOrCreateSession(sessionId: string): SessionState {
     const existing = this.sessions.get(sessionId);
@@ -75,8 +79,12 @@ export class SessionManager {
     state.options = next;
     if (state.connector) return; // already running
 
-    // Prefer env var for security; trim to avoid whitespace-only values
-    const resolvedKey = (apiKey ?? process.env.ASSEMBLYAI_API_KEY ?? '').trim();
+    // Prefer env var for security; use validated config with fallback to parameter
+    const resolvedKey = (
+      apiKey ??
+      this.envConfig.ASSEMBLYAI_API_KEY ??
+      ''
+    ).trim();
     if (!resolvedKey) {
       this.io.to(sessionId).emit('error', {
         code: 'ASSEMBLYAI_CONFIG_MISSING',
