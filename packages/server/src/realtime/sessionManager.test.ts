@@ -5,6 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Server as SocketIOServer } from 'socket.io';
+import type { EnvironmentConfig } from '@critgenius/shared';
 
 // Hoisted store to capture handlers passed into mocked connector instances
 const handlerStore: Record<
@@ -58,58 +59,14 @@ vi.mock('./assemblyaiConnector.js', () => {
   return { AssemblyAIConnector: AssemblyAIConnectorMock };
 });
 
-// Mock environment config for tests
+// Minimal mock environment config for SessionManager tests
 const mockEnvConfig = {
   NODE_ENV: 'test' as const,
-  PORT: 3100,
-  CLIENT_PORT: 3101,
-  HOST: 'localhost',
   ASSEMBLYAI_API_KEY: 'assemblyai-testkey-abcdefghijklmnopqrstuvwxyz123456',
-  MONGODB_URI: 'mongodb://localhost:27017/test',
-  MONGODB_DB_NAME: 'critgenius-listener',
-  REDIS_URL: 'redis://localhost:6379',
-  REDIS_PASSWORD: undefined,
-  REDIS_DB: 0,
-  JWT_SECRET: 'test-jwt-secret',
-  CORS_ORIGINS: 'http://localhost:3101',
-  JWT_EXPIRES_IN: '7d',
-  CSP_ENABLED: true,
-  HELMET_ENABLED: true,
-  RATE_LIMIT_ENABLED: true,
-  RATE_LIMIT_WINDOW_MS: 900000,
-  RATE_LIMIT_MAX_REQUESTS: 100,
-  MAX_AUDIO_FILE_SIZE: 52428800,
-  MAX_AUDIO_DURATION: 3600,
-  SUPPORTED_AUDIO_FORMATS: 'wav,mp3,m4a,flac,ogg',
   SESSION_TIMEOUT: 60,
   MAX_CONCURRENT_SESSIONS: 10,
-  EXPORT_TEMP_DIR: './temp-exports',
-  EXPORT_MAX_SIZE: 104857600,
-  AUTO_CLEANUP_ENABLED: true,
-  CLEANUP_INTERVAL_HOURS: 24,
-  DEFAULT_RETENTION_DAYS: 30,
-  GDPR_ENABLED: true,
-  DATA_ANONYMIZATION_ENABLED: true,
-  CONSENT_REQUIRED: true,
-  LOG_LEVEL: 'info' as const,
-  LOG_FORMAT: 'json' as const,
-  LOG_FILE_PATH: './logs/app.log',
-  WS_HEARTBEAT_INTERVAL: 30000,
-  WS_MAX_CONNECTIONS: 100,
-  CACHE_TTL: 300,
-  CACHE_MAX_SIZE: 1000,
-  HEALTH_CHECK_ENABLED: true,
-  METRICS_ENABLED: true,
-  SSL_ENABLED: false,
-  CSP_REPORT_URI: '/api/csp-report',
   MOCK_ASSEMBLYAI: true,
-  MOCK_ECOSYSTEM_SERVICES: true,
-  DEBUG: 'critgenius:*',
-  DEBUG_SQL: false,
-  DEBUG_REDIS: false,
-  HOT_RELOAD: true,
-  WATCH_FILES: true,
-};
+} as unknown as EnvironmentConfig;
 
 import { SessionManager } from './sessionManager.js';
 

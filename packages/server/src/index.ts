@@ -217,6 +217,17 @@ app.use(
         .json(createApiResponse(false, null, ERROR_MESSAGES.FILE_TOO_LARGE));
     }
 
+    // Handle malformed multipart form data (e.g., missing boundary)
+    if (
+      typeof error.message === 'string' &&
+      (error.message.includes('Multipart: Boundary not found') ||
+        error.message.includes('Boundary not found'))
+    ) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json(createApiResponse(false, null, 'No files uploaded'));
+    }
+
     return res
       .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
       .json(createApiResponse(false, null, ERROR_MESSAGES.SERVER_ERROR));

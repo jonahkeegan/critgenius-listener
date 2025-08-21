@@ -41,6 +41,6 @@ describe('Server', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
-    expect(response.body.message).toBe('No files uploaded');
+    expect(response.body.error).toBe('No files uploaded');
   });
 });
