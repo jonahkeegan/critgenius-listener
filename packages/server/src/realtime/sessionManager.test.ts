@@ -5,6 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Server as SocketIOServer } from 'socket.io';
+import type { EnvironmentConfig } from '@critgenius/shared';
 
 // Hoisted store to capture handlers passed into mocked connector instances
 const handlerStore: Record<
@@ -58,6 +59,15 @@ vi.mock('./assemblyaiConnector.js', () => {
   return { AssemblyAIConnector: AssemblyAIConnectorMock };
 });
 
+// Minimal mock environment config for SessionManager tests
+const mockEnvConfig = {
+  NODE_ENV: 'test' as const,
+  ASSEMBLYAI_API_KEY: 'assemblyai-testkey-abcdefghijklmnopqrstuvwxyz123456',
+  SESSION_TIMEOUT: 60,
+  MAX_CONCURRENT_SESSIONS: 10,
+  MOCK_ASSEMBLYAI: true,
+} as unknown as EnvironmentConfig;
+
 import { SessionManager } from './sessionManager.js';
 
 // Simple mock for Socket.IO server room emitter
@@ -85,17 +95,11 @@ describe('SessionManager', () => {
 
   it('emits error when API key missing on startTranscription', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const testEnvConfig = { ...mockEnvConfig, ASSEMBLYAI_API_KEY: '' };
+    const mgr = new SessionManager(io, testEnvConfig);
     const sessionId = 's-1';
 
-    // Ensure env is not used for this test
-    const prev = process.env.ASSEMBLYAI_API_KEY;
-    delete (process.env as any).ASSEMBLYAI_API_KEY;
-
     mgr.startTranscription(sessionId, { sampleRate: 16000 });
-
-    // Restore env
-    process.env.ASSEMBLYAI_API_KEY = prev;
 
     expect(roomEmit).toHaveBeenCalled();
     const first = roomEmit.mock.calls[0] as any[];
@@ -107,15 +111,11 @@ describe('SessionManager', () => {
 
   it('emits error when API key invalid format on startTranscription', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const testEnvConfig = { ...mockEnvConfig, ASSEMBLYAI_API_KEY: '' };
+    const mgr = new SessionManager(io, testEnvConfig);
     const sessionId = 's-1b';
 
-    const prev = process.env.ASSEMBLYAI_API_KEY;
-    delete (process.env as any).ASSEMBLYAI_API_KEY;
-
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, 'fake-key');
-
-    process.env.ASSEMBLYAI_API_KEY = prev;
 
     expect(roomEmit).toHaveBeenCalled();
     const first = roomEmit.mock.calls[0] as any[];
@@ -129,7 +129,7 @@ describe('SessionManager', () => {
 
   it('connects a connector and emits running status on onOpen', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-2';
 
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
@@ -148,7 +148,7 @@ describe('SessionManager', () => {
 
   it('forwards audio chunks to connector', () => {
     const { io } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-3';
     mgr.startTranscription(sessionId, { sampleRate: 16000 }, VALID_KEY);
 
@@ -160,7 +160,7 @@ describe('SessionManager', () => {
 
   it('normalizes transcription payloads and emits transcriptionUpdate', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-4';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -215,7 +215,7 @@ describe('SessionManager', () => {
 
   it('propagates connector error via error event', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-5';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -228,7 +228,7 @@ describe('SessionManager', () => {
 
   it('emits stopped on connector close and on stopTranscription()', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const sessionId = 's-6';
     mgr.startTranscription(sessionId, {}, VALID_KEY);
 
@@ -249,7 +249,7 @@ describe('SessionManager', () => {
 
   it('manages participants and cleans up session on last leave', () => {
     const { io, roomEmit } = createMockIO();
-    const mgr = new SessionManager(io);
+    const mgr = new SessionManager(io, mockEnvConfig);
     const s1 = createMockSocket('a');
     const s2 = createMockSocket('b');
     const sessionId = 's-7';

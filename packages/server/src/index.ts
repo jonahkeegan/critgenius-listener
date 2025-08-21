@@ -21,14 +21,22 @@ import {
   createApiResponse,
   isValidAudioFile,
   formatFileSize,
+  validateEnvironmentOnStartup,
+  type EnvironmentConfig,
 } from '@critgenius/shared';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from './types/socket-events.js';
 
+// Validate environment variables on startup with detailed error reporting
+const envConfig: EnvironmentConfig = validateEnvironmentOnStartup();
+
+// Use validated configuration instead of raw environment access
+const PORT = envConfig.PORT;
+
+// Create Express application
 const app: Application = express();
-const PORT = process.env.PORT || SERVER_CONFIG.DEFAULT_PORT;
 
 // Create HTTP server and integrate with Express
 const server: HttpServer = createServer(app);
@@ -47,8 +55,8 @@ const io: SocketIOServer<ClientToServerEvents, ServerToClientEvents> =
     },
   });
 
-// Initialize session manager
-const sessions = new SessionManager(io);
+// Initialize session manager with validated environment configuration
+const sessions = new SessionManager(io, envConfig);
 
 // Configure multer for file uploads
 const upload = multer({
@@ -207,6 +215,17 @@ app.use(
       return res
         .status(HTTP_STATUS.PAYLOAD_TOO_LARGE)
         .json(createApiResponse(false, null, ERROR_MESSAGES.FILE_TOO_LARGE));
+    }
+
+    // Handle malformed multipart form data (e.g., missing boundary)
+    if (
+      typeof error.message === 'string' &&
+      (error.message.includes('Multipart: Boundary not found') ||
+        error.message.includes('Boundary not found'))
+    ) {
+      return res
+        .status(HTTP_STATUS.BAD_REQUEST)
+        .json(createApiResponse(false, null, 'No files uploaded'));
     }
 
     return res

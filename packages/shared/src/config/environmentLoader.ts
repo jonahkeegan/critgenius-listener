@@ -84,23 +84,7 @@ function createValidationErrorMessage(
 
   const errorMessages = Array.from(errorsByPath.entries()).map(
     ([path, pathIssues]) => {
-      const messages = pathIssues.map(i => {
-        const issue = i as any; // keep formatting robust across Zod versions
-        switch (issue.code) {
-          case 'invalid_type':
-            return `Expected ${issue.expected}, received ${issue.received}`;
-          case 'too_small':
-            return `Must be at least ${issue.minimum}${issue.inclusive ? ' (inclusive)' : ''}`;
-          case 'too_big':
-            return `Must be at most ${issue.maximum}${issue.inclusive ? ' (inclusive)' : ''}`;
-          case 'invalid_string':
-            return issue.validation
-              ? `Invalid string: must be ${issue.validation}`
-              : 'Invalid string';
-          default:
-            return i.message || 'Invalid value';
-        }
-      });
+      const messages = pathIssues.map(formatZodIssue);
       return `  ${path}: ${messages.join(', ')}`;
     }
   );
@@ -112,6 +96,15 @@ function createValidationErrorMessage(
     'Please check your .env file and ensure all required variables are properly set.',
     'Refer to .env.example for the correct format and required variables.',
   ].join('\n');
+}
+
+/**
+ * Format a Zod issue with strict typing (no `any`).
+ * We only handle codes used by our schemas to avoid version-specific types.
+ */
+function formatZodIssue(issue: z.ZodIssue): string {
+  // Use Zod-provided message to avoid relying on internal issue shape
+  return issue.message || `Invalid value (${issue.code})`;
 }
 
 /**
