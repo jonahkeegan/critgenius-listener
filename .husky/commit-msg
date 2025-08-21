@@ -1,5 +1,3 @@
-#!/bin/sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # Check if commit message follows conventional commit format
 commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
