@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import prettierConfig from 'eslint-config-prettier';
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -94,17 +95,46 @@ export default tseslint.config(
     plugins: {
       react,
       'react-hooks': reactHooks,
+  'jsx-a11y': jsxA11y,
     },
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+  // Accessibility (WCAG-oriented) baseline
+  ...jsxA11y.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
       'react/prop-types': 'off', // TypeScript handles prop validation
+  // Additional a11y tightening (project emphasis on accessible realtime UI)
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-is-valid': 'off', // Not relevant yet (no anchors currently)
+      'jsx-a11y/no-autofocus': 'error',
+      'jsx-a11y/no-redundant-roles': 'off',
+      'jsx-a11y/media-has-caption': 'off', // Disable until media elements introduced
+    },
+  },
+
+  // UI component accessibility tuning (focused, minimal noise; zero-warnings policy)
+  {
+    files: ['packages/client/src/components/**/*.{tsx,jsx}'],
+    rules: {
+      'jsx-a11y/interactive-supports-focus': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      // Keep guidance minimal; other rules disabled upstream if not applicable yet
     },
   },
 
   // Prettier configuration (must be last to override conflicting rules)
   prettierConfig,
+
+  // Performance-oriented server overrides (avoid accidental heavy operations in hot paths)
+  {
+    files: ['packages/server/src/**/*.ts'],
+    rules: {
+  'no-console': 'off',
+      'no-await-in-loop': 'warn',
+      'prefer-spread': 'warn',
+    },
+  },
 
   // Ignore patterns
   {
@@ -115,6 +145,7 @@ export default tseslint.config(
       'coverage/**',
       '**/*.d.ts',
       '**/*.js',
+  '**/vitest.config.ts',
       // Exclude shared tests from typed linting due to tsconfig excludes
       'packages/shared/src/**/*.test.ts',
       '*.config.js',

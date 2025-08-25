@@ -315,7 +315,6 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
           </DialogTitle>
           <DialogContent>
             <TextField
-              autoFocus
               margin="dense"
               label="Speaker Name"
               fullWidth
