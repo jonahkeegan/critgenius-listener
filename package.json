@@ -4,9 +4,7 @@
   "description": "D&D Audio Capture & Transcription System with Real-time Speaker-to-Character Mapping",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "packageManager": "pnpm@8.15.8",
   "engines": {
     "node": ">=18.0.0",
@@ -20,21 +18,21 @@
     "test:ui": "pnpm --recursive run test:ui",
     "test:coverage": "pnpm --recursive run test:coverage",
     "test:integration": "pnpm --recursive run test:integration",
-  "test:eslint-config": "vitest run tests/eslint/eslint-config.test.ts",
+    "test:eslint-config": "vitest run tests/eslint/eslint-config.test.ts",
     "test:client": "pnpm --filter @critgenius/listener-client run test",
     "test:server": "pnpm --filter @critgenius/listener-server run test",
     "test:shared": "pnpm --filter @critgenius/listener-shared run test",
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
-  "lint:all": "eslint packages --max-warnings 0",
-  "lint:ci": "node scripts/lint-ci.mjs",
-  "lint:client": "pnpm --filter @critgenius/client lint",
-  "lint:server": "pnpm --filter @critgenius/server lint",
-  "lint:shared": "pnpm --filter @critgenius/shared lint",
-  "lint:accessibility": "eslint packages/client/src --ext .tsx --max-warnings 0 --no-error-on-unmatched-pattern",
-  "type-check:lint": "pnpm type-check && pnpm lint",
-  "lint:staged": "lint-staged",
-  "git:safe-sync": "bash scripts/git-safe-sync.sh",
+    "lint:all": "eslint packages --max-warnings 0",
+    "lint:ci": "node scripts/lint-ci.mjs",
+    "lint:client": "pnpm --filter @critgenius/client lint",
+    "lint:server": "pnpm --filter @critgenius/server lint",
+    "lint:shared": "pnpm --filter @critgenius/shared lint",
+    "lint:accessibility": "eslint \"packages/client/src/**/*.tsx\" --max-warnings 0",
+    "type-check:lint": "pnpm type-check && pnpm lint",
+    "lint:staged": "lint-staged",
+    "git:safe-sync": "bash scripts/git-safe-sync.sh",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "clean": "pnpm --recursive run clean && rimraf dist",
     "setup": "pnpm install && pnpm run build",
@@ -51,12 +49,7 @@
         "llm": "^1.0.0",
         "publisher": "^1.0.0"
       },
-      "capabilities": [
-        "real-time-transcription",
-        "speaker-diarization",
-        "character-mapping",
-        "session-recording"
-      ],
+      "capabilities": ["real-time-transcription", "speaker-diarization", "character-mapping", "session-recording"],
       "apis": {
         "export": "/api/export",
         "transcription": "/api/transcription",
@@ -93,16 +86,9 @@
   },
   "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ],
-    "*.{css,scss}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yml,yaml}": ["prettier --write"],
+    "*.{css,scss}": ["prettier --write"]
   },
   "pnpm": {
     "overrides": {
@@ -119,11 +105,11 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "eslint": "^9.33.0",
-  "eslint-plugin-jsx-a11y": "^6.10.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-  "eslint-formatter-junit": "^8.40.0",
+    "eslint-formatter-junit": "^8.40.0",
     "husky": "^9.1.7",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.5",
