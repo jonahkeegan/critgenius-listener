@@ -9,6 +9,7 @@ import type {
   ClientToServerEvents,
   SocketConnectionState,
 } from '../types/socket';
+import { clientEnv } from '../config/environment';
 
 type QueueItem<
   K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
@@ -37,8 +38,6 @@ class SocketService {
     isConnecting: false,
     error: null,
   };
-  // Extended state for tests (accessed with @ts-expect-error): network status
-  // Not part of the exported SocketConnectionState type
   private extendedState: { networkStatus: { isOnline: boolean } } = {
     networkStatus: { isOnline: true },
   };
@@ -53,9 +52,7 @@ class SocketService {
     transcriptionStatus: [],
     error: [],
   };
-  // Outbound message queue used when socket is disconnected
   private messageQueue: AnyQueueItem[] = [];
-  // Reconnection control
   private resilienceConfig: ResilienceConfig = {
     maxReconnectionAttempts: 5,
     initialReconnectionDelay: 1000,
@@ -80,26 +77,18 @@ class SocketService {
   }
 
   public connect(): void {
-    if (this.socket?.connected) {
-      console.log('Socket already connected');
-      return;
-    }
-
-    console.log('Attempting to connect to Socket.IO server...');
+    if (this.socket?.connected) return;
     this.connectionState.isConnecting = true;
     this.emitStateChange();
-
-    // Create socket connection with proper configuration
-    this.socket = io('http://localhost:3001', {
+    const url = clientEnv.CLIENT_SOCKET_URL || 'http://localhost:3001';
+    this.socket = io(url, {
       transports: ['websocket', 'polling'],
       upgrade: true,
       rememberUpgrade: true,
-      reconnection: false, // we'll manage reconnection to make tests deterministic
+      reconnection: false,
       timeout: 20000,
       withCredentials: true,
     });
-
-    // Set up event listeners
     this.setupEventListeners();
   }
 
@@ -117,35 +106,27 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('📱 Socket.IO connected:', this.socket?.id);
       this.connectionState.isConnected = true;
       this.connectionState.isConnecting = false;
       this.connectionState.error = null;
       this.emitStateChange();
       this.emitToInternalListeners('connectionStatus', 'connected');
       this.reconnectionAttempts = 0;
-      // Flush any queued messages
       this.flushQueue();
-      // Clear any pending reconnect timer
       if (this.reconnectTimer) {
         clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
       }
     });
-
-    this.socket.on('disconnect', reason => {
-      console.log('📴 Socket.IO disconnected:', reason);
+    this.socket.on('disconnect', () => {
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
       this.emitStateChange();
       this.emitToInternalListeners('connectionStatus', 'disconnected');
-      // Probe network status to update extended state for UI/telemetry
       void this.checkNetworkStatus();
       this.scheduleReconnect();
     });
-
     this.socket.on('connect_error', error => {
-      console.error('❌ Socket.IO connection error:', error);
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
       this.connectionState.error = error.message;
@@ -156,15 +137,12 @@ class SocketService {
     this.socket.on('connectionStatus', status => {
       this.emitToInternalListeners('connectionStatus', status);
     });
-
     this.socket.on('processingUpdate', data => {
       this.emitToInternalListeners('processingUpdate', data);
     });
-
     this.socket.on('transcriptionUpdate', data => {
       this.emitToInternalListeners('transcriptionUpdate', data);
     });
-
     this.socket.on('error', error => {
       this.emitToInternalListeners('error', error);
     });
@@ -178,7 +156,6 @@ class SocketService {
       this.socket.emit(event, ...args);
       return;
     }
-    // Queue while disconnected
     this.messageQueue.push({ event, args } as AnyQueueItem);
   }
 
@@ -196,12 +173,8 @@ class SocketService {
   ): void {
     const listeners = this.getListeners(event);
     if (listeners) {
-      const index = listeners.indexOf(
-        listener as NonNullable<ServerToClientEvents[K]>
-      );
-      if (index > -1) {
-        listeners.splice(index, 1);
-      }
+      const index = listeners.indexOf(listener);
+      if (index > -1) listeners.splice(index, 1);
     }
   }
 
@@ -211,7 +184,6 @@ class SocketService {
       this.connectionState.isConnected ? 'connected' : 'disconnected'
     );
   }
-
   private emitToInternalListeners<K extends keyof ServerToClientEvents>(
     event: K,
     ...args: ServerToClientEvents[K] extends (...a: infer P) => unknown
@@ -222,7 +194,6 @@ class SocketService {
     if (listeners && listeners.length) {
       listeners.forEach(listener => {
         try {
-          // TypeScript can infer args from the generic constraint above
           (
             listener as (
               ...a: Parameters<NonNullable<ServerToClientEvents[K]>>
@@ -232,7 +203,7 @@ class SocketService {
               NonNullable<ServerToClientEvents[K]>
             >)
           );
-        } catch (error: unknown) {
+        } catch (error) {
           console.error(
             `Error in listener for event ${String(event)}:`,
             error instanceof Error ? error.message : String(error)
@@ -243,35 +214,26 @@ class SocketService {
   }
 
   public getConnectionState(): SocketConnectionState {
-    // Include extended state for tests (still typed as SocketConnectionState)
     return {
       ...this.connectionState,
       ...(this.extendedState as unknown as Record<string, unknown>),
     } as SocketConnectionState;
   }
-
   public getSocket(): Socket<
     ServerToClientEvents,
     ClientToServerEvents
   > | null {
     return this.socket;
   }
-
-  // Session helpers used in tests
   public joinSession(sessionId: string): void {
     this.emit('joinSession', { sessionId } as Parameters<
       ClientToServerEvents['joinSession']
     >[0]);
   }
-
-  // Update resilience configuration used in tests
   public updateResilienceConfig(cfg: Partial<ResilienceConfig>): void {
     this.resilienceConfig = { ...this.resilienceConfig, ...cfg };
   }
-
-  // Network status check used in tests; guarded to avoid unused warnings in production
-  /* istanbul ignore next */
-  private async checkNetworkStatus(): Promise<void> {
+  /* istanbul ignore next */ private async checkNetworkStatus(): Promise<void> {
     const online =
       typeof navigator !== 'undefined'
         ? Boolean((navigator as unknown as { onLine?: boolean }).onLine)
@@ -289,28 +251,23 @@ class SocketService {
       this.emitStateChange();
     }
   }
-
   private flushQueue(): void {
     if (!this.socket?.connected || this.messageQueue.length === 0) return;
     const pending = [...this.messageQueue] as AnyQueueItem[];
     this.messageQueue.length = 0;
     pending.forEach(item => this.emitQueued(item));
   }
-
-  // Typed re-emitter to preserve event-args correlation without suppressions
   private emitQueued<K extends keyof ClientToServerEvents>(
     item: QueueItem<K>
   ): void {
     if (!this.socket) return;
     this.socket.emit(item.event, ...item.args);
   }
-
   private scheduleReconnect(): void {
     if (
       this.reconnectionAttempts >= this.resilienceConfig.maxReconnectionAttempts
-    ) {
+    )
       return;
-    }
     const base = this.resilienceConfig.initialReconnectionDelay;
     const jitter = this.resilienceConfig.reconnectionDelayJitter;
     const delay = base + (jitter ? Math.floor(Math.random() * jitter) : 0);
