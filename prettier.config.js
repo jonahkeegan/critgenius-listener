@@ -15,7 +15,6 @@ export default {
 
   // JSX specific options
   jsxSingleQuote: true,
-  jsxBracketSameLine: false,
 
   // Object and array formatting
   bracketSpacing: true,
