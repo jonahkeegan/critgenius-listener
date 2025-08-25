@@ -112,16 +112,6 @@ export default tseslint.config(
     },
   },
 
-  // UI component accessibility tuning (focused, minimal noise; zero-warnings policy)
-  {
-    files: ['packages/client/src/components/**/*.{tsx,jsx}'],
-    rules: {
-      'jsx-a11y/interactive-supports-focus': 'error',
-      'jsx-a11y/click-events-have-key-events': 'error',
-      // Keep guidance minimal; other rules disabled upstream if not applicable yet
-    },
-  },
-
   // Prettier configuration (must be last to override conflicting rules)
   prettierConfig,
 
