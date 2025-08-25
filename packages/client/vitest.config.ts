@@ -1,8 +1,20 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+// Minimal inline client env injection for tests to avoid pulling server/shared runtime logic.
+function clientDefine() {
+  const clientCfg = {
+    NODE_ENV: process.env.NODE_ENV || 'test',
+    CLIENT_API_BASE_URL: 'http://localhost:3001',
+    CLIENT_SOCKET_URL: 'http://localhost:3001',
+    CLIENT_FEATURE_FLAGS: '',
+    featureFlags: [],
+  };
+  return { __CLIENT_ENV__: JSON.stringify(clientCfg) };
+}
 
 export default defineConfig({
+  define: clientDefine(),
   plugins: [react()],
   test: {
     globals: true,
@@ -19,8 +31,8 @@ export default defineConfig({
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
         'dist/',
-        'build/'
-      ]
-    }
-  }
-})
+        'build/',
+      ],
+    },
+  },
+});
