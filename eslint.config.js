@@ -95,17 +95,16 @@ export default tseslint.config(
     plugins: {
       react,
       'react-hooks': reactHooks,
-  'jsx-a11y': jsxA11y,
+      'jsx-a11y': jsxA11y,
     },
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-  // Accessibility (WCAG-oriented) baseline
-  ...jsxA11y.configs.recommended.rules,
+      // Accessibility (WCAG-oriented) baseline
+      ...jsxA11y.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
       'react/prop-types': 'off', // TypeScript handles prop validation
-  // Additional a11y tightening (project emphasis on accessible realtime UI)
-      'jsx-a11y/alt-text': 'error',
+      // Additional a11y tightening (project emphasis on accessible realtime UI)
       'jsx-a11y/anchor-is-valid': 'off', // Not relevant yet (no anchors currently)
       'jsx-a11y/no-autofocus': 'error',
       'jsx-a11y/no-redundant-roles': 'off',
@@ -130,7 +129,7 @@ export default tseslint.config(
   {
     files: ['packages/server/src/**/*.ts'],
     rules: {
-  'no-console': 'off',
+      'no-console': 'off',
       'no-await-in-loop': 'warn',
       'prefer-spread': 'warn',
     },
@@ -145,7 +144,7 @@ export default tseslint.config(
       'coverage/**',
       '**/*.d.ts',
       '**/*.js',
-  '**/vitest.config.ts',
+      '**/vitest.config.ts',
       // Exclude shared tests from typed linting due to tsconfig excludes
       'packages/shared/src/**/*.test.ts',
       '*.config.js',
