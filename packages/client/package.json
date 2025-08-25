@@ -13,8 +13,9 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "lint": "eslint src --max-warnings 0",
-    "lint:fix": "eslint src --fix",
+  "lint": "eslint src --max-warnings 0",
+  "lint:fix": "eslint src --fix",
+  "lint:a11y": "eslint src --ext .tsx --rule 'jsx-a11y/*:error'",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist"
   },
