@@ -5,7 +5,7 @@
  */
 
 // During build we inject __CLIENT_ENV__ via Vite define. In tests this may be undefined.
-// The typing for this global is declared in src/types/global.d.ts
+// Global typing declared in ../global.d.ts (GlobalWithClientEnv ambient interface).
 
 export interface ClientRuntimeConfig {
   NODE_ENV: string;
@@ -35,9 +35,6 @@ const defaultConfig: ClientRuntimeConfig = {
   featureFlags: [],
 };
 
-interface GlobalWithClientEnv {
-  __CLIENT_ENV__?: Partial<ClientRuntimeConfig>;
-}
 export function getClientConfig(): ClientRuntimeConfig {
   const g: unknown = globalThis;
   const raw = (g as GlobalWithClientEnv).__CLIENT_ENV__;

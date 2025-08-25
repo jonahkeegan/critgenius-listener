@@ -1,6 +1,6 @@
 # Technical Context - Crit Genius Listener
 
-**Last Updated:** 2025-01-08 20:31 PST **Version:** 2.0.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-25 08:30 PST **Version:** 2.1.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md
 
 ## Technology Stack (Context7 Validated)
@@ -83,17 +83,17 @@ alignment:
 }
 ```
 
-### Testing Framework Stack
+### Testing Framework Stack (Updated)
 
 ```json
 {
-  "jest": "^29.0.0",
-  "@testing-library/react": "^14.0.0",
-  "@testing-library/jest-dom": "^6.0.0",
-  "cypress": "^13.0.0",
-  "supertest": "^6.3.0"
+  "vitest": "^3.x",
+  "@testing-library/react": "^16.x",
+  "@testing-library/jest-dom": "^6.x",
+  "supertest": "^7.x"
 }
 ```
+*Migration:* Replaced Jest with Vitest for faster ESM-native execution; Cypress deferred.
 
 ## Development Tools
 
@@ -106,13 +106,14 @@ alignment:
   - MongoDB for VS Code
 - **AI Assistant:** Cline with Memory Bank system
 - **Version Control:** Git with GitHub integration
-- **Package Management:** npm or yarn
+- **Package Management:** pnpm (workspaces) – selected for efficient disk usage & deterministic installs
 
 **Development Workflow Tools:**
 
-- **ESLint** for code quality and consistency
-- **Prettier** for code formatting
-- **Husky** for Git hooks and pre-commit checks
+- **ESLint** (flat config, zero-warning policy)
+- **Prettier** for formatting consistency
+- **Husky + lint-staged** (Aug 2025) lightweight pre-commit automation (ESLint --fix + Prettier on staged files; Conventional Commits via commit-msg)
+- **Vitest** (migration from Jest) for fast ESM-native unit/integration tests
 - **Docker Compose** for local development environment
 
 ## Infrastructure and Deployment
@@ -246,7 +247,7 @@ app.ws('/api/live-transcript/:id', liveTranscriptStream);
 **Comprehensive Testing Strategy:**
 
 ```javascript
-// Unit Tests (Jest + Testing Library)
+// Unit Tests (Vitest + Testing Library)
 describe('Audio Capture Component', () => {
   test('requests microphone permission', async () => {
     // Test microphone permission handling
@@ -458,15 +459,15 @@ ALLOWED_ORIGINS=http://localhost:3000
 
 **Development Dependencies:**
 
-- **npm/yarn:** Package management
+- **pnpm:** Workspace-aware package management
 - **Docker:** Containerization and local development
 - **GitHub Actions:** CI/CD pipeline automation
 - **ESLint/Prettier:** Code quality and formatting tools
 
 ## Notes
 
-- Technology stack validated through comprehensive Context7 analysis
-- AssemblyAI and Web Audio API confirmed excellent documentation quality
+-- Technology stack validated through comprehensive Context7 analysis
+-- AssemblyAI and Web Audio API confirmed excellent documentation quality
 - Architecture optimized for real-time performance and CritGenius integration
 - Scalability planning includes microservices migration path
 - Security implementation follows industry best practices

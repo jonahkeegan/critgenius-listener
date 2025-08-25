@@ -15,7 +15,9 @@ function resolveClientDefine(mode: string) {
   } catch {
     // In client build we don't want to crash for missing server-only secrets; we fall back.
   }
-  const clientCfg = getClientRuntimeConfig(envConfig || ({} as any));
+  // Provide a typed empty fallback rather than using 'as any' to preserve type safety
+  const emptyEnv: Partial<ReturnType<typeof loadEnvironment>> = {};
+  const clientCfg = getClientRuntimeConfig(envConfig || emptyEnv);
   return { __CLIENT_ENV__: clientCfg };
 }
 

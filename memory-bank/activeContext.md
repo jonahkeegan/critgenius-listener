@@ -1,13 +1,13 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-20 15:41 PST **Version:** 2.6.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-25 08:30 PST **Version:** 2.8.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
 
 Based on comprehensive analysis of all Memory Bank files, the current project state is:
 
-### Project Status: INFRASTRUCTURE SETUP ADVANCING - ENVIRONMENT MANAGEMENT SYSTEM COMPLETED
+### Project Status: INFRASTRUCTURE SETUP ADVANCING - PRE-COMMIT AUTOMATION ESTABLISHED
 
 - **Memory Bank Status:** ✅ Fully Operational (6/6 files) - Updated with Environment Management patterns
 - **Strategic Foundation:** ✅ Complete - Product Context & Project Scope Established  
@@ -82,17 +82,38 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-20)
+### Latest Updates (2025-08-25)
 
-- **MAJOR MILESTONE:** Environment Variable Schema and Template System Completed (Task 2.7.1)
-  - ✅ Comprehensive Zod schema validation with 16 categorized configuration groups
-  - ✅ Environment-specific templates: .env.development.example, .env.staging.example, .env.production.example
-  - ✅ TypeScript type generation from schemas ensuring compile-time safety with runtime validation
-  - ✅ Centralized environment management in packages/shared/src/config/ with environment.ts and environmentLoader.ts
-  - ✅ Startup validation with detailed error messages and performance timing
-  - ✅ Comprehensive developer documentation at docs/environment-configuration-guide.md
-  - ✅ Environment utilities (isDevelopment, isProduction, etc.) for conditional application logic
-  - ✅ Successfully tested and validated across monorepo packages
+- **INFRASTRUCTURE:** Pre-commit automation (Task 2.8.1)
+  - ✅ Hardened Husky integration (shebangs, comments, stderr improvements)
+  - ✅ `pre-commit`: lint-staged executes ESLint --fix + Prettier on staged files only
+  - ✅ `commit-msg`: Conventional Commit regex enforcement with concise guidance
+  - ✅ Added `docs/pre-commit-workflow.md` (philosophy, troubleshooting, extension patterns)
+  - ✅ Completion report + reflection entry recorded (traceability maintained)
+  - ✅ ADR-006 added (development workflow hook strategy)
+  - ✅ Performance target: hook execution typically <1s on small staged sets
+  - ✅ Security: no secret exposure (patterns limited to staged file paths; no env echoing)
+
+### Previous Updates (2025-08-24)
+
+- **MAJOR MILESTONE:** Client Environment Integration (Task 2.7.4)
+  - ✅ Added client-safe schema (`clientConfigSchema`) and allow-list projection preventing accidental secret exposure
+  - ✅ Build-time injection via Vite `define(__CLIENT_ENV__)` with immutable sanitized snapshot
+  - ✅ Client runtime accessor with dynamic feature flag evaluation (no stale caching) enabling test isolation & future toggles
+  - ✅ Socket service refactored to consume centralized env; removed hardcoded endpoints & resolved merge conflicts
+  - ✅ Vitest config simplified with inline env injection eliminating dependency on built shared output (improved reliability)
+  - ✅ Feature flags parsed from `CLIENT_FEATURE_FLAGS` (comma-separated, trimmed, case-sensitive) with resilient empty handling
+  - ✅ Added test coverage ensuring only approved keys exposed to client bundle
+  - ✅ Achieved zero lint warnings, strict type safety, and full monorepo test pass post-integration
+  - ✅ Authored completion report documenting implementation & risk mitigation
+
+### Previous Updates (2025-08-20)
+
+- Environment Variable Schema and Template System Completed (Task 2.7.1)
+  - Comprehensive Zod schema validation with 16 categorized configuration groups
+  - Environment-specific templates (.env.development/.staging/.production examples)
+  - Centralized environment management & startup validation instrumentation
+  - Documentation + environment utility helpers validated across packages
 
 ### Previous Updates (2025-08-19)
 
@@ -123,6 +144,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - **2025-01-08 20:08:** productContext.md updated with comprehensive product strategy
 - **2025-01-08 20:09:** projectbrief.md enhanced with detailed project scope and objectives
 - **2025-01-08 20:10:** Project state advanced to "Strategy Defined Phase"
+ - **2025-08-24:** ADR-005 accepted (Client-safe environment projection)
+ - **2025-08-25:** ADR-006 accepted (Lightweight pre-commit automation strategy)
 
 ## Active Issues
 
@@ -144,11 +167,11 @@ _None - strategic foundation complete, ready for technical planning_
 
 ## Infrastructure Update
 
-- Environment variable management system completed
-- All packages now use centralized environment loader and validator
-- `.env.development.example`, `.env.staging.example`, `.env.production.example` templates available for all contributors
-- Validation errors surfaced on startup for missing/invalid variables
-- Developer documentation updated for onboarding and troubleshooting
+- Environment variable management system completed (schema + templates)
+- Client integration layer finalized (sanitized projection, build/test/runtime alignment)
+- Socket layer now environment-driven, enabling environment-based endpoint/feature adjustments
+- `.env.*.example` templates + new client integration patterns documented
+- Validation errors continue to surface early; client build fails fast if projection missing
 
 ## Current Focus
 

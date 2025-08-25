@@ -1,11 +1,11 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-08-18 15:09 PST **Version:** 1.2.0 **System Status:** Active
+**Last Updated:** 2025-08-21 21:23 PST **Version:** 1.3.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-004.md` **Status:** Active - Socket.IO Resilience
-Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
+**Currently Active:** `consolidated-learnings-005.md` **Status:** Active - Contains Environment &
+Testing Patterns **Current Row Count:** 105 **Last Updated:** 2025-08-21 22:00 PST
 
 ## File Registry
 
@@ -52,7 +52,7 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 
 ### consolidated-learnings-004.md
 
-- **Status:** Active - Socket.IO Resilience Patterns
+- **Status:** Completed/Archived
 - **Row Count:** 248
 - **Created:** 2025-08-18 15:09 PST
 - **Last Updated:** 2025-08-18 15:32 PST
@@ -66,14 +66,20 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
   performance optimization, security enhancements, and testing frameworks - optimized for gaming/D&D
   session reliability requirements
 
-### consolidated-learnings-003.md
+### consolidated-learnings-005.md
 
-- **Status:** Active with content
-- **Row Count:** 149
-- **Created:** 2025-08-17 16:04 PST
-- **Last Updated:** 2025-08-17 16:04 PST
-- **Primary Topics:** Client-Side Socket.IO Implementation, Context Recovery Patterns, Type Management, Documentation Workflows, Version Control Coordination, Real-Time UI Integration
-- **Description:** Advanced development patterns for client-side Socket.IO implementation with React, context corruption recovery strategies, monorepo type management, Memory Bank documentation workflows, and real-time UI integration patterns
+- **Status:** Active - Contains Environment & Testing Patterns
+- **Row Count:** 105
+- **Created:** 2025-08-21 21:22 PST
+- **Last Updated:** 2025-08-21 22:00 PST
+- **Primary Topics:** Environment Management Architecture, Type-Safe Configuration Injection,
+  Mock-Based External Service Validation, SessionManager Bridge Architecture, Server-Side Transcript
+  Normalization, External Service Event Lifecycle Management, Centralized Configuration Management
+  in Monorepos
+- **Description:** Consolidated learnings covering comprehensive environment validation patterns
+  with Zod, type-safe configuration management, external service integration testing strategies,
+  real-time communication bridge patterns, and security-focused configuration templates for Node.js
+  monorepo applications
 
 ## Topic Index
 
@@ -84,12 +90,19 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 - **Layout Component Composition** (consolidated-learnings-001.md)
 - **Component Architecture Patterns** (consolidated-learnings-001.md)
 
+### Environment Management Architecture
+
+- **Comprehensive Startup Validation with Zod** (consolidated-learnings-005.md)
+- **Environment-Specific Configuration Templates** (consolidated-learnings-005.md)
+
 ### Technical Implementation
 
 - **React Testing Library Integration** (consolidated-learnings-001.md)
 - **Vitest Over Jest Migration** (consolidated-learnings-001.md)
 - **ESLint 9 Flat Configuration** (consolidated-learnings-001.md)
 - **React Responsive Hook System** (consolidated-learnings-001.md)
+- **Type-Safe Configuration Injection** (consolidated-learnings-005.md)
+- **Environment Loader Utilities** (consolidated-learnings-005.md)
 
 ### Project Management
 
@@ -113,6 +126,7 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 - **PNPM Security Override Strategy** (consolidated-learnings-001.md)
 - **Security Monitoring Process** (consolidated-learnings-001.md)
 - **Selective File Staging for Monorepos** (consolidated-learnings-001.md)
+- **Centralized Configuration Management in Monorepos** (consolidated-learnings-005.md)
 
 ### Material UI & Theming
 
@@ -121,6 +135,11 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 - **Audio Interface Design Patterns** (consolidated-learnings-001.md)
 - **Audio Interface Component Development** (consolidated-learnings-001.md)
 
+### Testing Strategies
+
+- **Mock-Based External Service Validation** (consolidated-learnings-005.md)
+- **Focused Unit Testing for External Connectors** (consolidated-learnings-005.md)
+
 ### External Service Integration
 
 - **Enterprise Configuration Management System** (consolidated-learnings-001.md)
@@ -128,18 +147,21 @@ Patterns **Current Row Count:** 248 **Last Updated:** 2025-08-18 15:32 PST
 - **Structured Logging Architecture for External Services** (consolidated-learnings-001.md)
 - **Advanced Testing Strategies for External Dependencies** (consolidated-learnings-001.md)
 - **TypeScript Integration for External Services** (consolidated-learnings-001.md)
+- **External Service Event Lifecycle Management** (consolidated-learnings-005.md)
 
 ### Real-Time Communication Architecture
 
 - **Modern WebSocket Library Selection** (consolidated-learnings-001.md)
 - **Monorepo Dependency Installation** (consolidated-learnings-001.md)
 - **Real-Time Communication Infrastructure** (consolidated-learnings-001.md)
+- **SessionManager Bridge Architecture** (consolidated-learnings-005.md)
+- **Server-Side Transcript Normalization** (consolidated-learnings-005.md)
 
 ## Pagination Status
 
-- **Total Files:** 4 (1 active, 3 archived)
-- **Active File Capacity:** 285 remaining rows (300 max)
-- **Next File Number:** 005
+- **Total Files:** 5 (1 active, 4 archived)
+- **Active File Capacity:** 258 remaining rows (300 max)
+- **Next File Number:** 006
 
 ## System Notes
 

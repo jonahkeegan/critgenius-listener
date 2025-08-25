@@ -147,6 +147,24 @@ pnpm lint             # Lint all packages
 pnpm lint:fix         # Fix linting issues
 ```
 
+### Pre-commit Hooks
+
+Husky + lint-staged run automatically on commit:
+
+```bash
+# Actions performed:
+# 1. ESLint --fix on staged TS/JS/TSX/JSX
+# 2. Prettier formatting for code, config, markdown, styles
+```
+
+Skip only for exceptional cases:
+
+```bash
+git commit -m "chore: bulk vendor sync" --no-verify
+```
+
+See `docs/pre-commit-workflow.md` for details / extension guidance.
+
 ### Package Management
 
 This project uses pnpm workspaces. Key commands:
