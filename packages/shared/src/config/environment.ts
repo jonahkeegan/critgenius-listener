@@ -152,6 +152,17 @@ const productionConfigSchema = z.object({
   CSP_REPORT_URI: z.string().default('/api/csp-report'),
 });
 
+// Client (Browser) Configuration
+// These are server-provided values that may be exposed to the client build. They are
+// intentionally optional so that sensible defaults can be derived from HOST/PORT when absent.
+// Never place secrets here – this list is for PUBLIC values only.
+const clientConfigSchema = z.object({
+  CLIENT_API_BASE_URL: urlSchema.optional(),
+  CLIENT_SOCKET_URL: urlSchema.optional(),
+  // Comma separated feature flags (e.g. "new-ui,debug-panels") – parsed client-side
+  CLIENT_FEATURE_FLAGS: z.string().optional(),
+});
+
 // ===========================================
 // Complete Environment Schema
 // ===========================================
@@ -176,6 +187,7 @@ export const environmentSchema = z.object({
   ...developmentConfigSchema.shape,
   ...testingConfigSchema.shape,
   ...productionConfigSchema.shape,
+  ...clientConfigSchema.shape,
 });
 
 // ===========================================
@@ -310,6 +322,7 @@ export const schemaCategories = {
   development: developmentConfigSchema,
   testing: testingConfigSchema,
   production: productionConfigSchema,
+  client: clientConfigSchema,
 } as const;
 
 export type SchemaCategory = keyof typeof schemaCategories;

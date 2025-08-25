@@ -176,7 +176,7 @@
   - [x] 2.6.8 Develop comprehensive test suite for Socket.IO functionality with Vitest
   - [x] 2.6.9 Update documentation with detailed architecture diagrams and usage examples
     - [x] 2.6.10 Validate integration with existing AssemblyAI real-time transcription
-  - [ ] 2.7 Set up environment variable management with validation and development/production
+  - [x] 2.7 Set up environment variable management with validation and development/production
         configurations
     - [x] 2.7.1 Create environment variable schema and template system - Design comprehensive
           .env structure with .env.example templates, define variable categories (API keys,
@@ -186,15 +186,20 @@
           TypeScript-based validation system with joi or zod, create environment loading utilities
           with error handling, and implement startup validation checks with descriptive error
           messages
-    - [ ] 2.7.3 Configure environment-specific configuration management - Set up separate
+    - [x] 2.7.3 Configure environment-specific configuration management - Set up separate
           configuration files for development/production environments, implement secure API key
           management for AssemblyAI integration, and configure database connection variables with
           fallback defaults
-    - [ ] 2.7.4 Integrate environment management with project architecture - Update existing
+    - [x] 2.7.4 Integrate environment management with project architecture - Update existing
           packages (client/server/shared) to use centralized environment management, configure
           build processes to handle environment-specific builds, and ensure compatibility with
           existing TypeScript and testing infrastructure
   - [ ] 2.8 Create development scripts for linting, formatting, and pre-commit hooks using Husky
+      - [x] 2.8.1 Install Husky and lint-staged for pre-commit automation - Husky & lint-staged integrated at root with pre-commit (ESLint + Prettier) and commit-msg (Conventional Commits) hooks, documentation added (`docs/pre-commit-workflow.md`), and completion report created.
+    - [ ] 2.8.2 Configure ESLint scripts for code quality enforcement - Set up comprehensive ESLint scripts in package.json for all packages, configure ESLint rules for TypeScript, React, and accessibility compliance, and create workspace-level linting scripts that work across client/server/shared packages
+    - [ ] 2.8.3 Configure Prettier scripts for code formatting consistency - Set up Prettier formatting scripts with monorepo support, integrate Prettier with existing prettier.config.js configuration, and create format scripts for individual packages and workspace-wide formatting
+    - [ ] 2.8.4 Integrate pre-commit hooks with comprehensive quality checks - Configure Husky pre-commit hooks to run ESLint, Prettier, and TypeScript compilation, set up lint-staged configuration to run appropriate tools on staged files, and integrate with existing TypeScript configuration for compilation checks
+    - [ ] 2.8.5 Validate development workflow and create documentation - Test the complete pre-commit workflow with sample commits, verify integration with existing project structure and scripts, and document the development workflow and troubleshooting guide
   - [ ] 2.9 Configure hot-reload development server with proxy settings for API integration
   - [ ] 2.10 Set up local HTTPS development server for Web Audio API testing requirements
 

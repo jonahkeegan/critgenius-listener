@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-20 15:42 PST **Version:** 2.1.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-24 09:55 PST **Version:** 2.2.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -206,6 +206,46 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Rationale:** TypeScript compile-time safety combined with runtime validation prevents configuration errors, improves developer experience, and enables secure deployment patterns  
 **Consequences:** Centralized configuration management enables consistent validation, reduces misconfiguration risks, and provides clear error messaging at startup
 
+### ADR-005: Client-Safe Environment Projection & Build Injection
+
+**Status:** Accepted (Aug 24, 2025)  
+**Context:** Need to expose a minimal, non-secret subset of configuration to browser code while preventing accidental leakage and enabling dynamic feature flags.  
+**Decision:** Introduce explicit allow-list schema (`clientConfigSchema`) plus projection utility (`getClientRuntimeConfig`) that feeds sanitized JSON into Vite via `define(__CLIENT_ENV__)`; supply runtime accessor with non-cached `hasFeature` evaluation.  
+**Rationale:** Positive control (enumerated allow-list) eliminates secret drift; build-time injection provides immutable snapshot for bundle determinism; dynamic evaluation avoids stale values in tests and future live toggling scenarios.  
+**Consequences:** Requires explicit updates when adding new public keys (small maintenance cost) but materially reduces security risk and simplifies client consumption & testing.
+
+### ADR-006: Lightweight Pre-Commit Automation Strategy (Husky + lint-staged)
+
+**Status:** Accepted (Aug 25, 2025)  
+**Context:** Need consistent, fast local quality gates (formatting + lint) without slowing contributor workflow or duplicating CI responsibilities (type-check & tests).  
+**Decision:** Use Husky with a minimal `pre-commit` hook invoking `lint-staged` (ESLint auto-fix + Prettier) and a `commit-msg` hook enforcing Conventional Commit messages. Exclude type-check and test execution from hooks to keep latency low (<1s typical).  
+**Rationale:** Staged-file scoping + auto-fix prevents most CI lint failures while preserving rapid iteration. Conventional Commit enforcement at source improves changelog hygiene and PR review quality.  
+**Consequences:** Type errors or failing tests are caught in CI (and by developer manual runs). Future escalation (optional) can add run-once type-check or selective tests if signal-to-time ratio remains favorable.
+
+## Development Workflow Patterns
+
+### Pre-Commit Quality Gate Pattern
+
+| Aspect | Implementation | Rationale |
+|--------|----------------|-----------|
+| Scope | Staged files only | Minimize latency; avoid full-repo scans |
+| Tools | ESLint (--fix) + Prettier | Auto-remediation of style + basic issues |
+| Enforcement | Conventional Commit regex in commit-msg | Consistent history & semantic versioning prep |
+| Exclusions | Type-check, tests | Preserve speed; handled in CI gates |
+| Extensibility | Documented in `docs/pre-commit-workflow.md` | Clear path for future enhancements |
+
+### Hook Hardening Guidelines
+1. Always include shebang (`#!/usr/bin/env sh`) for cross-platform consistency.
+2. Send failure messaging to stderr to ensure visibility in various Git UIs.
+3. Keep hook logic declarative; delegate work to package scripts or lint-staged config.
+4. Avoid logging environment variable values (privacy & secret safety).
+5. Provide documented skip procedure (`--no-verify`) for rare bulk operations.
+
+### Future Enhancements (Deferred)
+- Optional run-once type-check for large refactors.
+- Secret scanning (git-secrets / trufflehog-lite) prior to push.
+- Selective test execution for changed packages using pnpm filtering.
+
 ## Environment Configuration Patterns
 
 ### Comprehensive Environment Variable Architecture
@@ -271,6 +311,8 @@ Type Generation → Error Reporting → Application Ready
 - Environment utility functions (isDevelopment, isProduction, isStaging)
 - TypeScript type generation from Zod schemas for compile-time safety
 - Graceful error handling with actionable developer guidance
+ - Client projection safety: explicit allow-list blocks accidental secret inclusion (KEY|SECRET|TOKEN patterns)
+ - Feature flag parsing: `CLIENT_FEATURE_FLAGS="a,b,c"` → normalized Set enabling O(1) flag lookups and dynamic test mutation
 
 ### Implementation Benefits
 
@@ -279,3 +321,5 @@ Type Generation → Error Reporting → Application Ready
 - **Security**: Environment-specific security requirements and validation
 - **Maintainability**: Centralized configuration management across monorepo
 - **Deployment Safety**: Startup validation prevents misconfigured deployments
+- **Client Security**: Sanitized projection ensures no secret categories reach the bundle
+- **Testability**: Dynamic flag evaluation (no static cache) enables per-test environment mutation without reset hooks

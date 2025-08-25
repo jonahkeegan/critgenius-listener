@@ -41,15 +41,12 @@ export const useSocket = () => {
     []
   );
 
-  // Listen to server events
   const on = useCallback(
     <K extends keyof ServerToClientEvents>(
       event: K,
       listener: ServerToClientEvents[K]
     ) => {
       SocketService.on(event, listener as NonNullable<ServerToClientEvents[K]>);
-
-      // Return cleanup function
       return () => {
         SocketService.off(
           event,
@@ -60,7 +57,6 @@ export const useSocket = () => {
     []
   );
 
-  // Set up connection state listener
   useEffect(() => {
     const cleanup = on(
       'connectionStatus',

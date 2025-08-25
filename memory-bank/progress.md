@@ -1,6 +1,6 @@
 # Progress Tracking - CritGenius: Listener
 
-**Last Updated:** 2025-08-20 15:41 PST **Version:** 2.3.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-25 08:30 PST **Version:** 2.5.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md, activeContext.md
 
 ## Project Timeline
@@ -357,6 +357,27 @@ productContext.md, systemPatterns.md, techContext.md, activeContext.md
   - [x] Integrated environment utilities (isDevelopment, isProduction, etc.) for conditional application logic
   - [x] Resolved TypeScript compilation issues and export alias patterns for SDK compatibility
   - [x] Successfully tested and validated environment loading across monorepo packages
+ - [x] **2025-08-24 09:40 PST** Task 2.7.4: Integrate centralized environment management into client build, runtime, and tests
+       - [x] Extended shared schema with `clientConfigSchema` + allow‑list projection (`getClientRuntimeConfig`) preventing secret leakage
+       - [x] Implemented sanitized build-time injection via Vite `define(__CLIENT_ENV__)` with immutable JSON snapshot
+       - [x] Added client accessor (`packages/client/src/config/environment.ts`) exposing `getClientConfig`, `resolveNodeEnv`, and dynamic `hasFeature`
+       - [x] Refactored Socket service to consume validated env (base URL + future flags) removing hardcoded constants & merge conflict remnants
+       - [x] Implemented dynamic feature flag parsing (`CLIENT_FEATURE_FLAGS` comma list) with non-cached evaluation for test reliability
+       - [x] Adjusted Vitest config to inline minimal env define (avoids cross-package build dependency + reduced flakiness)
+       - [x] Added dedicated test suite validating client env defaults & feature flags; ensured zero secret fields exposed
+       - [x] Achieved 0 ESLint warnings, full type safety, and all tests passing across client/server/shared after refactor
+       - [x] Authored completion report: `task-completion-reports/task-2-7-4-environment-integration-completion-report.md`
+       - [x] Updated Memory Bank (progress, activeContext, systemPatterns) with new ADR and patterns
+ - [x] **2025-08-25 08:15 PST** Task 2.8.1: Install Husky and lint-staged for pre-commit automation
+       - [x] Confirmed existing dependencies (husky, lint-staged) present; hardened implementation
+       - [x] Added shebang + comments to `.husky/pre-commit` (ESLint + Prettier on staged files)
+       - [x] Enhanced `commit-msg` hook with Conventional Commit enforcement + stderr messaging
+       - [x] Added documentation: `docs/pre-commit-workflow.md` detailing scope & extension paths
+       - [x] Added completion report: `task-completion-reports/dev-infra-task-2-8-1-completion-report.md`
+       - [x] Reflection entry appended to `memory-bank/raw_reflection_log.md`
+       - [x] Updated infrastructure task list marking 2.8.1 complete
+       - [x] Introduced ADR-006 (development workflow hook strategy) in `systemPatterns.md`
+       - [x] No impact to build/test pipelines; hooks remain sub-second for typical diffs
 
 ### Phase 4: Technical Architecture Planning
 

@@ -343,6 +343,28 @@ export function validateEnvironmentOnStartup(): EnvironmentConfig {
 }
 
 // ===========================================
+// Client-Safe Projection
+// ===========================================
+/**
+ * Derive a minimal, client-safe configuration object. This should be used by build tooling
+ * (e.g. Vite define / env injection) to expose only non-sensitive values to the browser bundle.
+ * Never include secrets (API keys, JWT secrets, database URIs, etc.).
+ */
+export function getClientRuntimeConfig(
+  env: Partial<EnvironmentConfig> | EnvironmentConfig = loadEnvironment()
+) {
+  const cfg = env as EnvironmentConfig;
+  const apiBase = cfg.CLIENT_API_BASE_URL || `http://${cfg.HOST}:${cfg.PORT}`;
+  const socketUrl = cfg.CLIENT_SOCKET_URL || apiBase;
+  return {
+    NODE_ENV: cfg.NODE_ENV,
+    CLIENT_API_BASE_URL: apiBase,
+    CLIENT_SOCKET_URL: socketUrl,
+    CLIENT_FEATURE_FLAGS: cfg.CLIENT_FEATURE_FLAGS || '',
+  } as const;
+}
+
+// ===========================================
 // Default Export
 // ===========================================
 

@@ -1,1 +1,4 @@
+#!/usr/bin/env sh
+
+# Husky pre-commit hook - runs lint-staged (ESLint + Prettier) on staged files only
 npx lint-staged
