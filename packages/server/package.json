@@ -16,6 +16,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\"",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist",
     "db:migrate": "node scripts/migrate.js",

@@ -84,6 +84,13 @@ memory-bank/progress.md
 memory-bank/systemPatterns.md
 memory-bank/activeContext.md
 memory-bank/techContext.md
+memory-bank/index-progress.md
+memory-bank/progress-0*.md
+memory-bank/index-techContext.md
+memory-bank/techContext-0*.md
+memory-bank/consolidated-learnings-0*.md
+# Added 2025-08-25: Ignore versioned memory-bank segmentation & indexes to keep VCS lean.
+# These remain local knowledge base artifacts not required for build/test.
 context-inputs/
 workflow-docs/
 task-completion-reports/

@@ -36,6 +36,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "lint": "eslint \"src/**/!(*.test).{ts,tsx}\" --max-warnings 0",
     "lint:fix": "eslint \"src/**/!(*.test).{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,scss}\"",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist .turbo node_modules/.cache"
   },

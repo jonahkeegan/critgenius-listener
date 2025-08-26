@@ -145,6 +145,12 @@ pnpm test:server      # Test server package
 # Linting
 pnpm lint             # Lint all packages
 pnpm lint:fix         # Fix linting issues
+pnpm format           # Format entire repository (alias of format:write)
+pnpm format:check     # Check formatting (CI safe)
+pnpm format:write     # Write formatting changes
+pnpm format:client    # Format only client package
+pnpm format:server    # Format only server package
+pnpm format:shared    # Format only shared package
 ```
 
 ### Pre-commit Hooks
