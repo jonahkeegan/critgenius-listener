@@ -123,6 +123,7 @@ export default tseslint.config(
       '**/*.d.ts',
       '**/*.js',
       '**/vitest.config.ts',
+      // Exclude shared tests from typed linting due to tsconfig excludes
       'packages/shared/src/**/*.test.ts',
       '*.config.js',
       '*.config.mjs',
