@@ -32,7 +32,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         // Enable the lightweight project service so type-aware rules (no-unsafe-*) function
-        // without needing explicit tsconfig listing (typescript-eslint v8+ flat config)
+        // without needing explicit tsconfig listing (see current typescript-eslint flat config docs for version details)
         projectService: true,
       },
     },
