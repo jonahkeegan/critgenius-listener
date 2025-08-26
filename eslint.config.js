@@ -3,66 +3,46 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
-import prettierConfig from 'eslint-config-prettier';
+import prettier from 'eslint-config-prettier';
 
-/** @type {import('eslint').Linter.Config[]} */
+// Flat config using typescript-eslint helper
 export default tseslint.config(
-  // Base ESLint recommended rules
+  // Base recommended JS + TS rules
   js.configs.recommended,
-
-  // TypeScript ESLint recommended rules (includes type-checked rules)
   ...tseslint.configs.recommended,
 
-  // Configuration for all files
+  // Global language + React settings
   {
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
-        // Node.js globals for server code
-        console: 'readonly',
-        process: 'readonly',
-        Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
         global: 'readonly',
         module: 'readonly',
         require: 'readonly',
         exports: 'readonly',
-        // Browser globals for client code
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        // React/JSX globals
-        JSX: 'readonly',
-        React: 'readonly',
-      },
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-        project: true, // Auto-detect tsconfig.json files
-        tsconfigRootDir: import.meta.dirname,
       },
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
+    settings: { react: { version: 'detect' } },
   },
 
-  // TypeScript-specific overrides
+  // TypeScript rule tuning
   {
     files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        // Enable the lightweight project service so type-aware rules (no-unsafe-*) function
+        // without needing explicit tsconfig listing (typescript-eslint v8+ flat config)
+        projectService: true,
+      },
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn', // Warn instead of error for development
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
@@ -71,14 +51,13 @@ export default tseslint.config(
     },
   },
 
-  // Test files: relax strict unsafe/any rules to keep tests ergonomic
+  // Test files: relax strict unsafe/any rules for ergonomics
   {
     files: [
       '**/*.test.{ts,tsx,js,jsx}',
       '**/__tests__/**/*.{ts,tsx,js,jsx}',
       '**/test-setup.{ts,js}',
     ],
-    ignores: [],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -89,7 +68,7 @@ export default tseslint.config(
     },
   },
 
-  // React configuration
+  // React + Accessibility configuration
   {
     files: ['**/*.{jsx,tsx}'],
     plugins: {
@@ -100,22 +79,31 @@ export default tseslint.config(
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      // Accessibility (WCAG-oriented) baseline
       ...jsxA11y.configs.recommended.rules,
-      'react/react-in-jsx-scope': 'off', // Not needed in React 17+
-      'react/prop-types': 'off', // TypeScript handles prop validation
-      // Additional a11y tightening (project emphasis on accessible realtime UI)
-      'jsx-a11y/anchor-is-valid': 'off', // Not relevant yet (no anchors currently)
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      // Additional accessibility tightening (project emphasis)
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-is-valid': 'off',
       'jsx-a11y/no-autofocus': 'error',
       'jsx-a11y/no-redundant-roles': 'off',
-      'jsx-a11y/media-has-caption': 'off', // Disable until media elements introduced
+      'jsx-a11y/media-has-caption': 'off',
     },
   },
 
-  // Prettier configuration (must be last to override conflicting rules)
-  prettierConfig,
+  // Focused component-level accessibility strictness (UI components)
+  {
+    files: ['packages/client/src/components/**/*.{tsx,jsx}'],
+    rules: {
+      'jsx-a11y/interactive-supports-focus': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+    },
+  },
 
-  // Performance-oriented server overrides (avoid accidental heavy operations in hot paths)
+  // Prettier last to disable stylistic conflicts
+  prettier,
+
+  // Server performance-oriented overrides
   {
     files: ['packages/server/src/**/*.ts'],
     rules: {
@@ -135,7 +123,6 @@ export default tseslint.config(
       '**/*.d.ts',
       '**/*.js',
       '**/vitest.config.ts',
-      // Exclude shared tests from typed linting due to tsconfig excludes
       'packages/shared/src/**/*.test.ts',
       '*.config.js',
       '*.config.mjs',
