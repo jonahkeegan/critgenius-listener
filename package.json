@@ -24,7 +24,7 @@
     "test:shared": "pnpm --filter @critgenius/shared test",
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
-    "lint:all": "eslint packages --max-warnings 0",
+    "lint:all": "eslint \"packages/**/*.{ts,tsx,js,jsx}\" --max-warnings 0",
     "lint:ci": "node scripts/lint-ci.mjs",
     "lint:client": "pnpm --filter @critgenius/client lint",
     "lint:server": "pnpm --filter @critgenius/server lint",
