@@ -15,6 +15,40 @@
 
 ---
 
+Date: 2025-08-27
+TaskRef: "Task 2.8.4: Integrate enhanced Husky pre-commit scripts (conditional TS type-check + validation tooling)"
+
+Learnings:
+- Conditional execution (detecting staged TS/TSX) preserves performance while raising baseline quality—most non-code commits now skip the heavier step automatically.
+- Developer feedback clarity (emoji status + timing) meaningfully reduces cognitive load scanning hook output; small UI touches matter in infra ergonomics.
+- A simulation harness (`precommit-simulate`) provides higher assurance than ad-hoc manual staging, and is low-maintenance when built on top of existing hook logic.
+- Formatting “errors” are often auto-fixable; tests must treat those scenarios differently than true lint/type failures to avoid false negatives.
+
+Technical Discoveries:
+- Using `git diff --cached --name-only --diff-filter=ACM` is sufficient for staged file detection; no need to consider deletions for type-check gating (deleted files can’t introduce new type regressions directly).
+- Timing the type-check gives a baseline for future regression monitoring without adding external dependencies.
+- `pnpm -w type-check` already leverages per-package isolation; no extra scripts required for incremental builds yet.
+- Simulation needed to unstage temporary files—safe cleanup via `git reset HEAD .` keeps working tree integrity.
+
+Success Patterns:
+- Reuse of existing lint-staged config avoided config drift; enhancement focused purely on orchestration layer (hook script).
+- Documentation update immediately after implementation ensures knowledge capture while fresh.
+- Scenario-based validation encourages proactive failure-mode thinking (lint, format, type) and accelerates future refactors.
+
+Implementation Excellence:
+- Hook written with portable POSIX shell subset for cross-platform reliability; avoided Bash-only constructs.
+- Graceful skip path with explicit message reduces confusion (“did it run?”) for non-TS commits.
+- Scripts isolated (`precommit-validate`, `precommit-simulate`) to separate concerns: performance benchmarking vs. failure-mode simulation.
+- No leakage of environment or secret values; output limited to status lines.
+
+Improvements_Identified_For_Consolidation:
+- Add CI job to run simulation suite to detect regressions in hook semantics.
+- Introduce optional JSON output mode for the simulator for machine parsing and dashboarding.
+- Explore caching `.tsbuildinfo` artifacts for further type-check speedup once scale increases.
+- Potential future selective test execution (detect changed packages) as an optional pre-push gate.
+
+---
+
 Date: 2025-08-25
 TaskRef: "Task 2.8.1: Install Husky and lint-staged for pre-commit automation"
 
