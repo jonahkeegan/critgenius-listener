@@ -1,4 +1,42 @@
 #!/usr/bin/env sh
 
-# Husky pre-commit hook - runs lint-staged (ESLint + Prettier) on staged files only
-npx lint-staged
+# Strict mode (portable subset)
+set -e
+
+echo "🚦 Pre-commit quality gate starting..."
+
+echo "🔧 Running lint-staged (ESLint + Prettier on staged files)..."
+if npx lint-staged; then
+	echo "✅ Lint & format passed"
+else
+	echo "❌ Lint / format failed – blocking commit"
+	exit 1
+fi
+
+# Detect staged TypeScript source changes (added / copied / modified)
+if git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$' >/dev/null 2>&1; then
+	echo "🧪 TypeScript changes detected – running incremental type check..."
+	# Capture start time; if unavailable mark unknown
+	start_ts="$(date +%s 2>/dev/null || echo '')"
+	# Use workspace aggregated script so each package runs its own type-check
+	if pnpm -w type-check >/dev/null 2>&1; then
+		end_ts="$(date +%s 2>/dev/null || echo '')"
+		if [ -n "$start_ts" ] && [ -n "$end_ts" ]; then
+			duration=$(( end_ts - start_ts ))
+			if [ "$duration" -ge 0 ] && [ "$duration" -le 3600 ]; then
+				echo "✅ Type check passed (${duration}s)"
+			else
+				echo "✅ Type check passed (duration unavailable)"
+			fi
+		else
+			echo "✅ Type check passed"
+		fi
+	else
+		echo "❌ Type check failed – review errors above. Commit aborted." >&2
+		exit 1
+	fi
+else
+	echo "⏩ No staged TypeScript changes – skipping type check"
+fi
+
+echo "🎉 All pre-commit checks passed"

@@ -1,6 +1,6 @@
 # Technical Context - Crit Genius Listener
 
-**Last Updated:** 2025-08-25 08:30 PST **Version:** 2.1.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-27 09:15 PST **Version:** 2.2.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md
 
 ## Technology Stack (Context7 Validated)
@@ -112,7 +112,7 @@ alignment:
 
 - **ESLint** (flat config, zero-warning policy)
 - **Prettier** for formatting consistency
-- **Husky + lint-staged** (Aug 2025) lightweight pre-commit automation (ESLint --fix + Prettier on staged files; Conventional Commits via commit-msg)
+- **Husky + lint-staged** (Aug 2025) lightweight pre-commit automation (ESLint --fix + Prettier on staged files; Conventional Commits via commit-msg; conditional TS type-check gating added Aug 27 via ADR-007)
 - **Vitest** (migration from Jest) for fast ESM-native unit/integration tests
 - **Docker Compose** for local development environment
 
