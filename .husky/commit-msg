@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-#!/usr/bin/env sh
-
 # Non-blocking commit message helper (soft validation only)
 # Design: Never block automation / CI / tooling. Emits a warning if format not matched.
 # Updated Aug 28 2025: Expanded automation prefixes; guaranteed exit 0 path; broadened CI heuristics.
