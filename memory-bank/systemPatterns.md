@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-24 09:55 PST **Version:** 2.2.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-27 09:15 PST **Version:** 2.3.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -221,6 +221,14 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Decision:** Use Husky with a minimal `pre-commit` hook invoking `lint-staged` (ESLint auto-fix + Prettier) and a `commit-msg` hook enforcing Conventional Commit messages. Exclude type-check and test execution from hooks to keep latency low (<1s typical).  
 **Rationale:** Staged-file scoping + auto-fix prevents most CI lint failures while preserving rapid iteration. Conventional Commit enforcement at source improves changelog hygiene and PR review quality.  
 **Consequences:** Type errors or failing tests are caught in CI (and by developer manual runs). Future escalation (optional) can add run-once type-check or selective tests if signal-to-time ratio remains favorable.
+
+### ADR-007: Conditional Type-Aware Pre-Commit Gating & Validation Harness
+
+**Status:** Accepted (Aug 27, 2025)  
+**Context:** Need earlier surfacing of type regressions without penalizing non-TypeScript commits; desire reproducible, automatable validation of hook behavior.  
+**Decision:** Enhance pre-commit hook to execute monorepo `pnpm -w type-check` only when staged changes include `.ts` / `.tsx` files; add separate `precommit:validate` (full pipeline) and `precommit:simulate` (scenario harness) scripts.  
+**Rationale:** Conditional gating maintains sub-second latency for docs/style/markdown-only commits while providing immediate feedback on type integrity when it matters; simulation harness future-proofs behavior against silent regressions and supports potential CI enforcement.  
+**Consequences:** Slight additional complexity in hook script (staged file detection) and maintenance of simulation scenarios; provides stronger local quality signal and foundation for automated guardrail. Future work may extend harness with JSON output & CI integration.
 
 ## Development Workflow Patterns
 
