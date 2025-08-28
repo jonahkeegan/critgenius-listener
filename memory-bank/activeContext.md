@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-27 09:15 PST **Version:** 2.9.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-28 09:30 PST **Version:** 2.10.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,19 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-27)
+### Latest Updates (2025-08-28)
+
+- **INFRASTRUCTURE:** Development Workflow Validation & Benchmarking (Task 2.8.5)
+  - ✅ Added `precommit:benchmark` script (timed ESLint, Prettier, conditional type-check; avg/min/max)
+  - ✅ Authored `docs/development-workflow.md` (sequence diagrams, quality gate checklist, optimization roadmap)
+  - ✅ Authored `docs/developer-onboarding.md` consolidating setup, scripts, quality gates
+  - ✅ Added infrastructure test for simulation + benchmark harness
+  - ✅ Updated lint-staged to ignore intentional a11y failing fixture (narrow pattern) without weakening rules
+  - ✅ Baseline metrics captured (ESLint ~14.8s, Prettier ~2.3s, TypeScript ~8.7s)
+  - ✅ Reflection + consolidated learning recorded (raw + consolidated-learnings-005)
+  - ✅ Completion report generated; no secrets or sensitive paths logged
+
+### Previous Updates (2025-08-27)
 
 - **INFRASTRUCTURE:** Conditional Type-Aware Pre-Commit Integration (Task 2.8.4)
   - ✅ Enhanced `.husky/pre-commit` to include conditional `pnpm -w type-check` when staged TS/TSX present
@@ -164,10 +176,10 @@ _None - strategic foundation complete, ready for technical planning_
 
 ## Immediate Next Steps
 
-1. **System Architecture Design:** Define component architecture and data flow patterns
-2. **Technology Stack Specification:** Detail implementation technologies and frameworks
-3. **Technical Requirements Analysis:** Validate real-time performance requirements
-4. **Development Environment Setup:** Prepare for audio processing development
+1. **Remaining Infra Clean-up:** Complete Task 2.1.3 (TypeScript foundation packages) & Task 1.7 (PR/Issue templates)
+2. **System Architecture Design:** Define component architecture and data flow patterns
+3. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency assumptions against AssemblyAI constraints
+4. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (only after infra tasks complete)
 
 ## Reference Links
 

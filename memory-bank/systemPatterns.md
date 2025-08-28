@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-27 09:15 PST **Version:** 2.3.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-28 09:30 PST **Version:** 2.4.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -230,6 +230,14 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Rationale:** Conditional gating maintains sub-second latency for docs/style/markdown-only commits while providing immediate feedback on type integrity when it matters; simulation harness future-proofs behavior against silent regressions and supports potential CI enforcement.
 **Consequences:** Slight additional complexity in hook script (staged file detection) and maintenance of simulation scenarios; provides stronger local quality signal and foundation for automated guardrail. Future work may extend harness with JSON output & CI integration.
 
+### ADR-008: Development Workflow Benchmarking & Onboarding Documentation
+
+**Status:** Accepted (Aug 28, 2025)
+**Context:** Need standardized measurement of local quality gate performance and consolidated onboarding to reduce ramp time and detect regressions early.
+**Decision:** Introduce `precommit:benchmark` script capturing ESLint, Prettier, and TypeScript timings (avg/min/max) plus onboarding & workflow documentation (`developer-onboarding.md`, `development-workflow.md`).
+**Rationale:** Quantified baselines enable future optimization (lint caching, selective scopes); centralized docs eliminate fragmented setup knowledge and enforce consistent quality gate understanding.
+**Consequences:** Additional maintenance to keep docs & metrics current; minimal runtime overhead (on-demand invocation). Future optional JSON output & CI trend analysis deferred.
+
 ## Development Workflow Patterns
 
 ### Pre-Commit Quality Gate Pattern
@@ -253,6 +261,25 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 - Optional run-once type-check for large refactors.
 - Secret scanning (git-secrets / trufflehog-lite) prior to push.
 - Selective test execution for changed packages using pnpm filtering.
+ - JSON benchmark emission + historical trend charting.
+ - ESLint cache warm profiling to reduce cold start cost.
+ - Incremental type-check using project references (if split emerges).
+
+### Workflow Benchmarking Pattern (New)
+
+| Aspect | Implementation | Rationale |
+|--------|----------------|-----------|
+| Timing Scope | ESLint, Prettier (check), TypeScript type-check | Focus on dominant local quality gate costs |
+| Measurement | Iterative loop (N runs) compute avg/min/max | Smooth out transient variance |
+| Invocation | Manual (`pnpm precommit:benchmark`) | Avoid adding latency to normal commits |
+| Output | Human-readable table + warning threshold (>30s cumulative) | Immediate interpretability |
+| Future Extension | Optional `--json` flag & CI trend capture | Enables regression dashboards |
+
+Guidelines:
+1. Normalize formatting before collecting baselines (prevents noisy deltas).
+2. Exclude intentional lint-failing fixtures via narrow ignore patterns instead of disabling rules.
+3. Record baseline in consolidated learning for discoverability.
+4. Re-run after dependency upgrades affecting lint or type-check performance.
 
 ## Environment Configuration Patterns
 
