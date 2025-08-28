@@ -6,7 +6,11 @@ import type { ApiResponse } from '../types/index.js';
 /**
  * Create a standardized API response
  */
-export declare function createApiResponse<T>(success: boolean, data?: T, error?: string): ApiResponse<T>;
+export declare function createApiResponse<T>(
+  success: boolean,
+  data?: T,
+  error?: string
+): ApiResponse<T>;
 /**
  * Format file size in human-readable format
  */

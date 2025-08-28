@@ -9,23 +9,23 @@ contact_links:
   - name: 🎲 D&D Community Discussion
     url: https://github.com/crit-genius/listener/discussions
     about: Join the community discussion for general D&D integration ideas, gameplay questions, and collaborative brainstorming.
-  
-  - name: 📚 Documentation & Usage Questions  
+
+  - name: 📚 Documentation & Usage Questions
     url: https://github.com/crit-genius/listener/discussions/categories/q-a
     about: Ask questions about setup, configuration, usage, or D&D session integration in our Q&A section.
-  
+
   - name: 🚀 Feature Ideas & Brainstorming
     url: https://github.com/crit-genius/listener/discussions/categories/ideas
     about: Share early-stage ideas for D&D features, CritGenius ecosystem integration, or content creator tools.
-  
+
   - name: 🎧 Audio Hardware Compatibility
     url: https://github.com/crit-genius/listener/discussions/categories/hardware
     about: Discuss microphone compatibility, audio device optimization, and hardware setup recommendations.
-  
+
   - name: 🔒 Security & Privacy Concerns
     url: https://github.com/crit-genius/listener/security/advisories
     about: Report security vulnerabilities privately through GitHub's security advisory system.
-  
+
   - name: 📊 Performance Optimization Discussion
     url: https://github.com/crit-genius/listener/discussions/categories/performance
     about: Discuss performance optimization strategies, share benchmarks, and collaborate on audio processing improvements.
@@ -50,8 +50,8 @@ template_chooser:
     - "freeze"
     - "error message"
     - "not responding"
-    
-  # Feature Request Template Selection  
+
+  # Feature Request Template Selection
   feature_request_triggers:
     - "enhancement"
     - "new feature"
@@ -68,12 +68,12 @@ template_chooser:
     - "webhook"
     - "notification"
     - "dashboard"
-    
+
   # Performance Issue Template Selection
   performance_triggers:
     - "slow"
     - "lag"
-    - "delay" 
+    - "delay"
     - "high CPU"
     - "memory leak"
     - "high memory"
@@ -99,7 +99,8 @@ auto_labeling:
         keywords: ["microphone", "audio", "Web Audio API", "sound", "recording"]
         labels: ["component:audio"]
       transcription_related:
-        keywords: ["AssemblyAI", "transcription", "speech-to-text", "recognition"]
+        keywords:
+          ["AssemblyAI", "transcription", "speech-to-text", "recognition"]
         labels: ["component:transcription"]
       ui_related:
         keywords: ["interface", "UI", "button", "display", "responsive"]
@@ -113,8 +114,8 @@ auto_labeling:
       privacy_related:
         keywords: ["privacy", "GDPR", "consent", "data protection"]
         labels: ["component:privacy"]
-  
-  # Feature Request Labels  
+
+  # Feature Request Labels
   feature_request:
     default_labels:
       - "enhancement"
@@ -142,7 +143,7 @@ auto_labeling:
       accessibility:
         keywords: ["accessibility", "screen reader", "keyboard", "a11y"]
         labels: ["epic:accessibility"]
-  
+
   # Performance Issue Labels
   performance_issue:
     default_labels:
@@ -154,7 +155,7 @@ auto_labeling:
         labels: ["severity:critical"]
       high_performance:
         keywords: ["major delay", "significant", "high impact"]
-        labels: ["severity:high"] 
+        labels: ["severity:high"]
       medium_performance:
         keywords: ["noticeable", "moderate", "manageable"]
         labels: ["severity:medium"]
@@ -181,25 +182,25 @@ assignment_rules:
   audio_issues:
     triggers: ["component:audio", "Web Audio API", "microphone"]
     assign_to: "audio-team"
-    
+
   transcription_issues:
     triggers: ["component:transcription", "AssemblyAI", "speech-to-text"]
     assign_to: "ai-integration-team"
-    
+
   ui_issues:
     triggers: ["component:ui", "frontend", "React", "interface"]
     assign_to: "frontend-team"
-    
+
   performance_issues:
     triggers: ["performance", "optimization", "latency"]
     assign_to: "performance-team"
-    
+
   # Priority-based assignment
   critical_issues:
     triggers: ["priority:critical", "severity:critical"]
     assign_to: "tech-lead"
     escalate: true
-    
+
   security_issues:
     triggers: ["security", "vulnerability", "privacy"]
     assign_to: "security-team"
@@ -213,23 +214,24 @@ lifecycle_rules:
     warning_label: "stale"
     close_after: 7
     exclude_labels: ["priority:critical", "priority:high", "in-progress"]
-    
-  # Duplicate issue handling  
+
+  # Duplicate issue handling
   duplicate_detection:
     similarity_threshold: 0.85
     auto_label: "possible-duplicate"
     require_manual_review: true
-    
+
   # Issue validation
   validation_rules:
     bug_reports:
-      required_fields: ["reproduction_steps", "expected_behavior", "actual_behavior"]
+      required_fields:
+        ["reproduction_steps", "expected_behavior", "actual_behavior"]
       require_environment_info: true
-      
+
     performance_issues:
       required_fields: ["performance_metrics", "system_specs"]
       require_benchmarks: true
-      
+
     feature_requests:
       required_fields: ["problem_description", "proposed_solution"]
       require_use_case: true
@@ -238,15 +240,15 @@ lifecycle_rules:
 project_integration:
   # GitHub Projects integration
   default_project: "CritGenius: Listener Development"
-  
+
   # Board automation
   board_columns:
     new_issues: "🔍 Triage"
-    in_progress: "🔨 In Development" 
+    in_progress: "🔨 In Development"
     review: "👀 Review"
     testing: "🧪 Testing"
     done: "✅ Complete"
-    
+
   # Milestone automation
   milestone_rules:
     bug_fixes: "Bug Fixes & Stability"
@@ -258,23 +260,23 @@ project_integration:
 notifications:
   # Team notifications
   critical_issues:
-    notify: ["tech-lead", "product-owner"] 
+    notify: ["tech-lead", "product-owner"]
     channels: ["slack", "email"]
-    
+
   performance_issues:
     notify: ["performance-team", "tech-lead"]
     channels: ["slack"]
-    
+
   security_issues:
     notify: ["security-team", "tech-lead", "product-owner"]
     channels: ["secure-slack", "email"]
     private: true
-    
+
   # Community notifications
   dnd_features:
     notify: ["community-manager"]
     channels: ["community-discord"]
-    
+
   # Stakeholder updates
   weekly_summary:
     recipients: ["product-owner", "stakeholders"]
@@ -289,14 +291,14 @@ quality_requirements:
     min_reviewers: 1
     require_audio_team_review: ["component:audio"]
     require_security_review: ["component:privacy", "security"]
-    
-  # Testing requirements  
+
+  # Testing requirements
   testing_gates:
     unit_tests: "required"
     integration_tests: "required_for_features"
     performance_tests: "required_for_performance_changes"
     cross_browser_tests: "required_for_ui_changes"
-    
+
   # Documentation requirements
   documentation_gates:
     api_changes: "required"
@@ -309,18 +311,18 @@ analytics:
   # Issue metrics
   track_metrics:
     - "time_to_first_response"
-    - "time_to_resolution"  
+    - "time_to_resolution"
     - "issue_volume_by_type"
     - "performance_issue_trends"
     - "user_satisfaction_scores"
-    
+
   # Performance tracking
   performance_sla:
     critical_response_time: "2 hours"
     high_response_time: "24 hours"
     medium_response_time: "3 days"
     low_response_time: "1 week"
-    
+
   # Reporting frequency
   reports:
     daily: ["critical_issues", "new_performance_issues"]
@@ -332,10 +334,10 @@ template_maintenance:
   review_frequency: "quarterly"
   update_triggers:
     - "new_technology_adoption"
-    - "performance_requirement_changes" 
+    - "performance_requirement_changes"
     - "user_feedback_patterns"
     - "community_growth_milestones"
-    
+
   version_control:
     track_changes: true
     require_approval: true

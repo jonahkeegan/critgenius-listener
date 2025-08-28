@@ -7,9 +7,9 @@
  */
 export var AudioProcessingStatus;
 (function (AudioProcessingStatus) {
-    AudioProcessingStatus["PENDING"] = "pending";
-    AudioProcessingStatus["PROCESSING"] = "processing";
-    AudioProcessingStatus["COMPLETED"] = "completed";
-    AudioProcessingStatus["FAILED"] = "failed";
+  AudioProcessingStatus['PENDING'] = 'pending';
+  AudioProcessingStatus['PROCESSING'] = 'processing';
+  AudioProcessingStatus['COMPLETED'] = 'completed';
+  AudioProcessingStatus['FAILED'] = 'failed';
 })(AudioProcessingStatus || (AudioProcessingStatus = {}));
 //# sourceMappingURL=index.js.map

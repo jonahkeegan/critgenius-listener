@@ -64,7 +64,11 @@ export interface MetricsCollector {
   /** Record a histogram/timing metric */
   histogram(name: string, value: number, tags?: Record<string, string>): void;
   /** Record a distribution metric */
-  distribution(name: string, value: number, tags?: Record<string, string>): void;
+  distribution(
+    name: string,
+    value: number,
+    tags?: Record<string, string>
+  ): void;
 }
 
 /**
@@ -72,11 +76,23 @@ export interface MetricsCollector {
  */
 export interface AlertingService {
   /** Send critical alert */
-  sendAlert(severity: 'low' | 'medium' | 'high' | 'critical', message: string, data?: Record<string, unknown>): Promise<void>;
+  sendAlert(
+    severity: 'low' | 'medium' | 'high' | 'critical',
+    message: string,
+    data?: Record<string, unknown>
+  ): Promise<void>;
   /** Send performance alert */
-  sendPerformanceAlert(metric: string, value: number, threshold: number, data?: Record<string, unknown>): Promise<void>;
+  sendPerformanceAlert(
+    metric: string,
+    value: number,
+    threshold: number,
+    data?: Record<string, unknown>
+  ): Promise<void>;
   /** Send error alert with context */
-  sendErrorAlert(error: AssemblyAIClientError, context?: Record<string, unknown>): Promise<void>;
+  sendErrorAlert(
+    error: AssemblyAIClientError,
+    context?: Record<string, unknown>
+  ): Promise<void>;
 }
 
 /**
@@ -116,7 +132,9 @@ export class ConsoleLogOutput implements LogOutput {
 
   private formatEntry(entry: LogEntry): string {
     const timestamp = entry.timestamp;
-    const level = this.colorize ? this.colorizeLevel(entry.level) : entry.level.toUpperCase();
+    const level = this.colorize
+      ? this.colorizeLevel(entry.level)
+      : entry.level.toUpperCase();
     const component = `[${entry.component}]`;
     const event = entry.event;
     const message = entry.message;
@@ -144,8 +162,8 @@ export class ConsoleLogOutput implements LogOutput {
   private colorizeLevel(level: LogLevel): string {
     const colors = {
       [LogLevel.DEBUG]: '\x1b[36m', // Cyan
-      [LogLevel.INFO]: '\x1b[32m',  // Green
-      [LogLevel.WARN]: '\x1b[33m',  // Yellow
+      [LogLevel.INFO]: '\x1b[32m', // Green
+      [LogLevel.WARN]: '\x1b[33m', // Yellow
       [LogLevel.ERROR]: '\x1b[31m', // Red
       [LogLevel.FATAL]: '\x1b[35m', // Magenta
     };
@@ -163,7 +181,11 @@ export class FileLogOutput implements LogOutput {
   private maxBufferSize: number;
   private flushInterval: NodeJS.Timeout | null = null;
 
-  constructor(filePath: string, maxBufferSize: number = 100, autoFlushInterval: number = 5000) {
+  constructor(
+    filePath: string,
+    maxBufferSize: number = 100,
+    autoFlushInterval: number = 5000
+  ) {
     this.filePath = filePath;
     this.maxBufferSize = maxBufferSize;
 
@@ -190,7 +212,8 @@ export class FileLogOutput implements LogOutput {
 
     try {
       const fs = await import('fs/promises');
-      const content = entries.map(entry => JSON.stringify(entry)).join('\n') + '\n';
+      const content =
+        entries.map(entry => JSON.stringify(entry)).join('\n') + '\n';
       await fs.appendFile(this.filePath, content);
     } catch (error) {
       console.error('Failed to write logs to file:', error);
@@ -216,7 +239,11 @@ export class MemoryMetricsCollector implements MetricsCollector {
   private gauges: Map<string, number> = new Map();
   private histograms: Map<string, number[]> = new Map();
 
-  increment(name: string, value: number = 1, tags?: Record<string, string>): void {
+  increment(
+    name: string,
+    value: number = 1,
+    tags?: Record<string, string>
+  ): void {
     const key = this.buildKey(name, tags);
     const current = this.counters.get(key) || 0;
     this.counters.set(key, current + value);
@@ -234,7 +261,11 @@ export class MemoryMetricsCollector implements MetricsCollector {
     this.histograms.set(key, values);
   }
 
-  distribution(name: string, value: number, tags?: Record<string, string>): void {
+  distribution(
+    name: string,
+    value: number,
+    tags?: Record<string, string>
+  ): void {
     // Same as histogram for this simple implementation
     this.histogram(name, value, tags);
   }
@@ -314,13 +345,15 @@ export class AssemblyAILogger {
   /**
    * Log connection events
    */
-  logConnection(event: 'connecting' | 'connected' | 'disconnected' | 'error', 
-                sessionId?: string, 
-                error?: AssemblyAIClientError, 
-                duration?: number): void {
+  logConnection(
+    event: 'connecting' | 'connected' | 'disconnected' | 'error',
+    sessionId?: string,
+    error?: AssemblyAIClientError,
+    duration?: number
+  ): void {
     const level = error ? LogLevel.ERROR : LogLevel.INFO;
     const data: Record<string, unknown> = { event };
-    
+
     if (sessionId) data.sessionId = sessionId;
     if (duration) data.duration = duration;
 
@@ -332,7 +365,13 @@ export class AssemblyAILogger {
     }
     if (duration) logData.duration = duration;
 
-    this.log(level, 'AssemblyAI-Connection', event, `Connection ${event}`, logData);
+    this.log(
+      level,
+      'AssemblyAI-Connection',
+      event,
+      `Connection ${event}`,
+      logData
+    );
 
     // Record metrics
     this.metricsCollector.increment('assemblyai.connection.events', 1, {
@@ -342,35 +381,53 @@ export class AssemblyAILogger {
     });
 
     if (duration) {
-      this.metricsCollector.histogram('assemblyai.connection.duration', duration, {
-        ...this.defaultTags,
-        event,
-      });
+      this.metricsCollector.histogram(
+        'assemblyai.connection.duration',
+        duration,
+        {
+          ...this.defaultTags,
+          event,
+        }
+      );
     }
 
     // Send alerts for critical connection issues
     if (error && !error.retryable && this.alertingService) {
-      this.alertingService.sendErrorAlert(error, { event, sessionId }).catch(console.error);
+      this.alertingService
+        .sendErrorAlert(error, { event, sessionId })
+        .catch(console.error);
     }
   }
 
   /**
    * Log transcription events
    */
-  logTranscription(event: 'transcript_received' | 'audio_sent' | 'session_begins' | 'session_terminated',
-                   sessionId?: string,
-                   transcriptData?: { text?: string; confidence?: number; words?: number },
-                   performance?: { latency?: number; throughput?: number }): void {
+  logTranscription(
+    event:
+      | 'transcript_received'
+      | 'audio_sent'
+      | 'session_begins'
+      | 'session_terminated',
+    sessionId?: string,
+    transcriptData?: { text?: string; confidence?: number; words?: number },
+    performance?: { latency?: number; throughput?: number }
+  ): void {
     const data: Record<string, unknown> = { event };
-    
+
     if (sessionId) data.sessionId = sessionId;
     if (transcriptData) data.transcript = transcriptData;
 
-    this.log(LogLevel.INFO, 'AssemblyAI-Transcription', event, `Transcription ${event}`, {
-      data,
-      ...(sessionId && { sessionId }),
-      ...(performance && { performance }),
-    });
+    this.log(
+      LogLevel.INFO,
+      'AssemblyAI-Transcription',
+      event,
+      `Transcription ${event}`,
+      {
+        data,
+        ...(sessionId && { sessionId }),
+        ...(performance && { performance }),
+      }
+    );
 
     // Record metrics
     this.metricsCollector.increment('assemblyai.transcription.events', 1, {
@@ -379,38 +436,57 @@ export class AssemblyAILogger {
     });
 
     if (transcriptData?.confidence) {
-      this.metricsCollector.histogram('assemblyai.transcription.confidence', transcriptData.confidence, {
-        ...this.defaultTags,
-      });
+      this.metricsCollector.histogram(
+        'assemblyai.transcription.confidence',
+        transcriptData.confidence,
+        {
+          ...this.defaultTags,
+        }
+      );
     }
 
     if (performance?.latency) {
-      this.metricsCollector.histogram('assemblyai.transcription.latency', performance.latency, {
-        ...this.defaultTags,
-      });
+      this.metricsCollector.histogram(
+        'assemblyai.transcription.latency',
+        performance.latency,
+        {
+          ...this.defaultTags,
+        }
+      );
 
       // Alert on high latency
       if (performance.latency > 500 && this.alertingService) {
-        this.alertingService.sendPerformanceAlert(
-          'transcription_latency',
-          performance.latency,
-          500,
-          { event, sessionId }
-        ).catch(console.error);
+        this.alertingService
+          .sendPerformanceAlert(
+            'transcription_latency',
+            performance.latency,
+            500,
+            { event, sessionId }
+          )
+          .catch(console.error);
       }
     }
 
     if (performance?.throughput) {
-      this.metricsCollector.gauge('assemblyai.transcription.throughput', performance.throughput, {
-        ...this.defaultTags,
-      });
+      this.metricsCollector.gauge(
+        'assemblyai.transcription.throughput',
+        performance.throughput,
+        {
+          ...this.defaultTags,
+        }
+      );
     }
   }
 
   /**
    * Log retry attempts
    */
-  logRetry(attempt: number, maxAttempts: number, delay: number, error?: AssemblyAIClientError): void {
+  logRetry(
+    attempt: number,
+    maxAttempts: number,
+    delay: number,
+    error?: AssemblyAIClientError
+  ): void {
     const data = {
       attempt,
       maxAttempts,
@@ -421,8 +497,13 @@ export class AssemblyAILogger {
     const logData: Partial<LogEntry> = { data };
     if (error) logData.error = this.serializeError(error);
 
-    this.log(LogLevel.WARN, 'AssemblyAI-Retry', 'retry_attempt', 
-             `Retry attempt ${attempt}/${maxAttempts} in ${delay}ms`, logData);
+    this.log(
+      LogLevel.WARN,
+      'AssemblyAI-Retry',
+      'retry_attempt',
+      `Retry attempt ${attempt}/${maxAttempts} in ${delay}ms`,
+      logData
+    );
 
     this.metricsCollector.increment('assemblyai.retry.attempts', 1, {
       ...this.defaultTags,
@@ -444,11 +525,24 @@ export class AssemblyAILogger {
     const logData: Partial<LogEntry> = { data };
     if (sessionId) logData.sessionId = sessionId;
 
-    this.log(LogLevel.WARN, 'AssemblyAI-RateLimit', 'rate_limited', 
-             `Rate limited, retry after ${retryAfter}ms`, logData);
+    this.log(
+      LogLevel.WARN,
+      'AssemblyAI-RateLimit',
+      'rate_limited',
+      `Rate limited, retry after ${retryAfter}ms`,
+      logData
+    );
 
-    this.metricsCollector.increment('assemblyai.ratelimit.events', 1, this.defaultTags);
-    this.metricsCollector.histogram('assemblyai.ratelimit.delay', retryAfter, this.defaultTags);
+    this.metricsCollector.increment(
+      'assemblyai.ratelimit.events',
+      1,
+      this.defaultTags
+    );
+    this.metricsCollector.histogram(
+      'assemblyai.ratelimit.delay',
+      retryAfter,
+      this.defaultTags
+    );
   }
 
   /**
@@ -463,19 +557,31 @@ export class AssemblyAILogger {
       audioChunksSent: stats.audioChunksSent,
       averageLatency: stats.averageLatency,
       uptime: stats.uptime,
-      successRate: stats.connectionAttempts > 0 ? stats.successfulConnections / stats.connectionAttempts : 0,
+      successRate:
+        stats.connectionAttempts > 0
+          ? stats.successfulConnections / stats.connectionAttempts
+          : 0,
     };
 
     const logData: Partial<LogEntry> = { data: performance };
     if (sessionId) logData.sessionId = sessionId;
 
-    this.log(LogLevel.INFO, 'AssemblyAI-Performance', 'stats_update', 
-             'Performance statistics updated', logData);
+    this.log(
+      LogLevel.INFO,
+      'AssemblyAI-Performance',
+      'stats_update',
+      'Performance statistics updated',
+      logData
+    );
 
     // Record all performance metrics
     Object.entries(performance).forEach(([key, value]) => {
       if (typeof value === 'number') {
-        this.metricsCollector.gauge(`assemblyai.performance.${key}`, value, this.defaultTags);
+        this.metricsCollector.gauge(
+          `assemblyai.performance.${key}`,
+          value,
+          this.defaultTags
+        );
       }
     });
   }
@@ -489,22 +595,33 @@ export class AssemblyAILogger {
       sanitizedChanges.apiKey = '***REDACTED***';
     }
 
-    this.log(LogLevel.INFO, 'AssemblyAI-Config', 'config_updated', 
-             'Configuration updated', {
-      data: { changes: sanitizedChanges },
-    });
+    this.log(
+      LogLevel.INFO,
+      'AssemblyAI-Config',
+      'config_updated',
+      'Configuration updated',
+      {
+        data: { changes: sanitizedChanges },
+      }
+    );
 
-    this.metricsCollector.increment('assemblyai.config.updates', 1, this.defaultTags);
+    this.metricsCollector.increment(
+      'assemblyai.config.updates',
+      1,
+      this.defaultTags
+    );
   }
 
   /**
    * Core logging method
    */
-  private async log(level: LogLevel, 
-                    component: string, 
-                    event: string, 
-                    message: string, 
-                    additionalData?: Partial<LogEntry>): Promise<void> {
+  private async log(
+    level: LogLevel,
+    component: string,
+    event: string,
+    message: string,
+    additionalData?: Partial<LogEntry>
+  ): Promise<void> {
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       level,
@@ -516,10 +633,10 @@ export class AssemblyAILogger {
     };
 
     // Write to all outputs
-    const writePromises = this.outputs.map(output => 
-      output.write(entry).catch(error => 
-        console.error(`Failed to write to log output:`, error)
-      )
+    const writePromises = this.outputs.map(output =>
+      output
+        .write(entry)
+        .catch(error => console.error(`Failed to write to log output:`, error))
     );
 
     await Promise.all(writePromises);
@@ -528,16 +645,18 @@ export class AssemblyAILogger {
   /**
    * Serialize error for logging
    */
-  private serializeError(error: AssemblyAIClientError): NonNullable<LogEntry['error']> {
+  private serializeError(
+    error: AssemblyAIClientError
+  ): NonNullable<LogEntry['error']> {
     const serialized: NonNullable<LogEntry['error']> = {
       name: error.name,
       message: error.message,
       retryable: error.retryable,
     };
-    
+
     if (error.stack) serialized.stack = error.stack;
     if (error.code) serialized.code = error.code;
-    
+
     return serialized;
   }
 
@@ -555,10 +674,10 @@ export class AssemblyAILogger {
    * Flush all log outputs
    */
   async flush(): Promise<void> {
-    const flushPromises = this.outputs.map(output => 
-      output.flush().catch(error => 
-        console.error('Failed to flush log output:', error)
-      )
+    const flushPromises = this.outputs.map(output =>
+      output
+        .flush()
+        .catch(error => console.error('Failed to flush log output:', error))
     );
     await Promise.all(flushPromises);
   }
@@ -567,10 +686,10 @@ export class AssemblyAILogger {
    * Close all log outputs
    */
   async close(): Promise<void> {
-    const closePromises = this.outputs.map(output => 
-      output.close().catch(error => 
-        console.error('Failed to close log output:', error)
-      )
+    const closePromises = this.outputs.map(output =>
+      output
+        .close()
+        .catch(error => console.error('Failed to close log output:', error))
     );
     await Promise.all(closePromises);
   }
@@ -579,14 +698,12 @@ export class AssemblyAILogger {
 /**
  * Factory function to create configured logger
  */
-export function createAssemblyAILogger(
-  config?: {
-    metricsCollector?: MetricsCollector;
-    alertingService?: AlertingService;
-    fileLogging?: { enabled: boolean; filePath: string };
-    defaultTags?: Record<string, string>;
-  }
-): AssemblyAILogger {
+export function createAssemblyAILogger(config?: {
+  metricsCollector?: MetricsCollector;
+  alertingService?: AlertingService;
+  fileLogging?: { enabled: boolean; filePath: string };
+  defaultTags?: Record<string, string>;
+}): AssemblyAILogger {
   const logger = new AssemblyAILogger(
     config?.metricsCollector,
     config?.alertingService

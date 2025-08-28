@@ -69,7 +69,9 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   const theme = useTheme();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [searchInput, setSearchInput] = useState(searchQuery);
-  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
   const [selectedSpeakers, setSelectedSpeakers] = useState<string[]>([]);
   const [autoScroll, setAutoScroll] = useState(true);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -86,7 +88,8 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   useEffect(() => {
     const handleScroll = () => {
       if (scrollContainerRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+        const { scrollTop, scrollHeight, clientHeight } =
+          scrollContainerRef.current;
         const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
         setShowScrollToBottom(!isNearBottom && transcriptEntries.length > 0);
         setAutoScroll(isNearBottom);
@@ -98,7 +101,7 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
       container.addEventListener('scroll', handleScroll);
       return () => container.removeEventListener('scroll', handleScroll);
     }
-    
+
     return undefined;
   }, [transcriptEntries.length]);
 
@@ -133,7 +136,8 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
 
   const scrollToBottom = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      scrollContainerRef.current.scrollTop =
+        scrollContainerRef.current.scrollHeight;
       setAutoScroll(true);
     }
   };
@@ -142,7 +146,7 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    
+
     if (hours > 0) {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
@@ -152,15 +156,22 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   // Filter transcript entries based on search and speaker filters
   const filteredEntries = transcriptEntries.filter(entry => {
     // Text search filter
-    if (searchInput && !entry.text.toLowerCase().includes(searchInput.toLowerCase())) {
+    if (
+      searchInput &&
+      !entry.text.toLowerCase().includes(searchInput.toLowerCase())
+    ) {
       return false;
     }
-    
+
     // Speaker filter
-    if (selectedSpeakers.length > 0 && entry.speakerId && !selectedSpeakers.includes(entry.speakerId)) {
+    if (
+      selectedSpeakers.length > 0 &&
+      entry.speakerId &&
+      !selectedSpeakers.includes(entry.speakerId)
+    ) {
       return false;
     }
-    
+
     return true;
   });
 
@@ -177,35 +188,48 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
   };
 
   return (
-    <Card elevation={3} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card
+      elevation={3}
+      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       <CardContent sx={{ p: 3, pb: 0, flexShrink: 0 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          sx={{ mb: 2 }}
+        >
           <Box>
-            <Typography variant="h5" component="h2">
+            <Typography variant='h5' component='h2'>
               Live Transcript
             </Typography>
-            <Box display="flex" alignItems="center" gap={2} sx={{ mt: 1 }}>
+            <Box display='flex' alignItems='center' gap={2} sx={{ mt: 1 }}>
               <Chip
                 label={isLive ? 'LIVE' : 'PAUSED'}
                 color={isLive ? 'success' : 'warning'}
-                size="small"
-                variant="filled"
+                size='small'
+                variant='filled'
               />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Session: {formatSessionDuration(sessionDuration)}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant='body2' color='text.secondary'>
                 Lines: {transcriptEntries.length}
               </Typography>
             </Box>
           </Box>
-          <Box display="flex" gap={1}>
-            <Tooltip title={isLive ? 'Pause Live Updates' : 'Resume Live Updates'}>
-              <IconButton onClick={onToggleLive} color={isLive ? 'error' : 'success'}>
+          <Box display='flex' gap={1}>
+            <Tooltip
+              title={isLive ? 'Pause Live Updates' : 'Resume Live Updates'}
+            >
+              <IconButton
+                onClick={onToggleLive}
+                color={isLive ? 'error' : 'success'}
+              >
                 {isLive ? <Pause /> : <PlayArrow />}
               </IconButton>
             </Tooltip>
-            <Tooltip title="Export Transcript">
+            <Tooltip title='Export Transcript'>
               <IconButton onClick={onExportTranscript}>
                 <Download />
               </IconButton>
@@ -214,22 +238,22 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
         </Box>
 
         {/* Search and Filter Controls */}
-        <Box display="flex" gap={2} sx={{ mb: 2 }}>
+        <Box display='flex' gap={2} sx={{ mb: 2 }}>
           <TextField
-            size="small"
-            placeholder="Search transcript..."
+            size='small'
+            placeholder='Search transcript...'
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearchSubmit()}
+            onChange={e => setSearchInput(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && handleSearchSubmit()}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
+                <InputAdornment position='start'>
                   <Search />
                 </InputAdornment>
               ),
               endAdornment: searchInput && (
-                <InputAdornment position="end">
-                  <IconButton size="small" onClick={handleSearchClear}>
+                <InputAdornment position='end'>
+                  <IconButton size='small' onClick={handleSearchClear}>
                     <Clear />
                   </IconButton>
                 </InputAdornment>
@@ -237,13 +261,13 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
             }}
             sx={{ flexGrow: 1 }}
           />
-          <Tooltip title="Filter by Speaker">
+          <Tooltip title='Filter by Speaker'>
             <IconButton onClick={handleFilterClick}>
               <FilterList />
               {selectedSpeakers.length > 0 && (
                 <Chip
                   label={selectedSpeakers.length}
-                  size="small"
+                  size='small'
                   sx={{
                     position: 'absolute',
                     top: -4,
@@ -260,27 +284,29 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
 
         {/* Active Filters Display */}
         {(searchInput || selectedSpeakers.length > 0) && (
-          <Box display="flex" gap={1} flexWrap="wrap" sx={{ mb: 2 }}>
+          <Box display='flex' gap={1} flexWrap='wrap' sx={{ mb: 2 }}>
             {searchInput && (
               <Chip
                 label={`Search: "${searchInput}"`}
-                size="small"
+                size='small'
                 onDelete={handleSearchClear}
-                color="primary"
-                variant="outlined"
+                color='primary'
+                variant='outlined'
               />
             )}
-            {selectedSpeakers.map((speakerId) => {
+            {selectedSpeakers.map(speakerId => {
               const speaker = getSpeaker(speakerId);
               const character = getCharacterForSpeaker(speakerId);
               return (
                 <Chip
                   key={speakerId}
-                  label={character ? character.name : speaker?.name || 'Unknown'}
-                  size="small"
+                  label={
+                    character ? character.name : speaker?.name || 'Unknown'
+                  }
+                  size='small'
                   onDelete={() => toggleSpeakerFilter(speakerId)}
-                  color="secondary"
-                  variant="outlined"
+                  color='secondary'
+                  variant='outlined'
                 />
               );
             })}
@@ -301,10 +327,10 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
       >
         {filteredEntries.length === 0 ? (
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+            display='flex'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
             sx={{
               height: '100%',
               minHeight: 200,
@@ -312,10 +338,12 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
               textAlign: 'center',
             }}
           >
-            <Typography variant="h6" gutterBottom>
-              {transcriptEntries.length === 0 ? 'No Transcript Available' : 'No Results Found'}
+            <Typography variant='h6' gutterBottom>
+              {transcriptEntries.length === 0
+                ? 'No Transcript Available'
+                : 'No Results Found'}
             </Typography>
-            <Typography variant="body2">
+            <Typography variant='body2'>
               {transcriptEntries.length === 0
                 ? 'Start recording or upload audio files to see real-time transcription'
                 : 'Try adjusting your search terms or speaker filters'}
@@ -323,20 +351,28 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
           </Box>
         ) : (
           <Box sx={{ pb: 2 }}>
-            {filteredEntries.map((entry) => {
+            {filteredEntries.map(entry => {
               const speaker = getSpeaker(entry.speakerId);
               const character = getCharacterForSpeaker(entry.speakerId);
-              
+
               return (
                 <SpeakerTranscriptLine
                   key={entry.id}
                   entry={entry}
                   speaker={speaker}
                   character={character}
-                  isHighlighted={searchInput ? entry.text.toLowerCase().includes(searchInput.toLowerCase()) : false}
+                  isHighlighted={
+                    searchInput
+                      ? entry.text
+                          .toLowerCase()
+                          .includes(searchInput.toLowerCase())
+                      : false
+                  }
                   searchQuery={searchInput}
                   showTimestamp={true}
-                  sessionStartTime={sessionDuration - (entry.endTime - entry.startTime)}
+                  sessionStartTime={
+                    sessionDuration - (entry.endTime - entry.startTime)
+                  }
                 />
               );
             })}
@@ -346,7 +382,7 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
         {/* Scroll to Bottom FAB */}
         {showScrollToBottom && (
           <Fab
-            size="small"
+            size='small'
             onClick={scrollToBottom}
             sx={{
               position: 'absolute',
@@ -374,14 +410,14 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
         }}
       >
         <MenuItem disabled>
-          <Typography variant="body2" fontWeight="bold">
+          <Typography variant='body2' fontWeight='bold'>
             Filter by Speaker:
           </Typography>
         </MenuItem>
-        {speakers.map((speaker) => {
+        {speakers.map(speaker => {
           const character = getCharacterForSpeaker(speaker.id);
           const isSelected = selectedSpeakers.includes(speaker.id);
-          
+
           return (
             <MenuItem
               key={speaker.id}
@@ -390,20 +426,36 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
                 bgcolor: isSelected ? 'action.selected' : 'transparent',
               }}
             >
-              <Box display="flex" alignItems="center" gap={1} sx={{ width: '100%' }}>
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: isSelected ? 'primary.main' : 'grey.400' }} />
+              <Box
+                display='flex'
+                alignItems='center'
+                gap={1}
+                sx={{ width: '100%' }}
+              >
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: isSelected ? 'primary.main' : 'grey.400',
+                  }}
+                />
                 <Box flexGrow={1}>
-                  <Typography variant="body2">
+                  <Typography variant='body2'>
                     {character ? character.name : speaker.name}
                   </Typography>
                   {character && (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant='caption' color='text.secondary'>
                       {speaker.name}
                     </Typography>
                   )}
                 </Box>
-                <Typography variant="caption" color="text.secondary">
-                  {transcriptEntries.filter(e => e.speakerId === speaker.id).length} lines
+                <Typography variant='caption' color='text.secondary'>
+                  {
+                    transcriptEntries.filter(e => e.speakerId === speaker.id)
+                      .length
+                  }{' '}
+                  lines
                 </Typography>
               </Box>
             </MenuItem>
@@ -411,7 +463,7 @@ const TranscriptWindow: React.FC<TranscriptWindowProps> = ({
         })}
         {speakers.length === 0 && (
           <MenuItem disabled>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant='body2' color='text.secondary'>
               No speakers detected
             </Typography>
           </MenuItem>
