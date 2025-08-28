@@ -4,9 +4,13 @@
 # Design: Never block automation / CI / tooling. Emits a warning if format not matched.
 
 # Universal bypass conditions (automation / CI heuristics)
-case "$CI$GITHUB_ACTIONS$BUILD_ID$DISABLE_COMMIT_MSG_HOOK" in
-  *1*|*true*|*TRUE*) exit 0 ;;
-esac
+# Evaluate each var independently to avoid accidental matches due to concatenation
+if [ "${CI}" = "true" ] || [ "${CI}" = "1" ] \
+  || [ "${GITHUB_ACTIONS}" = "true" ] || [ "${GITHUB_ACTIONS}" = "1" ] \
+  || [ -n "${BUILD_ID}" ] \
+  || [ "${DISABLE_COMMIT_MSG_HOOK}" = "true" ] || [ "${DISABLE_COMMIT_MSG_HOOK}" = "1" ]; then
+  exit 0
+fi
 
 commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
 auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove )'
