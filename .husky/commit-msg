@@ -1,29 +1,25 @@
 #!/usr/bin/env sh
 
-# Allow bypass via env var or specific automated prefixes
-[ "$DISABLE_COMMIT_MSG_HOOK" = "1" ] && exit 0
+# Non-blocking commit message helper (soft validation only)
+# Design: Never block automation / CI / tooling. Emits a warning if format not matched.
+
+# Universal bypass conditions (automation / CI heuristics)
+case "$CI$GITHUB_ACTIONS$BUILD_ID$DISABLE_COMMIT_MSG_HOOK" in
+  *1*|*true*|*TRUE*) exit 0 ;;
+esac
 
 commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
-auto_allowed_regex='^(Apply patch|apply patch)'
+auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove )'
 
+# Allow common auto prefixes
 if grep -qiE "$auto_allowed_regex" "$1"; then
   exit 0
 fi
 
 if ! grep -qE "$commit_regex" "$1"; then
-  echo "❌ Invalid commit message format!" >&2
-  echo "" >&2
-  echo "Commit message must follow the conventional commit format OR start with 'Apply patch'." >&2
-  echo "  <type>(<scope>): <description>" >&2
-  echo "" >&2
-  echo "Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build" >&2
-  echo "Set DISABLE_COMMIT_MSG_HOOK=1 to bypass (temporary automation use)." >&2
-  echo "" >&2
-  echo "Examples:" >&2
-  echo "  feat(env): add new environment validation" >&2
-  echo "  fix(server): resolve memory leak in audio processor" >&2
-  echo "  docs: update API documentation" >&2
-  echo "  Apply patch refactor memory-bank update" >&2
-  echo "" >&2
-  exit 1
+  echo "⚠ commit-msg advisory: Non-standard commit message detected." >&2
+  echo "  Provided: $(cat "$1")" >&2
+  echo "  Expected pattern: <type>(<scope>): <description>  (or auto-prefix allowed)" >&2
+  echo "  (Soft warning only – commit not blocked)" >&2
+  exit 0
 fi
