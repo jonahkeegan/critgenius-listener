@@ -16,13 +16,18 @@ fi
 # Detect staged TypeScript source changes (added / copied / modified)
 if git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$' >/dev/null 2>&1; then
 	echo "🧪 TypeScript changes detected – running incremental type check..."
-	start_ts=$(date +%s 2>/dev/null || echo 0)
+	# Capture start time; if unavailable mark unknown
+	start_ts="$(date +%s 2>/dev/null || echo '')"
 	# Use workspace aggregated script so each package runs its own type-check
 	if pnpm -w type-check >/dev/null 2>&1; then
-		end_ts=$(date +%s 2>/dev/null || echo 0)
-		duration=$(( end_ts - start_ts ))
-		if [ "$duration" -gt 0 ]; then
-			echo "✅ Type check passed (${duration}s)"
+		end_ts="$(date +%s 2>/dev/null || echo '')"
+		if [ -n "$start_ts" ] && [ -n "$end_ts" ]; then
+			duration=$(( end_ts - start_ts ))
+			if [ "$duration" -ge 0 ] && [ "$duration" -le 3600 ]; then
+				echo "✅ Type check passed (${duration}s)"
+			else
+				echo "✅ Type check passed (duration unavailable)"
+			fi
 		else
 			echo "✅ Type check passed"
 		fi
