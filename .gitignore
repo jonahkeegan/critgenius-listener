@@ -98,6 +98,7 @@ tasks/infrastructure-setup-task-list.md
 
 # Local utility / automation scripts (excluded from VCS per request)
 scripts/
+temp-backup-untracked/
 
 # Database
 *.sqlite
