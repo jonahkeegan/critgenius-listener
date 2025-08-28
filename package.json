@@ -46,7 +46,9 @@
     "clean": "pnpm --recursive run clean && rimraf dist coverage packages/**/dist packages/**/coverage",
     "setup": "pnpm install && pnpm run build",
     "type-check": "pnpm --recursive run type-check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "precommit:validate": "node scripts/precommit-validate.mjs",
+    "precommit:simulate": "node scripts/precommit-simulate.mjs"
   },
   "critgenius": {
     "ecosystem": {

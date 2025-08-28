@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-25 08:30 PST **Version:** 2.8.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-27 09:15 PST **Version:** 2.9.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-25)
+### Latest Updates (2025-08-27)
+
+- **INFRASTRUCTURE:** Conditional Type-Aware Pre-Commit Integration (Task 2.8.4)
+  - ✅ Enhanced `.husky/pre-commit` to include conditional `pnpm -w type-check` when staged TS/TSX present
+  - ✅ Added timing + ergonomic status output (emoji-coded) for faster developer parsing
+  - ✅ Introduced `precommit:validate` (full pipeline) and `precommit:simulate` (scenario harness) scripts
+  - ✅ Updated `docs/pre-commit-workflow.md` with simulation usage & troubleshooting matrix
+  - ✅ Completion report + reflection entry recorded; traceability preserved
+  - ✅ No secret exposure; output constrained to status lines only
+  - ✅ All tests, lint, and type-check passed post-integration
+
+### Previous Updates (2025-08-25)
 
 - **INFRASTRUCTURE:** Pre-commit automation (Task 2.8.1)
   - ✅ Hardened Husky integration (shebangs, comments, stderr improvements)

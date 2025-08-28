@@ -51,9 +51,7 @@ lerna-debug.log*
 .eslintcache
 
 # IDE and editor files
-.vscode/settings.json
-.vscode/launch.json
-.vscode/extensions.json
+.vscode/
 *.swp
 *.swo
 *.sublime-workspace
@@ -97,6 +95,10 @@ task-completion-reports/
 task-plans-cline/
 tasks/infrastructure-setup-task-list.md
 /docs/
+
+# Local utility / automation scripts (excluded from VCS per request)
+scripts/
+temp-backup-untracked/
 
 # Database
 *.sqlite
