@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Avatar,
-  Chip,
-  Tooltip,
-  Paper,
-} from '@mui/material';
+import { Box, Typography, Avatar, Chip, Tooltip, Paper } from '@mui/material';
 import {
   Person,
   Shield,
@@ -48,13 +41,25 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
 
   const getCharacterIcon = (characterClass: string) => {
     const lowerClass = characterClass.toLowerCase();
-    if (lowerClass.includes('fighter') || lowerClass.includes('warrior') || lowerClass.includes('paladin')) {
+    if (
+      lowerClass.includes('fighter') ||
+      lowerClass.includes('warrior') ||
+      lowerClass.includes('paladin')
+    ) {
       return <Shield />;
     }
-    if (lowerClass.includes('wizard') || lowerClass.includes('sorcerer') || lowerClass.includes('warlock')) {
+    if (
+      lowerClass.includes('wizard') ||
+      lowerClass.includes('sorcerer') ||
+      lowerClass.includes('warlock')
+    ) {
       return <LocalFireDepartment />;
     }
-    if (lowerClass.includes('cleric') || lowerClass.includes('druid') || lowerClass.includes('ranger')) {
+    if (
+      lowerClass.includes('cleric') ||
+      lowerClass.includes('druid') ||
+      lowerClass.includes('ranger')
+    ) {
       return <Healing />;
     }
     return <Psychology />;
@@ -74,11 +79,11 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
 
   const highlightSearchText = (text: string, query: string) => {
     if (!query) return text;
-    
+
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
+
+    return parts.map((part, index) =>
       regex.test(part) ? (
         <span
           key={index}
@@ -107,22 +112,20 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
       sx={{
         mb: 1,
         p: 2,
-        bgcolor: isHighlighted 
-          ? 'warning.light' 
-          : entry.isProcessing 
-          ? 'action.hover' 
-          : 'background.paper',
+        bgcolor: isHighlighted
+          ? 'warning.light'
+          : entry.isProcessing
+            ? 'action.hover'
+            : 'background.paper',
         borderLeft: `4px solid ${
-          character 
-            ? theme.palette.primary.main 
-            : speaker 
-            ? theme.palette.secondary.main 
-            : theme.palette.grey[400]
+          character
+            ? theme.palette.primary.main
+            : speaker
+              ? theme.palette.secondary.main
+              : theme.palette.grey[400]
         }`,
         border: `1px solid ${
-          isHighlighted 
-            ? theme.palette.warning.main 
-            : theme.palette.divider
+          isHighlighted ? theme.palette.warning.main : theme.palette.divider
         }`,
         borderRadius: 1,
         transition: 'all 0.2s ease',
@@ -130,16 +133,16 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
         position: 'relative',
       }}
     >
-      <Box display="flex" gap={2}>
+      <Box display='flex' gap={2}>
         {/* Speaker Avatar */}
         <Box sx={{ flexShrink: 0 }}>
           <Avatar
             sx={{
-              bgcolor: character 
-                ? theme.palette.primary.main 
-                : speaker 
-                ? theme.palette.secondary.main 
-                : theme.palette.grey[400],
+              bgcolor: character
+                ? theme.palette.primary.main
+                : speaker
+                  ? theme.palette.secondary.main
+                  : theme.palette.grey[400],
               width: { xs: 32, sm: 40 },
               height: { xs: 32, sm: 40 },
             }}
@@ -151,69 +154,76 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
         {/* Content */}
         <Box sx={{ flexGrow: 1, minWidth: 0 }}>
           {/* Header with Speaker Info and Timestamp */}
-          <Box 
-            display="flex" 
-            justifyContent="space-between" 
-            alignItems="flex-start" 
+          <Box
+            display='flex'
+            justifyContent='space-between'
+            alignItems='flex-start'
             sx={{ mb: 1 }}
             flexWrap={{ xs: 'wrap', sm: 'nowrap' }}
             gap={{ xs: 1, sm: 2 }}
           >
             <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-              <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-                <Typography 
-                  variant="subtitle2" 
-                  fontWeight="bold"
+              <Box display='flex' alignItems='center' gap={1} flexWrap='wrap'>
+                <Typography
+                  variant='subtitle2'
+                  fontWeight='bold'
                   sx={{
-                    color: character 
-                      ? theme.palette.primary.main 
-                      : speaker 
-                      ? theme.palette.secondary.main 
-                      : theme.palette.text.secondary,
+                    color: character
+                      ? theme.palette.primary.main
+                      : speaker
+                        ? theme.palette.secondary.main
+                        : theme.palette.text.secondary,
                   }}
                 >
                   {displayName}
                 </Typography>
-                
+
                 {character && (
                   <Chip
                     label={`${character.race} ${character.class}`}
-                    size="small"
-                    variant="outlined"
-                    color="primary"
+                    size='small'
+                    variant='outlined'
+                    color='primary'
                   />
                 )}
-                
+
                 {speakerInfo && (
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant='caption' color='text.secondary'>
                     ({speakerInfo})
                   </Typography>
                 )}
               </Box>
             </Box>
 
-            <Box display="flex" alignItems="center" gap={1} sx={{ flexShrink: 0 }}>
+            <Box
+              display='flex'
+              alignItems='center'
+              gap={1}
+              sx={{ flexShrink: 0 }}
+            >
               {/* Confidence Indicator */}
-              <Tooltip title={`Confidence: ${(entry.confidence * 100).toFixed(1)}%`}>
+              <Tooltip
+                title={`Confidence: ${(entry.confidence * 100).toFixed(1)}%`}
+              >
                 <Chip
                   icon={entry.confidence >= 0.9 ? <VolumeUp /> : <Warning />}
                   label={`${(entry.confidence * 100).toFixed(0)}%`}
-                  size="small"
+                  size='small'
                   color={getConfidenceColor(entry.confidence)}
-                  variant="outlined"
-                  sx={{ 
+                  variant='outlined'
+                  sx={{
                     fontSize: '0.75rem',
                     height: 20,
                   }}
                 />
               </Tooltip>
-              
+
               {/* Timestamp */}
               {showTimestamp && (
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary"
-                  sx={{ 
+                <Typography
+                  variant='caption'
+                  color='text.secondary'
+                  sx={{
                     fontFamily: 'monospace',
                     minWidth: 'fit-content',
                   }}
@@ -226,21 +236,23 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
 
           {/* Transcript Text */}
           <Typography
-            variant="body1"
+            variant='body1'
             sx={{
               lineHeight: 1.6,
               fontSize: {
-                xs: '0.875rem',  // 14px on mobile
-                sm: '1rem',      // 16px on tablet+
+                xs: '0.875rem', // 14px on mobile
+                sm: '1rem', // 16px on tablet+
               },
               wordBreak: 'break-word',
               color: entry.isProcessing ? 'text.secondary' : 'text.primary',
             }}
           >
-            {searchQuery ? highlightSearchText(entry.text, searchQuery) : entry.text}
+            {searchQuery
+              ? highlightSearchText(entry.text, searchQuery)
+              : entry.text}
             {entry.isProcessing && (
               <Typography
-                component="span"
+                component='span'
                 sx={{
                   ml: 1,
                   fontStyle: 'italic',
@@ -256,7 +268,11 @@ const SpeakerTranscriptLine: React.FC<SpeakerTranscriptLineProps> = ({
           {/* Additional Info for Low Confidence */}
           {entry.confidence < 0.7 && (
             <Box sx={{ mt: 1 }}>
-              <Typography variant="caption" color="warning.main" sx={{ fontStyle: 'italic' }}>
+              <Typography
+                variant='caption'
+                color='warning.main'
+                sx={{ fontStyle: 'italic' }}
+              >
                 ⚠️ Low confidence transcription - may contain errors
               </Typography>
             </Box>

@@ -26,7 +26,7 @@ assignees: ''
 - [ ] Dungeon Master
 - [ ] Content Creator/Streamer
 - [ ] All users
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 **D&D scenario:**
 
@@ -69,9 +69,7 @@ assignees: ''
 
 -
 -
--
-
-**Expected behavior:**
+- **Expected behavior:**
 
 <!-- Describe exactly how the feature should work -->
 
@@ -113,10 +111,10 @@ assignees: ''
 
 **D&D terminology enhancement:**
 
-- Specific game terms to recognize: ******\_******
-- Character name handling improvements: ******\_******
-- Spell/ability recognition: ******\_******
-- Dice notation integration: ******\_******
+- Specific game terms to recognize: **\*\***\_**\*\***
+- Character name handling improvements: **\*\***\_**\*\***
+- Spell/ability recognition: **\*\***\_**\*\***
+- Dice notation integration: **\*\***\_**\*\***
 
 **Speaker mapping enhancements:**
 
@@ -159,7 +157,7 @@ assignees: ''
 - [ ] Mobile browsers (iOS Safari, Android Chrome)
 - [ ] Electron desktop app (future)
 - [ ] Browser extensions integration
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 **Device considerations:**
 
@@ -182,8 +180,8 @@ assignees: ''
 
 **Data sharing requirements:**
 
-- Export formats needed: ******\_******
-- API endpoints for other components: ******\_******
+- Export formats needed: **\*\***\_**\*\***
+- API endpoints for other components: **\*\***\_**\*\***
 - Real-time data streaming: [ ] Required [ ] Optional [ ] Not needed
 
 **Workflow integration:**
@@ -282,9 +280,9 @@ assignees: ''
 
 **Beta testing approach:**
 
-- Target user group: ******\_******
+- Target user group: **\*\***\_**\*\***
 - Testing duration: **\_** weeks
-- Success criteria for release: ******\_******
+- Success criteria for release: **\*\***\_**\*\***
 
 ## Priority & Timeline
 
@@ -307,9 +305,9 @@ assignees: ''
 
 **Dependencies:**
 
-- Blocked by: ******\_******
-- Requires completion of: ******\_******
-- Enables future features: ******\_******
+- Blocked by: **\*\***\_**\*\***
+- Requires completion of: **\*\***\_**\*\***
+- Enables future features: **\*\***\_**\*\***
 
 ### 🎯 MVP Definition
 
@@ -343,8 +341,8 @@ assignees: ''
 
 **Similar features in other tools:**
 
-- Tool name: **\_** Feature: ******\_******
-- Tool name: **\_** Feature: ******\_******
+- Tool name: **\_** Feature: **\*\***\_**\*\***
+- Tool name: **\_** Feature: **\*\***\_**\*\***
 
 **How this would be better:**
 
@@ -366,9 +364,9 @@ assignees: ''
 
 **Related D&D tools integration:**
 
-- VTT platforms: ******\_******
-- Character sheet apps: ******\_******
-- Campaign management tools: ******\_******
+- VTT platforms: **\*\***\_**\*\***
+- Character sheet apps: **\*\***\_**\*\***
+- Campaign management tools: **\*\***\_**\*\***
 
 ### 📚 Supporting Information
 

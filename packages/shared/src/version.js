@@ -7,10 +7,10 @@ export const version = '0.1.0';
  * Get comprehensive version information
  */
 export function getVersionInfo() {
-    return {
-        version,
-        buildTime: new Date().toISOString(),
-        nodeVersion: process.version,
-    };
+  return {
+    version,
+    buildTime: new Date().toISOString(),
+    nodeVersion: process.version,
+  };
 }
 //# sourceMappingURL=version.js.map

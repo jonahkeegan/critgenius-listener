@@ -9,7 +9,8 @@
 export const APP_CONFIG = {
   NAME: 'CritGenius Listener',
   VERSION: '0.1.0',
-  DESCRIPTION: 'Real-time audio capture and processing for intelligent feedback analysis',
+  DESCRIPTION:
+    'Real-time audio capture and processing for intelligent feedback analysis',
 } as const;
 
 /**

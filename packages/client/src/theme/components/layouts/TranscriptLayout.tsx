@@ -33,7 +33,7 @@ export interface TranscriptLayoutProps {
 
 /**
  * TranscriptLayout - Specialized layout for transcript display
- * 
+ *
  * Features:
  * - Reading-optimized text layout with responsive typography
  * - Speaker identification panel with mobile-friendly stacking
@@ -79,20 +79,23 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
     flexDirection: 'column',
     gap: theme.spacing(shouldStack ? 2 : 1),
     // Optimize for reading
-    backgroundColor: paperWrapper ? theme.palette.background.paper : 'transparent',
+    backgroundColor: paperWrapper
+      ? theme.palette.background.paper
+      : 'transparent',
     position: 'relative',
   } as const;
 
   // Speaker panel positioning styles
   const speakerPanelSx = {
     flex: shouldStack ? '0 0 auto' : '0 0 280px',
-    ...(stickySpeakerPanel && !shouldStack && {
-      position: 'sticky',
-      top: theme.spacing(2),
-      alignSelf: 'flex-start',
-      maxHeight: 'calc(100vh - 120px)',
-      overflowY: 'auto',
-    }),
+    ...(stickySpeakerPanel &&
+      !shouldStack && {
+        position: 'sticky',
+        top: theme.spacing(2),
+        alignSelf: 'flex-start',
+        maxHeight: 'calc(100vh - 120px)',
+        overflowY: 'auto',
+      }),
   };
 
   // Transcript content area styles
@@ -102,7 +105,9 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
     mx: shouldStack ? 0 : 'auto',
     // Optimize typography for reading
     '& .transcript-text': {
-      fontSize: isMobile ? 'clamp(0.875rem, 2.8vw, 1rem)' : 'clamp(1rem, 2.5vw, 1.125rem)',
+      fontSize: isMobile
+        ? 'clamp(0.875rem, 2.8vw, 1rem)'
+        : 'clamp(1rem, 2.5vw, 1.125rem)',
       lineHeight: 1.7,
       letterSpacing: '0.01em',
       color: theme.palette.text.primary,
@@ -137,17 +142,11 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
           }}
         >
           {/* Controls */}
-          {controls && (
-            <Box sx={{ flex: 1 }}>
-              {controls}
-            </Box>
-          )}
+          {controls && <Box sx={{ flex: 1 }}>{controls}</Box>}
 
           {/* Status Info */}
           {statusInfo && (
-            <Box sx={{ flex: isMobile ? 1 : '0 0 auto' }}>
-              {statusInfo}
-            </Box>
+            <Box sx={{ flex: isMobile ? 1 : '0 0 auto' }}>{statusInfo}</Box>
           )}
         </Box>
       )}
@@ -163,16 +162,10 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
         }}
       >
         {/* Transcript Content */}
-        <Box sx={transcriptContentSx}>
-          {transcript}
-        </Box>
+        <Box sx={transcriptContentSx}>{transcript}</Box>
 
         {/* Speaker Panel */}
-        {speakerPanel && (
-          <Box sx={speakerPanelSx}>
-            {speakerPanel}
-          </Box>
-        )}
+        {speakerPanel && <Box sx={speakerPanelSx}>{speakerPanel}</Box>}
       </Box>
     </>
   );
@@ -185,11 +178,7 @@ export const TranscriptLayout: React.FC<TranscriptLayoutProps> = ({
     );
   }
 
-  return (
-    <Box sx={containerSx}>
-      {content}
-    </Box>
-  );
+  return <Box sx={containerSx}>{content}</Box>;
 };
 
 export default TranscriptLayout;

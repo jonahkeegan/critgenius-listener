@@ -51,7 +51,9 @@ export interface CharacterProfile {
 interface CharacterAssignmentGridProps {
   speakers: SpeakerProfile[];
   characters: CharacterProfile[];
-  onCreateCharacter: (character: Omit<CharacterProfile, 'id' | 'createdAt'>) => void;
+  onCreateCharacter: (
+    character: Omit<CharacterProfile, 'id' | 'createdAt'>
+  ) => void;
   onUpdateCharacter: (id: string, updates: Partial<CharacterProfile>) => void;
   onDeleteCharacter: (id: string) => void;
   onAssignSpeaker: (characterId: string, speakerId: string | null) => void;
@@ -69,9 +71,14 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
 }) => {
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
-  const [editingCharacter, setEditingCharacter] = useState<CharacterProfile | null>(null);
-  const [draggedSpeaker, setDraggedSpeaker] = useState<SpeakerProfile | null>(null);
-  const [dragOverCharacter, setDragOverCharacter] = useState<string | null>(null);
+  const [editingCharacter, setEditingCharacter] =
+    useState<CharacterProfile | null>(null);
+  const [draggedSpeaker, setDraggedSpeaker] = useState<SpeakerProfile | null>(
+    null
+  );
+  const [dragOverCharacter, setDragOverCharacter] = useState<string | null>(
+    null
+  );
   const [newCharacter, setNewCharacter] = useState({
     name: '',
     class: '',
@@ -88,7 +95,13 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
         class: newCharacter.class.trim(),
         race: newCharacter.race.trim() || 'Unknown',
       });
-      setNewCharacter({ name: '', class: '', race: '', level: 1, description: '' });
+      setNewCharacter({
+        name: '',
+        class: '',
+        race: '',
+        level: 1,
+        description: '',
+      });
       setOpenDialog(false);
     }
   };
@@ -106,7 +119,11 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
   };
 
   const handleUpdateCharacter = () => {
-    if (editingCharacter && newCharacter.name.trim() && newCharacter.class.trim()) {
+    if (
+      editingCharacter &&
+      newCharacter.name.trim() &&
+      newCharacter.class.trim()
+    ) {
       onUpdateCharacter(editingCharacter.id, {
         ...newCharacter,
         name: newCharacter.name.trim(),
@@ -114,7 +131,13 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
         race: newCharacter.race.trim() || 'Unknown',
       });
       setEditingCharacter(null);
-      setNewCharacter({ name: '', class: '', race: '', level: 1, description: '' });
+      setNewCharacter({
+        name: '',
+        class: '',
+        race: '',
+        level: 1,
+        description: '',
+      });
       setOpenDialog(false);
     }
   };
@@ -122,18 +145,36 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingCharacter(null);
-    setNewCharacter({ name: '', class: '', race: '', level: 1, description: '' });
+    setNewCharacter({
+      name: '',
+      class: '',
+      race: '',
+      level: 1,
+      description: '',
+    });
   };
 
   const getCharacterIcon = (characterClass: string) => {
     const lowerClass = characterClass.toLowerCase();
-    if (lowerClass.includes('fighter') || lowerClass.includes('warrior') || lowerClass.includes('paladin')) {
+    if (
+      lowerClass.includes('fighter') ||
+      lowerClass.includes('warrior') ||
+      lowerClass.includes('paladin')
+    ) {
       return <Shield />;
     }
-    if (lowerClass.includes('wizard') || lowerClass.includes('sorcerer') || lowerClass.includes('warlock')) {
+    if (
+      lowerClass.includes('wizard') ||
+      lowerClass.includes('sorcerer') ||
+      lowerClass.includes('warlock')
+    ) {
       return <LocalFireDepartment />;
     }
-    if (lowerClass.includes('cleric') || lowerClass.includes('druid') || lowerClass.includes('ranger')) {
+    if (
+      lowerClass.includes('cleric') ||
+      lowerClass.includes('druid') ||
+      lowerClass.includes('ranger')
+    ) {
       return <Healing />;
     }
     return <Psychology />;
@@ -141,7 +182,9 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
 
   const getAssignedSpeaker = (characterId: string) => {
     const character = characters.find(c => c.id === characterId);
-    return character?.speakerId ? speakers.find(s => s.id === character.speakerId) : null;
+    return character?.speakerId
+      ? speakers.find(s => s.id === character.speakerId)
+      : null;
   };
 
   const getUnassignedSpeakers = () => {
@@ -183,15 +226,20 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
   return (
     <Card elevation={3}>
       <CardContent sx={{ p: 3 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-          <Typography variant="h5" component="h2">
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          sx={{ mb: 3 }}
+        >
+          <Typography variant='h5' component='h2'>
             Character Assignments
           </Typography>
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<Add />}
             onClick={() => setOpenDialog(true)}
-            size="small"
+            size='small'
             sx={{
               bgcolor: theme.palette.primary.main,
               '&:hover': { bgcolor: theme.palette.primary.dark },
@@ -204,12 +252,16 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
         {/* Unassigned Speakers Pool */}
         {unassignedSpeakers.length > 0 && (
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <DragIndicator color="action" />
+            <Typography
+              variant='h6'
+              gutterBottom
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
+              <DragIndicator color='action' />
               Unassigned Speakers
             </Typography>
-            <Box display="flex" gap={1} flexWrap="wrap">
-              {unassignedSpeakers.map((speaker) => (
+            <Box display='flex' gap={1} flexWrap='wrap'>
+              {unassignedSpeakers.map(speaker => (
                 <Paper
                   key={speaker.id}
                   draggable
@@ -231,7 +283,7 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <Box display="flex" alignItems="center" gap={1}>
+                  <Box display='flex' alignItems='center' gap={1}>
                     <Avatar
                       sx={{
                         bgcolor: theme.palette.secondary.main,
@@ -242,10 +294,10 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                       <Person />
                     </Avatar>
                     <Box>
-                      <Typography variant="body2" fontWeight="bold">
+                      <Typography variant='body2' fontWeight='bold'>
                         {speaker.name}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant='caption' color='text.secondary'>
                         {speaker.voiceSamples} samples
                       </Typography>
                     </Box>
@@ -259,10 +311,10 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
         {/* Character Grid */}
         {characters.length === 0 ? (
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+            display='flex'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
             sx={{
               py: 6,
               color: 'text.secondary',
@@ -270,14 +322,14 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
             }}
           >
             <Shield sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               No Characters Created
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant='body2' sx={{ mb: 2 }}>
               Create D&D characters to assign speakers for voice mapping
             </Typography>
             <Button
-              variant="outlined"
+              variant='outlined'
               startIcon={<Add />}
               onClick={() => setOpenDialog(true)}
             >
@@ -296,16 +348,16 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
               gap: 3,
             }}
           >
-            {characters.map((character) => {
+            {characters.map(character => {
               const assignedSpeaker = getAssignedSpeaker(character.id);
               const isDragOver = dragOverCharacter === character.id;
-              
+
               return (
                 <Box key={character.id}>
                   <Paper
-                    onDragOver={(e) => handleCharacterDragOver(e, character.id)}
+                    onDragOver={e => handleCharacterDragOver(e, character.id)}
                     onDragLeave={handleCharacterDragLeave}
-                    onDrop={(e) => handleCharacterDrop(e, character.id)}
+                    onDrop={e => handleCharacterDrop(e, character.id)}
                     sx={{
                       p: 2,
                       height: '100%',
@@ -313,18 +365,25 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                         isDragOver
                           ? theme.palette.success.main
                           : assignedSpeaker
-                          ? theme.palette.primary.main
-                          : theme.palette.divider
+                            ? theme.palette.primary.main
+                            : theme.palette.divider
                       }`,
                       borderRadius: 2,
                       transition: 'all 0.2s ease',
-                      bgcolor: isDragOver ? 'success.light' : 'background.paper',
+                      bgcolor: isDragOver
+                        ? 'success.light'
+                        : 'background.paper',
                       opacity: isDragOver ? 0.9 : 1,
                       transform: isDragOver ? 'scale(1.02)' : 'scale(1)',
                     }}
                   >
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-                      <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                      display='flex'
+                      justifyContent='space-between'
+                      alignItems='flex-start'
+                      sx={{ mb: 2 }}
+                    >
+                      <Box display='flex' alignItems='center' gap={1}>
                         <Avatar
                           sx={{
                             bgcolor: assignedSpeaker
@@ -335,28 +394,29 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                           {getCharacterIcon(character.class)}
                         </Avatar>
                         <Box>
-                          <Typography variant="h6" component="h3">
+                          <Typography variant='h6' component='h3'>
                             {character.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Level {character.level} {character.race} {character.class}
+                          <Typography variant='body2' color='text.secondary'>
+                            Level {character.level} {character.race}{' '}
+                            {character.class}
                           </Typography>
                         </Box>
                       </Box>
-                      <Box display="flex" gap={0.5}>
-                        <Tooltip title="Edit Character">
+                      <Box display='flex' gap={0.5}>
+                        <Tooltip title='Edit Character'>
                           <IconButton
-                            size="small"
+                            size='small'
                             onClick={() => handleEditCharacter(character)}
                           >
                             <Edit />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Delete Character">
+                        <Tooltip title='Delete Character'>
                           <IconButton
-                            size="small"
+                            size='small'
                             onClick={() => onDeleteCharacter(character.id)}
-                            color="error"
+                            color='error'
                           >
                             <Delete />
                           </IconButton>
@@ -365,7 +425,11 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                     </Box>
 
                     {character.description && (
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontStyle: 'italic' }}>
+                      <Typography
+                        variant='body2'
+                        color='text.secondary'
+                        sx={{ mb: 2, fontStyle: 'italic' }}
+                      >
                         {character.description}
                       </Typography>
                     )}
@@ -380,8 +444,12 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                             border: `1px solid ${theme.palette.success.main}`,
                           }}
                         >
-                          <Box display="flex" justifyContent="space-between" alignItems="center">
-                            <Box display="flex" alignItems="center" gap={1}>
+                          <Box
+                            display='flex'
+                            justifyContent='space-between'
+                            alignItems='center'
+                          >
+                            <Box display='flex' alignItems='center' gap={1}>
                               <Avatar
                                 sx={{
                                   bgcolor: theme.palette.success.main,
@@ -392,18 +460,23 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                                 <Person />
                               </Avatar>
                               <Box>
-                                <Typography variant="body2" fontWeight="bold">
+                                <Typography variant='body2' fontWeight='bold'>
                                   {assignedSpeaker.name}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography
+                                  variant='caption'
+                                  color='text.secondary'
+                                >
                                   {assignedSpeaker.voiceSamples} voice samples
                                 </Typography>
                               </Box>
                             </Box>
-                            <Tooltip title="Unassign Speaker">
+                            <Tooltip title='Unassign Speaker'>
                               <IconButton
-                                size="small"
-                                onClick={() => onAssignSpeaker(character.id, null)}
+                                size='small'
+                                onClick={() =>
+                                  onAssignSpeaker(character.id, null)
+                                }
                               >
                                 <SwapHoriz />
                               </IconButton>
@@ -414,18 +487,24 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
                     ) : (
                       <Box
                         sx={{
-                          bgcolor: isDragOver ? 'success.light' : 'action.hover',
+                          bgcolor: isDragOver
+                            ? 'success.light'
+                            : 'action.hover',
                           borderRadius: 1,
                           p: 2,
                           border: `2px dashed ${
-                            isDragOver ? theme.palette.success.main : theme.palette.divider
+                            isDragOver
+                              ? theme.palette.success.main
+                              : theme.palette.divider
                           }`,
                           textAlign: 'center',
                           transition: 'all 0.2s ease',
                         }}
                       >
-                        <Typography variant="body2" color="text.secondary">
-                          {isDragOver ? 'Drop speaker here!' : 'Drag a speaker here'}
+                        <Typography variant='body2' color='text.secondary'>
+                          {isDragOver
+                            ? 'Drop speaker here!'
+                            : 'Drag a speaker here'}
                         </Typography>
                       </Box>
                     )}
@@ -438,18 +517,39 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
 
         {/* Tips Section */}
         {characters.length > 0 && (
-          <Box sx={{ mt: 3, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Box
+            sx={{
+              mt: 3,
+              pt: 2,
+              borderTop: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
               Tips for character assignments:
             </Typography>
-            <Typography variant="caption" color="text.secondary" component="div">
-              • Drag unassigned speakers onto character cards to create voice mappings
+            <Typography
+              variant='caption'
+              color='text.secondary'
+              component='div'
+            >
+              • Drag unassigned speakers onto character cards to create voice
+              mappings
             </Typography>
-            <Typography variant="caption" color="text.secondary" component="div">
-              • Use the swap icon to quickly reassign speakers between characters
+            <Typography
+              variant='caption'
+              color='text.secondary'
+              component='div'
+            >
+              • Use the swap icon to quickly reassign speakers between
+              characters
             </Typography>
-            <Typography variant="caption" color="text.secondary" component="div">
-              • Characters without speakers won&apos;t appear in real-time transcriptions
+            <Typography
+              variant='caption'
+              color='text.secondary'
+              component='div'
+            >
+              • Characters without speakers won&apos;t appear in real-time
+              transcriptions
             </Typography>
           </Box>
         )}
@@ -458,7 +558,7 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
-          maxWidth="md"
+          maxWidth='md'
           fullWidth
           PaperProps={{
             sx: {
@@ -480,59 +580,77 @@ const CharacterAssignmentGrid: React.FC<CharacterAssignmentGridProps> = ({
               }}
             >
               <TextField
-                label="Character Name"
+                label='Character Name'
                 fullWidth
-                variant="outlined"
+                variant='outlined'
                 value={newCharacter.name}
-                onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
-                placeholder="e.g., Thorin Ironshield"
+                onChange={e =>
+                  setNewCharacter({ ...newCharacter, name: e.target.value })
+                }
+                placeholder='e.g., Thorin Ironshield'
               />
               <TextField
-                label="Class"
+                label='Class'
                 fullWidth
-                variant="outlined"
+                variant='outlined'
                 value={newCharacter.class}
-                onChange={(e) => setNewCharacter({ ...newCharacter, class: e.target.value })}
-                placeholder="e.g., Fighter, Wizard, Rogue"
+                onChange={e =>
+                  setNewCharacter({ ...newCharacter, class: e.target.value })
+                }
+                placeholder='e.g., Fighter, Wizard, Rogue'
               />
               <TextField
-                label="Race"
+                label='Race'
                 fullWidth
-                variant="outlined"
+                variant='outlined'
                 value={newCharacter.race}
-                onChange={(e) => setNewCharacter({ ...newCharacter, race: e.target.value })}
-                placeholder="e.g., Human, Elf, Dwarf"
+                onChange={e =>
+                  setNewCharacter({ ...newCharacter, race: e.target.value })
+                }
+                placeholder='e.g., Human, Elf, Dwarf'
               />
               <TextField
-                label="Level"
-                type="number"
+                label='Level'
+                type='number'
                 fullWidth
-                variant="outlined"
+                variant='outlined'
                 value={newCharacter.level}
-                onChange={(e) => setNewCharacter({ ...newCharacter, level: parseInt(e.target.value) || 1 })}
+                onChange={e =>
+                  setNewCharacter({
+                    ...newCharacter,
+                    level: parseInt(e.target.value) || 1,
+                  })
+                }
                 inputProps={{ min: 1, max: 20 }}
               />
               <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
                 <TextField
-                  label="Description (Optional)"
+                  label='Description (Optional)'
                   fullWidth
                   multiline
                   rows={3}
-                  variant="outlined"
+                  variant='outlined'
                   value={newCharacter.description}
-                  onChange={(e) => setNewCharacter({ ...newCharacter, description: e.target.value })}
-                  placeholder="Brief character description or backstory..."
+                  onChange={e =>
+                    setNewCharacter({
+                      ...newCharacter,
+                      description: e.target.value,
+                    })
+                  }
+                  placeholder='Brief character description or backstory...'
                 />
               </Box>
             </Box>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button onClick={handleCloseDialog} color="inherit">
+            <Button onClick={handleCloseDialog} color='inherit'>
               Cancel
             </Button>
             <Button
-              onClick={editingCharacter ? handleUpdateCharacter : handleCreateCharacter}
-              variant="contained"
+              onClick={
+                editingCharacter ? handleUpdateCharacter : handleCreateCharacter
+              }
+              variant='contained'
               disabled={!newCharacter.name.trim() || !newCharacter.class.trim()}
             >
               {editingCharacter ? 'Update' : 'Create'}

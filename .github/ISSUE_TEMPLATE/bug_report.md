@@ -23,10 +23,10 @@ assignees: ''
 **Microphone Details:**
 
 - [ ] Built-in laptop/desktop microphone
-- [ ] USB headset (Brand/Model: ******\_******)
-- [ ] Bluetooth headset (Brand/Model: ******\_******)
-- [ ] External USB microphone (Brand/Model: ******\_******)
-- [ ] Other: ******\_******
+- [ ] USB headset (Brand/Model: **\*\***\_**\*\***)
+- [ ] Bluetooth headset (Brand/Model: **\*\***\_**\*\***)
+- [ ] External USB microphone (Brand/Model: **\*\***\_**\*\***)
+- [ ] Other: **\*\***\_**\*\***
 
 **Audio Settings:**
 
@@ -66,9 +66,9 @@ assignees: ''
 
 **D&D Terminology Recognition:**
 
-- Specific terms not recognized: ******\_******
-- Character names causing issues: ******\_******
-- Spell/ability names problematic: ******\_******
+- Specific terms not recognized: **\*\***\_**\*\***
+- Character names causing issues: **\*\***\_**\*\***
+- Spell/ability names problematic: **\*\***\_**\*\***
 
 ## Environment Information
 
@@ -78,15 +78,15 @@ assignees: ''
 
 - [ ] Windows 10
 - [ ] Windows 11
-- [ ] macOS (version: ******\_******)
-- [ ] Linux (distribution: ******\_******)
-- [ ] Other: ******\_******
+- [ ] macOS (version: **\*\***\_**\*\***)
+- [ ] Linux (distribution: **\*\***\_**\*\***)
+- [ ] Other: **\*\***\_**\*\***
 
 **Browser Information:**
 
 - Browser: [ ] Chrome [ ] Firefox [ ] Safari [ ] Edge
-- Version: ******\_******
-- Extensions that might interfere: ******\_******
+- Version: **\*\***\_**\*\***
+- Extensions that might interfere: **\*\***\_**\*\***
 
 **Network Configuration:**
 
@@ -99,7 +99,7 @@ assignees: ''
 
 **Session Information:**
 
-- Session ID (if available): ******\_******
+- Session ID (if available): **\*\***\_**\*\***
 - Number of participants: **\_**
 - Session duration before issue: **\_** minutes
 - Character assignments active: [ ] Yes [ ] No
@@ -243,7 +243,7 @@ content needed:** [ ] Yes [ ] No
 - [ ] Tested in different browser
 - [ ] Checked network connection
 - [ ] Waited and retried later
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 ### 📝 Additional Notes
 

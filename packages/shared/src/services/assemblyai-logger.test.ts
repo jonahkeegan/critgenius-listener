@@ -86,7 +86,9 @@ describe('AssemblyAI Logger Implementation', () => {
       logger.logConnection('connecting', 'session-123');
 
       expect(consoleLogSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/AssemblyAI-Connection.*connecting.*Connection connecting/)
+        expect.stringMatching(
+          /AssemblyAI-Connection.*connecting.*Connection connecting/
+        )
       );
       expect(mockMetrics.increment).toHaveBeenCalledWith(
         'assemblyai.connection.events',
@@ -96,7 +98,10 @@ describe('AssemblyAI Logger Implementation', () => {
     });
 
     it('should log connection errors', () => {
-      const error = new AssemblyAIClientError('Connection failed', 'CONN_ERROR');
+      const error = new AssemblyAIClientError(
+        'Connection failed',
+        'CONN_ERROR'
+      );
       logger.logConnection('error', 'session-123', error);
 
       expect(consoleLogSpy).toHaveBeenCalledWith(
@@ -127,17 +132,22 @@ describe('AssemblyAI Logger Implementation', () => {
       };
 
       const alertLogger = new AssemblyAILogger(mockMetrics, mockAlerting);
-      const error = new AssemblyAIClientError('Auth failed', 'AUTH_ERROR', 401, false);
+      const error = new AssemblyAIClientError(
+        'Auth failed',
+        'AUTH_ERROR',
+        401,
+        false
+      );
 
       alertLogger.logConnection('error', 'session-123', error);
 
       // Wait for async alert
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockAlerting.sendErrorAlert).toHaveBeenCalledWith(
-        error,
-        { event: 'error', sessionId: 'session-123' }
-      );
+      expect(mockAlerting.sendErrorAlert).toHaveBeenCalledWith(error, {
+        event: 'error',
+        sessionId: 'session-123',
+      });
     });
   });
 
@@ -169,8 +179,16 @@ describe('AssemblyAI Logger Implementation', () => {
     });
 
     it('should log transcript confidence metrics', () => {
-      const transcriptData = { text: 'Hello world', confidence: 0.95, words: 2 };
-      logger.logTranscription('transcript_received', 'session-123', transcriptData);
+      const transcriptData = {
+        text: 'Hello world',
+        confidence: 0.95,
+        words: 2,
+      };
+      logger.logTranscription(
+        'transcript_received',
+        'session-123',
+        transcriptData
+      );
 
       expect(mockMetrics.histogram).toHaveBeenCalledWith(
         'assemblyai.transcription.confidence',
@@ -181,7 +199,12 @@ describe('AssemblyAI Logger Implementation', () => {
 
     it('should log performance metrics', () => {
       const performance = { latency: 150, throughput: 1000 };
-      logger.logTranscription('transcript_received', 'session-123', undefined, performance);
+      logger.logTranscription(
+        'transcript_received',
+        'session-123',
+        undefined,
+        performance
+      );
 
       expect(mockMetrics.histogram).toHaveBeenCalledWith(
         'assemblyai.transcription.latency',
@@ -205,7 +228,12 @@ describe('AssemblyAI Logger Implementation', () => {
       const alertLogger = new AssemblyAILogger(mockMetrics, mockAlerting);
       const performance = { latency: 750 }; // Above 500ms threshold
 
-      alertLogger.logTranscription('transcript_received', 'session-123', undefined, performance);
+      alertLogger.logTranscription(
+        'transcript_received',
+        'session-123',
+        undefined,
+        performance
+      );
 
       // Wait for async alert
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -455,7 +483,7 @@ describe('AssemblyAI Logger Implementation', () => {
 
       const metrics = collector.getMetrics();
       expect(metrics).toHaveProperty('histograms');
-      
+
       const histogramData = (metrics as any).histograms.test_histogram;
       expect(histogramData.count).toBe(3);
       expect(histogramData.sum).toBe(450);
@@ -465,12 +493,18 @@ describe('AssemblyAI Logger Implementation', () => {
     });
 
     it('should handle tags in metric names', () => {
-      collector.increment('requests', 1, { endpoint: '/api/v1', method: 'GET' });
-      collector.increment('requests', 2, { endpoint: '/api/v2', method: 'POST' });
+      collector.increment('requests', 1, {
+        endpoint: '/api/v1',
+        method: 'GET',
+      });
+      collector.increment('requests', 2, {
+        endpoint: '/api/v2',
+        method: 'POST',
+      });
 
       const metrics = collector.getMetrics();
       const counters = (metrics as any).counters;
-      
+
       expect(counters['requests{endpoint=/api/v1,method=GET}']).toBe(1);
       expect(counters['requests{endpoint=/api/v2,method=POST}']).toBe(2);
     });
@@ -524,8 +558,10 @@ describe('AssemblyAI Logger Implementation', () => {
       logger.logConnection('connecting', 'session-abc');
       logger.logConnection('connected', 'session-abc', undefined, 1200);
       logger.logTranscription('session_begins', 'session-abc');
-      logger.logTranscription('transcript_received', 'session-abc', 
-        { text: 'Hello world', confidence: 0.95 }, 
+      logger.logTranscription(
+        'transcript_received',
+        'session-abc',
+        { text: 'Hello world', confidence: 0.95 },
         { latency: 120 }
       );
       logger.logConnection('disconnected', 'session-abc');

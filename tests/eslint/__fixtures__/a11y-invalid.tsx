@@ -4,9 +4,11 @@ import React from 'react';
 export const BadImage: React.FC = () => (
   <div>
     {/* Missing alt text */}
-    <img src="/some/path.png" />
+    <img src='/some/path.png' />
     {/* click handler without key events */}
-    <div onClick={() => console.log('clicked')} role="button">Clickable</div>
+    <div onClick={() => console.log('clicked')} role='button'>
+      Clickable
+    </div>
   </div>
 );
 

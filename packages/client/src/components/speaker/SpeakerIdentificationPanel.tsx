@@ -71,7 +71,9 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState(false);
   const [newSpeakerName, setNewSpeakerName] = useState('');
-  const [editingSpeaker, setEditingSpeaker] = useState<SpeakerProfile | null>(null);
+  const [editingSpeaker, setEditingSpeaker] = useState<SpeakerProfile | null>(
+    null
+  );
 
   const handleCreateSpeaker = () => {
     if (newSpeakerName.trim()) {
@@ -117,15 +119,20 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
   return (
     <Card elevation={3} sx={{ height: 'fit-content' }}>
       <CardContent sx={{ p: 3 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-          <Typography variant="h5" component="h2">
+        <Box
+          display='flex'
+          justifyContent='space-between'
+          alignItems='center'
+          sx={{ mb: 3 }}
+        >
+          <Typography variant='h5' component='h2'>
             Speaker Profiles
           </Typography>
           <Button
-            variant="contained"
+            variant='contained'
             startIcon={<Person />}
             onClick={() => setOpenDialog(true)}
-            size="small"
+            size='small'
             sx={{
               bgcolor: theme.palette.secondary.main,
               '&:hover': { bgcolor: theme.palette.secondary.dark },
@@ -137,10 +144,10 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
 
         {speakers.length === 0 ? (
           <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+            display='flex'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
             sx={{
               py: 4,
               color: 'text.secondary',
@@ -148,14 +155,14 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
             }}
           >
             <Person sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
-            <Typography variant="h6" gutterBottom>
+            <Typography variant='h6' gutterBottom>
               No Speaker Profiles
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant='body2' sx={{ mb: 2 }}>
               Create speaker profiles to enable voice-to-character mapping
             </Typography>
             <Button
-              variant="outlined"
+              variant='outlined'
               startIcon={<Person />}
               onClick={() => setOpenDialog(true)}
             >
@@ -164,7 +171,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
           </Box>
         ) : (
           <List sx={{ px: 0 }}>
-            {speakers.map((speaker) => (
+            {speakers.map(speaker => (
               <ListItem
                 key={speaker.id}
                 sx={{
@@ -191,43 +198,55 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                 </Avatar>
                 <ListItemText
                   primary={
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="subtitle1" fontWeight="bold">
+                    <Box display='flex' alignItems='center' gap={1}>
+                      <Typography variant='subtitle1' fontWeight='bold'>
                         {speaker.name}
                       </Typography>
                       {speaker.character && (
                         <Chip
                           label={speaker.character}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
+                          size='small'
+                          color='primary'
+                          variant='outlined'
                         />
                       )}
                     </Box>
                   }
                   secondary={
                     <Box sx={{ mt: 1 }}>
-                      <Box display="flex" alignItems="center" gap={1} sx={{ mb: 0.5 }}>
-                        <Typography variant="caption" color="text.secondary">
+                      <Box
+                        display='flex'
+                        alignItems='center'
+                        gap={1}
+                        sx={{ mb: 0.5 }}
+                      >
+                        <Typography variant='caption' color='text.secondary'>
                           Voice Samples: {speaker.voiceSamples}
                         </Typography>
-                        <Tooltip title={`Confidence: ${(speaker.confidence * 100).toFixed(1)}%`}>
+                        <Tooltip
+                          title={`Confidence: ${(speaker.confidence * 100).toFixed(1)}%`}
+                        >
                           <Chip
                             icon={getConfidenceIcon(speaker.confidence)}
                             label={`${(speaker.confidence * 100).toFixed(0)}%`}
-                            size="small"
+                            size='small'
                             color={getConfidenceColor(speaker.confidence)}
-                            variant="outlined"
+                            variant='outlined'
                           />
                         </Tooltip>
                       </Box>
                       {isRecording && recordingSpeakerId === speaker.id && (
-                        <Box display="flex" alignItems="center" gap={1} sx={{ mt: 1 }}>
-                          <Typography variant="caption" color="error">
+                        <Box
+                          display='flex'
+                          alignItems='center'
+                          gap={1}
+                          sx={{ mt: 1 }}
+                        >
+                          <Typography variant='caption' color='error'>
                             Recording sample...
                           </Typography>
                           <LinearProgress
-                            color="error"
+                            color='error'
                             sx={{ flexGrow: 1, maxWidth: 100, height: 4 }}
                           />
                         </Box>
@@ -236,21 +255,29 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                   }
                 />
                 <ListItemSecondaryAction>
-                  <Box display="flex" gap={0.5}>
-                    <Tooltip title="Record Voice Sample">
+                  <Box display='flex' gap={0.5}>
+                    <Tooltip title='Record Voice Sample'>
                       <IconButton
-                        size="small"
+                        size='small'
                         onClick={() => onRecordSample(speaker.id)}
                         disabled={isRecording}
-                        color={isRecording && recordingSpeakerId === speaker.id ? 'error' : 'default'}
+                        color={
+                          isRecording && recordingSpeakerId === speaker.id
+                            ? 'error'
+                            : 'default'
+                        }
                       >
-                        {isRecording && recordingSpeakerId === speaker.id ? <Stop /> : <Mic />}
+                        {isRecording && recordingSpeakerId === speaker.id ? (
+                          <Stop />
+                        ) : (
+                          <Mic />
+                        )}
                       </IconButton>
                     </Tooltip>
                     {speaker.voiceSamples > 0 && (
-                      <Tooltip title="Play Sample">
+                      <Tooltip title='Play Sample'>
                         <IconButton
-                          size="small"
+                          size='small'
                           onClick={() => onPlaySample(speaker.id)}
                           disabled={isRecording}
                         >
@@ -258,19 +285,19 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                         </IconButton>
                       </Tooltip>
                     )}
-                    <Tooltip title="Edit Profile">
+                    <Tooltip title='Edit Profile'>
                       <IconButton
-                        size="small"
+                        size='small'
                         onClick={() => handleEditSpeaker(speaker)}
                       >
                         <Edit />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Profile">
+                    <Tooltip title='Delete Profile'>
                       <IconButton
-                        size="small"
+                        size='small'
                         onClick={() => onDeleteSpeaker(speaker.id)}
-                        color="error"
+                        color='error'
                       >
                         <Delete />
                       </IconButton>
@@ -282,17 +309,19 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
           </List>
         )}
 
-        <Box sx={{ mt: 3, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Box
+          sx={{ mt: 3, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}
+        >
+          <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
             Tips for better voice recognition:
           </Typography>
-          <Typography variant="caption" color="text.secondary" component="div">
+          <Typography variant='caption' color='text.secondary' component='div'>
             • Record 3-5 voice samples per speaker for optimal accuracy
           </Typography>
-          <Typography variant="caption" color="text.secondary" component="div">
+          <Typography variant='caption' color='text.secondary' component='div'>
             • Ensure clear audio quality and minimal background noise
           </Typography>
-          <Typography variant="caption" color="text.secondary" component="div">
+          <Typography variant='caption' color='text.secondary' component='div'>
             • Each sample should be 10-30 seconds of natural speech
           </Typography>
         </Box>
@@ -301,7 +330,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
-          maxWidth="sm"
+          maxWidth='sm'
           fullWidth
           PaperProps={{
             sx: {
@@ -311,30 +340,35 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
           }}
         >
           <DialogTitle>
-            {editingSpeaker ? 'Edit Speaker Profile' : 'Create New Speaker Profile'}
+            {editingSpeaker
+              ? 'Edit Speaker Profile'
+              : 'Create New Speaker Profile'}
           </DialogTitle>
           <DialogContent>
             <TextField
-              margin="dense"
-              label="Speaker Name"
+              margin='dense'
+              label='Speaker Name'
               fullWidth
-              variant="outlined"
+              variant='outlined'
               value={newSpeakerName}
-              onChange={(e) => setNewSpeakerName(e.target.value)}
-              placeholder="e.g., Player 1, Sarah, DM"
+              onChange={e => setNewSpeakerName(e.target.value)}
+              placeholder='e.g., Player 1, Sarah, DM'
               sx={{ mt: 2 }}
             />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-              Choose a recognizable name for this speaker. You can assign them to a character later.
+            <Typography variant='body2' color='text.secondary' sx={{ mt: 2 }}>
+              Choose a recognizable name for this speaker. You can assign them
+              to a character later.
             </Typography>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 2 }}>
-            <Button onClick={handleCloseDialog} color="inherit">
+            <Button onClick={handleCloseDialog} color='inherit'>
               Cancel
             </Button>
             <Button
-              onClick={editingSpeaker ? handleUpdateSpeaker : handleCreateSpeaker}
-              variant="contained"
+              onClick={
+                editingSpeaker ? handleUpdateSpeaker : handleCreateSpeaker
+              }
+              variant='contained'
               disabled={!newSpeakerName.trim()}
             >
               {editingSpeaker ? 'Update' : 'Create'}
