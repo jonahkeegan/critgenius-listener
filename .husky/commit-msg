@@ -1,19 +1,14 @@
 #!/usr/bin/env sh
 
-# Commit message advisory hook (non-blocking by design)
-# Strategy: Provide guidance for Conventional Commits while allowing automation and
-# avoiding friction. Never blocks unless explicitly adapted in future.
+# Commit message advisory hook (non-blocking)
+# Provides Conventional Commit guidance while allowing automation.
 
-# Universal/automation bypass conditions
-if [ "${CI}" = "true" ] || [ "${CI}" = "1" ] \
-  || [ "${GITHUB_ACTIONS}" = "true" ] || [ "${GITHUB_ACTIONS}" = "1" ] \
-  || [ -n "${BUILD_ID}" ] \
-  || [ "${DISABLE_COMMIT_MSG_HOOK}" = "true" ] || [ "${DISABLE_COMMIT_MSG_HOOK}" = "1" ]; then
-  exit 0
-fi
+# Universal bypass (CI / automation / explicit disable)
+case "${CI}${GITHUB_ACTIONS}${BUILD_ID}${DISABLE_COMMIT_MSG_HOOK}" in
+  *1*|*true*|*TRUE*) exit 0 ;;
+esac
 
 commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
-# Broader set of common automated prefixes (merge, revert, scripted updates, etc.)
 auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove )'
 
 # Allow automation prefixes silently
