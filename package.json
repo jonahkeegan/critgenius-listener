@@ -48,7 +48,8 @@
     "type-check": "pnpm --recursive run type-check",
     "prepare": "husky",
     "precommit:validate": "node scripts/precommit-validate.mjs",
-    "precommit:simulate": "node scripts/precommit-simulate.mjs"
+    "precommit:simulate": "node scripts/precommit-simulate.mjs",
+    "precommit:benchmark": "node scripts/precommit-benchmark.mjs"
   },
   "critgenius": {
     "ecosystem": {
@@ -97,7 +98,10 @@
   },
   "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix --ignore-pattern tests/eslint/__fixtures__/a11y-invalid.tsx",
+      "prettier --write"
+    ],
     "*.{json,md,yml,yaml}": ["prettier --write"],
     "*.{css,scss}": ["prettier --write"]
   },

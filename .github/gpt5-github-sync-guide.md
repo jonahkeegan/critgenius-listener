@@ -17,6 +17,54 @@
 
 ---
 
+## Updated Operational Criteria (Aug 28, 2025)
+
+These augment (do not replace) the Golden Rules and MUST be enforced every sync cycle:
+
+1. Feature Branch & PR Naming: Ensure the active feature branch name reflects the MOST RECENTLY
+   COMPLETED TASK (e.g. `feat/dev-infra/2-8-5-workflow-benchmarking`). If task scope advances,
+   create / switch to a newly named branch before committing further related work. Do not continue
+   piling unrelated tasks onto an outdated branch name.
+2. Non-Deletion Policy for Markdown: NEVER delete local `*.md` files as part of automated sync. If a
+   Markdown file appears removed in `git diff --name-status`, halt and request confirmation (likely
+   accidental). Renames must use `git mv` so history persists.
+3. Strict `.gitignore` Respect: Before staging, list ignored candidates with
+   `git ls-files -o -i --exclude-standard`. If any appear, do not add them—report instead. Never
+   override ignore rules during automated sync.
+4. Commit Message Hook Non-Blocking Guarantee: The `commit-msg` hook MUST remain soft (exit 0).
+   Expand pass-through conditions for CI/non-interactive environments (e.g., `CI`, `GITHUB_ACTIONS`,
+   build IDs, explicit disable vars). Hard failures are converted to advisory warnings only.
+5. Advisory-Only Conventional Commit Enforcement: Allow broad automation / maintenance prefixes
+   (`Apply patch`, `Merge`, `Revert`, `Update`, `Add`, `Remove`) without warning. For other messages
+   not matching Conventional Commit pattern, emit an advisory warning and proceed (never block local
+   or automated commits).
+
+Quick Branch Name Update Recipe (when latest completed task changes):
+
+```bash
+LATEST_TASK="2-8-5"          # Example
+SLUG="workflow-benchmarking" # Kebab summary
+NEW_BRANCH="feat/dev-infra/${LATEST_TASK}-${SLUG}"
+git checkout -b "$NEW_BRANCH"  # or: git switch "$NEW_BRANCH" if already exists
+```
+
+Then push normally (see Steps 9–10). Close or supersede prior PR / rename PR via UI to align with
+new branch name.
+
+Markdown Deletion Guard (run before commit):
+
+```bash
+if git diff --name-status | grep -E '^D' | grep -iE '\\.md$'; then
+  echo "⚠ Attempted Markdown deletion detected. Aborting per non-deletion policy." >&2
+  exit 1  # abort automation; require explicit human confirmation
+fi
+```
+
+Hook Soft Policy Reminder: Do NOT rely on the hook to enforce semantic rigor in automation contexts;
+CI pipelines or code review remain the enforcement layer for message quality.
+
+---
+
 ## High-Level Flow (Steps 1–13 Mapped)
 
 1. Create task branch

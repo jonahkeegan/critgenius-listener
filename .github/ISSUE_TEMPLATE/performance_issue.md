@@ -19,7 +19,7 @@ assignees: ''
 - [ ] Audio dropouts or stuttering
 - [ ] Slow UI responsiveness
 - [ ] AssemblyAI connection problems
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 **Brief description:**
 
@@ -110,33 +110,33 @@ assignees: ''
 
 **Computer Specs:**
 
-- CPU: ******\_******
+- CPU: **\*\***\_**\*\***
 - RAM: **\_** GB
-- GPU: ******\_******
+- GPU: **\*\***\_**\*\***
 - Storage type: [ ] SSD [ ] HDD [ ] NVMe
 - Available disk space: **\_** GB
 
 **Audio Hardware:**
 
-- Microphone: ******\_******
-- Audio interface: ******\_******
-- Headphones/speakers: ******\_******
-- USB/Bluetooth connections: ******\_******
+- Microphone: **\*\***\_**\*\***
+- Audio interface: **\*\***\_**\*\***
+- Headphones/speakers: **\*\***\_**\*\***
+- USB/Bluetooth connections: **\*\***\_**\*\***
 
 ### 🖥️ Operating Environment
 
 **Operating System:**
 
-- OS: ******\_******
-- Version: ******\_******
+- OS: **\*\***\_**\*\***
+- Version: **\*\***\_**\*\***
 - Available RAM: **\_** GB
-- Background processes consuming resources: ******\_******
+- Background processes consuming resources: **\*\***\_**\*\***
 
 **Browser Information:**
 
 - Browser: [ ] Chrome [ ] Firefox [ ] Safari [ ] Edge
-- Version: ******\_******
-- Extensions installed: ******\_******
+- Version: **\*\***\_**\*\***
+- Extensions installed: **\*\***\_**\*\***
 - Hardware acceleration: [ ] Enabled [ ] Disabled
 
 **Network Configuration:**
@@ -159,10 +159,10 @@ assignees: ''
 
 **Load Testing Results:**
 
-- Single speaker performance: ******\_******
-- 2-3 speakers performance: ******\_******
-- 4+ speakers performance: ******\_******
-- Long session (2+ hours) stability: ******\_******
+- Single speaker performance: **\*\***\_**\*\***
+- 2-3 speakers performance: **\*\***\_**\*\***
+- 4+ speakers performance: **\*\***\_**\*\***
+- Long session (2+ hours) stability: **\*\***\_**\*\***
 
 ### 🔄 Performance Under Different Conditions
 
@@ -175,10 +175,10 @@ assignees: ''
 
 **Device/Browser Variations:**
 
-- Performance in other browsers: ******\_******
-- Different microphone performance: ******\_******
-- Wired vs wireless audio impact: ******\_******
-- Multiple tab/window impact: ******\_******
+- Performance in other browsers: **\*\***\_**\*\***
+- Different microphone performance: **\*\***\_**\*\***
+- Wired vs wireless audio impact: **\*\***\_**\*\***
+- Multiple tab/window impact: **\*\***\_**\*\***
 
 ## Reproduction Information
 
@@ -206,8 +206,8 @@ assignees: ''
 
 - Minimum session length: **\_** minutes
 - Minimum participants: **\_**
-- Specific audio conditions needed: ******\_******
-- Network conditions that trigger issue: ******\_******
+- Specific audio conditions needed: **\*\***\_**\*\***
+- Network conditions that trigger issue: **\*\***\_**\*\***
 
 ## Monitoring & Diagnostic Data
 
@@ -300,7 +300,7 @@ assignees: ''
 - Previous latency measurements: **\_** ms
 - Previous memory usage: **\_** MB
 - Previous CPU usage: **\_** %
-- When performance was last acceptable: ******\_******
+- When performance was last acceptable: **\*\***\_**\*\***
 
 **Performance vs. Competitors:**
 
@@ -320,9 +320,9 @@ assignees: ''
 
 **Environmental Factors:**
 
-- Better performance conditions: ******\_******
-- Worse performance conditions: ******\_******
-- Optimal session characteristics: ******\_******
+- Better performance conditions: **\*\***\_**\*\***
+- Worse performance conditions: **\*\***\_**\*\***
+- Optimal session characteristics: **\*\***\_**\*\***
 
 ## Proposed Solutions & Workarounds
 
@@ -336,7 +336,7 @@ assignees: ''
 - [ ] Reducing number of participants
 - [ ] Using different browser
 - [ ] Clearing browser cache
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 **Temporary solutions tried:**
 
@@ -354,7 +354,7 @@ assignees: ''
 - [ ] CPU processing optimization
 - [ ] Network request batching
 - [ ] Caching strategies
-- [ ] Other: ******\_******
+- [ ] Other: **\*\***\_**\*\***
 
 **Feature trade-offs acceptable:**
 

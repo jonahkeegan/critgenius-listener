@@ -1,29 +1,35 @@
 #!/usr/bin/env sh
 
-# Non-blocking commit message helper (soft validation only)
-# Design: Never block automation / CI / tooling. Emits a warning if format not matched.
+# Commit message advisory hook (non-blocking)
+# Provides Conventional Commit guidance while allowing automation.
+# Updated Aug 28 2025: Expanded automation prefixes; broadened CI heuristics; always exit 0.
 
 # Universal bypass conditions (automation / CI heuristics)
 # Evaluate each var independently to avoid accidental matches due to concatenation
 if [ "${CI}" = "true" ] || [ "${CI}" = "1" ] \
   || [ "${GITHUB_ACTIONS}" = "true" ] || [ "${GITHUB_ACTIONS}" = "1" ] \
-  || [ -n "${BUILD_ID}" ] \
+  || [ -n "${BUILD_ID}" ] || [ -n "${RUN_ID}" ] || [ -n "${PIPELINE_ID}" ] \
   || [ "${DISABLE_COMMIT_MSG_HOOK}" = "true" ] || [ "${DISABLE_COMMIT_MSG_HOOK}" = "1" ]; then
   exit 0
 fi
 
-commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
-auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove )'
+commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,72}'
+# Broader automation / maintenance prefixes; case-insensitive
+auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove |Bump |Dependabot |Sync |Format |Docs |Chore |Refactor )'
 
-# Allow common auto prefixes
+# Allow automation prefixes silently
 if grep -qiE "$auto_allowed_regex" "$1"; then
   exit 0
 fi
 
 if ! grep -qE "$commit_regex" "$1"; then
+  msg_contents=$(cat "$1" 2>/dev/null || echo "<unreadable>")
   echo "⚠ commit-msg advisory: Non-standard commit message detected." >&2
-  echo "  Provided: $(cat "$1")" >&2
-  echo "  Expected pattern: <type>(<scope>): <description>  (or auto-prefix allowed)" >&2
-  echo "  (Soft warning only – commit not blocked)" >&2
+  echo "  Provided: $msg_contents" >&2
+  echo "  Expected: <type>(<scope>): <description>  (or recognized automation prefix)" >&2
+  echo "  Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build" >&2
+  echo "  (Soft warning only – commit not blocked. Set DISABLE_COMMIT_MSG_HOOK=1 to silence.)" >&2
   exit 0
 fi
+
+exit 0
