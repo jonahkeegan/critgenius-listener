@@ -43,11 +43,26 @@ for (const row of summary) {
   console.log(`${row.kind.padEnd(14)} avg=${row.avg} min=${row.min} max=${row.max} n=${row.iterations}`);
 }
 
-// Basic regression heuristic (tunable): warn if avg > 30s any step
+// Basic regression heuristic: configurable threshold (default 30s)
+// Priority order: CLI flag --threshold=ms > env PRECOMMIT_WARN_THRESHOLD_MS > default (30000)
+const cliThresholdArg = process.argv.find(a => a.startsWith('--threshold='));
+const threshold = (() => {
+  if (cliThresholdArg) {
+    const v = parseInt(cliThresholdArg.split('=')[1], 10);
+    if (!Number.isNaN(v) && v > 0) return v;
+  }
+  const envVal = process.env.PRECOMMIT_WARN_THRESHOLD_MS;
+  if (envVal) {
+    const v = parseInt(envVal, 10);
+    if (!Number.isNaN(v) && v > 0) return v;
+  }
+  return 30000;
+})();
+
 let warn = false;
 for (const row of summary) {
-  if (row.avg > 30000) {
-    console.warn(`⚠ Performance warning: ${row.kind} average ${row.avg}ms (>30000)`);
+  if (row.avg > threshold) {
+    console.warn(`⚠ Performance warning: ${row.kind} average ${row.avg}ms (>${threshold})`);
     warn = true;
   }
 }
