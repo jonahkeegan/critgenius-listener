@@ -17,7 +17,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const tmpDir = path.join(root, '.precommit-sim');
@@ -56,7 +56,8 @@ const scenarios = /** @type {Record<string, {desc:string, mutate:()=>void}>} */ 
 const run = (cmd) => execSync(cmd, { stdio: 'pipe' }).toString();
 
 function stageFile(p) {
-  execSync(`git add ${JSON.stringify(path.relative(root, p))}`);
+  // Use execFileSync to avoid shell interpolation risk
+  execFileSync('git', ['add', path.relative(root, p)]);
 }
 
 function resetTmp() {
