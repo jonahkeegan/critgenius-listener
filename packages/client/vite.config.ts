@@ -117,8 +117,12 @@ export default defineConfig(({ mode }) => {
     },
   };
   // In test mode (vitest), avoid watching overhead; vitest sets command='serve' but NODE_ENV='test'
-  if (process.env.VITEST) {
-    config.server = { ...config.server, watch: { ignored: ['**/*'] } } as any;
+  if (process.env.VITEST && config.server) {
+    // Narrow watching entirely in vitest context to eliminate fs watcher overhead
+    config.server = {
+      ...config.server,
+      watch: { ignored: ['**/*'] },
+    };
   }
   return config;
 });
