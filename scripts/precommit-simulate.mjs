@@ -48,7 +48,8 @@ const scenarios = /** @type {Record<string, {desc:string, mutate:()=>void}>} */ 
     desc: 'TypeScript type mismatch',
     mutate: () => {
       const file = path.join(tmpDir, 'type-error.ts');
-      fs.writeFileSync(file, 'export const broken: number = "string" as any;\n');
+  // Deliberate genuine type error (no 'as any' escape hatch)
+  fs.writeFileSync(file, 'export const broken: number = "string";\n');
     },
   },
 });
