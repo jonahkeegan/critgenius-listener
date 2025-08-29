@@ -134,6 +134,17 @@ const developmentConfigSchema = z.object({
   DEBUG_REDIS: booleanSchema.default(false),
   HOT_RELOAD: booleanSchema.default(true),
   WATCH_FILES: booleanSchema.default(true),
+  // Development proxy settings (not required / not present outside development)
+  DEV_PROXY_ENABLED: booleanSchema.default(true),
+  DEV_PROXY_TARGET_PORT: portSchema.default(3100),
+  DEV_PROXY_ASSEMBLYAI_ENABLED: booleanSchema.default(true),
+  DEV_PROXY_ASSEMBLYAI_PATH: z.string().default('/proxy/assemblyai'),
+  DEV_PROXY_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(120000)
+    .default(30000),
 });
 
 // Testing Configuration
@@ -200,6 +211,8 @@ export const developmentEnvironmentSchema = environmentSchema.extend({
   DEBUG: z.string().default('critgenius:*'),
   HOT_RELOAD: z.literal(true),
   WATCH_FILES: z.literal(true),
+  DEV_PROXY_ENABLED: z.literal(true),
+  DEV_PROXY_ASSEMBLYAI_ENABLED: z.literal(true),
   // Less strict requirements for development
   JWT_SECRET: z.string().default('dev-jwt-secret-change-in-production'),
   MONGODB_URI: z
