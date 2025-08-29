@@ -32,7 +32,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         // Enable the lightweight project service so type-aware rules (no-unsafe-*) function
-        // without needing explicit tsconfig listing (see current typescript-eslint flat config docs for version details)
+        // without needing explicit tsconfig listing (typescript-eslint v8+ flat config)
         projectService: true,
       },
     },
@@ -123,7 +123,6 @@ export default tseslint.config(
       '**/*.d.ts',
       '**/*.js',
       '**/vitest.config.ts',
-      // Exclude shared tests from typed linting due to tsconfig excludes
       'packages/shared/src/**/*.test.ts',
       '*.config.js',
       '*.config.mjs',
