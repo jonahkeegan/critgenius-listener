@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 
-# Non-blocking commit message helper (soft validation only)
-# Design: Never block automation / CI / tooling. Emits a warning if format not matched.
+# Commit message advisory hook (non-blocking by design)
+# Strategy: Provide guidance for Conventional Commits while allowing automation and
+# avoiding friction. Never blocks unless explicitly adapted in future.
 
-# Universal bypass conditions (automation / CI heuristics)
-# Evaluate each var independently to avoid accidental matches due to concatenation
+# Universal/automation bypass conditions
 if [ "${CI}" = "true" ] || [ "${CI}" = "1" ] \
   || [ "${GITHUB_ACTIONS}" = "true" ] || [ "${GITHUB_ACTIONS}" = "1" ] \
   || [ -n "${BUILD_ID}" ] \
@@ -13,9 +13,10 @@ if [ "${CI}" = "true" ] || [ "${CI}" = "1" ] \
 fi
 
 commit_regex='^(feat|fix|docs|style|refactor|perf|test|chore|ci|build)(\(.+\))?: .{1,50}'
+# Broader set of common automated prefixes (merge, revert, scripted updates, etc.)
 auto_allowed_regex='^(Apply patch|apply patch|Merge |Revert |Update |Add |Remove )'
 
-# Allow common auto prefixes
+# Allow automation prefixes silently
 if grep -qiE "$auto_allowed_regex" "$1"; then
   exit 0
 fi
@@ -23,7 +24,8 @@ fi
 if ! grep -qE "$commit_regex" "$1"; then
   echo "⚠ commit-msg advisory: Non-standard commit message detected." >&2
   echo "  Provided: $(cat "$1")" >&2
-  echo "  Expected pattern: <type>(<scope>): <description>  (or auto-prefix allowed)" >&2
-  echo "  (Soft warning only – commit not blocked)" >&2
+  echo "  Expected: <type>(<scope>): <description>  (or recognized auto prefix)" >&2
+  echo "  Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build" >&2
+  echo "  (Soft warning only – commit not blocked. Set DISABLE_COMMIT_MSG_HOOK=1 to silence.)" >&2
   exit 0
 fi
