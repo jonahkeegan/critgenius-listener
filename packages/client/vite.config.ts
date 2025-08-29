@@ -33,14 +33,21 @@ function envReloadPlugin(): Plugin {
     configureServer(server) {
       const candidates = ['.env', '.env.local', '.env.development'];
       const root = process.cwd();
+      const watched: string[] = [];
       candidates.forEach(file => {
         const p = path.resolve(root, file);
         if (fs.existsSync(p)) {
+          watched.push(p);
           fs.watchFile(p, { interval: 700 }, () => {
             server.ws.send({ type: 'full-reload', path: '*' });
           });
         }
       });
+      // Cleanup on server close to avoid leaking watchers during restarts (HMR / plugin reload)
+      const close = () => {
+        watched.forEach(p => fs.unwatchFile(p));
+      };
+      server.httpServer?.once('close', close);
     },
   };
 }
