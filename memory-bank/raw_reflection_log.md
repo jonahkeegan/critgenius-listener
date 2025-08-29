@@ -32,6 +32,41 @@ Improvements_Identified_For_Consolidation:
 
 *Ready for new entries.*
 
+Date: 2025-08-29
+TaskRef: "Task 2.9.2: Development Proxy Configuration (Vite → API / Socket.IO / AssemblyAI)"
+
+Learnings:
+- Isolating proxy logic behind a pure helper (`buildDevProxy`) enables deterministic unit testing without invoking full Vite/esbuild pipeline (reduces infra test flakiness).
+- Prefixing all development-only vars with `DEV_PROXY_` creates an immediate visual + grep filter to prevent accidental production coupling.
+- Enforcing literal defaults (`z.literal(true)`) in the development schema for always-on conveniences (proxy enable flags) clarifies intent and avoids unnecessary env churn.
+- Skipping secret header injection for AssemblyAI during early exploration is a deliberate DX vs. security trade: lowers immediate complexity while signaling future secure mediation.
+- Fallback logic in tests (graceful `.env.example` absence) guards against environment-dependent filesystem issues on CI or partial checkout scenarios.
+
+Technical Discoveries:
+- Vite `server.proxy` accepts conditional spread patterns cleanly under `exactOptionalPropertyTypes` so long as the property is omitted (not undefined) when disabled.
+- WebSocket proxy stability requires explicit `ws: true` and (in local dev) `secure: false`; omitting either can produce silent upgrade failures behind corporate proxies.
+- AssemblyAI path rewriting is safest when using a unique prefix path (e.g., `/proxy/assemblyai`) to avoid collisions with future internal API routes.
+- Timeouts (`timeout` in proxy options) offer a simple guardrail against hanging external calls without introducing extra abort logic.
+
+Success Patterns:
+- Added documentation (`docs/development-proxy.md`) contemporaneously with implementation—prevents drift and shortens onboarding cycle.
+- Test suite targets the pure function (not the build config) shrinking execution time and surface area for flakey environment invariants.
+- Environment schema ↑ test alignment (env var presence + defaults) continues the pattern of schema-as-source-of-truth.
+- Security review table in completion report creates an auditable artifact for future ADR formalization (candidate ADR-010).
+
+Implementation Excellence:
+- Zero production impact (proxy only constructed in dev branch paths) preserving deployment confidence.
+- No new runtime dependencies; leveraged existing TypeScript + Vite types for integration.
+- Structured sequence diagram in completion report clarifies request flow—useful for future debugging & knowledge transfer.
+- Chose minimal variable surface (5 keys) to reduce cognitive overhead while covering 90% of customization needs.
+
+Improvements_Identified_For_Consolidation:
+- Implement secure server-side AssemblyAI signing/forward endpoint to eliminate any temptation to expose API key via client path.
+- Add optional debug logging hook with redaction safeguards for timing & error classification (latency observability).
+- Consider automatic backend port probe (fallback to disabled proxy with informative warning) to reduce misconfiguration friction.
+- Introduce ADR-010 to formally capture dev proxy architecture, security boundaries, and future enhancement roadmap.
+- Add coverage for WebSocket upgrade pass-through (integration test using mocked Socket.IO client behind proxy) in a future infra task.
+
 Date: 2025-08-28
 TaskRef: "Task 2.9.1: Vite Dev Server Enhancement (HMR + Build Optimization)"
 

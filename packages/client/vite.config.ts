@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
+import { buildDevProxy } from './src/config/devProxy';
 
 // Build-time environment resolution (Node context) – guarded for safety
 function resolveClientDefine(mode: string) {
@@ -70,6 +71,9 @@ export default defineConfig(({ mode }) => {
   loadEnv(mode, process.cwd(), '');
   const define = resolveClientDefine(mode);
   const clientPort = Number(process.env.CLIENT_PORT || 5173);
+  const devProxy = buildDevProxy(
+    process.env as Record<string, string | undefined>
+  );
   const config: UserConfig = {
     define: {
       ...Object.entries(define).reduce(
@@ -88,6 +92,7 @@ export default defineConfig(({ mode }) => {
         // Exclude build output + tests from triggering unnecessary reloads
         ignored: ['**/dist/**', '**/coverage/**'],
       },
+      ...(devProxy ? { proxy: devProxy } : {}),
     },
     build: {
       outDir: 'dist',

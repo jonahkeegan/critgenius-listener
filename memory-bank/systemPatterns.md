@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-28 22:30 PST **Version:** 2.5.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-29 09:30 PST **Version:** 2.6.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -247,6 +247,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Consequences:** Slight config complexity increase; future bundle size monitoring deferred (visualizer not yet integrated). Production unaffected (plugin limited by `apply: 'serve'`). Follow-up tasks: bundle analyzer integration, HMR latency instrumentation, JSON chunk baseline tracking.  
 **Alternatives Considered:** (1) Fine-grained per-package chunk splitting (risk: request overhead) rejected for premature complexity; (2) External env reload plugin dependency rejected to minimize supply chain surface.  
 **Validation:** Lint/type/tests green; new `vite.config.test.ts` asserts manual chunk classification; no secret exposure detected in define serialization.
+
+### ADR-010: Development Proxy Architecture (Local Cross-Origin Unification)
+
+**Status:** Accepted (Aug 29, 2025)  
+**Context:** Need consistent localhost origin for client (5173) interacting with future server API + Socket.IO while avoiding CORS friction and preventing accidental exposure of secrets or third-party websockets. AssemblyAI passthrough not yet required but considered for future ergonomics.  
+**Decision:** Introduce dev-only proxy configuration controlled by literal env flags (`DEV_PROXY_ENABLED=true`, `DEV_PROXY_ASSEMBLYAI_ENABLED=false`) with deterministic helper `buildDevProxy` generating Vite `server.proxy` map for `/api`, `/socket.io`, and optional AssemblyAI realtime path. Conditional spread keeps config minimal and type-safe under `exactOptionalPropertyTypes`.  
+**Rationale:** Centralized pure helper enables isolated testing (no Vite spin-up), reduces config drift, and establishes explicit security boundary (no secrets, no default third-party passthrough). Literal flags eliminate risk of production enablement via unvalidated env injection.  
+**Consequences:** Slight increase in environment schema surface; additional maintenance if production proxy strategy diverges (may necessitate future ADR). AssemblyAI proxy intentionally disabled until auth & rate controls defined.  
+**Alternatives Considered:** (1) Direct client calls to separate localhost ports (higher CORS/config overhead) rejected for dev ergonomics; (2) Broad wildcard proxy rejected due to overexposure risk.  
+**Validation:** Lint/type/tests pass; unit tests assert helper invariants (disabled state returns undefined, custom path, timeout honored). No secret leakage (only non-sensitive paths/ports).  
+**Follow-Ups:** Integration test once API routes implemented; potential enabling of AssemblyAI proxy with auth middleware; documentation update if production reverse proxy (NGINX/Traefik) introduced.
 
 ## Development Workflow Patterns
 

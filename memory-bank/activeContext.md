@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-28 22:30 PST **Version:** 2.11.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-29 09:30 PST **Version:** 2.12.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-28)
+### Latest Updates (2025-08-29)
+
+- **INFRASTRUCTURE:** Development Proxy Configuration (Task 2.9.2)
+  - ✅ Added dev-only proxy env schema flags (`DEV_PROXY_ENABLED` literal true, `DEV_PROXY_TARGET_PORT`, `DEV_PROXY_ASSEMBLYAI_ENABLED` literal false, `DEV_PROXY_ASSEMBLYAI_PATH`, `DEV_PROXY_TIMEOUT_MS`)
+  - ✅ Implemented pure helper `buildDevProxy` for deterministic proxy map (API + Socket.IO + optional AssemblyAI)
+  - ✅ Updated Vite config to conditionally apply proxy (strict optional typing preserved)
+  - ✅ Added focused unit tests covering disabled state, overrides, structural defaults (no Vite/esbuild side-effects)
+  - ✅ Authored `docs/development-proxy.md` (purpose, security posture, failure modes, roadmap) & completion report
+  - ✅ No secret exposure; AssemblyAI passthrough disabled by default pending hardened auth strategy
+  - ✅ Reflection + progress logs updated; ADR-010 placeholder to follow in systemPatterns
+
+### Previous Updates (2025-08-28)
 
 - **INFRASTRUCTURE:** Vite Dev Server Enhancement (Task 2.9.1)
   - ✅ Introduced manual chunk function (react | mui | realtime | vendor) for improved caching stability
