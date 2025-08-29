@@ -16,6 +16,7 @@ fi
 # Detect staged TypeScript source changes (added / copied / modified)
 if git diff --cached --name-only --diff-filter=ACM | grep -E '\\.(ts|tsx)$' >/dev/null 2>&1; then
 	echo "🧪 TypeScript changes detected – running incremental type check..."
+	# Capture start time; fallback to 0 if unsupported
 	start_ts=$(date +%s 2>/dev/null || echo 0)
 	if pnpm -w type-check >/dev/null 2>&1; then
 		end_ts=$(date +%s 2>/dev/null || echo 0)
