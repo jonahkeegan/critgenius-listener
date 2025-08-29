@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-28 09:30 PST **Version:** 2.10.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-28 22:30 PST **Version:** 2.11.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -83,6 +83,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ### Latest Updates (2025-08-28)
+
+- **INFRASTRUCTURE:** Vite Dev Server Enhancement (Task 2.9.1)
+  - ✅ Introduced manual chunk function (react | mui | realtime | vendor) for improved caching stability
+  - ✅ Added dev-only `envReloadPlugin` (full reload on `.env*` change; privacy-preserving)
+  - ✅ Centralized Vite cache directory to reduce redundant transforms
+  - ✅ Applied build optimizations (`target: es2022`, inline asset limit, css esbuild minify, chunk warning threshold)
+  - ✅ Extended optimizeDeps (MUI + socket.io-client) & explicit HMR overlay config
+  - ✅ Added structural config test ensuring define + chunk classification invariants
+  - ✅ No production impact (plugin scoped via `apply: 'serve'`); lint/type/test suites green
+  - ✅ Reflection entry added; consolidation pending next batch cycle
 
 - **INFRASTRUCTURE:** Development Workflow Validation & Benchmarking (Task 2.8.5)
   - ✅ Added `precommit:benchmark` script (timed ESLint, Prettier, conditional type-check; avg/min/max)

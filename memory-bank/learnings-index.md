@@ -1,11 +1,11 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-08-21 21:23 PST **Version:** 1.3.0 **System Status:** Active
+**Last Updated:** 2025-08-28 22:20 PST **Version:** 1.4.0 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `consolidated-learnings-005.md` **Status:** Active - Contains Environment &
-Testing Patterns **Current Row Count:** 105 **Last Updated:** 2025-08-21 22:00 PST
+Testing Patterns **Current Row Count:** 188 **Last Updated:** 2025-08-28 22:20 PST
 
 ## File Registry
 
@@ -69,17 +69,19 @@ Testing Patterns **Current Row Count:** 105 **Last Updated:** 2025-08-21 22:00 P
 ### consolidated-learnings-005.md
 
 - **Status:** Active - Contains Environment & Testing Patterns
-- **Row Count:** 105
+- **Row Count:** 188
 - **Created:** 2025-08-21 21:22 PST
-- **Last Updated:** 2025-08-21 22:00 PST
+- **Last Updated:** 2025-08-28 22:20 PST
 - **Primary Topics:** Environment Management Architecture, Type-Safe Configuration Injection,
   Mock-Based External Service Validation, SessionManager Bridge Architecture, Server-Side Transcript
   Normalization, External Service Event Lifecycle Management, Centralized Configuration Management
-  in Monorepos
+  in Monorepos, Pre-commit Optimization, Benchmark Architecture, Hook Ergonomics, Conditional
+  Type-Check Gating
 - **Description:** Consolidated learnings covering comprehensive environment validation patterns
   with Zod, type-safe configuration management, external service integration testing strategies,
-  real-time communication bridge patterns, and security-focused configuration templates for Node.js
-  monorepo applications
+  real-time communication bridge patterns, security-focused configuration templates, and advanced
+  development workflow optimization (simulation, benchmarking, conditional gating) for Node.js
+  monorepo applications.
 
 ## Topic Index
 

@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-28 09:30 PST **Version:** 2.4.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-28 22:30 PST **Version:** 2.5.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -237,6 +237,16 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Decision:** Introduce `precommit:benchmark` script capturing ESLint, Prettier, and TypeScript timings (avg/min/max) plus onboarding & workflow documentation (`developer-onboarding.md`, `development-workflow.md`).
 **Rationale:** Quantified baselines enable future optimization (lint caching, selective scopes); centralized docs eliminate fragmented setup knowledge and enforce consistent quality gate understanding.
 **Consequences:** Additional maintenance to keep docs & metrics current; minimal runtime overhead (on-demand invocation). Future optional JSON output & CI trend analysis deferred.
+
+### ADR-009: Vite Dev Server Optimization & Safe Environment Reload
+
+**Status:** Accepted (Aug 28, 2025)  
+**Context:** Need faster iterative feedback (HMR), improved long-term browser caching, and safe developer ergonomics for adjusting non-secret client config without manual restarts. Existing static chunk mapping limited caching granularity; env changes required server restart.  
+**Decision:** Introduce manual chunk function segmenting `react`, `@mui/*`, `socket.io-client` (realtime), and remaining vendor; add dev-only `envReloadPlugin` using `fs.watchFile` for `.env*` triggering full reload; centralize Vite `cacheDir`; extend optimizeDeps; add structural test to enforce config invariants.  
+**Rationale:** Coarse segmentation maximizes cache-hit ratio with minimal request inflation; explicit test coverage reduces regression risk; central cache improves cold start; plugin approach maintains privacy (no value logging) while minimizing complexity (no external deps).  
+**Consequences:** Slight config complexity increase; future bundle size monitoring deferred (visualizer not yet integrated). Production unaffected (plugin limited by `apply: 'serve'`). Follow-up tasks: bundle analyzer integration, HMR latency instrumentation, JSON chunk baseline tracking.  
+**Alternatives Considered:** (1) Fine-grained per-package chunk splitting (risk: request overhead) rejected for premature complexity; (2) External env reload plugin dependency rejected to minimize supply chain surface.  
+**Validation:** Lint/type/tests green; new `vite.config.test.ts` asserts manual chunk classification; no secret exposure detected in define serialization.
 
 ## Development Workflow Patterns
 
