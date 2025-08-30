@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-29 12:10 PST **Version:** 2.13.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-30 14:45 PST **Version:** 2.14.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -94,6 +94,15 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - 🔜 Follow-ups: Zod schema for manifest, parallel startup for independent branches, JSON structured logging, service subset CLI filters
 
 - **INFRASTRUCTURE:** Coordinated Dev Orchestration (Task 2.9.3)
+ - **RESILIENCE:** Enhanced Health Checks & Intelligent Restart Logic (Task 2.9.3 Resilience Enhancement)
+  - ✅ Expanded `/api/health` to structured multi-component response: dependency states (database, cache, externalApi, processing, storage), system metrics (memory), score heuristic (0–100), tri-state status (`healthy|degraded|unhealthy`), per-check detail map.
+  - ✅ Implemented mock-first dependency probes (format/presence) for deterministic tests (no network IO); future real pings behind opt-in flag.
+  - ✅ Added exponential backoff restart algorithm in orchestration: per-service attempts, capped doubling, circuit breaker after maxAttempts with cooldown.
+  - ✅ Per-service restart config blocks (`restart.baseMs|maxMs|maxAttempts|circuitCooldownMs`) added to `services.yaml` enabling differentiated recovery tuning.
+  - ✅ Updated tests to allow degraded state; maintained strict type safety under `exactOptionalPropertyTypes` via conditional object assembly.
+  - ⚠️ Latency metric & event loop lag measurement deferred; CPU load sampling not yet implemented.
+  - 🔜 Follow-Ups: extract pure backoff calculator with unit tests, add event loop lag sampling, verbose suppression flag for lightweight probes, memory threshold-based degradation, structured restart logging.
+
   - ✅ Orchestration script enforces server-first readiness via `/api/health` polling
   - ✅ Mock health server enables schema-strict smoke test path (`ORCHESTRATION_SMOKE`)
   - ✅ Layered spawn fallback resolves Windows pnpm ENOENT issues

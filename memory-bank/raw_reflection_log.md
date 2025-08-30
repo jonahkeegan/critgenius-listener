@@ -70,3 +70,43 @@ Improvements_Identified_For_Consolidation:
 - Add JSON structured logging mode for machine-readable orchestration metrics.
 - Extend health strategies (WebSocket ping, custom script) for services without simple HTTP readiness.
 
+Date: 2025-08-30
+TaskRef: "2-9-3 Enhanced Health Checks & Intelligent Restart Logic"
+
+Learnings:
+- Expanding health output with structured component states enables early anomaly detection without log diving.
+- A score heuristic (0-100) gives an at-a-glance indicator while preserving granular `details`—dual-level observability is valuable.
+- Mock-first dependency checks (env + format validation) decouple reliability features from external infrastructure availability in early phases.
+- Memory snapshot (rss / heap) provides immediate signal for runaway leaks during dev without heavy profiler overhead.
+- Tri-state health (`healthy|degraded|unhealthy`) better reflects partial impairment vs binary OK/fail responses.
+
+Technical Discoveries:
+- `exactOptionalPropertyTypes` requires constructing detail objects conditionally—spreading undefined fields triggers type friction; building objects incrementally avoids this.
+- Adding circuit breaker state to an in-memory map is sufficient for dev orchestration; persistent state is unnecessary at this maturity stage.
+- Score threshold tuning is straightforward when subtractive penalties are coarse-grained (major vs minor faults) rather than per-check weighting.
+- Per-service restart config in `services.yaml` scales better than global-only knobs; supports future specialization (e.g., chat gateway vs transcription core).
+- Health endpoint latency stayed negligible with synchronous mock checks; deferring real network pings prevents timeout stacking.
+
+Success Patterns:
+- Updated tests in lockstep with schema change prevented brittle expectations (accepting `healthy|degraded`).
+- Isolated backoff calculation logic conceptually (even before extraction) making future unit tests trivial to add.
+- Non-invasive enhancement: existing consumers of `/api/health` still parse prior top-level fields; additive changes are backwards compatible.
+- Using simple penalties instead of dynamic weighted averages minimized over-engineering while meeting monitoring goals.
+- Incrementally layering circuit breaker after implementing exponential backoff reduced cognitive load.
+
+Implementation Excellence:
+- Avoided secret exposure: only key presence/length checked—no accidental logging paths added.
+- Conditional object assembly satisfied strict TS settings without resorting to `as` casts, maintaining type integrity.
+- Restart logic respects circuit open window, preventing rapid thrash and CPU churn during persistent failure states.
+- Manifest restart parameters use explicit names (baseMs, maxMs, maxAttempts, circuitCooldownMs)—self documenting in YAML.
+- Tests relaxed expectations deliberately—documented rationale prevents future accidental re-tightening.
+
+Improvements_Identified_For_Consolidation:
+- Extract and unit test pure backoff + circuit breaker decision function for deterministic coverage (edge: maxAttempts, cooldown expiry).
+- Add event loop lag measurement (interval sampling) to enrich `system.eventLoopLagMs` metric.
+- Provide verbose=false query param to suppress `details` for ultra-lightweight probes (CI / uptime pingers).
+- Integrate real dependency pings behind opt-in env flags to preserve fast responses locally.
+- Emit structured log line for each restart attempt including attempt, backoff, reason, circuit state.
+- Document health schema in architecture & ops guides; include versioning plan for future fields.
+- Add degrade triggers for memory thresholds (e.g., >70% heap used) to preempt OOM issues.
+

@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-30 11:05 PST **Version:** 2.8.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-30 14:45 PST **Version:** 2.9.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -269,6 +269,28 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Alternatives Considered:** Client-side retry wrapping (adds frontend complexity); environment schema relaxation (weakens guarantees); adopting external process manager (adds dependency surface, less tailored health logic).  
 **Validation:** Smoke test passes (mock mode); manual real-mode validation confirmed client availability post server readiness; no runtime package code changed.  
 **Follow-Ups:** Real-server orchestration test with curated env, structured JSON logging, dynamic port/health path overrides, exponential backoff & crash loop detection, ADR update after monitoring expansion.
+
+### ADR-012: Enhanced Health Endpoint & Intelligent Restart Backoff
+
+**Status:** Accepted (Aug 30, 2025)  
+**Context:** Initial health endpoint returned minimal static fields (binary healthy). Lacked component granularity (dependencies) and provided no prioritization signal for emerging failures. Restart logic used fixed delay causing potential thrash under persistent failure and lacked circuit breaking.
+**Decision:** Expand `/api/health` to structured multi-component response (dependency states, system metrics, score heuristic, tri-state status) and implement exponential backoff + circuit breaker restart logic in development orchestration with per-service configurable parameters.
+**Rationale:** Granular health surface accelerates root cause isolation and supports future automated alerting; scoring offers at-a-glance overview for dashboards. Backoff reduces restart storm risk; circuit breaker prevents infinite crash loops and preserves developer machine resources.
+**Consequences:** Slightly larger health payload; consumers expecting binary status must adapt (backward compatibility retained at top-level fields). Orchestration complexity increased but encapsulated; requires documentation of restart tuning semantics.
+**Alternatives Considered:** (1) Introduce external process manager (PM2/Nodemon) — rejected for limited customization. (2) Weighted moving average scoring — premature complexity vs simple subtractive penalties. (3) Real network dependency pings — deferred to avoid test brittleness.
+**Validation:** Updated tests accept `healthy|degraded`; no secret leakage; score calculation deterministic. All existing suites green.
+**Follow-Ups:** Event loop lag metric, memory pressure degradation triggers, optional concise mode (no details), real dependency ping (opt-in), structured log emission of restart attempts.
+
+### Resilience Pattern: Structured Health Scoring & Backoff Restart (Added 2025-08-30)
+
+**Pattern:** Provide multi-dimensional health snapshot + adaptive restart strategy to improve local reliability insight and prevent thrash.
+**Components:** Health Controller → Dependency Probes (mock-first) → Scoring Heuristic → Orchestrator Monitor Loop → Backoff Calculator → Circuit Breaker.
+**Scoring Heuristic:** Start 100; subtract 40 for disconnected/unreachable, 15 for degraded/backpressure; thresholds: ≥90 healthy, ≥60 degraded else unhealthy.
+**Restart Algorithm:** `delay = min(baseMs * 2^attempt, maxMs)`; after `maxAttempts` open circuit until `now + circuitCooldownMs`; reset attempts on successful probe.
+**Benefits:** Faster triage, reduced noisy logs, tunable resilience. Foundation for future SLA dashboards.
+**Metrics (Current):** Memory (rssMB, heapUsedMB, heapTotalMB). *Deferred:* eventLoopLagMs, cpuLoad normalization.
+**Risks:** Over-simplified scoring may mask nuanced degradation → mitigate with future weight refinement & additional metrics; payload size growth minimal (<1 KB typical).
+**Future Extensions:** Pluggable probe registry, asynchronous parallel probe execution, persistent restart analytics, threshold-based alert hooks.
 
 ## Development Workflow Patterns
 
