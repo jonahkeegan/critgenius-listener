@@ -12,6 +12,8 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --stream run dev",
+    "dev:coordinated": "node scripts/dev-orchestration.mjs",
+    "dev:coordinated:watch": "node scripts/dev-orchestration.mjs --monitor",
     "build": "pnpm --recursive run build",
     "test": "pnpm --recursive run test",
     "test:watch": "pnpm --recursive run test:watch",

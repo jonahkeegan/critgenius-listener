@@ -6,7 +6,7 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --watch src --exec tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
@@ -37,6 +37,7 @@
     "ws": "^8.17.0"
   },
   "devDependencies": {
+    "nodemon": "^3.1.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
