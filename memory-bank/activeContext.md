@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-29 09:30 PST **Version:** 2.12.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-29 12:10 PST **Version:** 2.13.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,24 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-29)
+### Latest Updates (2025-08-30)
+
+- **INFRASTRUCTURE:** Declarative Service Manifest Orchestration (Task 2.9.3 Enhancement)
+  - ✅ Replaced inline hardcoded CONFIG with versioned `services.yaml` manifest (global + service maps)
+  - ✅ Added loader (`service-manifest-loader.mjs`) with structural validation, `${port}` interpolation, aggregated error reporting
+  - ✅ Refactored orchestration script to dynamic dependency-aware startup (topological sort + cycle detection)
+  - ✅ Generic monitoring & restart loop now scales to N services without script edits
+  - ✅ Smoke mode refined: per-service `smokeCommand` & `smokeStartupTimeoutMs` (removes conditional branches)
+  - ✅ Added unit test + ambient d.ts for typed consumption; documentation with sequence diagrams (`docs/orchestration-manifest.md`)
+  - 🔜 Follow-ups: Zod schema for manifest, parallel startup for independent branches, JSON structured logging, service subset CLI filters
+
+- **INFRASTRUCTURE:** Coordinated Dev Orchestration (Task 2.9.3)
+  - ✅ Orchestration script enforces server-first readiness via `/api/health` polling
+  - ✅ Mock health server enables schema-strict smoke test path (`ORCHESTRATION_SMOKE`)
+  - ✅ Layered spawn fallback resolves Windows pnpm ENOENT issues
+  - ✅ Optional monitoring (`--monitor`) with restart cycle (basic backoff) implemented
+  - ✅ Completion report + consolidated learnings update produced (patterns & risks captured)
+  - 🔜 Next: real-server orchestration integration test, JSON logging, dynamic port detection, ADR monitoring extension
 
 - **INFRASTRUCTURE:** Development Proxy Configuration (Task 2.9.2)
   - ✅ Added dev-only proxy env schema flags (`DEV_PROXY_ENABLED` literal true, `DEV_PROXY_TARGET_PORT`, `DEV_PROXY_ASSEMBLYAI_ENABLED` literal false, `DEV_PROXY_ASSEMBLYAI_PATH`, `DEV_PROXY_TIMEOUT_MS`)

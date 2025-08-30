@@ -1,0 +1,40 @@
+version: "1.0"
+metadata:
+  name: "critgenius-listener-dev-services"
+  description: "Development orchestration service manifest"
+
+global:
+  pollIntervalMs: 1000
+  monitorIntervalMs: 5000
+  restartBackoffMs: 2000
+
+services:
+  server:
+    name: "server"
+    command: "pnpm --filter @critgenius/server run dev"
+    smokeCommand: "node scripts/mock-health-server.mjs"
+    port: 3100
+    healthPath: "/api/health"
+    startupTimeoutMs: 30000
+    smokeStartupTimeoutMs: 15000
+    dependencies: []
+    environment:
+      PORT: "${port}"
+      NODE_ENV: "development"
+      ASSEMBLYAI_API_KEY: "DEV_PLACEHOLDER_KEY_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456"
+      MONGODB_URI: "mongodb://localhost:27017/critgenius"
+      REDIS_URL: "redis://localhost:6379/0"
+      JWT_SECRET: "dev_jwt_secret_placeholder_please_change"
+      DEV_PROXY_ENABLED: "true"
+      DEV_PROXY_ASSEMBLYAI_ENABLED: "true"
+      DEV_PROXY_TARGET_PORT: "${port}"
+      DEV_PROXY_TIMEOUT_MS: "30000"
+
+  client:
+    name: "client"
+    command: "pnpm --filter @critgenius/client run dev"
+    port: 5173
+    healthPath: "/"
+    startupTimeoutMs: 20000
+    dependencies: ["server"]
+    environment: {}

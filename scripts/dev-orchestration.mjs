@@ -8,16 +8,16 @@ import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import http from 'node:http';
 import process from 'node:process';
+import { loadServiceManifest } from './service-manifest-loader.mjs';
 
-// Derive ports (allow env override, fallback to schema defaults)
+// Smoke mode toggles service command substitution and timeouts where defined
 const SMOKE = process.env.ORCHESTRATION_SMOKE === 'true';
-const CONFIG = {
-  server: { command: SMOKE ? "node scripts/mock-health-server.mjs" : "pnpm --filter @critgenius/server run dev", port: Number(process.env.PORT) || 3100, healthPath: '/api/health', startupTimeoutMs: SMOKE ? 15_000 : 30_000 },
-  client: { command: "pnpm --filter @critgenius/client run dev", port: 5173, healthPath: '/', startupTimeoutMs: 20_000 },
-  pollIntervalMs: 1_000,
-  monitorIntervalMs: 5_000,
-  restartBackoffMs: 2_000,
-};
+let MANIFEST; // loaded lazily
+
+async function getConfig() {
+  if (!MANIFEST) MANIFEST = await loadServiceManifest();
+  return MANIFEST;
+}
 
 const args = process.argv.slice(2);
 const enableMonitor = args.includes('--monitor') || args.includes('-m');
@@ -45,29 +45,19 @@ async function waitForService(name, { port, healthPath, startupTimeoutMs }) {
       process.stdout.write(`\r✅ ${name} ready on port ${port} (wait ${(Date.now()-start)}ms)\n`);
       return true;
     }
-    await delay(CONFIG.pollIntervalMs);
+    const { global } = await getConfig();
+    await delay(global.pollIntervalMs);
   }
   process.stdout.write(`\n❌ ${name} failed to become ready within ${startupTimeoutMs}ms\n`);
   return false;
 }
 
-function spawnLogged(name, commandParts) {
+function spawnLogged(name, commandParts, serviceDef) {
   const env = { ...process.env };
-  if (name === 'server') {
-    if (!env.PORT) env.PORT = String(CONFIG.server.port);
-    // Inject minimal required env vars for smoke test so server validation passes without real services.
-    if (SMOKE) {
-      env.ASSEMBLYAI_API_KEY = env.ASSEMBLYAI_API_KEY || 'DEV_PLACEHOLDER_KEY_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456';
-      env.MONGODB_URI = env.MONGODB_URI || 'mongodb://localhost:27017/critgenius';
-      env.REDIS_URL = env.REDIS_URL || 'redis://localhost:6379/0';
-      env.JWT_SECRET = env.JWT_SECRET || 'dev_jwt_secret_placeholder_please_change';
-            env.NODE_ENV = 'development';
-            env.HOT_RELOAD = 'true';
-            env.WATCH_FILES = 'true';
-            env.DEV_PROXY_ENABLED = 'true';
-            env.DEV_PROXY_ASSEMBLYAI_ENABLED = 'true';
-            env.DEV_PROXY_TARGET_PORT = String(CONFIG.server.port);
-            env.DEV_PROXY_TIMEOUT_MS = '30000';
+  // Interpolate service-level environment overrides
+  if (serviceDef?.environment && typeof serviceDef.environment === 'object') {
+    for (const [k, v] of Object.entries(serviceDef.environment)) {
+      if (env[k] === undefined) env[k] = String(v);
     }
   }
   const base = typeof commandParts === 'string' ? commandParts : commandParts.command;
@@ -92,57 +82,80 @@ function spawnLogged(name, commandParts) {
 }
 
 async function orchestrate() {
-  console.log('🧪 CritGenius coordinated dev starting...');
-  let server = spawnLogged('server', { command: CONFIG.server.command });
-  if (SMOKE) console.log(`[orchestrator] Spawned server with PORT=${process.env.PORT || '(injected '+CONFIG.server.port+')'}`);
-  const serverReady = await waitForService('server', CONFIG.server);
-  if (!serverReady) {
-    server.kill();
-    process.exitCode = 1;
-    return;
+  const manifest = await getConfig();
+  const services = manifest.services;
+  const global = manifest.global;
+  console.log('🧪 CritGenius coordinated dev starting (manifest mode)...');
+
+  // Topologically sort services by dependencies (simple DFS)
+  const ordered = [];
+  const temp = new Set();
+  const perm = new Set();
+  function visit(name) {
+    if (perm.has(name)) return;
+    if (temp.has(name)) throw new Error(`Cyclic dependency detected involving ${name}`);
+    temp.add(name);
+    const svc = services[name];
+    if (!svc) throw new Error(`Service ${name} not defined in manifest`);
+    for (const dep of svc.dependencies || []) visit(dep);
+    perm.add(name);
+    temp.delete(name);
+    ordered.push(name);
   }
-  let client = spawnLogged('client', { command: CONFIG.client.command });
-  const clientReady = await waitForService('client', CONFIG.client);
-  if (!clientReady) {
-    client.kill();
-    server.kill();
-    process.exitCode = 1;
-    return;
+  for (const name of Object.keys(services)) visit(name);
+
+  const processes = new Map();
+  for (const name of ordered) {
+    const svc = services[name];
+    const cmd = SMOKE && svc.smokeCommand ? svc.smokeCommand : svc.command;
+    if (SMOKE && svc.smokeStartupTimeoutMs) svc.startupTimeoutMs = svc.smokeStartupTimeoutMs;
+    console.log(`🚀 Starting ${name} (${cmd}) ...`);
+    const child = spawnLogged(name, { command: cmd }, svc);
+    processes.set(name, child);
+    const ready = await waitForService(name, svc);
+    if (!ready) {
+      child.kill();
+      // kill previously started
+      for (const [n,p] of processes) if (n !== name) p.kill();
+      process.exitCode = 1;
+      return;
+    }
   }
 
   console.log('🌐 Dev environment ready:');
-  console.log(`   ⚡ Server: http://localhost:${CONFIG.server.port}`);
-  console.log(`   🎨 Client: http://localhost:${CONFIG.client.port}`);
+  for (const name of ordered) {
+    const svc = services[name];
+    console.log(`   • ${name}: http://localhost:${svc.port}${svc.healthPath}`);
+  }
 
-  if (!enableMonitor) return; // passive mode ends here (process persists via child stdio inherit)
-
-  console.log('🩺 Monitoring enabled (5s interval)...');
+  if (!enableMonitor) return;
+  console.log(`🩺 Monitoring enabled (${global.monitorIntervalMs}ms interval)...`);
   setInterval(async () => {
-    const sOk = await probe({ port: CONFIG.server.port, path: CONFIG.server.healthPath });
-    const cOk = await probe({ port: CONFIG.client.port, path: CONFIG.client.healthPath });
-    if (!sOk) {
-      console.log('🚨 Server unhealthy. Restarting...');
-      server.kill();
-      await delay(CONFIG.restartBackoffMs);
-  server = spawnLogged('server', { command: CONFIG.server.command });
+    for (const name of ordered) {
+      const svc = services[name];
+      const ok = await probe({ port: svc.port, path: svc.healthPath });
+      if (!ok) {
+        console.log(`🚨 ${name} unhealthy. Restarting...`);
+        const proc = processes.get(name);
+        proc && proc.kill();
+        await delay(global.restartBackoffMs);
+        const cmd = SMOKE && svc.smokeCommand ? svc.smokeCommand : svc.command;
+        const child = spawnLogged(name, { command: cmd }, svc);
+        processes.set(name, child);
+      }
     }
-    if (!cOk) {
-      console.log('🚨 Client unhealthy. Restarting...');
-      client.kill();
-      await delay(CONFIG.restartBackoffMs);
-  client = spawnLogged('client', { command: CONFIG.client.command });
-    }
-  }, CONFIG.monitorIntervalMs);
+  }, global.monitorIntervalMs);
 
-  // Graceful shutdown
   const shutdown = () => {
     console.log('\n🛑 Shutting down coordinated dev...');
-    server.kill();
-    client.kill();
+    for (const [,proc] of processes) proc.kill();
     process.exit(0);
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 }
 
-orchestrate();
+orchestrate().catch(err => {
+  console.error('❌ Orchestration failed:', err.message);
+  process.exitCode = 1;
+});

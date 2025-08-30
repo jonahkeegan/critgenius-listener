@@ -130,6 +130,9 @@ Masters, and content creators with seamless audio documentation and transcriptio
 - **Data Storage:** Privacy-first with minimal cloud dependencies
 - **API Design:** RESTful with real-time WebSocket capabilities
 - **Security:** End-to-end encryption for audio streams and transcripts
+- **Developer Orchestration:** Declarative multi-service manifest (services.yaml) enabling
+  dependency-aware local startup, health-gated sequencing, and generic monitoring/restart loop
+  (enhances reliability + reduces setup friction)
 
 ## Project Dependencies
 

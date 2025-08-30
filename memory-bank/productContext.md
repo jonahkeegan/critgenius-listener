@@ -176,3 +176,21 @@ with speaker-to-character mapping and AI extensibility
 - **Foundation:** ../memory-bank/projectbrief.md
 - **Next Dependencies:** systemPatterns.md, techContext.md
 - **Source:** ../context-inputs/product-stratgegy-critgenius-listener.md
+
+## Infrastructure Enablers (2025-08-30 Update)
+
+Progressive infrastructure capabilities underpinning product feasibility:
+
+- Environment schema validation & startup gating (prevents misconfigured deployments)
+- Client-safe configuration projection (privacy guardrail for browser bundle)
+- Pre-commit automation & conditional type-aware gating (quality velocity balance)
+- Development workflow benchmarking & onboarding documentation (consistent ramp-in)
+- Vite dev server optimization & safe environment reload (fast feedback loop)
+- Development proxy architecture (unified local origin; reduced CORS friction)
+- Coordinated dev orchestration (sequenced server→client startup, health gating)
+- Declarative service manifest orchestration (scalable multi-service startup, dependency-aware
+  sequencing, generic monitoring & restart framework, per-service smoke overrides)
+
+These enablers reduce operational friction and derisk future feature delivery (audio pipeline, AI
+integrations, session analytics) by standardizing config, reliability, and local developer
+ergonomics.

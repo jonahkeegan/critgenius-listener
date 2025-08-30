@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-29 09:30 PST **Version:** 2.6.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-30 11:05 PST **Version:** 2.8.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -259,6 +259,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Validation:** Lint/type/tests pass; unit tests assert helper invariants (disabled state returns undefined, custom path, timeout honored). No secret leakage (only non-sensitive paths/ports).  
 **Follow-Ups:** Integration test once API routes implemented; potential enabling of AssemblyAI proxy with auth middleware; documentation update if production reverse proxy (NGINX/Traefik) introduced.
 
+### ADR-011: Coordinated Development Orchestration & Health-Gated Startup
+
+**Status:** Accepted (Aug 29, 2025)  
+**Context:** Parallel `pnpm` dev scripts produced client race errors against not-yet-initialized server endpoints; Windows-specific `pnpm` spawning inconsistencies (ENOENT) reduced reliability; strict env schema complicated direct full-server invocation in a minimal smoke test context.  
+**Decision:** Add orchestration script launching server first, polling `/api/health` until <500, then launching client and probing `/`; supply optional `--monitor` restart loop; introduce mock health server for smoke tests (`ORCHESTRATION_SMOKE=true`).  
+**Rationale:** Sequenced, health-gated startup eliminates transient failures, improves developer confidence, and isolates orchestration logic for testing without relaxing configuration guarantees. Mock mode reduces dependency surface for CI smoke validation.  
+**Consequences:** Additional script maintenance (spawn fallback, monitoring), distinct mock vs real test paths (real-server integration deferred). Monitoring presently simple (fixed interval, no exponential backoff or crash loop metrics).  
+**Alternatives Considered:** Client-side retry wrapping (adds frontend complexity); environment schema relaxation (weakens guarantees); adopting external process manager (adds dependency surface, less tailored health logic).  
+**Validation:** Smoke test passes (mock mode); manual real-mode validation confirmed client availability post server readiness; no runtime package code changed.  
+**Follow-Ups:** Real-server orchestration test with curated env, structured JSON logging, dynamic port/health path overrides, exponential backoff & crash loop detection, ADR update after monitoring expansion.
+
 ## Development Workflow Patterns
 
 ### Pre-Commit Quality Gate Pattern
@@ -379,3 +390,21 @@ Type Generation → Error Reporting → Application Ready
 - **Deployment Safety**: Startup validation prevents misconfigured deployments
 - **Client Security**: Sanitized projection ensures no secret categories reach the bundle
 - **Testability**: Dynamic flag evaluation (no static cache) enables per-test environment mutation without reset hooks
+
+### Declarative Service Manifest Orchestration Pattern (Added 2025-08-30)
+
+**Context:** Initial coordinated dev orchestration (ADR-011) used inline hardcoded configuration for two services (server/client). Anticipated expansion (e.g., additional mock connectors, future audio processing workers) would necessitate script edits and increase regression risk.
+
+**Decision:** Introduce root `services.yaml` manifest defining global polling/monitoring/backoff plus per-service command set (dev vs smoke), port, healthPath, startup timeouts, dependencies, environment interpolation (`${port}`), and optional smoke overrides. Refactor orchestration script to dynamically load manifest, perform dependency-aware (DFS topological) startup, and apply generic monitoring & restart logic across all services.
+
+**Rationale:** Externalizing topology yields zero-code service addition, central governance of operational parameters, improved review clarity (manifest diffs), and foundation for future enhancements (parallel DAG branch startup, richer validation). Cycle detection strengthens robustness as service graph grows.
+
+**Mechanics:** Loader parses YAML, performs structural validation (presence + primitive types), aggregates errors, interpolates placeholders, returns typed object (ambient d.ts). Orchestrator executes DFS ordering, sequential readiness probes, and interval-based health monitoring with restart semantics.
+
+**Benefits:** Decoupled configuration, scalability, reduced code churn, explicit dependency modeling, aggregated validation errors, maintainable smoke strategy via per-service overrides.
+
+**Risks & Mitigations:** Limited semantic validation (range/enum) → plan Zod manifest schema. Sequential startup latency → planned parallel independent branch startup. Coarse polling monitoring → roadmap for event probes & adaptive intervals.
+
+**Follow-Ups:** Zod schema, JSON structured logging & metrics, CLI service filters, parallel startup, extended health probes (WS, script), crash loop detection & exponential backoff.
+
+**Version Impact:** Version bumped to 2.8.0 to reflect new orchestration pattern integration.
