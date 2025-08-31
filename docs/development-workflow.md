@@ -85,11 +85,13 @@ When changing shared types used by server/client:
 
 ## Tooling Reference
 
-| Script                | Purpose                                                                  |
-| --------------------- | ------------------------------------------------------------------------ |
-| `precommit:validate`  | Full pipeline (lint, format check, type-check) ignoring staged narrowing |
-| `precommit:simulate`  | Scenario suite (clean, lint-error, format-error, type-error)             |
-| `precommit:benchmark` | Performance timing across iterations                                     |
+| Script                  | Purpose                                                                  |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `precommit:validate`    | Full pipeline (lint, format check, type-check) ignoring staged narrowing |
+| `precommit:simulate`    | Scenario suite (clean, lint-error, format-error, type-error)             |
+| `precommit:benchmark`   | Performance timing across iterations                                     |
+| `dev:coordinated`       | Orchestrated server→client startup with health checks                    |
+| `dev:coordinated:watch` | Orchestrated startup plus 5s interval health monitoring & auto-restart   |
 
 ## Validation Checklist (Task 2.8.5)
 
@@ -135,3 +137,42 @@ No secrets handled in hooks; avoid echoing raw env values. Do not add API key ch
 ---
 
 Maintained by Infra. Keep diagrams current when logic changes.
+
+---
+
+## Coordinated Dev Orchestration (Task 2.9.3)
+
+Purpose: Deterministic, observable startup order and optional resiliency loop for local development.
+
+Key Features:
+
+- Sequenced startup: server waits until `/api/health` returns (<500 response) before launching
+  client.
+- Readiness windows: server 30s, client 20s with 1s polling cadence.
+- Clear console UX: pending indicator replaced by ✅ / ❌ with elapsed ms.
+- Optional monitoring (`dev:coordinated:watch`): 5s probes, automatic process restart if unhealthy.
+- Graceful shutdown: SIGINT/SIGTERM propagate to child processes and exit cleanly.
+
+Non-Goals (MVP scope):
+
+- WebSocket level synthetic pings.
+- AssemblyAI external reachability tests (kept isolated to avoid network dependency in dev tests).
+- Multi-service dependency graph beyond current server/client pair.
+
+Testing Strategy:
+
+- Smoke test `tests/orchestration/dev-orchestration.smoke.test.ts` validates server health precedes
+  client readiness.
+- Unit-style isolation not added to avoid brittleness around spawn timing; future refactor may
+  abstract probe logic.
+
+Extension Roadmap:
+
+- Add structured JSON log mode for editor integration.
+- Config-driven service manifest (YAML/JSON) for additional internal microservices.
+- Exponential backoff metrics and restart counters surfaced via `/api/health` augmentation.
+
+Security & Privacy:
+
+- No secrets logged; only port numbers and generic status lines.
+- Does not read or print full environment—delegates to underlying processes which already sanitize.

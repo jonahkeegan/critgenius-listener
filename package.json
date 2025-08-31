@@ -12,6 +12,8 @@
   },
   "scripts": {
     "dev": "pnpm --parallel --stream run dev",
+    "dev:coordinated": "node scripts/dev-orchestration.mjs",
+    "dev:coordinated:watch": "node scripts/dev-orchestration.mjs --monitor",
     "build": "pnpm --recursive run build",
     "test": "pnpm --recursive run test",
     "test:watch": "pnpm --recursive run test:watch",
@@ -133,6 +135,7 @@
     "supertest": "^7.1.4",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "js-yaml": "^4.1.0"
   }
 }

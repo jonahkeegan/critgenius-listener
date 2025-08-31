@@ -32,71 +32,81 @@ Improvements_Identified_For_Consolidation:
 
 *Ready for new entries.*
 
-Date: 2025-08-29
-TaskRef: "Task 2.9.2: Development Proxy Configuration (Vite → API / Socket.IO / AssemblyAI)"
+Date: 2025-08-30
+TaskRef: "2-9-3 Declarative Service Manifest Orchestration"
 
 Learnings:
-- Isolating proxy logic behind a pure helper (`buildDevProxy`) enables deterministic unit testing without invoking full Vite/esbuild pipeline (reduces infra test flakiness).
-- Prefixing all development-only vars with `DEV_PROXY_` creates an immediate visual + grep filter to prevent accidental production coupling.
-- Enforcing literal defaults (`z.literal(true)`) in the development schema for always-on conveniences (proxy enable flags) clarifies intent and avoids unnecessary env churn.
-- Skipping secret header injection for AssemblyAI during early exploration is a deliberate DX vs. security trade: lowers immediate complexity while signaling future secure mediation.
-- Fallback logic in tests (graceful `.env.example` absence) guards against environment-dependent filesystem issues on CI or partial checkout scenarios.
+- Decoupling orchestration configuration into a manifest significantly reduced cognitive load and improved extensibility; topology shifts now require zero code edits.
+- Lightweight structural validation (manual) was sufficient initially; full schema (Zod) can be deferred without blocking value delivery.
+- Topological sorting with explicit cycle detection is a low-cost safeguard that hardens future scalability.
+- Smoke mode encapsulated per-service (smokeCommand + smokeStartupTimeoutMs) is more maintainable than global branching logic.
+- Interpolating dynamic values (e.g. ${port}) inside manifest environment blocks removes duplication and error risk.
 
 Technical Discoveries:
-- Vite `server.proxy` accepts conditional spread patterns cleanly under `exactOptionalPropertyTypes` so long as the property is omitted (not undefined) when disabled.
-- WebSocket proxy stability requires explicit `ws: true` and (in local dev) `secure: false`; omitting either can produce silent upgrade failures behind corporate proxies.
-- AssemblyAI path rewriting is safest when using a unique prefix path (e.g., `/proxy/assemblyai`) to avoid collisions with future internal API routes.
-- Timeouts (`timeout` in proxy options) offer a simple guardrail against hanging external calls without introducing extra abort logic.
+- Manual YAML validation plus targeted error aggregation provides clear developer feedback while avoiding dependency bloat.
+- Ambient .d.ts file beside a `.mjs` script enables typed test imports without altering build configuration.
+- A single generic monitoring loop can manage N services with uniform restart semantics—no need for per-service branching.
+- Cycle detection via DFS sets (temp/perm) is concise and robust for small-to-medium service graphs.
+- Environment injection strategy (only set if undefined) prevents accidental override of user-specific overrides.
 
 Success Patterns:
-- Added documentation (`docs/development-proxy.md`) contemporaneously with implementation—prevents drift and shortens onboarding cycle.
-- Test suite targets the pure function (not the build config) shrinking execution time and surface area for flakey environment invariants.
-- Environment schema ↑ test alignment (env var presence + defaults) continues the pattern of schema-as-source-of-truth.
-- Security review table in completion report creates an auditable artifact for future ADR formalization (candidate ADR-010).
+- Introduced feature parity refactor with zero regression by retaining probe + health semantics and adding tests early.
+- Documentation (sequence diagrams) immediately after implementation accelerates onboarding and future iteration.
+- Reusing existing probe function prevented divergent health logic paths.
+- Incremental layering (loader -> orchestration refactor -> tests -> docs) minimized integration friction.
+- Clear separation of manifest concern vs. orchestration logic improved readability.
 
 Implementation Excellence:
-- Zero production impact (proxy only constructed in dev branch paths) preserving deployment confidence.
-- No new runtime dependencies; leveraged existing TypeScript + Vite types for integration.
-- Structured sequence diagram in completion report clarifies request flow—useful for future debugging & knowledge transfer.
-- Chose minimal variable surface (5 keys) to reduce cognitive overhead while covering 90% of customization needs.
+- Added cycle detection and failure fast behavior—avoids silent partial startup states.
+- Generic restart logic leverages manifest-driven intervals/backoff, enabling future per-service overrides.
+- Interpolation handled before spawning processes, ensuring env values are correct and deterministic.
+- Error messaging aggregates all manifest validation issues for one-pass fix cycles.
+- Test coverage validates load, interpolation, and error pathways (missing file), giving confidence for future manifest edits.
 
 Improvements_Identified_For_Consolidation:
-- Implement secure server-side AssemblyAI signing/forward endpoint to eliminate any temptation to expose API key via client path.
-- Add optional debug logging hook with redaction safeguards for timing & error classification (latency observability).
-- Consider automatic backend port probe (fallback to disabled proxy with informative warning) to reduce misconfiguration friction.
-- Introduce ADR-010 to formally capture dev proxy architecture, security boundaries, and future enhancement roadmap.
-- Add coverage for WebSocket upgrade pass-through (integration test using mocked Socket.IO client behind proxy) in a future infra task.
+- Upgrade validation to Zod for richer type + range checking and future editor tooling synergy.
+- Add parallel startup for independent services to reduce total cold-start latency.
+- Provide CLI flags for selective service inclusion/exclusion (e.g. focus dev on server only).
+- Add JSON structured logging mode for machine-readable orchestration metrics.
+- Extend health strategies (WebSocket ping, custom script) for services without simple HTTP readiness.
 
-Date: 2025-08-28
-TaskRef: "Task 2.9.1: Vite Dev Server Enhancement (HMR + Build Optimization)"
+Date: 2025-08-30
+TaskRef: "2-9-3 Enhanced Health Checks & Intelligent Restart Logic"
 
 Learnings:
-- Incremental enhancement of existing config (surgical modifications) yields low-risk performance + DX wins without refactor churn.
-- Coarse-grained manual chunk buckets (react / mui / realtime / vendor) strike a balance between cache efficiency and avoiding request proliferation.
-- Explicitly surfacing environment-derived client config through a single serialized define key simplifies future audit for secret exposure.
-- Separation of qualitative expectation setting (not yet benchmarked) from delivered changes keeps scope disciplined and avoids premature optimization claims.
+- Expanding health output with structured component states enables early anomaly detection without log diving.
+- A score heuristic (0-100) gives an at-a-glance indicator while preserving granular `details`—dual-level observability is valuable.
+- Mock-first dependency checks (env + format validation) decouple reliability features from external infrastructure availability in early phases.
+- Memory snapshot (rss / heap) provides immediate signal for runaway leaks during dev without heavy profiler overhead.
+- Tri-state health (`healthy|degraded|unhealthy`) better reflects partial impairment vs binary OK/fail responses.
 
 Technical Discoveries:
-- `fs.watchFile` polling proves more reliable than native watch on some Windows setups for `.env` changes; acceptable overhead given small file size.
-- Vite `manualChunks` function form offers simpler future extensibility (e.g., icon sub-chunk) versus static object mapping.
-- Placing `cacheDir` inside shared workspace node_modules reduces duplicate caches across packages and shortens cold start.
-- Guarding `import.meta.vitest` prevents accidental environment branching during production builds when tests import config.
+- `exactOptionalPropertyTypes` requires constructing detail objects conditionally—spreading undefined fields triggers type friction; building objects incrementally avoids this.
+- Adding circuit breaker state to an in-memory map is sufficient for dev orchestration; persistent state is unnecessary at this maturity stage.
+- Score threshold tuning is straightforward when subtractive penalties are coarse-grained (major vs minor faults) rather than per-check weighting.
+- Per-service restart config in `services.yaml` scales better than global-only knobs; supports future specialization (e.g., chat gateway vs transcription core).
+- Health endpoint latency stayed negligible with synchronous mock checks; deferring real network pings prevents timeout stacking.
 
 Success Patterns:
-- Added test (`vite.config.test.ts`) immediately with config changes, converting infrastructure config into a unit-tested asset.
-- Maintained privacy-first stance (no logging of values) while enabling dynamic env reload capability.
-- Kept enhancements orthogonal (HMR polish, chunking, env reload, caching) to simplify debugging if regressions appeared.
-- Documentation via completion report ensures transparent rationale for each config knob.
+- Updated tests in lockstep with schema change prevented brittle expectations (accepting `healthy|degraded`).
+- Isolated backoff calculation logic conceptually (even before extraction) making future unit tests trivial to add.
+- Non-invasive enhancement: existing consumers of `/api/health` still parse prior top-level fields; additive changes are backwards compatible.
+- Using simple penalties instead of dynamic weighted averages minimized over-engineering while meeting monitoring goals.
+- Incrementally layering circuit breaker after implementing exponential backoff reduced cognitive load.
 
 Implementation Excellence:
-- Avoided new runtime dependencies; leveraged core Node + existing plugins only.
-- Manual chunking function written declaratively, easy to expand while keeping deterministic naming.
-- Dev-only plugin isolated with `apply: 'serve'` minimizing production risk surface.
-- Alias moved to `path.resolve` for cross-platform correctness without introducing brittle relative assumptions.
+- Avoided secret exposure: only key presence/length checked—no accidental logging paths added.
+- Conditional object assembly satisfied strict TS settings without resorting to `as` casts, maintaining type integrity.
+- Restart logic respects circuit open window, preventing rapid thrash and CPU churn during persistent failure states.
+- Manifest restart parameters use explicit names (baseMs, maxMs, maxAttempts, circuitCooldownMs)—self documenting in YAML.
+- Tests relaxed expectations deliberately—documented rationale prevents future accidental re-tightening.
 
 Improvements_Identified_For_Consolidation:
-- Add bundle size analyzer & record baseline to quantify future reductions.
-- Implement HMR timing overlay to gather empirical <200ms update target metrics.
-- Extend env reload plugin to debounce rapid successive writes and log a single summarized reload notice.
-- Add integration test ensuring `.env` change triggers full reload & updated client config consumption.
-- Consider chunk size threshold monitoring (bundler analyzer CI gate) to detect drift early.
+- Extract and unit test pure backoff + circuit breaker decision function for deterministic coverage (edge: maxAttempts, cooldown expiry).
+- Add event loop lag measurement (interval sampling) to enrich `system.eventLoopLagMs` metric.
+- Provide verbose=false query param to suppress `details` for ultra-lightweight probes (CI / uptime pingers).
+- Integrate real dependency pings behind opt-in env flags to preserve fast responses locally.
+- Emit structured log line for each restart attempt including attempt, backoff, reason, circuit state.
+- Document health schema in architecture & ops guides; include versioning plan for future fields.
+- Add degrade triggers for memory thresholds (e.g., >70% heap used) to preempt OOM issues.
+
