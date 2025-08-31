@@ -90,6 +90,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Implemented minimal HTTP proxy forwarding integration test (lower flake vs full Vite/socket orchestration)
   - ✅ Introduced simulated react-refresh HMR state retention harness (permissive assertion acknowledges jsdom runtime limitations)
   - ✅ Updated `docs/development-server.md` replacing script-based validation with test-centric workflow & troubleshooting matrix
+   - ✅ Refactored `docs/development-server.md` into structured guide (sections, sequence diagrams) + added automated integrity test (`tests/docs/development-server-doc.test.ts`)
   - ✅ Removed obsolete skipped test; enforced zero lint warnings; added missing `@types/react-refresh`
   - 🔜 Follow-Ups: WebSocket proxy forwarding test; real Vite-driven strict HMR state preservation; proxy negative-path tests; watcher disposal & latency instrumentation
 

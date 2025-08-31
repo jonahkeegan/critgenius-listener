@@ -74,4 +74,8 @@ Improvements_Identified_For_Consolidation:
 - Centralize test utilities for mock server & file watcher to reduce duplication across future dev infra tests.
 - Consider instrumentation hook for measuring HMR + reload event frequency to catch regressions early.
 
+Additional Update (Doc Refactor Integration):
+- Implemented structured `development-server.md` rewrite with sequence diagrams and added automated integrity test (`tests/docs/development-server-doc.test.ts`) ensuring required sections persist.
+- Root test script now executes docs test to prevent silent drift; low-cost guardrail established.
+
 
