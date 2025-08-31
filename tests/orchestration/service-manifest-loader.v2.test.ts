@@ -30,7 +30,17 @@ describe('service-manifest-loader v2 enhancements', () => {
   });
 
   it('validates new executionConfig shape (fallbackCommands array)', () => {
-    const bad = `version: "2.0"\nservices:\n  svc:\n    name: "svc"\n    command: "pnpm run dev"\n    port: 5001\n    healthPath: "/health"\n    startupTimeoutMs: 5000\n    executionConfig: 123\n`;
+    const bad = `
+version: "2.0"
+services:
+  svc:
+    name: "svc"
+    command: "pnpm run dev"
+    port: 5001
+    healthPath: "/health"
+    startupTimeoutMs: 5000
+    executionConfig: 123
+`;
     const file = dump(bad);
     const script = path.resolve(process.cwd(), 'scripts/manifest-dump.cjs');
     expect(() =>
