@@ -1,15 +1,16 @@
 ## Declarative Service Manifest Orchestration
 
-This document describes the new manifest-driven coordinated dev workflow introduced in
-`services.yaml` and implemented in `scripts/dev-orchestration.mjs` +
-`scripts/service-manifest-loader.mjs`.
+This document describes the manifest-driven coordinated dev workflow introduced in `services.yaml`
+and implemented by the promoted **v3 orchestrator** now exposed at `scripts/dev-orchestration.mjs`
+(wrapper delegating to `dev-orchestration.v3.mjs`) plus `scripts/service-manifest-loader.mjs`.
 
 ### Goals
 
 1. Decouple orchestration logic from hardcoded topology
 2. Enable easy addition / modification of services without script edits
 3. Provide smoke-mode overrides for fast CI validation
-4. Preserve existing health check + monitoring functionality
+4. Preserve and extend health check + monitoring functionality (readiness + liveness)
+5. Add structured restart/backoff with circuit breaker to prevent thrashing
 
 ### Manifest Overview (`services.yaml`)
 
@@ -19,14 +20,16 @@ Key sections:
 - `global`: polling + monitoring intervals and restart backoff
 - `services`: service map with commands, ports, health paths, timeouts, dependencies, environment
 
-Environment values support `${port}` interpolation.
+Environment values support `${port}` interpolation plus orchestrator injected convenience vars:
+`SERVICE_NAME`, `TIMEOUT`, `DEV_PROXY_TIMEOUT_MS` (derived from global.defaultTimeout unless
+overridden).
 
 ### Core Startup Sequence
 
 ```mermaid
 sequenceDiagram
     participant Dev as Developer
-    participant Orchestrator as dev-orchestration.mjs
+    participant Orchestrator as dev-orchestration.v3
     participant Loader as service-manifest-loader
     participant Manifest as services.yaml
     participant Proc as Child Processes
@@ -53,7 +56,7 @@ sequenceDiagram
     end
 ```
 
-### Monitoring & Restart Cycle
+### Monitoring & Restart Cycle (v3)
 
 ```mermaid
 sequenceDiagram
@@ -66,12 +69,14 @@ sequenceDiagram
         Orchestrator->>Health: GET /healthPath
         alt Status < 500
             Health-->>Orchestrator: healthy
-            Orchestrator->>Monitor: no-op
+            Orchestrator->>Monitor: reset consecutive failures
         else Unhealthy
             Health-->>Orchestrator: unhealthy
-            Orchestrator->>Service: kill()
-            Orchestrator->>Orchestrator: delay(global.restartBackoffMs)
-            Orchestrator->>Service: spawn(command)
+            Orchestrator->>Orchestrator: inc consecutive failures
+            alt >= threshold (3)
+                Orchestrator->>Service: kill()
+                Orchestrator->>Orchestrator: scheduleRestart(backoff)
+            end
         end
     end
 ```
@@ -89,21 +94,27 @@ sequenceDiagram
     Orchestrator->>Orchestrator: Inject placeholder env vars (already in manifest)
 ```
 
-### Restart Logic (Unhealthy -> Restart)
+### Restart Logic (Unhealthy -> Restart, v3)
 
 ```mermaid
 flowchart TD
-    A[Monitor detects unhealthy] --> B[KILL process]
-    B --> C[Wait restartBackoffMs]
-    C --> D[Spawn new process]
-    D --> E[Passive: continue]
+    A[Exit OR 3 consecutive failed probes OR readiness timeout] --> B[Compute backoff (exp)]
+    B --> C[Spawn new process]
+    C --> D[If success -> reset attempts]
+    C --> E[If fail -> attempts++]
+    E --> F{attempts > max?}
+    F -->|Yes| G[Open circuit cooldown]
+    F -->|No| B
 ```
 
-### Error Handling
+### Error Handling (v3)
 
 - Manifest validation failures: process exits with aggregated error list
 - Cyclic dependencies: explicit cycle detection error before spawning
-- Health timeout: abort + cleanup previously spawned services
+- Readiness timeout: abort start attempt & schedule restart under policy
+- Liveness probe consecutive failures (>=3): triggers restart flow
+- Circuit breaker: after maxAttempts reached, service enters cooldown (no restarts) until
+  `circuitCooldownMs` expires
 
 ### Extending the Topology
 
@@ -115,10 +126,11 @@ flowchart TD
 
 ### Future Enhancements (Deferred)
 
-- YAML schema validation via Zod + intermediate JSON transform
-- Per-service custom monitor strategy (websocket ping, etc.)
-- Parallel startup of independent branches (requires concurrency controls)
-- Structured JSON log mode for machine parsing
+- Parallel startup of independent branches (requires concurrency & dependency gating)
+- Structured JSON log / event stream (for UI dashboard)
+- Configurable health probe strategy (HTTP / WebSocket / custom command)
+- Declarative per-service consecutive failure thresholds
+- Rich TUI / web dashboard
 
 ### Quick Verification Commands (Optional)
 
@@ -134,4 +146,4 @@ environment (.env) validated via existing environment loader.
 
 ---
 
-Generated as part of task 2-9-3: Enhance Declarative Service Manifest.
+Updated (Phase 4) – v3 orchestration promoted; legacy script removed after stabilization.
