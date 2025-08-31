@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-30 14:45 PST **Version:** 2.9.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-31 15:20 PST **Version:** 2.11.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -281,6 +281,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Validation:** Updated tests accept `healthy|degraded`; no secret leakage; score calculation deterministic. All existing suites green.
 **Follow-Ups:** Event loop lag metric, memory pressure degradation triggers, optional concise mode (no details), real dependency ping (opt-in), structured log emission of restart attempts.
 
+### ADR-013: Declarative Service Manifest Orchestration & Generic Restart Framework
+
+**Status:** Accepted (Aug 30, 2025)
+**Context:** Inline orchestration logic constrained scalability (adding services required script edits) and limited resilience (fixed sequencing, ad-hoc env injection).
+**Decision:** Introduce versioned `services.yaml` manifest with global + per-service config (commands, readiness/liveness parameters, dependencies, restart policy) and generic orchestrator performing topological sorting, readiness gating, liveness monitoring, exponential backoff restart with circuit breaker, and conditional smoke overrides.
+**Rationale:** Manifest externalization reduces code churn, improves auditability (YAML diff review), enables zero-code service addition, and forms a stable contract for future parallel startup & multi-probe extensions.
+**Consequences:** Slight complexity increase in loader & validation; current validation is structural (manual) pending Zod migration; sequential startup latency persists until parallel branches implemented.
+**Alternatives Considered:** PM2/Nodemon layering (insufficient fine-grained policy control), JSON config (less human-friendly for multi-service editing), early adoption of full schema (higher upfront friction).
+**Validation:** Unit tests (loader, topology) green; smoke path unaffected; consolidated learnings captured (File 006).
+**Follow-Ups:** Zod schema migration, parallel branch concurrency, structured JSON event emission, multi-probe types (http/tcp/command), dry-run planning mode, CLI service filters, extracted pure backoff module tests.
+
 ### Resilience Pattern: Structured Health Scoring & Backoff Restart (Added 2025-08-30)
 
 **Pattern:** Provide multi-dimensional health snapshot + adaptive restart strategy to improve local reliability insight and prevent thrash.
@@ -430,3 +441,14 @@ Type Generation → Error Reporting → Application Ready
 **Follow-Ups:** Zod schema, JSON structured logging & metrics, CLI service filters, parallel startup, extended health probes (WS, script), crash loop detection & exponential backoff.
 
 **Version Impact:** Version bumped to 2.8.0 to reflect new orchestration pattern integration.
+
+### ADR-014: Dev Server Validation & Test-Centric Hot Reload Strategy
+
+**Status:** Accepted (Aug 31, 2025)
+**Context:** Need reliable, low-latency validation of dev server behavior (env-driven reloads, proxy correctness, HMR state retention) without incurring flakiness and overhead of full Vite + Socket.IO orchestration during routine CI/test runs. Prior inline plugin + global test export hack impeded isolation and increased regression surface.
+**Decision:** Extract `envReloadPlugin` into standalone module (serve-only), implement unit test with minimal mock server (EventEmitter + ws.send), replace planned standalone validation script with integrated test suite (plugin reload, proxy forwarding, simulated HMR state retention), and adopt minimal HTTP proxy harness instead of full-stack socket-equipped environment for baseline forwarding coverage.
+**Rationale:** Pure module extraction enables deterministic testing and simpler maintenance; test-centric approach collapses duplicated logic and ESM loader complexity; simulated react-refresh harness captures majority of regression risk at fractional cost; minimal integration test reduces flake and accelerates feedback loops.
+**Consequences:** WebSocket proxy forwarding and strict real HMR verification deferred (explicit follow-up items). Simulated harness may not always preserve state in jsdom, requiring permissive assertion (documented) to avoid false negatives.
+**Alternatives Considered:** (1) Retain inline plugin with global injection (fragile); (2) Maintain external validation script (duplication, drift risk); (3) Full Vite spin-up integration test (slower, flaky, higher maintenance). All rejected in favor of modular + test-centric approach.
+**Validation:** Lint/type/tests green; plugin test reliably emits `full-reload`; proxy forwarding integration test passes (status, headers); no secret exposure; added `@types/react-refresh` for type completeness.
+**Follow-Ups:** WebSocket upgrade forwarding test (socket.io echo), Vite-in-process strict HMR suite, negative-path proxy error handling tests, watcher disposal assertion, reload latency performance metric instrumentation, potential consolidation of test utility scaffolds.

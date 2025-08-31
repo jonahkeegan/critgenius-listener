@@ -32,81 +32,46 @@ Improvements_Identified_For_Consolidation:
 
 *Ready for new entries.*
 
-Date: 2025-08-30
-TaskRef: "2-9-3 Declarative Service Manifest Orchestration"
+
+Date: 2025-08-31
+TaskRef: "Dev Infra Task 2.9.4 – Dev Server Validation & Documentation"
 
 Learnings:
-- Decoupling orchestration configuration into a manifest significantly reduced cognitive load and improved extensibility; topology shifts now require zero code edits.
-- Lightweight structural validation (manual) was sufficient initially; full schema (Zod) can be deferred without blocking value delivery.
-- Topological sorting with explicit cycle detection is a low-cost safeguard that hardens future scalability.
-- Smoke mode encapsulated per-service (smokeCommand + smokeStartupTimeoutMs) is more maintainable than global branching logic.
-- Interpolating dynamic values (e.g. ${port}) inside manifest environment blocks removes duplication and error risk.
+- Test-centric validation (unit + focused integration) yields faster, more reliable feedback than bespoke validation scripts that duplicate logic.
+- Extracting dev-time functionality (env reload plugin) into its own module dramatically reduces brittleness and enables pure unit tests without global test hooks.
+- Simulated HMR via react-refresh runtime offers high signal with minimal setup; acceptable to allow permissive assertions when jsdom constraints limit parity.
+- Small, deterministic integration tests (HTTP proxy forwarding) provide better stability than full-stack spin-ups early in the lifecycle.
+- Lint and type gates actively surfaced subtle gaps (missing `@types/react-refresh`) early, preventing CI regressions.
+- Clear separation between configuration shape tests and runtime behavior tests clarifies failure modes and accelerates debugging.
 
 Technical Discoveries:
-- Manual YAML validation plus targeted error aggregation provides clear developer feedback while avoiding dependency bloat.
-- Ambient .d.ts file beside a `.mjs` script enables typed test imports without altering build configuration.
-- A single generic monitoring loop can manage N services with uniform restart semantics—no need for per-service branching.
-- Cycle detection via DFS sets (temp/perm) is concise and robust for small-to-medium service graphs.
-- Environment injection strategy (only set if undefined) prevents accidental override of user-specific overrides.
+- Direct react-refresh runtime usage in jsdom can reset state even when signatures match—environment limitation rather than logic defect.
+- File watcher latency (650ms test) largely driven by chosen interval; potential optimization path via configurable debounce.
+- `@ts-ignore` conversions to `@ts-expect-error` improve intentionality and lint clarity.
+- Minimal mock Vite server object (ws.send + httpServer EventEmitter) is sufficient to exercise plugin hooks for reload events.
+- Adding `@types/react-refresh` resolves TS7016 without needing custom ambient declarations.
 
 Success Patterns:
-- Introduced feature parity refactor with zero regression by retaining probe + health semantics and adding tests early.
-- Documentation (sequence diagrams) immediately after implementation accelerates onboarding and future iteration.
-- Reusing existing probe function prevented divergent health logic paths.
-- Incremental layering (loader -> orchestration refactor -> tests -> docs) minimized integration friction.
-- Clear separation of manifest concern vs. orchestration logic improved readability.
+- Modular extraction (plugin) + isolated unit test = lower coupling and easier future enhancements.
+- Deterministic Express-based proxy forwarding test avoids race conditions of full Vite + socket.io harness.
+- Explicit deferred items documented in completion report create a clear backlog for incremental hardening.
+- Consistent privacy stance: no raw env value logging while still validating reload paths.
+- Fast feedback loop: lint -> type-check -> targeted tests minimized iteration cycles.
 
 Implementation Excellence:
-- Added cycle detection and failure fast behavior—avoids silent partial startup states.
-- Generic restart logic leverages manifest-driven intervals/backoff, enabling future per-service overrides.
-- Interpolation handled before spawning processes, ensuring env values are correct and deterministic.
-- Error messaging aggregates all manifest validation issues for one-pass fix cycles.
-- Test coverage validates load, interpolation, and error pathways (missing file), giving confidence for future manifest edits.
+- Clean, single-responsibility `envReloadPlugin` with optional extra watch file via env var.
+- Converted fragile global injection strategy into explicit test harness mocks.
+- Maintained strict ESLint zero-warning policy (replaced ignores, removed stale directives).
+- Added type dependency instead of suppressing the error—aligns with strict typing principle.
+- Tests parameterized with generous but bounded timeouts preventing flakiness while ensuring coverage.
 
 Improvements_Identified_For_Consolidation:
-- Upgrade validation to Zod for richer type + range checking and future editor tooling synergy.
-- Add parallel startup for independent services to reduce total cold-start latency.
-- Provide CLI flags for selective service inclusion/exclusion (e.g. focus dev on server only).
-- Add JSON structured logging mode for machine-readable orchestration metrics.
-- Extend health strategies (WebSocket ping, custom script) for services without simple HTTP readiness.
+- Add WebSocket proxy forwarding integration (socket.io echo test) to validate upgrade path.
+- Introduce performance timing assertions (warn if reload latency > threshold, e.g., 500ms) for proactive ergonomics monitoring.
+- Add watcher disposal assertion (ensure no lingering FS watchers) to prevent FD leaks.
+- Implement negative path proxy tests (upstream timeout, 5xx propagation, header stripping rules).
+- Add real Vite-driven HMR test suite behind opt-in flag for comprehensive state preservation guarantee.
+- Centralize test utilities for mock server & file watcher to reduce duplication across future dev infra tests.
+- Consider instrumentation hook for measuring HMR + reload event frequency to catch regressions early.
 
-Date: 2025-08-30
-TaskRef: "2-9-3 Enhanced Health Checks & Intelligent Restart Logic"
-
-Learnings:
-- Expanding health output with structured component states enables early anomaly detection without log diving.
-- A score heuristic (0-100) gives an at-a-glance indicator while preserving granular `details`—dual-level observability is valuable.
-- Mock-first dependency checks (env + format validation) decouple reliability features from external infrastructure availability in early phases.
-- Memory snapshot (rss / heap) provides immediate signal for runaway leaks during dev without heavy profiler overhead.
-- Tri-state health (`healthy|degraded|unhealthy`) better reflects partial impairment vs binary OK/fail responses.
-
-Technical Discoveries:
-- `exactOptionalPropertyTypes` requires constructing detail objects conditionally—spreading undefined fields triggers type friction; building objects incrementally avoids this.
-- Adding circuit breaker state to an in-memory map is sufficient for dev orchestration; persistent state is unnecessary at this maturity stage.
-- Score threshold tuning is straightforward when subtractive penalties are coarse-grained (major vs minor faults) rather than per-check weighting.
-- Per-service restart config in `services.yaml` scales better than global-only knobs; supports future specialization (e.g., chat gateway vs transcription core).
-- Health endpoint latency stayed negligible with synchronous mock checks; deferring real network pings prevents timeout stacking.
-
-Success Patterns:
-- Updated tests in lockstep with schema change prevented brittle expectations (accepting `healthy|degraded`).
-- Isolated backoff calculation logic conceptually (even before extraction) making future unit tests trivial to add.
-- Non-invasive enhancement: existing consumers of `/api/health` still parse prior top-level fields; additive changes are backwards compatible.
-- Using simple penalties instead of dynamic weighted averages minimized over-engineering while meeting monitoring goals.
-- Incrementally layering circuit breaker after implementing exponential backoff reduced cognitive load.
-
-Implementation Excellence:
-- Avoided secret exposure: only key presence/length checked—no accidental logging paths added.
-- Conditional object assembly satisfied strict TS settings without resorting to `as` casts, maintaining type integrity.
-- Restart logic respects circuit open window, preventing rapid thrash and CPU churn during persistent failure states.
-- Manifest restart parameters use explicit names (baseMs, maxMs, maxAttempts, circuitCooldownMs)—self documenting in YAML.
-- Tests relaxed expectations deliberately—documented rationale prevents future accidental re-tightening.
-
-Improvements_Identified_For_Consolidation:
-- Extract and unit test pure backoff + circuit breaker decision function for deterministic coverage (edge: maxAttempts, cooldown expiry).
-- Add event loop lag measurement (interval sampling) to enrich `system.eventLoopLagMs` metric.
-- Provide verbose=false query param to suppress `details` for ultra-lightweight probes (CI / uptime pingers).
-- Integrate real dependency pings behind opt-in env flags to preserve fast responses locally.
-- Emit structured log line for each restart attempt including attempt, backoff, reason, circuit state.
-- Document health schema in architecture & ops guides; include versioning plan for future fields.
-- Add degrade triggers for memory thresholds (e.g., >70% heap used) to preempt OOM issues.
 

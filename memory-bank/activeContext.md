@@ -1,15 +1,15 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-30 14:45 PST **Version:** 2.14.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-08-31 15:20 PST **Version:** 2.16.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
 
 Based on comprehensive analysis of all Memory Bank files, the current project state is:
 
-### Project Status: INFRASTRUCTURE SETUP ADVANCING - PRE-COMMIT AUTOMATION ESTABLISHED
+### Project Status: INFRASTRUCTURE RESILIENCE LAYER ESTABLISHED (MANIFEST + HEALTH BACKOFF)
 
-- **Memory Bank Status:** ✅ Fully Operational (6/6 files) - Updated with Environment Management patterns
+- **Memory Bank Status:** ✅ Fully Operational (6/6 files) - Updated with Orchestration & Resilience patterns
 - **Strategic Foundation:** ✅ Complete - Product Context & Project Scope Established  
 - **Technical Architecture:** ✅ Complete - Context7 Validated Architecture Strategy
 - **Infrastructure Setup:** ✅ Latest Milestone - Comprehensive Environment Variable Schema & Templates (Task 2.7.1)
@@ -82,7 +82,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-30)
+### Latest Updates (2025-08-31)
+
+- **INFRASTRUCTURE:** Dev Server Validation & Documentation (Task 2.9.4)
+  - ✅ Extracted `envReloadPlugin` to dedicated module (removes inline config coupling; privacy-preserving full reload on `.env*` changes + optional extra watch file via `ENV_RELOAD_EXTRA`)
+  - ✅ Added unit test (mock Vite server) asserting `full-reload` websocket emission on file change
+  - ✅ Implemented minimal HTTP proxy forwarding integration test (lower flake vs full Vite/socket orchestration)
+  - ✅ Introduced simulated react-refresh HMR state retention harness (permissive assertion acknowledges jsdom runtime limitations)
+  - ✅ Updated `docs/development-server.md` replacing script-based validation with test-centric workflow & troubleshooting matrix
+  - ✅ Removed obsolete skipped test; enforced zero lint warnings; added missing `@types/react-refresh`
+  - 🔜 Follow-Ups: WebSocket proxy forwarding test; real Vite-driven strict HMR state preservation; proxy negative-path tests; watcher disposal & latency instrumentation
+
+### Previous Updates (2025-08-30)
 
 - **INFRASTRUCTURE:** Declarative Service Manifest Orchestration (Task 2.9.3 Enhancement)
   - ✅ Replaced inline hardcoded CONFIG with versioned `services.yaml` manifest (global + service maps)
@@ -101,7 +112,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Per-service restart config blocks (`restart.baseMs|maxMs|maxAttempts|circuitCooldownMs`) added to `services.yaml` enabling differentiated recovery tuning.
   - ✅ Updated tests to allow degraded state; maintained strict type safety under `exactOptionalPropertyTypes` via conditional object assembly.
   - ⚠️ Latency metric & event loop lag measurement deferred; CPU load sampling not yet implemented.
-  - 🔜 Follow-Ups: extract pure backoff calculator with unit tests, add event loop lag sampling, verbose suppression flag for lightweight probes, memory threshold-based degradation, structured restart logging.
+  - 🔜 Follow-Ups: extract pure backoff calculator with unit tests, add event loop lag sampling, verbose suppression flag for lightweight probes, memory threshold-based degradation, structured restart logging, multi-probe strategy, parallel independent branch startup, dry-run planning mode.
 
   - ✅ Orchestration script enforces server-first readiness via `/api/health` polling
   - ✅ Mock health server enables schema-strict smoke test path (`ORCHESTRATION_SMOKE`)

@@ -1,9 +1,9 @@
-import { defineConfig, loadEnv, type UserConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
-import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
 import { buildDevProxy } from './src/config/devProxy';
+import { envReloadPlugin } from './src/dev/envReloadPlugin';
 
 // Build-time environment resolution (Node context) – guarded for safety
 function resolveClientDefine(mode: string) {
@@ -22,35 +22,6 @@ function resolveClientDefine(mode: string) {
   const emptyEnv: Partial<ReturnType<typeof loadEnvironment>> = {};
   const clientCfg = getClientRuntimeConfig(envConfig || emptyEnv);
   return { __CLIENT_ENV__: clientCfg };
-}
-
-// Dev-only plugin: watch .env* changes and trigger a full page reload so updated client-safe
-// variables (after validation) become visible without manual restart. Kept intentionally simple
-// and privacy-aware (never logs values).
-function envReloadPlugin(): Plugin {
-  return {
-    name: 'env-reload',
-    apply: 'serve',
-    configureServer(server) {
-      const candidates = ['.env', '.env.local', '.env.development'];
-      const root = process.cwd();
-      const watched: string[] = [];
-      candidates.forEach(file => {
-        const p = path.resolve(root, file);
-        if (fs.existsSync(p)) {
-          watched.push(p);
-          fs.watchFile(p, { interval: 700 }, () => {
-            server.ws.send({ type: 'full-reload', path: '*' });
-          });
-        }
-      });
-      // Cleanup on server close to avoid leaking watchers during restarts (HMR / plugin reload)
-      const close = () => {
-        watched.forEach(p => fs.unwatchFile(p));
-      };
-      server.httpServer?.once('close', close);
-    },
-  };
 }
 
 // Manual chunking strategy: produce stable, cache-friendly groupings for frequently updated UI
@@ -131,3 +102,5 @@ export default defineConfig(({ mode }) => {
   }
   return config;
 });
+
+// Plugin now imported from dedicated module for direct unit testing.
