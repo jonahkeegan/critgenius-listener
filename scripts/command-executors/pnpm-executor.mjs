@@ -17,10 +17,6 @@ export class PnpmExecutor extends BaseExecutor {
     // If full command includes pnpm already keep order; otherwise prefix fallback variants.
     const attempts = [];
     if (command) attempts.push(command);
-    // Provide canonical base if service.command already includes pnpm sub command.
-    const baseCmd = command.startsWith('pnpm ')
-      ? command
-      : `pnpm ${command}`;
     for (const fb of fallbackCommands) {
       const candidate = command.startsWith(fb)
         ? command
