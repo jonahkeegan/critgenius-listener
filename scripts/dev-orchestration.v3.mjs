@@ -186,7 +186,7 @@ async function orchestrate() {
         const ok = await probe({ port: svc.port, path: svc.healthPath });
         if (!ok) {
           const c = (unhealthyCounts.get(name) || 0) + 1;
-            unhealthyCounts.set(name, c);
+          unhealthyCounts.set(name, c);
           if (c >= maxConsecutive) {
             error(`Service ${name} failed health probe ${c}x -> restarting.`);
             state.process.kill();
