@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-08-31 15:20 PST **Version:** 2.11.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-03 09:10 PST **Version:** 2.12.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -452,3 +452,9 @@ Type Generation → Error Reporting → Application Ready
 **Alternatives Considered:** (1) Retain inline plugin with global injection (fragile); (2) Maintain external validation script (duplication, drift risk); (3) Full Vite spin-up integration test (slower, flaky, higher maintenance). All rejected in favor of modular + test-centric approach.
 **Validation:** Lint/type/tests green; plugin test reliably emits `full-reload`; proxy forwarding integration test passes (status, headers); no secret exposure; added `@types/react-refresh` for type completeness.
 **Follow-Ups:** WebSocket upgrade forwarding test (socket.io echo), Vite-in-process strict HMR suite, negative-path proxy error handling tests, watcher disposal assertion, reload latency performance metric instrumentation, potential consolidation of test utility scaffolds.
+
+### Pattern Update (2025-09-03): Env Reload Integration Test Scaffold
+**Context:** Need end-to-end verification that environment reload plugin behavior matches real browser execution (unit + simulated tests insufficient for confidence in navigation-triggered reload path).
+**Implementation:** Added Playwright-driven integration test (programmatic Vite server + Chromium) asserting exactly one navigation reload within 2s after `.env` mutation; captures baseline latency; uses navigation counting to avoid direct WebSocket coupling initially.
+**Benefits:** High-signal validation with minimal flake; foundation for expanding scenario matrix (extra watch paths, negative cases, debounce behavior, restart resilience). Maintains privacy (no env value logging) and keeps dependency scope localized to client workspace.
+**Deferred Enhancements:** WebSocket frame shape assertion, structured log capture (non-silent logger), latency threshold alerting, server restart path test, consolidated integration utility module.

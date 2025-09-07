@@ -8,6 +8,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "types": ["node", "playwright"],
 
     // Client-specific path mappings
     "baseUrl": ".",

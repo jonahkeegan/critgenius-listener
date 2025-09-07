@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-08-31 15:20 PST **Version:** 2.16.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-03 09:10 PST **Version:** 2.17.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-08-31)
+### Latest Updates (2025-09-03)
+
+- **INFRASTRUCTURE:** Dev Server Validation Extension (Task 2.9.4 – Integration Scaffold)
+  - ✅ Added Playwright + programmatic Vite integration test validating `envReloadPlugin` triggers exactly one full reload on `.env` mutation (navigation-based detection)
+  - ✅ Introduced dedicated integration test config (`vitest.integration.config.ts`) with serial execution & extended timeouts
+  - ✅ Established baseline reload latency metric (~1.2–1.4s) for future regression monitoring
+  - ✅ Maintained privacy (no env value logging; structural reload assertion only)
+  - 🔜 Follow-Ups: extended watch list test (`ENV_RELOAD_EXTRA`), negative no-reload assertions, WebSocket message capture, latency instrumentation, restart resilience
+
+### Previous Updates (2025-08-31)
 
 - **INFRASTRUCTURE:** Dev Server Validation & Documentation (Task 2.9.4)
   - ✅ Extracted `envReloadPlugin` to dedicated module (removes inline config coupling; privacy-preserving full reload on `.env*` changes + optional extra watch file via `ENV_RELOAD_EXTRA`)

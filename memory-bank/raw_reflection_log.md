@@ -79,3 +79,44 @@ Additional Update (Doc Refactor Integration):
 - Root test script now executes docs test to prevent silent drift; low-cost guardrail established.
 
 
+Date: 2025-09-03
+TaskRef: "Dev Infra Task 2-9-4 – envReloadPlugin Integration Test (Initial E2E)"
+
+Learnings:
+- Programmatic Vite server startup (vs spawning a child process) yields faster, more deterministic integration tests (<1.5s) and simpler log capture hooks.
+- Real browser navigation is a robust proxy for validating Vite full reload events; avoids coupling to Vite's internal WebSocket message schema initially.
+- A single high-signal integration test before expanding the matrix reduces maintenance overhead while still increasing confidence beyond unit tests.
+- Soft assertions (warnings) for non-critical signals (e.g., missing plugin log under silent level) prevent early flakiness and keep CI green while iterating.
+- Keeping env reload validation secret-safe is straightforward when tests assert structural effects (reload) instead of value content.
+
+Technical Discoveries:
+- `logLevel: 'silent'` suppresses plugin `logger.info` calls—custom logger must be paired with non-silent level for strict log assertions.
+- Navigation counting via Playwright frame events is simpler than intercepting WebSocket frames yet still detects redundant reloads.
+- Ephemeral port allocation using raw `net` sockets removes a third-party dependency (`get-port`) while remaining reliable on Windows.
+- Playwright adds measurable install footprint; scoping to client package isolates cache impact.
+- Full reload latency (cold start + single edit) currently ~1.2–1.4s; baseline captured for future regression detection.
+
+Success Patterns:
+- Minimal surface area (one authoritative test) established a scalable scaffold for subsequent scenarios.
+- Dependency minimization (no `tmp`, no `get-port`) aligns with lean infra goal and reduces attack surface / supply chain noise.
+- Explicit follow-up scenario table creates a clear incremental roadmap (EXTENDED watch list, negative cases, debounce, restart resilience).
+- Clean resource lifecycle (browser, server, temp dir) prevents handle leaks—foundation for scaling test count.
+- Using navigation count to assert exactly one reload eliminates timing race conditions inherent in message-level polling.
+
+Implementation Excellence:
+- Introduced dedicated `vitest.integration.config.ts` isolating integration tier (serial, lowered concurrency, extended timeouts).
+- Added type-safe Playwright integration with explicit `types` injection in `tsconfig.json`.
+- Custom ephemeral port allocator implemented in ~10 lines; removes external dependency and supports deterministic cleanup.
+- Test code documents rationale within comments, aiding future contributors extending scenario coverage.
+- Strict reload assertion (exactly 2 navigations) guards against accidental multiple broadcasts.
+
+Improvements_Identified_For_Consolidation:
+- Add strict log assertion by adjusting logger level (or removing `silent`) once stability confirmed.
+- Implement `ENV_RELOAD_EXTRA` scenario (positive) and non-env change scenario (negative) to harden watch list correctness.
+- Add rapid consecutive edits test to detect potential future debounce requirement (or to justify adding one).
+- Introduce direct WebSocket message capture utility to validate `type === 'full-reload'` structure in addition to navigation.
+- Add optional latency metric collection (warn if reload > 2000ms threshold) for early performance regression surface.
+- Evaluate a shared integration util module (server + browser manager) to DRY future tests (proxy, HMR, socket resilience).
+- Provide CI skip flag (e.g., `INTEGRATION_BROWSER=0`) to allow faster local/unit-only pipelines while retaining nightly full runs.
+
+
