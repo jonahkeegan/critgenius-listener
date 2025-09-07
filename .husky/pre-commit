@@ -13,6 +13,16 @@ else
 	exit 1
 fi
 
+echo "📁 Validating filenames for OneDrive/GitHub compatibility..."
+if node scripts/filename-validator.mjs >/dev/null 2>&1; then
+	echo "✅ Filename validation passed"
+else
+	echo "❌ Problematic filenames detected – these will break OneDrive/GitHub sync:"
+	echo "   Run 'pnpm validate:filenames' to see details and fix issues"
+	echo "   Commit aborted to prevent sync issues"
+	exit 1
+fi
+
 # Detect staged TypeScript source changes (added / copied / modified)
 if git diff --cached --name-only --diff-filter=ACM | grep -E '\\.(ts|tsx)$' >/dev/null 2>&1; then
 	echo "🧪 TypeScript changes detected – running incremental type check..."

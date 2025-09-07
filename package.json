@@ -52,7 +52,9 @@
     "prepare": "husky",
     "precommit:validate": "node scripts/precommit-validate.mjs",
     "precommit:simulate": "node scripts/precommit-simulate.mjs",
-    "precommit:benchmark": "node scripts/precommit-benchmark.mjs"
+    "precommit:benchmark": "node scripts/precommit-benchmark.mjs",
+    "validate:filenames": "node scripts/filename-validator.mjs",
+    "validate:filenames:fix": "node scripts/filename-validator.mjs --fix"
   },
   "critgenius": {
     "ecosystem": {

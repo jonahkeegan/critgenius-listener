@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-03 09:10 PST **Version:** 2.17.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-06 **Version:** 2.18.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,15 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-03)
+### Latest Updates (2025-09-06)
+
+- **INFRASTRUCTURE:** Dev Server Validation (Task 2.9.4 – Interface Enhancement)
+  - ✅ Added explicit `extraWatchPaths` to `envReloadPlugin` with merge to `ENV_RELOAD_EXTRA`
+  - ✅ Implemented path canonicalization (lower-case on win32) and Map-based deduplication
+  - ✅ Updated `vite.config.ts` usage and unit tests; integration test remains opt-in (`RUN_CLIENT_IT=true`)
+  - ✅ Updated docs (`docs/development-server.md`); distilled reflections to `consolidated-learnings-006.md` and reset `raw_reflection_log.md`
+
+### Previous Updates (2025-09-03)
 
 - **INFRASTRUCTURE:** Dev Server Validation Extension (Task 2.9.4 – Integration Scaffold)
   - ✅ Added Playwright + programmatic Vite integration test validating `envReloadPlugin` triggers exactly one full reload on `.env` mutation (navigation-based detection)

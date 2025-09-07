@@ -73,4 +73,41 @@ describe('envReloadPlugin', () => {
     expect(server.added.some(p => p.endsWith('extra.env'))).toBe(true);
     delete process.env.ENV_RELOAD_EXTRA;
   });
+
+  it('processes extraWatchPaths option (relative + absolute)', () => {
+    const abs = path.join(process.cwd(), 'abs.file');
+    const plugin = envReloadPlugin({
+      rootDir: server.config.root,
+      extraWatchPaths: ['relative.file', abs, '', undefined as unknown as string],
+    });
+    if (typeof plugin.configureServer === 'function') {
+      plugin.configureServer(server as any);
+    } else if (
+      plugin.configureServer &&
+      typeof (plugin.configureServer as any).handler === 'function'
+    ) {
+      (plugin.configureServer as any).handler(server as any);
+    }
+    expect(server.added).toContain(path.join(server.config.root, 'relative.file'));
+    expect(server.added).toContain(abs);
+  });
+
+  it('merges extraWatchPaths with ENV_RELOAD_EXTRA (backward compatible)', () => {
+    process.env.ENV_RELOAD_EXTRA = 'legacy.file';
+    const plugin = envReloadPlugin({
+      rootDir: server.config.root,
+      extraWatchPaths: ['explicit.file'],
+    });
+    if (typeof plugin.configureServer === 'function') {
+      plugin.configureServer(server as any);
+    } else if (
+      plugin.configureServer &&
+      typeof (plugin.configureServer as any).handler === 'function'
+    ) {
+      (plugin.configureServer as any).handler(server as any);
+    }
+    expect(server.added).toContain(path.join(server.config.root, 'explicit.file'));
+    expect(server.added).toContain(path.join(server.config.root, 'legacy.file'));
+    delete process.env.ENV_RELOAD_EXTRA;
+  });
 });

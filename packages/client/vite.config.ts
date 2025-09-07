@@ -53,7 +53,17 @@ export default defineConfig(({ mode }) => {
       ),
       'import.meta.vitest': 'undefined',
     },
-    plugins: [react(), envReloadPlugin()],
+    plugins: [
+      react(),
+      envReloadPlugin({
+        // Prefer explicit, type-safe configuration; env var fallback remains supported.
+        extraWatchPaths: [
+          // Example shared configs or sibling packages; adjust as needed.
+          // '../server/.env',
+          // '../shared/config/app.json',
+        ],
+      }),
+    ],
     server: {
       port: clientPort,
       host: true,

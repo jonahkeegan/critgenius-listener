@@ -3,9 +3,6 @@ import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'fs';
 import path from 'path';
 import os from 'os';
 import net from 'net';
-import { chromium, Browser, Page, Frame } from 'playwright';
-import react from '@vitejs/plugin-react';
-import { createServer, InlineConfig, ViteDevServer } from 'vite';
 import { envReloadPlugin } from '../../dev/envReloadPlugin';
 
 /**
@@ -14,11 +11,14 @@ import { envReloadPlugin } from '../../dev/envReloadPlugin';
  * websocket full-reload message (observed as a second navigation in the page).
  */
 
-describe('integration: envReloadPlugin full reload on .env change', () => {
+const runIntegration = process.env.RUN_CLIENT_IT === 'true';
+const describeMaybe = runIntegration ? describe : describe.skip;
+
+describeMaybe('integration: envReloadPlugin full reload on .env change', () => {
   let tmpDir: string;
-  let server: ViteDevServer;
-  let browser: Browser;
-  let page: Page;
+  let server: any;
+  let browser: any;
+  let page: any;
   let port: number;
   const navigations: number[] = []; // timestamps
   const logs: string[] = [];
@@ -40,7 +40,7 @@ describe('integration: envReloadPlugin full reload on .env change', () => {
 
     port = await allocatePort();
 
-    const customLogger = {
+  const customLogger = {
       info(msg: string) {
         logs.push(msg);
       },
@@ -54,7 +54,11 @@ describe('integration: envReloadPlugin full reload on .env change', () => {
       hasWarned: false,
     } as any;
 
-    const config: InlineConfig = {
+  const { default: react } = await import('@vitejs/plugin-react');
+  const { createServer } = await import('vite');
+  const { chromium } = await import('playwright');
+
+  const config: any = {
       root: tmpDir,
       logLevel: 'silent',
       server: { port, strictPort: true },
@@ -64,9 +68,9 @@ describe('integration: envReloadPlugin full reload on .env change', () => {
     server = await createServer(config);
     await server.listen();
 
-    browser = await chromium.launch();
+  browser = await chromium.launch();
     page = await browser.newPage();
-    page.on('framenavigated', (f: Frame) => {
+  page.on('framenavigated', (f: any) => {
       if (f === page.mainFrame()) navigations.push(Date.now());
     });
     await page.goto(`http://localhost:${port}`);

@@ -1,6 +1,6 @@
 # System Patterns - Crit Genius Listener
 
-**Last Updated:** 2025-09-03 09:10 PST **Version:** 2.12.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-06 **Version:** 2.13.0 **Dependencies:** projectbrief.md,
 productContext.md
 
 ## Architectural Decisions
@@ -247,6 +247,12 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 **Consequences:** Slight config complexity increase; future bundle size monitoring deferred (visualizer not yet integrated). Production unaffected (plugin limited by `apply: 'serve'`). Follow-up tasks: bundle analyzer integration, HMR latency instrumentation, JSON chunk baseline tracking.  
 **Alternatives Considered:** (1) Fine-grained per-package chunk splitting (risk: request overhead) rejected for premature complexity; (2) External env reload plugin dependency rejected to minimize supply chain surface.  
 **Validation:** Lint/type/tests green; new `vite.config.test.ts` asserts manual chunk classification; no secret exposure detected in define serialization.
+
+#### 2025-09-06 Update: Explicit Options + Canonicalization & Dedup
+- Enhancement: `envReloadPlugin` now accepts `extraWatchPaths?: string[]` and merges with `ENV_RELOAD_EXTRA`.
+- Reliability: Paths canonicalized (normalize + lower-case on Windows) and deduped via `Map<canonical, absolute>`.
+- Privacy: Logs only relative changed file path; never logs env values.
+- Testing: Unit tests cover options handling, env fallback, merging, and normalization; integration remains opt-in.
 
 ### ADR-010: Development Proxy Architecture (Local Cross-Origin Unification)
 
