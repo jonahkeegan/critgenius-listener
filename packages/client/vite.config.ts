@@ -1,9 +1,10 @@
-import { defineConfig, loadEnv, type UserConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
 import { buildDevProxy } from './src/config/devProxy';
+import { envReloadPlugin } from './src/dev/envReloadPlugin';
 
 // Build-time environment resolution (Node context) – guarded for safety
 function resolveClientDefine(mode: string) {
@@ -24,35 +25,6 @@ function resolveClientDefine(mode: string) {
   return { __CLIENT_ENV__: clientCfg };
 }
 
-// Dev-only plugin: watch .env* changes and trigger a full page reload so updated client-safe
-// variables (after validation) become visible without manual restart. Kept intentionally simple
-// and privacy-aware (never logs values).
-function envReloadPlugin(): Plugin {
-  return {
-    name: 'env-reload',
-    apply: 'serve',
-    configureServer(server) {
-      const candidates = ['.env', '.env.local', '.env.development'];
-      const root = process.cwd();
-      const watched: string[] = [];
-      candidates.forEach(file => {
-        const p = path.resolve(root, file);
-        if (fs.existsSync(p)) {
-          watched.push(p);
-          fs.watchFile(p, { interval: 700 }, () => {
-            server.ws.send({ type: 'full-reload', path: '*' });
-          });
-        }
-      });
-      // Cleanup on server close to avoid leaking watchers during restarts (HMR / plugin reload)
-      const close = () => {
-        watched.forEach(p => fs.unwatchFile(p));
-      };
-      server.httpServer?.once('close', close);
-    },
-  };
-}
-
 // Manual chunking strategy: produce stable, cache-friendly groupings for frequently updated UI
 // code vs rarely changing vendor dependencies. Keeps react/mui/socket.io isolated to optimize
 // browser caching across deploys.
@@ -71,6 +43,10 @@ export default defineConfig(({ mode }) => {
   loadEnv(mode, process.cwd(), '');
   const define = resolveClientDefine(mode);
   const clientPort = Number(process.env.CLIENT_PORT || 5173);
+  const httpsEnabled = (process.env.HTTPS_ENABLED || 'false').toString() === 'true';
+  const httpsCert = process.env.HTTPS_CERT_PATH;
+  const httpsKey = process.env.HTTPS_KEY_PATH;
+  const httpsPort = Number(process.env.HTTPS_PORT || 5174);
   const devProxy = buildDevProxy(
     process.env as Record<string, string | undefined>
   );
@@ -82,9 +58,19 @@ export default defineConfig(({ mode }) => {
       ),
       'import.meta.vitest': 'undefined',
     },
-    plugins: [react(), envReloadPlugin()],
+    plugins: [
+      react(),
+      envReloadPlugin({
+        // Prefer explicit, type-safe configuration; env var fallback remains supported.
+        extraWatchPaths: [
+          // Example shared configs or sibling packages; adjust as needed.
+          // '../server/.env',
+          // '../shared/config/app.json',
+        ],
+      }),
+    ],
     server: {
-      port: clientPort,
+      port: httpsEnabled ? httpsPort : clientPort,
       host: true,
       open: false,
       hmr: { overlay: true },
@@ -93,6 +79,34 @@ export default defineConfig(({ mode }) => {
         ignored: ['**/dist/**', '**/coverage/**'],
       },
       ...(devProxy ? { proxy: devProxy } : {}),
+      ...(httpsEnabled && httpsCert && httpsKey
+        ? (() => {
+            try {
+              const certExists = fs.existsSync(httpsCert);
+              const keyExists = fs.existsSync(httpsKey);
+              if (!certExists || !keyExists) {
+                 
+                console.warn(
+                  '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
+                );
+                return {};
+              }
+              return {
+                https: {
+                  cert: fs.readFileSync(httpsCert),
+                  key: fs.readFileSync(httpsKey),
+                },
+              };
+            } catch (e) {
+               
+              console.warn(
+                '[vite:https] Failed to load certificates – falling back to HTTP:',
+                e instanceof Error ? e.message : e
+              );
+              return {};
+            }
+          })()
+        : {}),
     },
     build: {
       outDir: 'dist',
@@ -131,3 +145,5 @@ export default defineConfig(({ mode }) => {
   }
   return config;
 });
+
+// Plugin now imported from dedicated module for direct unit testing.

@@ -15,7 +15,8 @@
     "dev:coordinated": "node scripts/dev-orchestration.mjs",
     "dev:coordinated:watch": "node scripts/dev-orchestration.mjs --monitor",
     "build": "pnpm --recursive run build",
-    "test": "pnpm --recursive run test",
+    "test": "pnpm --recursive run test && vitest run",
+    "test:docs": "vitest run tests/docs",
     "test:watch": "pnpm --recursive run test:watch",
     "test:ui": "pnpm --recursive run test:ui",
     "test:coverage": "pnpm --recursive run test:coverage",
@@ -51,7 +52,12 @@
     "prepare": "husky",
     "precommit:validate": "node scripts/precommit-validate.mjs",
     "precommit:simulate": "node scripts/precommit-simulate.mjs",
-    "precommit:benchmark": "node scripts/precommit-benchmark.mjs"
+    "precommit:benchmark": "node scripts/precommit-benchmark.mjs",
+    "validate:filenames": "node scripts/filename-validator.mjs",
+    "validate:filenames:fix": "node scripts/filename-validator.mjs --fix",
+    "certs:setup": "node scripts/setup-https-certs.mjs",
+    "certs:setup:force": "node scripts/setup-https-certs.mjs --force",
+    "certs:check": "node scripts/check-cert-expiration.mjs"
   },
   "critgenius": {
     "ecosystem": {

@@ -145,6 +145,11 @@ const developmentConfigSchema = z.object({
     .min(1000)
     .max(120000)
     .default(30000),
+  // Local HTTPS (optional for enabling secure context: microphone access in some browsers)
+  HTTPS_ENABLED: booleanSchema.default(false),
+  HTTPS_CERT_PATH: optionalStringSchema,
+  HTTPS_KEY_PATH: optionalStringSchema,
+  HTTPS_PORT: portSchema.default(5174),
 });
 
 // Testing Configuration

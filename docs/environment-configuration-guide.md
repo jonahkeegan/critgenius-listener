@@ -275,6 +275,36 @@ JWT_SECRET=your-very-secure-32-plus-character-secret-key
 - Debug features enabled
 - Relaxed validation
 
+#### Local HTTPS (Optional)
+
+For browsers that require a secure context for full microphone access, you can enable local HTTPS:
+
+Variables (development only):
+
+| Variable        | Default                              | Description                                  |
+| --------------- | ------------------------------------ | -------------------------------------------- |
+| HTTPS_ENABLED   | false                                | Toggle HTTPS dev server                      |
+| HTTPS_CERT_PATH | ./certificates/dev/dev-cert.pem (doc)| Certificate path (PEM). Ignored if disabled. |
+| HTTPS_KEY_PATH  | ./certificates/dev/dev-key.pem (doc) | Private key path (PEM).                      |
+| HTTPS_PORT      | 5174                                 | Port used when HTTPS is enabled              |
+
+Setup:
+
+```bash
+pnpm certs:setup          # Generate (mkcert preferred, openssl fallback)
+pnpm certs:check          # Warn if cert near expiration
+```
+
+Enable in `.env`:
+
+```bash
+HTTPS_ENABLED=true
+HTTPS_CERT_PATH=./certificates/dev/dev-cert.pem
+HTTPS_KEY_PATH=./certificates/dev/dev-key.pem
+```
+
+If files are missing or unreadable the dev server falls back to HTTP with a warning.
+
 ### Staging
 
 - Production-like security

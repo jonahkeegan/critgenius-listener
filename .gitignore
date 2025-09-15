@@ -94,6 +94,9 @@ workflow-docs/
 task-completion-reports/
 task-plans-cline/
 tasks/infrastructure-setup-task-list.md
+tasks/NUL
+# Local development certificates (do not commit HTTPS keys/certs)
+certificates/
 # Docs are now versioned (removed /docs/ ignore 2025-08-28 for benchmark threshold guide)
 
 # Local backup scripts remain ignored; allow other tooling scripts to be tracked
@@ -132,6 +135,30 @@ docker-compose.override.yml
 *.tfstate
 *.tfstate.*
 .terraform/
+
+# Problematic filename protection (OneDrive/GitHub compatibility)
+# Windows reserved device names (case-insensitive patterns)
+**/[Cc][Oo][Nn]
+**/[Cc][Oo][Nn].*
+**/[Pp][Rr][Nn]
+**/[Pp][Rr][Nn].*
+**/[Aa][Uu][Xx]
+**/[Aa][Uu][Xx].*
+**/[Nn][Uu][Ll]
+**/[Nn][Uu][Ll].*
+**/[Cc][Oo][Mm][1-9]
+**/[Cc][Oo][Mm][1-9].*
+**/[Ll][Pp][Tt][1-9]
+**/[Ll][Pp][Tt][1-9].*
+
+# Files with problematic characters that break OneDrive/GitHub sync
+**/*[<>:"|?*]*
+**/*[<>:"|?*]*.*
+
+# Files with trailing dots or spaces (Windows incompatible)
+**/*.
+**/*" "
+**/* 
 
 # Other
 .nyc_output
