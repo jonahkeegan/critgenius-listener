@@ -95,6 +95,8 @@ task-completion-reports/
 task-plans-cline/
 tasks/infrastructure-setup-task-list.md
 tasks/NUL
+# Local development certificates (do not commit HTTPS keys/certs)
+certificates/
 # Docs are now versioned (removed /docs/ ignore 2025-08-28 for benchmark threshold guide)
 
 # Local backup scripts remain ignored; allow other tooling scripts to be tracked

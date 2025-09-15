@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
+import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
 import { buildDevProxy } from './src/config/devProxy';
 import { envReloadPlugin } from './src/dev/envReloadPlugin';
@@ -42,6 +43,10 @@ export default defineConfig(({ mode }) => {
   loadEnv(mode, process.cwd(), '');
   const define = resolveClientDefine(mode);
   const clientPort = Number(process.env.CLIENT_PORT || 5173);
+  const httpsEnabled = (process.env.HTTPS_ENABLED || 'false').toString() === 'true';
+  const httpsCert = process.env.HTTPS_CERT_PATH;
+  const httpsKey = process.env.HTTPS_KEY_PATH;
+  const httpsPort = Number(process.env.HTTPS_PORT || 5174);
   const devProxy = buildDevProxy(
     process.env as Record<string, string | undefined>
   );
@@ -65,7 +70,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     server: {
-      port: clientPort,
+      port: httpsEnabled ? httpsPort : clientPort,
       host: true,
       open: false,
       hmr: { overlay: true },
@@ -74,6 +79,34 @@ export default defineConfig(({ mode }) => {
         ignored: ['**/dist/**', '**/coverage/**'],
       },
       ...(devProxy ? { proxy: devProxy } : {}),
+      ...(httpsEnabled && httpsCert && httpsKey
+        ? (() => {
+            try {
+              const certExists = fs.existsSync(httpsCert);
+              const keyExists = fs.existsSync(httpsKey);
+              if (!certExists || !keyExists) {
+                 
+                console.warn(
+                  '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
+                );
+                return {};
+              }
+              return {
+                https: {
+                  cert: fs.readFileSync(httpsCert),
+                  key: fs.readFileSync(httpsKey),
+                },
+              };
+            } catch (e) {
+               
+              console.warn(
+                '[vite:https] Failed to load certificates – falling back to HTTP:',
+                e instanceof Error ? e.message : e
+              );
+              return {};
+            }
+          })()
+        : {}),
     },
     build: {
       outDir: 'dist',

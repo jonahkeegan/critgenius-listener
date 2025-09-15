@@ -193,6 +193,37 @@ Deferred items (tracked for incremental hardening):
 - Watcher disposal + reload latency instrumentation
 - Performance metrics export (cold start, first HMR patch)
 
+### Local HTTPS (New)
+
+Secure context is required by some browsers for full microphone API access. Local HTTPS is now
+supported via optional environment variables:
+
+| Variable         | Default                                | Purpose                                  |
+| ---------------- | -------------------------------------- | ---------------------------------------- |
+| HTTPS_ENABLED    | false                                  | Toggle HTTPS dev server                  |
+| HTTPS_CERT_PATH  | ./certificates/dev/dev-cert.pem        | Certificate file (PEM)                   |
+| HTTPS_KEY_PATH   | ./certificates/dev/dev-key.pem         | Private key file (PEM)                   |
+| HTTPS_PORT       | 5174                                   | Alternate port used when HTTPS enabled   |
+
+Generation script:
+
+```bash
+pnpm certs:setup            # mkcert preferred, falls back to openssl
+pnpm certs:setup:force      # Regenerate even if existing
+pnpm certs:check            # Warn if <30 days until expiration
+```
+
+Enable in `.env`:
+
+```bash
+HTTPS_ENABLED=true
+HTTPS_CERT_PATH=./certificates/dev/dev-cert.pem
+HTTPS_KEY_PATH=./certificates/dev/dev-key.pem
+```
+
+If cert files are missing or unreadable, Vite silently falls back to HTTP with a console warning.
+Certificates are git‑ignored (`certificates/`) and safe to regenerate at any time.
+
 ---
 
 ## 9. Security & Privacy Posture

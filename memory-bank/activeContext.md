@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-06 **Version:** 2.18.0 **Dependencies:** projectbrief.md,
-productContext.md, systemPatterns.md, techContext.md
+**Last Updated:** 2025-09-14 **Version:** 2.20.0 **Dependencies:** projectbrief.md,
+productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
 
@@ -29,7 +29,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 1. **Project Identity:** ✅ Fully Defined - Revolutionary D&D audio tool
 2. **Product Context:** ✅ Comprehensive - Market analysis, user segments, use cases complete
-3. **System Patterns:** ✅ Complete - ADRs, design patterns, architecture blueprint documented
+3. **System Patterns:** ✅ Segmented - Monolith decomposed into 3 thematic files (`systemPatterns-001/002/003.md`) + index
 4. **Technical Context:** ✅ Complete - Context7-validated technology stack with implementation
    details
 5. **Progress Tracking:** ✅ Active and current
@@ -82,7 +82,28 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-06)
+### Latest Updates (2025-09-14)
+
+- **SECURITY / DEV EXPERIENCE:** Local HTTPS Certificate Enablement (Task 2.10.1)
+  - ✅ Added development-only HTTPS environment variables (`HTTPS_ENABLED`, `HTTPS_CERT_PATH`, `HTTPS_KEY_PATH`, `HTTPS_PORT`) — isolated from production SSL vars
+  - ✅ Implemented idempotent certificate generation script (prefers `mkcert`; OpenSSL fallback with SAN: localhost, 127.0.0.1, ::1)
+  - ✅ Added expiration check script (warns before cert expiry) & `.gitignore` safeguard for `certificates/`
+  - ✅ Updated Vite dev server for conditional secure context with graceful HTTP fallback + succinct warning (no hard failure)
+  - ✅ Updated docs (`development-server.md`, `environment-configuration-guide.md`) with Local HTTPS section; added schema tests
+  - 🔐 Privacy: no secrets or cert material logged; paths only; local CA trust handled by developer machine
+  - 📈 Outcome: Enables advanced Web Audio APIs & consistent permission prompts in secure context; positions project for future features needing HTTPS (e.g., screen capture, potential service worker optimizations)
+  - 🔜 Follow-Ups: CI guard preventing unintended cert generation, `pnpm dev:https` convenience alias, fallback warning test, decision flow diagram
+
+### Previous Updates (2025-09-12)
+
+- **DOCUMENTATION:** System Patterns Segmentation
+  - ✅ Split legacy `systemPatterns.md` into three segments (architectural foundations, development & infrastructure, runtime & operational)
+  - ✅ Added `systemPatterns-index.md` with registry, topic mapping, maintenance protocol
+  - ✅ Archived original content to `systemPatterns-legacy-2025-09-12.md`; replaced monolith with redirect stub
+  - ✅ Updated active context dependencies; ensured cross-file consistency
+  - 🔜 Automation Backlog: line count script, semantic tagging, checksum integration
+
+### Previous Updates (2025-09-06)
 
 - **INFRASTRUCTURE:** Dev Server Validation (Task 2.9.4 – Interface Enhancement)
   - ✅ Added explicit `extraWatchPaths` to `envReloadPlugin` with merge to `ENV_RELOAD_EXTRA`

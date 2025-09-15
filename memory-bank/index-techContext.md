@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-06 | Version: 1.10.0 | System Status: Active
+Last Updated: 2025-09-14 | Version: 1.11.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -32,6 +32,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Declarative Service Manifest Orchestration | 002 |
 | Enhanced Health & Restart Resilience | 003 |
 | Declarative Manifest Orchestration | 003 |
+| Local Dev HTTPS Certificate Enablement | 003 |
 | Environment Validation | 002 |
 | CI/CD Workflow | 002 |
 | Infrastructure Scaling | 003 |
@@ -50,6 +51,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-14: Added local dev HTTPS certificate enablement topic (Task 2.10.1: dev-only HTTPS env vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 - 2025-09-06: Added envReloadPlugin interface enhancement topic (explicit options + canonicalization & dedup; Task 2.9.4 enhancement)
 - 2025-09-03: Added env reload integration test topic (Task 2.9.4 extension: real Vite + Playwright navigation-based reload detection scaffold)
 - 2025-08-31: Added dev server validation & documentation topic (Task 2.9.4: plugin extraction, test-centric validation, simulated HMR harness, proxy forwarding integration test)

@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-09-06  
-**Version:** 1.11.0  
+**Last Updated:** 2025-09-14  
+**Version:** 1.12.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-003.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~95  
-**Last Updated:** 2025-09-06
+**Current Row Count:** ~140  
+**Last Updated:** 2025-09-14
 
 ## File Registry
 
@@ -33,10 +33,10 @@
 ### progress-003.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~80
+- **Row Count:** ~125
 - **Date Range:** 2025-08-30 17:07 PST to Present
-- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), pending infra carry-over tasks initialization
-- **Description:** New progress segment continuation from progress-002 with carried forward tasks; now includes first completed infrastructure refinement (Task 2.9.4)
+- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), Local HTTPS Enablement (Task 2.10.1), pending infra carry-over tasks initialization
+- **Description:** Segment tracking late-stage infrastructure refinements (reload validation, interface enhancement, local secure context) while preparing for audio pipeline architecture
 
 ## Maintenance Protocol
 
@@ -45,6 +45,8 @@
 - Archive segment by marking status Archived and freezing its header metadata
 
 ## Recent Changes
+
+- 2025-09-14: Added Task 2.10.1 local HTTPS certificate enablement (dev schema vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 
 - 2025-09-06: Task 2.9.4 enhancement (envReloadPlugin interface): added explicit `extraWatchPaths` option, merged with `ENV_RELOAD_EXTRA`, implemented canonicalization + dedup, updated docs; distilled reflections to consolidated-learnings-006 and reset raw log
 - 2025-09-03: Added integration test scaffold for envReloadPlugin (real Vite + Playwright reload validation) – foundational E2E test layer initiated (Task 2.9.4 extension)
