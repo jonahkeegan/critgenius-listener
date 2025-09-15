@@ -444,6 +444,31 @@ git branch -d "$BRANCH"
 git push origin --delete "$BRANCH"  # optional; confirm PR closed
 ```
 
+### Post-Merge Cleanup Checklist (Operational)
+
+Use this focused checklist immediately after a successful merge to ensure no residual artifacts or stale branches linger. This supplements (does not replace) the detailed flow above.
+
+| Step | Action | Command / Verification | Rationale |
+| ---- | ------ | ---------------------- | --------- |
+| 1 | Confirm merge landed | View PR: merged badge present | Avoid deleting an unmerged branch by mistake |
+| 2 | Sync local `main` | `git checkout main && git pull --rebase origin main` | Ensures local baseline reflects merged commit |
+| 3 | Capture merge commit hash | `git log -1 --oneline` | Reference for release notes / audit trail |
+| 4 | Prune local task branch | `git branch -d $BRANCH` | Keeps workspace branch list minimal |
+| 5 | Remove remote branch (if policy) | `git push origin --delete $BRANCH` | Prevents future accidental reuse |
+| 6 | Clear stale tracking refs | `git fetch origin --prune` | Updates remote refs list |
+| 7 | Verify no orphan WIP dirs | Inspect `git status` (should be clean) | Detects untracked artifacts inadvertently left |
+| 8 | Regenerate summaries (if doc automation) | Run any doc/build scripts (optional) | Keeps derived docs in sync |
+| 9 | Update planning board / ticket | Transition status to "Done" | Maintains project management accuracy |
+| 10 | Prepare next task branch | `git checkout -b feat/<next-task>-<slug>` | Ensures new work isolates scope |
+
+Minimal one-line variant (only when fully confident):
+
+```bash
+git checkout main && git pull --rebase origin main && git branch -d $BRANCH && git push origin --delete $BRANCH && git fetch origin --prune
+```
+
+If ANY checklist item fails (e.g., branch not merged, untracked secrets appear), STOP and escalate with a concise diagnostic block before proceeding.
+
 ---
 
 ## Quick Decision Tree (When Unsure)
