@@ -105,6 +105,7 @@ scripts/backup-config.json
 scripts/install-global.ps1
 scripts/README.md
 temp-backup-untracked/
+!.precommit-sim/
 
 # Database
 *.sqlite

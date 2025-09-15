@@ -12,6 +12,7 @@ async function runLint(file: string) {
 }
 
 describe('ESLint accessibility rule regression', () => {
+  // Increased timeout due to cold ESLint startup cost in CI/Windows environments
   it('flags intentional accessibility violations', async () => {
     const resultInvalid = await runLint(
       'tests/eslint/__fixtures__/a11y-invalid.tsx'
@@ -30,7 +31,7 @@ describe('ESLint accessibility rule regression', () => {
         ].includes(r)
       )
     ).toBe(true);
-  });
+  }, 15000);
 
   it('does not flag valid accessibility patterns', async () => {
     const resultValid = await runLint(

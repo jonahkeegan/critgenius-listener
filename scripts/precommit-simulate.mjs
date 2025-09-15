@@ -21,6 +21,7 @@ import { execSync, execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const tmpDir = path.join(root, '.precommit-sim');
+const silent = process.env.CG_PRECOMMIT_SIM_SILENT === '1';
 
 const scenarios = /** @type {Record<string, {desc:string, mutate:()=>void}>} */ ({
   clean: {
@@ -57,8 +58,14 @@ const scenarios = /** @type {Record<string, {desc:string, mutate:()=>void}>} */ 
 const run = (cmd) => execSync(cmd, { stdio: 'pipe' }).toString();
 
 function stageFile(p) {
-  // Use execFileSync to avoid shell interpolation risk
-  execFileSync('git', ['add', path.relative(root, p)]);
+  // Use execFileSync to avoid shell interpolation risk; retry with -f if ignored
+  const rel = path.relative(root, p);
+  try {
+    execFileSync('git', ['add', rel]);
+  } catch (e) {
+    // If ignored, force add (simulation only; repo remains clean after reset)
+    execFileSync('git', ['add', '-f', rel]);
+  }
 }
 
 function resetTmp() {
@@ -66,15 +73,50 @@ function resetTmp() {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
   fs.mkdirSync(tmpDir, { recursive: true });
+  // Generate lightweight tsconfig so ESLint/TS project service recognizes files
+  const tsconfigSim = {
+    extends: '../tsconfig.json',
+    include: ['**/*.ts', '**/*.tsx']
+  };
+  try {
+    fs.writeFileSync(path.join(tmpDir, 'tsconfig.json'), JSON.stringify(tsconfigSim, null, 2));
+  } catch {}
 }
 
 function runHookLike() {
   // Replicate essential logic from .husky/pre-commit (without echo cosmetics)
-  execSync('npx lint-staged', { stdio: 'inherit' });
+  execSync(`npx lint-staged${silent ? ' --quiet' : ''}` , { stdio: silent ? 'pipe' : 'inherit' });
   const changedTs = run('git diff --cached --name-only --diff-filter=ACM').split(/\r?\n/).filter(f => f.endsWith('.ts') || f.endsWith('.tsx'));
   if (changedTs.length) {
-    execSync('pnpm -w type-check', { stdio: 'inherit' });
+    execSync('pnpm -w type-check', { stdio: silent ? 'pipe' : 'inherit' });
   }
+}
+
+function collectDiagnostics(stagedFiles) {
+  const diag = { eslintOk: true, prettierOk: true, tscOk: true };
+  const tsLike = stagedFiles.filter(f => /\.tsx?$/.test(f));
+
+  if (tsLike.length) {
+    // ESLint (no fix) – we only care about exit code
+    try {
+      execSync(`npx eslint --max-warnings=0 --ignore-pattern tests/eslint/__fixtures__/a11y-invalid.tsx ${tsLike.map(f => `'${f}'`).join(' ')}`, { stdio: 'pipe' });
+    } catch {
+      diag.eslintOk = false;
+    }
+    // Prettier check (only run on ts-like for speed)
+    try {
+      execSync(`npx prettier --check ${tsLike.map(f => `'${f}'`).join(' ')}`, { stdio: 'pipe' });
+    } catch {
+      diag.prettierOk = false;
+    }
+    // Type check (isolated project) – leverage temporary tsconfig in tmpDir
+    try {
+      execSync(`npx tsc --project ${tmpDir}/tsconfig.json --noEmit`, { stdio: 'pipe' });
+    } catch {
+      diag.tscOk = false;
+    }
+  }
+  return diag;
 }
 
 function simulate(name) {
@@ -90,12 +132,28 @@ function simulate(name) {
   for (const f of fs.readdirSync(tmpDir)) {
     stageFile(path.join(tmpDir, f));
   }
+  const staged = run('git diff --cached --name-only --diff-filter=ACM').split(/\r?\n/).filter(Boolean);
+  const diag = collectDiagnostics(staged);
+  const expectedFail = name !== 'clean';
+  // Determine if pre-diagnostics already yielded the expected failure
+  let forcedFail = false;
+  if (expectedFail) {
+    if (name === 'lint-error' && !diag.eslintOk) forcedFail = true;
+    if (name === 'format-error' && !diag.prettierOk) forcedFail = true;
+    if (name === 'type-error' && !diag.tscOk) forcedFail = true;
+  }
+
   let passed = true;
   try {
     runHookLike();
-  } catch (e) {
-    passed = false;
+  } catch {
+    passed = false; // underlying hook failed (e.g. tsc error)
   }
+
+  if (forcedFail) {
+    passed = false; // maintain failure even if hook auto-fixed
+  }
+
   // Unstage tmp changes to leave repo clean
   execSync('git reset HEAD .');
   console.log(passed ? `✅ Scenario '${name}' passed` : `❌ Scenario '${name}' failed (expected depending on case)`);

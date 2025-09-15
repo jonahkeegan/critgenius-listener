@@ -130,15 +130,15 @@ shell verification scripts maintained.
 
 ## 4. Configuration Matrix
 
-| Variable                     | Scope | Required       | Default      | Purpose                            |
-| ---------------------------- | ----- | -------------- | ------------ | ---------------------------------- |
-| DEV_PROXY_ENABLED            | Dev   | Conditional    | –            | Enable HTTP proxy layer            |
-| DEV_PROXY_TARGET_PORT        | Dev   | With proxy     | 3000         | Upstream API/server port           |
-| DEV_PROXY_ASSEMBLYAI_ENABLED | Dev   | No             | false        | Future AssemblyAI passthrough flag |
-| DEV_PROXY_ASSEMBLYAI_PATH    | Dev   | If passthrough | /v2/realtime | Socket path reservation            |
-| DEV_PROXY_TIMEOUT_MS         | Dev   | No             | 5000         | Upstream timeout guard             |
-| ENV_RELOAD_EXTRA             | Dev   | No             | –            | Additional file to watch           |
-| (client) extraWatchPaths     | Dev   | No             | –            | Explicit additional watch paths    |
+| Variable | Scope | Required | Default | Purpose |
+| -------- | ----- | -------- | ------- | ------- |
+| DEV_PROXY_ENABLED | Dev | Conditional | – | Enable HTTP proxy layer |
+| DEV_PROXY_TARGET_PORT | Dev | With proxy | 3000 | Upstream API/server port |
+| DEV_PROXY_ASSEMBLYAI_ENABLED | Dev | No | false | Future AssemblyAI passthrough flag |
+| DEV_PROXY_ASSEMBLYAI_PATH | Dev | If passthrough | /v2/realtime | Socket path reservation |
+| DEV_PROXY_TIMEOUT_MS | Dev | No | 5000 | Upstream timeout guard |
+| ENV_RELOAD_EXTRA | Dev | No | – | Additional file to watch |
+| (client) extraWatchPaths | Dev | No | – | Explicit additional watch paths |
 
 Validated via shared environment schema (see `docs/environment-configuration-guide.md`).
 
@@ -146,14 +146,14 @@ Validated via shared environment schema (see `docs/environment-configuration-gui
 
 ## 5. Validation & Test Harness
 
-| Test                      | Path                                                                 | Assertion                       |
-| ------------------------- | -------------------------------------------------------------------- | ------------------------------- |
-| Env reload plugin         | `packages/client/src/__tests__/dev-server/env-reload.plugin.test.ts` | Change ⇒ full reload WS event   |
-| Env reload plugin (IT)    | `packages/client/src/__tests__/integration/env-reload-plugin.integration.test.ts` | Real Vite + browser; enable with `RUN_CLIENT_IT=true` |
-| Proxy forwarding          | (integration test)                                                   | Status + header preservation    |
-| Manual chunks             | (config test)                                                        | Bucket mapping invariants       |
-| HMR retention (simulated) | (harness)                                                            | State preserved or soft warning |
-| Documentation integrity   | `tests/docs/development-server-doc.test.ts`                          | Required sections + links valid |
+| Test                      | Path                                                                 | Assertion                                        |
+| ------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
+| Env reload plugin         | `packages/client/src/__tests__/dev-server/env-reload.plugin.test.ts` | Change ⇒ full reload WS event                    |
+| Env reload plugin (IT)    | `packages/client/src/__tests__/integration/env-reload-plugin.integration.test.ts` | Real Vite + browser (enable with `RUN_CLIENT_IT=true`) |
+| Proxy forwarding          | (integration test)                                                   | Status + header preservation                     |
+| Manual chunks             | (config test)                                                        | Bucket mapping invariants                        |
+| HMR retention (simulated) | (harness)                                                            | State preserved or soft warning                  |
+| Documentation integrity   | `tests/docs/development-server-doc.test.ts`                          | Required sections + links valid                  |
 
 Philosophy: Tests own truth; docs summarize.
 

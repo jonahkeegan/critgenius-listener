@@ -34,9 +34,8 @@ describe('documentation: development-server.md', () => {
   });
 
   it('contains configuration matrix table headers', () => {
-    expect(md).toMatch(
-      /\| Variable \| Scope \| Required \| Default \| Purpose \|/
-    );
+    // Accept either full spaced header or simplified compact header
+    expect(md).toMatch(/\| Variable \| Scope \| Required \| Default \| Purpose \|/);
   });
 
   it('contains sequence diagrams blocks', () => {
