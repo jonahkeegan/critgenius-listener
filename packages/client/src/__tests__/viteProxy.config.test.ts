@@ -32,6 +32,25 @@ describe('buildDevProxy helper', () => {
     });
     expect(Object.keys(proxy || {})).toContain(custom);
   });
+  it('builds https proxy when enabled', () => {
+    const proxy = buildDevProxy({
+      DEV_PROXY_ENABLED: 'true',
+      DEV_PROXY_HTTPS_ENABLED: 'true',
+      DEV_PROXY_TARGET_HTTPS_PORT: '3101',
+      DEV_PROXY_REJECT_UNAUTHORIZED: 'false',
+    });
+    expect(proxy).toBeDefined();
+    const api = proxy!['/api'] as any;
+    expect(api.target).toContain('https://');
+    expect(api.headers['X-Forwarded-Proto']).toBe('https');
+  });
+  it('refuses proxy if host not allowlisted', () => {
+    const proxy = buildDevProxy({
+      DEV_PROXY_ENABLED: 'true',
+      DEV_PROXY_ALLOWED_HOSTS: 'example.com',
+    });
+    expect(proxy).toBeUndefined();
+  });
 });
 
 describe('Proxy env variable defaults (documentation alignment)', () => {

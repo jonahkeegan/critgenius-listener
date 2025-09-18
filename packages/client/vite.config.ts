@@ -89,21 +89,21 @@ export default defineConfig(({ mode }) => {
                 console.warn(
                   '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
                 );
-                return {};
+                return {} as Record<string, unknown>;
               }
               return {
                 https: {
                   cert: fs.readFileSync(httpsCert),
                   key: fs.readFileSync(httpsKey),
                 },
-              };
+              } as const;
             } catch (e) {
                
               console.warn(
                 '[vite:https] Failed to load certificates – falling back to HTTP:',
                 e instanceof Error ? e.message : e
               );
-              return {};
+              return {} as Record<string, unknown>;
             }
           })()
         : {}),

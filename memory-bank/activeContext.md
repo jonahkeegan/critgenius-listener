@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-14 **Version:** 2.20.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-17 **Version:** 2.21.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,19 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-14)
+### Latest Updates (2025-09-17)
+
+- **SECURITY / PROXY HARDENING:** Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2)
+  - ✅ Added dev-only HTTPS proxy env vars: `DEV_PROXY_HTTPS_ENABLED`, `DEV_PROXY_TARGET_HTTPS_PORT`, `DEV_PROXY_REJECT_UNAUTHORIZED`, `DEV_PROXY_ALLOWED_HOSTS`
+  - ✅ Refactored pure proxy builder to support protocol selection, host allowlist enforcement (fail-fast), keep-alive http/https agents, conditional TLS rejection override, and forwarded proto header injection
+  - ✅ Added preflight diagnostics script (`dev-https-preflight.mjs`) performing sanitized config summary, HTTP health probe, and WebSocket upgrade heuristic for early misconfiguration detection
+  - ✅ Extended tests: proxy config (HTTPS path, allowlist rejection, header emission) + env defaults
+  - ✅ Updated docs (`development-proxy.md`) and `.env.example` with secure proxy guidance & failure matrix expansion
+  - 🔐 Privacy: no secret or full config logging; sanitized echo only
+  - 📈 Outcome: Stronger security posture (least-privilege host routing), reduced handshake overhead via keep-alive, improved developer feedback loop
+  - 🔜 Follow-Ups: Full HTTPS + WS integration test (101 assert), latency instrumentation, negative-path tests (timeouts, cert rejection), visual overlay, metrics hook
+
+### Previous Updates (2025-09-14)
 
 - **SECURITY / DEV EXPERIENCE:** Local HTTPS Certificate Enablement (Task 2.10.1)
   - ✅ Added development-only HTTPS environment variables (`HTTPS_ENABLED`, `HTTPS_CERT_PATH`, `HTTPS_KEY_PATH`, `HTTPS_PORT`) — isolated from production SSL vars

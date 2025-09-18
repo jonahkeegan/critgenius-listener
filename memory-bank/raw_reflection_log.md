@@ -66,4 +66,42 @@ Improvements_Identified_For_Consolidation:
 - Potential integration test to assert Vite https object presence using ephemeral generated cert pair.
 - Consider colorized terminal output or structured JSON mode for CI parse if feature set expands.
 
+Date: 2025-09-17
+TaskRef: "Dev Infra Task 2.10.2 – Vite HTTPS Dev Proxy Hardening"
+
+Learnings:
+- Early HTTPS proxy integration surfaced implicit assumptions in client/WebSocket code paths that were cheaper to adjust now.
+- Centralizing dev-only HTTPS proxy variables in the shared schema prevents config drift and scattered conditional logic.
+- Preflight automation shortens feedback loops versus manual curl/browser iteration.
+- Distinguishing Vite server HTTPS from upstream backend HTTPS avoids premature coupling and clarifies migration stages.
+- Simple host allowlisting (DEV_PROXY_ALLOWED_HOSTS) meaningfully reduces accidental local tunneling risk.
+
+Technical Discoveries:
+- Vite proxy honors custom keep-alive agents—improves streaming stability without code changes elsewhere.
+- Injecting `X-Forwarded-Proto` supplies downstream services with correct scheme context without terminating TLS there.
+- Lightweight WebSocket upgrade probing (no full Socket.IO handshake) is sufficient to catch most TLS/route misconfigurations.
+- Consistent handling of `secure` + `rejectUnauthorized` across HTTP and WS paths prevents subtle mismatch errors.
+- Zod dev-only fields stay out of client bundle so long as projection helper remains curated.
+
+Success Patterns:
+- Incremental enhancement (reuse of proxy builder) kept diff minimal while adding resilience.
+- Targeted tests (HTTPS path + allowlist) locked intent and prevented regression.
+- `.env.example` alignment test continues to guard doc drift at near-zero maintenance cost.
+- Preflight script output remained sanitized (no secrets) but actionable.
+- Default values ensured full backward compatibility (HTTPS is opt-in).
+
+Implementation Excellence:
+- Achieved feature + hardening in <50 LOC net change to proxy builder.
+- No new runtime dependencies; preflight relies solely on Node core.
+- Removed unnecessary eslint-disable to preserve zero-warning standard.
+- Docs updated surgically to satisfy structure tests—maintains test-as-truth model.
+- Uniform naming across schema, docs, tests, and env example improved discoverability.
+
+Improvements_Identified_For_Consolidation:
+- Add integration test harness with mock HTTPS upstream + real WS upgrade to validate end-to-end secure flow.
+- Extend preflight: assert explicit 101 status + record latency metrics.
+- Dev overlay panel to visualize live proxy config (protocol, ports, allowlist state).
+- Negative-path tests (forced timeout, intentional self-signed rejection) to measure resilience + error clarity.
+- Optional metrics hook (upgrade latency, retry counts) behind dev flag for future performance tuning.
+
 

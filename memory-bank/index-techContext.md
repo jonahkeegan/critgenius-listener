@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-14 | Version: 1.11.0 | System Status: Active
+Last Updated: 2025-09-17 | Version: 1.12.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -39,6 +39,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Security Headers / CORS | 003 |
 | Performance Targets | 003 |
 | Risk Register | 003 |
+| Dev HTTPS Proxy Hardening & Diagnostics | 003 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -51,6 +52,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-17: Added dev HTTPS proxy hardening & diagnostics topic (Task 2.10.2: HTTPS proxy env vars, proxy builder enhancements, preflight diagnostics script, docs updates)
 - 2025-09-14: Added local dev HTTPS certificate enablement topic (Task 2.10.1: dev-only HTTPS env vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 - 2025-09-06: Added envReloadPlugin interface enhancement topic (explicit options + canonicalization & dedup; Task 2.9.4 enhancement)
 - 2025-09-03: Added env reload integration test topic (Task 2.9.4 extension: real Vite + Playwright navigation-based reload detection scaffold)

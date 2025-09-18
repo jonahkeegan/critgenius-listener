@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-09-14  
-**Version:** 1.12.0  
+**Last Updated:** 2025-09-17  
+**Version:** 1.13.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-003.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~140  
-**Last Updated:** 2025-09-14
+**Current Row Count:** ~185  
+**Last Updated:** 2025-09-17
 
 ## File Registry
 
@@ -33,10 +33,10 @@
 ### progress-003.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~125
+- **Row Count:** ~170
 - **Date Range:** 2025-08-30 17:07 PST to Present
-- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), Local HTTPS Enablement (Task 2.10.1), pending infra carry-over tasks initialization
-- **Description:** Segment tracking late-stage infrastructure refinements (reload validation, interface enhancement, local secure context) while preparing for audio pipeline architecture
+- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), Local HTTPS Enablement (Task 2.10.1), Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2), pending infra carry-over tasks initialization
+- **Description:** Segment tracking late-stage infrastructure refinements (reload validation, interface enhancement, secure context + hardened proxy) while preparing for audio pipeline architecture
 
 ## Maintenance Protocol
 
@@ -45,6 +45,8 @@
 - Archive segment by marking status Archived and freezing its header metadata
 
 ## Recent Changes
+
+- 2025-09-17: Added Task 2.10.2 dev HTTPS proxy hardening & diagnostics (env schema extensions, proxy builder enhancements, preflight script, docs updates)
 
 - 2025-09-14: Added Task 2.10.1 local HTTPS certificate enablement (dev schema vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 

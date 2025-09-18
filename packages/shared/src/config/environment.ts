@@ -137,6 +137,13 @@ const developmentConfigSchema = z.object({
   // Development proxy settings (not required / not present outside development)
   DEV_PROXY_ENABLED: booleanSchema.default(true),
   DEV_PROXY_TARGET_PORT: portSchema.default(3100),
+  // HTTPS-aware dev proxy enhancements
+  DEV_PROXY_HTTPS_ENABLED: booleanSchema.default(false),
+  DEV_PROXY_TARGET_HTTPS_PORT: portSchema.default(3101),
+  DEV_PROXY_REJECT_UNAUTHORIZED: booleanSchema.default(false),
+  DEV_PROXY_ALLOWED_HOSTS: z
+    .string()
+    .default('localhost,127.0.0.1'),
   DEV_PROXY_ASSEMBLYAI_ENABLED: booleanSchema.default(true),
   DEV_PROXY_ASSEMBLYAI_PATH: z.string().default('/proxy/assemblyai'),
   DEV_PROXY_TIMEOUT_MS: z.coerce
