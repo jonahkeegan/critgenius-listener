@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-14 **Version:** 2.20.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-20 **Version:** 2.23.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,36 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-14)
+### Latest Updates (2025-09-20)
+
+- SECURITY / DEV EXPERIENCE: Dev Proxy Dynamic Port Discovery (Task 2.10.2-1)
+  - Added shared dev env schema for discovery: `DEV_PROXY_AUTO_DISCOVER`, `DEV_PROXY_DISCOVERY_PORTS`, `DEV_PROXY_DISCOVERY_TIMEOUT_MS`, `DEV_PROXY_PROBE_TIMEOUT_MS`
+  - Implemented `PortDiscoveryService` (localhost-only probes to `/api/health`, strict per-port + global timeouts, sanitized logs)
+  - Introduced async `buildDevProxyWithDiscovery` with session cache; integrated into Vite `serve` only (build/test unaffected)
+  - Tests created for success/disabled/fallback; docs and `.env.example` updated (privacy preserved)
+  - Outcome: Faster dev startup with minimal config; bounded discovery time; backward compatible defaults
+  - Follow-Ups: Integration test across multiple candidates + HTTPS; optional parallelized probes with cap; dev overlay metrics
+
+- INFRASTRUCTURE / DX: Centralized Proxy Registry (Task 2.10.2-2)
+  - Added shared registry for dev proxy routes and env keys: `PROXY_ROUTES`, `PROXY_ENV_KEYS`, `resolveTargetFromEnv`, `getProxyRegistry()`
+  - Refactored client proxy builder to iterate registry for HTTP and WS; behavior preserved (AssemblyAI rewrite unchanged)
+  - Shared exports added (subpath `./config/proxyRegistry`); unit tests included; lint/type-check/tests PASS
+  - Outcome: Eliminates config drift, standardizes protocol/port derivation, enables future docs and .env example generators
+  - Follow-Ups: generator scripts + doc test, integration test matrix (HTTPS + candidates), ADR documenting rationale
+
+### Previous Updates (2025-09-17)
+
+- **SECURITY / PROXY HARDENING:** Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2)
+  - ✅ Added dev-only HTTPS proxy env vars: `DEV_PROXY_HTTPS_ENABLED`, `DEV_PROXY_TARGET_HTTPS_PORT`, `DEV_PROXY_REJECT_UNAUTHORIZED`, `DEV_PROXY_ALLOWED_HOSTS`
+  - ✅ Refactored pure proxy builder to support protocol selection, host allowlist enforcement (fail-fast), keep-alive http/https agents, conditional TLS rejection override, and forwarded proto header injection
+  - ✅ Added preflight diagnostics script (`dev-https-preflight.mjs`) performing sanitized config summary, HTTP health probe, and WebSocket upgrade heuristic for early misconfiguration detection
+  - ✅ Extended tests: proxy config (HTTPS path, allowlist rejection, header emission) + env defaults
+  - ✅ Updated docs (`development-proxy.md`) and `.env.example` with secure proxy guidance & failure matrix expansion
+  - 🔐 Privacy: no secret or full config logging; sanitized echo only
+  - 📈 Outcome: Stronger security posture (least-privilege host routing), reduced handshake overhead via keep-alive, improved developer feedback loop
+  - 🔜 Follow-Ups: Full HTTPS + WS integration test (101 assert), latency instrumentation, negative-path tests (timeouts, cert rejection), visual overlay, metrics hook
+
+### Previous Updates (2025-09-14)
 
 - **SECURITY / DEV EXPERIENCE:** Local HTTPS Certificate Enablement (Task 2.10.1)
   - ✅ Added development-only HTTPS environment variables (`HTTPS_ENABLED`, `HTTPS_CERT_PATH`, `HTTPS_KEY_PATH`, `HTTPS_PORT`) — isolated from production SSL vars

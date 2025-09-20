@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
-import { buildDevProxy } from './src/config/devProxy';
+import { buildDevProxy, buildDevProxyWithDiscovery } from './src/config/devProxy';
 import { envReloadPlugin } from './src/dev/envReloadPlugin';
 
 // Build-time environment resolution (Node context) – guarded for safety
@@ -38,7 +38,7 @@ function createManualChunks(id: string): string | undefined {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode, command }) => {
   // Load raw env (Vite) mainly for MODE; shared loader handles deep validation.
   loadEnv(mode, process.cwd(), '');
   const define = resolveClientDefine(mode);
@@ -47,9 +47,13 @@ export default defineConfig(({ mode }) => {
   const httpsCert = process.env.HTTPS_CERT_PATH;
   const httpsKey = process.env.HTTPS_KEY_PATH;
   const httpsPort = Number(process.env.HTTPS_PORT || 5174);
-  const devProxy = buildDevProxy(
-    process.env as Record<string, string | undefined>
-  );
+  // Prefer dynamic discovery when running dev server; build remains sync
+  const devProxy =
+    command === 'serve'
+      ? await buildDevProxyWithDiscovery(
+          process.env as Record<string, string | undefined>
+        )
+      : buildDevProxy(process.env as Record<string, string | undefined>);
   const config: UserConfig = {
     define: {
       ...Object.entries(define).reduce(
@@ -96,7 +100,7 @@ export default defineConfig(({ mode }) => {
                   cert: fs.readFileSync(httpsCert),
                   key: fs.readFileSync(httpsKey),
                 },
-              };
+              } as const;
             } catch (e) {
                
               console.warn(

@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-14 | Version: 1.11.0 | System Status: Active
+Last Updated: 2025-09-20 | Version: 1.13.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -25,6 +25,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Workflow Benchmarking & Onboarding | 002 |
 | Vite Dev Server Optimization | 002 |
 | Development Proxy Configuration | 002 |
+| Dev Proxy Dynamic Port Discovery | 002 |
 | Dev Server Validation & Documentation | 002 |
 | EnvReloadPlugin Interface Enhancement (explicit options + dedup) | 002 |
 | Env Reload Integration Test (Playwright) | 002 |
@@ -39,6 +40,8 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Security Headers / CORS | 003 |
 | Performance Targets | 003 |
 | Risk Register | 003 |
+| Dev HTTPS Proxy Hardening & Diagnostics | 003 |
+| Centralized Proxy Registry | 002 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -51,6 +54,9 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-20: Added Centralized Proxy Registry topic (Task 2.10.2-2: shared proxy route/env key registry, client proxy builder refactor; tests; future generators)
+- 2025-09-20: Added Dev Proxy Dynamic Port Discovery topic (Task 2.10.2-1: shared env schema, PortDiscoveryService, async proxy builder, Vite serve integration, unit tests, docs; sanitized logging)
+- 2025-09-17: Added dev HTTPS proxy hardening & diagnostics topic (Task 2.10.2: HTTPS proxy env vars, proxy builder enhancements, preflight diagnostics script, docs updates)
 - 2025-09-14: Added local dev HTTPS certificate enablement topic (Task 2.10.1: dev-only HTTPS env vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 - 2025-09-06: Added envReloadPlugin interface enhancement topic (explicit options + canonicalization & dedup; Task 2.9.4 enhancement)
 - 2025-09-03: Added env reload integration test topic (Task 2.9.4 extension: real Vite + Playwright navigation-based reload detection scaffold)

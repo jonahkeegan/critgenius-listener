@@ -1,3 +1,23 @@
+# Development Proxy
+
+## Dynamic Port Discovery
+
+The dev server can auto-discover the backend server port at startup to reduce manual configuration. It probes localhost ports (defaults: 3100, 3000, 8080) for a healthy response from `/api/health` and uses the first successful port.
+
+- Enable/disable: `DEV_PROXY_AUTO_DISCOVER` (default `true`)
+- Candidate ports: `DEV_PROXY_DISCOVERY_PORTS` (comma-separated)
+- Overall timeout: `DEV_PROXY_DISCOVERY_TIMEOUT_MS` (default `10000`)
+- Per-port timeout: `DEV_PROXY_PROBE_TIMEOUT_MS` (default `2000`)
+
+If discovery fails or is disabled, the proxy falls back to `DEV_PROXY_TARGET_PORT` (or HTTPS variant when enabled).
+
+Privacy & Safety:
+- Only ports are logged; no response bodies or headers.
+- Discovery is limited to localhost.
+
+Manual override:
+- Set `DEV_PROXY_AUTO_DISCOVER=false` and specify `DEV_PROXY_TARGET_PORT` (or `DEV_PROXY_TARGET_HTTPS_PORT` with `DEV_PROXY_HTTPS_ENABLED=true`).
+
 # Development Proxy Guide
 
 Comprehensive reference for the Vite development proxy configuration introduced in Task 2.9.2.
@@ -34,6 +54,10 @@ variables prefixed with `DEV_PROXY_`.
 | `DEV_PROXY_ASSEMBLYAI_ENABLED` | `true`              | Enables AssemblyAI external proxy entry                    |
 | `DEV_PROXY_ASSEMBLYAI_PATH`    | `/proxy/assemblyai` | Local path clients request; stripped before forwarding     |
 | `DEV_PROXY_TIMEOUT_MS`         | `30000`             | Timeout applied to proxied requests                        |
+| `DEV_PROXY_HTTPS_ENABLED`      | `false`             | When true, proxy targets `https://localhost:<port>`        |
+| `DEV_PROXY_TARGET_HTTPS_PORT`  | `3101`              | Backend HTTPS port used when HTTPS is enabled              |
+| `DEV_PROXY_REJECT_UNAUTHORIZED`| `false`             | When true, rejects self-signed/local certs                 |
+| `DEV_PROXY_ALLOWED_HOSTS`      | `localhost,127.0.0.1` | Comma list of allowed proxy target hosts                 |
 
 All defaults are safe for typical local setup (server on 3100, client on 5173). Set any variable to
 override.
@@ -43,8 +67,8 @@ override.
 1. Vite starts (development only).
 2. `buildDevProxy(process.env)` is invoked inside `vite.config.ts`.
 3. If `DEV_PROXY_ENABLED !== 'false'`, a proxy table is created:
-   - `/api` ➜ `http://localhost:<DEV_PROXY_TARGET_PORT>`
-   - `/socket.io` ➜ same target with `ws: true`
+  - `/api` ➜ `http(s)://localhost:<DEV_PROXY_TARGET(_HTTPS)_PORT>`
+  - `/socket.io` ➜ same target with `ws: true` and `X-Forwarded-Proto`
    - `<DEV_PROXY_ASSEMBLYAI_PATH>` ➜ `https://api.assemblyai.com` (rewritten path)
 4. Requests from the browser to these paths are transparently forwarded; responses flow back
    unchanged.
@@ -104,11 +128,22 @@ the pure helper:
 ## Failure Modes & Recovery
 
 | Symptom                      | Likely Cause                         | Resolution                                            |
-| ---------------------------- | ------------------------------------ | ----------------------------------------------------- |
 | 404 on `/api/...`            | Backend port mismatch                | Set `DEV_PROXY_TARGET_PORT` to match server port      |
 | WebSocket not connecting     | Proxy disabled or wrong port         | Ensure `DEV_PROXY_ENABLED=true` & port correct        |
 | AssemblyAI CORS errors       | Path disabled / key handling missing | Enable path or implement secure server-side forwarder |
 | Test failure (doc alignment) | `.env.example` drift                 | Update example file or adjust test to new default     |
+| Browser says "Not Secure"   | Missing HTTPS or untrusted cert      | Enable `HTTPS_ENABLED` and trust local certs          |
+| Proxy TLS handshake fails    | Cert rejected by proxy               | Set `DEV_PROXY_REJECT_UNAUTHORIZED=false` locally     |
+
+## Preflight Troubleshooting
+
+Run a quick preflight to check API and WSS reachability through the Vite dev server:
+
+```
+pnpm node scripts/dev-https-preflight.mjs
+```
+
+This prints a sanitized summary and probes `/api/health` and `/socket.io`.
 
 ## Extension Roadmap (Deferred)
 

@@ -206,9 +206,21 @@
       - [x] 2.9.3 Set up concurrent development orchestration for client-server coordination - Added `scripts/dev-orchestration.mjs` with sequenced server→client startup, health polling, optional monitoring & auto-restart, new scripts (`dev:coordinated`, `dev:coordinated:watch`), documentation section, guarded smoke test.
     - [x] 2.9.4 Validate development server configuration and create usage documentation - Test hot-reload functionality with React components and TypeScript compilation, verify API proxy settings with actual AssemblyAI integration and internal endpoints, document development server setup, usage patterns, and troubleshooting procedures
   - [ ] 2.10 Set up local HTTPS development server for Web Audio API testing requirements
-    - [ ] 2.10.1 Generate local SSL certificates and configure certificate management for development HTTPS server - Create self-signed certificates or use mkcert for trusted local certificates, configure certificate storage and management in development environment, set up certificate paths and permissions for secure development workflow
-    - [ ] 2.10.2 Configure Vite development server with HTTPS support and update proxy settings for secure API integration - Update Vite configuration to enable HTTPS with generated certificates, modify existing proxy settings to work with HTTPS endpoints, configure secure WebSocket connections for Socket.IO integration
-    - [ ] 2.10.3 Update development environment variables, scripts, and configuration files for HTTPS workflow - Add HTTPS-related environment variables to existing .env templates, update development scripts to use HTTPS URLs, modify configuration files to handle secure development endpoints
+    - [x] 2.10.1 Generate local SSL certificates and configure certificate management for development HTTPS server - Create self-signed certificates or use mkcert for trusted local certificates, configure certificate storage and management in development environment, set up certificate paths and permissions for secure development workflow
+    - [x] 2.10.2 Configure Vite development server with HTTPS support and update proxy settings for secure API integration - Update Vite configuration to enable HTTPS with generated certificates, modify existing proxy settings to work with HTTPS endpoints, configure secure WebSocket connections for Socket.IO integration
+      - [ ] 2.10.3 Update HTTPS dev config to use centralized proxy registry
+            - Align with centralized proxy registry as source of truth: import from `@critgenius/shared/config/proxyRegistry` (see `getProxyRegistry`, `PROXY_ENV_KEYS`, `resolveTargetFromEnv`) instead of ad-hoc env reads
+            - Ensure .env templates contain the registry-defined DEV_PROXY_* keys (no duplication elsewhere):
+                  - DEV_PROXY_ENABLED, DEV_PROXY_HTTPS_ENABLED, DEV_PROXY_TARGET_PORT, DEV_PROXY_TARGET_HTTPS_PORT
+                  - DEV_PROXY_ALLOWED_HOSTS, DEV_PROXY_REJECT_UNAUTHORIZED, DEV_PROXY_TIMEOUT_MS
+                  - DEV_PROXY_AUTO_DISCOVER, DEV_PROXY_DISCOVERY_PORTS, DEV_PROXY_DISCOVERY_TIMEOUT_MS, DEV_PROXY_PROBE_TIMEOUT_MS
+                  - DEV_PROXY_ASSEMBLYAI_ENABLED, DEV_PROXY_ASSEMBLYAI_PATH
+            - Update development scripts to respect HTTPS toggle and ports via registry helpers (e.g., `resolveTargetFromEnv`) rather than hard-coded URLs
+            - Modify client/server config to build proxy maps from `getProxyRegistry()`; preserve dynamic port discovery and HTTPS hardening behavior
+            - Add generators to keep docs and env templates in sync with the registry:
+                  - scripts/generate-proxy-docs.mjs → outputs `docs/development-proxy.routes.md`
+                  - scripts/generate-proxy-env-example.mjs → updates `.env.example`
+            - Reference: `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md` for background and usage notes
     - [ ] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
     - [ ] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
     - [ ] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
