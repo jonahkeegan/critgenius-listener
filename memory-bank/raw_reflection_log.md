@@ -137,3 +137,34 @@ Improvements_Identified_For_Consolidation:
 - Consider capped parallel probes (small fan-out) for faster worst-case while respecting rate limits.
 
 
+Date: 2025-09-20
+TaskRef: "Dev Infra Task 2.10.2-2 – Centralized Proxy Registry" (guided by CI protocol: C:\Users\jonah\OneDrive\Documents\Cline\Rules\07-cline-continuous-improvement-protocol.md)
+
+Learnings:
+- Centralizing proxy routes and env keys into a shared registry eliminates drift and simplifies maintenance across client/server surfaces.
+- Keeping behavior backward-compatible while refactoring enables safe incremental rollout and lowers coordination costs.
+- A small helper (resolveTargetFromEnv) standardizes protocol/port resolution, reducing edge-case handling in callers.
+- Registry as a single source of truth unlocks generators (docs and .env examples) without duplicating knowledge.
+
+Technical Discoveries:
+- Iterating a typed route registry to build both HTTP and WS proxy entries keeps Vite config coherent and reduces subtle mismatches.
+- Subpath exports from shared ("./config/proxyRegistry") provide clean, tree-shakeable imports for consumers.
+- Unit tests at the shared layer catch shape/contract regressions early before client wiring is affected.
+
+Success Patterns:
+- Quality gates stayed green across packages (lint, type-check, tests), validating the refactor’s non-breaking intent.
+- AssemblyAI path remained untouched; focused changes minimized regression surface while preserving existing rewrites.
+- Clear env key consolidation improved developer onboarding and discoverability.
+
+Implementation Excellence:
+- No new runtime dependencies; small, well-typed additions with zero ESLint warnings.
+- Privacy respected: no secrets logged; sanitized summaries only.
+- Clean separation: shared registry (types/config) → client proxy builder (consumes) → future generators (optional).
+
+Improvements_Identified_For_Consolidation:
+- Add generators: proxy routes doc table and selective .env.example updater; include a minimal doc test.
+- Integration test matrix for HTTPS and multiple candidate ports.
+- Lightweight dev overlay for discovery/registry visibility and bounded probing metrics.
+- Author a short ADR capturing decision, alternatives, and migration considerations.
+
+

@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-20 **Version:** 2.22.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-20 **Version:** 2.23.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -91,6 +91,13 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - Tests created for success/disabled/fallback; docs and `.env.example` updated (privacy preserved)
   - Outcome: Faster dev startup with minimal config; bounded discovery time; backward compatible defaults
   - Follow-Ups: Integration test across multiple candidates + HTTPS; optional parallelized probes with cap; dev overlay metrics
+
+- INFRASTRUCTURE / DX: Centralized Proxy Registry (Task 2.10.2-2)
+  - Added shared registry for dev proxy routes and env keys: `PROXY_ROUTES`, `PROXY_ENV_KEYS`, `resolveTargetFromEnv`, `getProxyRegistry()`
+  - Refactored client proxy builder to iterate registry for HTTP and WS; behavior preserved (AssemblyAI rewrite unchanged)
+  - Shared exports added (subpath `./config/proxyRegistry`); unit tests included; lint/type-check/tests PASS
+  - Outcome: Eliminates config drift, standardizes protocol/port derivation, enables future docs and .env example generators
+  - Follow-Ups: generator scripts + doc test, integration test matrix (HTTPS + candidates), ADR documenting rationale
 
 ### Previous Updates (2025-09-17)
 

@@ -46,6 +46,8 @@
 
 ## Recent Changes
 
+- 2025-09-20: Added Centralized Proxy Registry (Task 2.10.2-2): shared registry for routes/env keys, client proxy builder refactor, tests; enables future doc/.env generators
+
 - 2025-09-20: Added Dynamic Port Discovery for Dev Proxy & Vite Serve (Task 2.10.2-1): shared env schema extensions, PortDiscoveryService, async proxy builder, Vite serve integration, unit tests, docs, sanitized logs
 
 - 2025-09-17: Added Task 2.10.2 dev HTTPS proxy hardening & diagnostics (env schema extensions, proxy builder enhancements, preflight script, docs updates)

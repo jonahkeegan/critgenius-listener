@@ -93,7 +93,7 @@ export default defineConfig(async ({ mode, command }) => {
                 console.warn(
                   '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
                 );
-                return {} as Record<string, unknown>;
+                return {};
               }
               return {
                 https: {
@@ -107,7 +107,7 @@ export default defineConfig(async ({ mode, command }) => {
                 '[vite:https] Failed to load certificates – falling back to HTTP:',
                 e instanceof Error ? e.message : e
               );
-              return {} as Record<string, unknown>;
+              return {};
             }
           })()
         : {}),
