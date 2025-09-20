@@ -114,7 +114,7 @@ export async function buildDevProxyWithDiscovery(
   }
   return buildDevProxy({
     ...env,
-    [httpsEnabled ? keys.httpsPort : keys.httpPort]:
+    [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
       String(result.port),
   });
 }
