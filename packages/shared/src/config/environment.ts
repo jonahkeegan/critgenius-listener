@@ -137,6 +137,23 @@ const developmentConfigSchema = z.object({
   // Development proxy settings (not required / not present outside development)
   DEV_PROXY_ENABLED: booleanSchema.default(true),
   DEV_PROXY_TARGET_PORT: portSchema.default(3100),
+  // Dynamic backend port discovery (client dev server → backend server)
+  DEV_PROXY_AUTO_DISCOVER: booleanSchema.default(true),
+  DEV_PROXY_DISCOVERY_PORTS: z
+    .string()
+    .default('3100,3000,8080'),
+  DEV_PROXY_DISCOVERY_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(1000)
+    .max(60000)
+    .default(10000),
+  DEV_PROXY_PROBE_TIMEOUT_MS: z.coerce
+    .number()
+    .int()
+    .min(250)
+    .max(10000)
+    .default(2000),
   // HTTPS-aware dev proxy enhancements
   DEV_PROXY_HTTPS_ENABLED: booleanSchema.default(false),
   DEV_PROXY_TARGET_HTTPS_PORT: portSchema.default(3101),

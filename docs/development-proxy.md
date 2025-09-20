@@ -1,3 +1,23 @@
+# Development Proxy
+
+## Dynamic Port Discovery
+
+The dev server can auto-discover the backend server port at startup to reduce manual configuration. It probes localhost ports (defaults: 3100, 3000, 8080) for a healthy response from `/api/health` and uses the first successful port.
+
+- Enable/disable: `DEV_PROXY_AUTO_DISCOVER` (default `true`)
+- Candidate ports: `DEV_PROXY_DISCOVERY_PORTS` (comma-separated)
+- Overall timeout: `DEV_PROXY_DISCOVERY_TIMEOUT_MS` (default `10000`)
+- Per-port timeout: `DEV_PROXY_PROBE_TIMEOUT_MS` (default `2000`)
+
+If discovery fails or is disabled, the proxy falls back to `DEV_PROXY_TARGET_PORT` (or HTTPS variant when enabled).
+
+Privacy & Safety:
+- Only ports are logged; no response bodies or headers.
+- Discovery is limited to localhost.
+
+Manual override:
+- Set `DEV_PROXY_AUTO_DISCOVER=false` and specify `DEV_PROXY_TARGET_PORT` (or `DEV_PROXY_TARGET_HTTPS_PORT` with `DEV_PROXY_HTTPS_ENABLED=true`).
+
 # Development Proxy Guide
 
 Comprehensive reference for the Vite development proxy configuration introduced in Task 2.9.2.

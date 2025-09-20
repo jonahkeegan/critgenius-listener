@@ -67,11 +67,6 @@ console.log(`Environment: ${config.NODE_ENV}`);
 
 Optimized for local development with:
 
-- Relaxed security settings
-- Verbose logging
-- Local service URLs
-- Extended timeouts
-- Debug features enabled
 
 **Usage**: Copy to `.env` for local development
 
@@ -79,11 +74,6 @@ Optimized for local development with:
 
 Production-like configuration with:
 
-- Enhanced security
-- SSL/TLS required
-- Structured logging
-- Performance monitoring
-- Privacy compliance enabled
 
 **Usage**: Copy to `.env.staging` for staging deployment
 
@@ -91,11 +81,6 @@ Production-like configuration with:
 
 Maximum security configuration with:
 
-- All security features enabled
-- SSL/TLS mandatory
-- Minimal debug output
-- Strict validation
-- Compliance features required
 
 **Usage**: Copy to `.env.production` for production deployment
 
@@ -103,12 +88,15 @@ Maximum security configuration with:
 
 ### Node.js Environment
 
-- `NODE_ENV`: Environment name (development/staging/production/test)
-- `PORT`: Server port (default: 3100)
-- `CLIENT_PORT`: Client port (default: 3101)
-- `HOST`: Server host (default: localhost)
 
-### AssemblyAI Configuration
+Dynamic Discovery (optional, defaults shown):
+
+- DEV_PROXY_AUTO_DISCOVER=true
+- DEV_PROXY_DISCOVERY_PORTS=3100,3000,8080
+- DEV_PROXY_DISCOVERY_TIMEOUT_MS=10000
+- DEV_PROXY_PROBE_TIMEOUT_MS=2000
+
+These control the client dev server's ability to find the running backend automatically via `/api/health`. Disable to force a static port.
 
 - `ASSEMBLYAI_API_KEY`: API key for AssemblyAI service (required)
 - `ASSEMBLYAI_WEBHOOK_URL`: Webhook URL for callbacks

@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-17 **Version:** 2.21.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-20 **Version:** 2.22.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,17 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-17)
+### Latest Updates (2025-09-20)
+
+- SECURITY / DEV EXPERIENCE: Dev Proxy Dynamic Port Discovery (Task 2.10.2-1)
+  - Added shared dev env schema for discovery: `DEV_PROXY_AUTO_DISCOVER`, `DEV_PROXY_DISCOVERY_PORTS`, `DEV_PROXY_DISCOVERY_TIMEOUT_MS`, `DEV_PROXY_PROBE_TIMEOUT_MS`
+  - Implemented `PortDiscoveryService` (localhost-only probes to `/api/health`, strict per-port + global timeouts, sanitized logs)
+  - Introduced async `buildDevProxyWithDiscovery` with session cache; integrated into Vite `serve` only (build/test unaffected)
+  - Tests created for success/disabled/fallback; docs and `.env.example` updated (privacy preserved)
+  - Outcome: Faster dev startup with minimal config; bounded discovery time; backward compatible defaults
+  - Follow-Ups: Integration test across multiple candidates + HTTPS; optional parallelized probes with cap; dev overlay metrics
+
+### Previous Updates (2025-09-17)
 
 - **SECURITY / PROXY HARDENING:** Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2)
   - ✅ Added dev-only HTTPS proxy env vars: `DEV_PROXY_HTTPS_ENABLED`, `DEV_PROXY_TARGET_HTTPS_PORT`, `DEV_PROXY_REJECT_UNAUTHORIZED`, `DEV_PROXY_ALLOWED_HOSTS`
