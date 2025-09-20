@@ -22,6 +22,7 @@ export { version, getVersionInfo } from './version.js';
 // Export environment configuration and validation
 export * from './config/environment.js';
 export * from './config/environmentLoader.js';
+export * from './config/proxyRegistry.js';
 
 // Export AssemblyAI configuration (explicit import to avoid naming conflicts)
 export {

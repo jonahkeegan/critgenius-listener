@@ -2,29 +2,26 @@ import type { ProxyOptions } from 'vite';
 import http from 'node:http';
 import https from 'node:https';
 import { PortDiscoveryService } from './portDiscovery';
+import { getProxyRegistry, resolveTargetFromEnv } from '@critgenius/shared/config/proxyRegistry';
 
 export type DevProxyConfig = Record<string, string | ProxyOptions> | undefined;
 
 export function buildDevProxy(
   env: Record<string, string | undefined>
 ): DevProxyConfig {
-  const proxyEnabled = env.DEV_PROXY_ENABLED !== 'false';
+  const { env: keys, routes } = getProxyRegistry();
+  const proxyEnabled = env[keys.enabled] !== 'false';
   if (!proxyEnabled) return undefined;
-  const httpsEnabled = env.DEV_PROXY_HTTPS_ENABLED === 'true';
-  const rejectUnauthorized = env.DEV_PROXY_REJECT_UNAUTHORIZED === 'true';
-  const allowedHosts = (env.DEV_PROXY_ALLOWED_HOSTS || 'localhost,127.0.0.1')
+  const httpsEnabled = env[keys.httpsEnabled] === 'true';
+  const rejectUnauthorized = env[keys.rejectUnauthorized] === 'true';
+  const allowedHosts = (env[keys.allowedHosts] || 'localhost,127.0.0.1')
     .split(',')
     .map(h => h.trim())
     .filter(Boolean);
-  const proxyTargetPort = Number(
-    (httpsEnabled
-      ? env.DEV_PROXY_TARGET_HTTPS_PORT
-      : env.DEV_PROXY_TARGET_PORT) || env.PORT || env.VITE_PORT || (httpsEnabled ? 3101 : 3100)
-  );
-  const assemblyAIEnabled = env.DEV_PROXY_ASSEMBLYAI_ENABLED !== 'false';
-  const assemblyAIPath = env.DEV_PROXY_ASSEMBLYAI_PATH || '/proxy/assemblyai';
-  const proxyTimeout = Number(env.DEV_PROXY_TIMEOUT_MS || 30000);
-  const protocol = httpsEnabled ? 'https' : 'http';
+  const { protocol, port: proxyTargetPort } = resolveTargetFromEnv(env);
+  const assemblyAIEnabled = env[keys.assemblyAIEnabled] !== 'false';
+  const assemblyAIPath = env[keys.assemblyAIPath] || '/proxy/assemblyai';
+  const proxyTimeout = Number(env[keys.timeoutMs] || 30000);
   const host = 'localhost';
   if (!allowedHosts.includes(host)) {
     // Refuse to build proxy to disallowed target host
@@ -39,26 +36,26 @@ export function buildDevProxy(
   const httpAgent = new http.Agent({ keepAlive: true });
   const httpsAgent = new https.Agent({ keepAlive: true, rejectUnauthorized: !rejectUnauthorized });
   const agent = httpsEnabled ? (httpsAgent as unknown as http.Agent) : httpAgent;
-  const base: Record<string, ProxyOptions> = {
-    '/api': {
-      target: proxyTargetOrigin,
+  const base: Record<string, ProxyOptions> = {};
+  for (const r of routes) {
+    if (r.optional && r.enableEnvVar && env[r.enableEnvVar] === 'false') continue;
+    base[r.path] = {
+      target: r.id === 'assemblyai' ? 'https://api.assemblyai.com' : proxyTargetOrigin,
       changeOrigin: true,
-      ws: false,
-      headers: { 'X-Forwarded-Proto': protocol },
-      secure: !httpsEnabled ? undefined : !rejectUnauthorized,
-      agent,
-      timeout: proxyTimeout,
-    },
-    '/socket.io': {
-      target: proxyTargetOrigin,
-      changeOrigin: true,
-      ws: true,
-      headers: { 'X-Forwarded-Proto': protocol },
-      secure: !httpsEnabled ? undefined : !rejectUnauthorized,
-      agent,
-      timeout: proxyTimeout,
-    },
-  };
+      ws: r.ws,
+      ...(r.id !== 'assemblyai'
+        ? {
+            headers: { 'X-Forwarded-Proto': protocol },
+            secure: !httpsEnabled ? undefined : !rejectUnauthorized,
+            agent,
+            timeout: proxyTimeout,
+          }
+        : {
+            rewrite: (p: string) => p.replace(assemblyAIPath, ''),
+            timeout: proxyTimeout,
+          }),
+    } as ProxyOptions;
+  }
   if (assemblyAIEnabled) {
     base[assemblyAIPath] = {
       target: 'https://api.assemblyai.com',
@@ -79,17 +76,14 @@ let cachedDiscoveredPort: number | undefined;
 export async function buildDevProxyWithDiscovery(
   env: Record<string, string | undefined>
 ): Promise<DevProxyConfig> {
-  const proxyEnabled = env.DEV_PROXY_ENABLED !== 'false';
+  const { env: keys } = getProxyRegistry();
+  const proxyEnabled = env[keys.enabled] !== 'false';
   if (!proxyEnabled) return undefined;
-  const httpsEnabled = env.DEV_PROXY_HTTPS_ENABLED === 'true';
+  const httpsEnabled = env[keys.httpsEnabled] === 'true';
 
-  const fallbackPort = Number(
-    (httpsEnabled
-      ? env.DEV_PROXY_TARGET_HTTPS_PORT
-      : env.DEV_PROXY_TARGET_PORT) || env.PORT || env.VITE_PORT || (httpsEnabled ? 3101 : 3100)
-  );
+  const fallbackPort = resolveTargetFromEnv(env).port;
 
-  const autoDiscover = (env.DEV_PROXY_AUTO_DISCOVER ?? 'true') === 'true';
+  const autoDiscover = (env[keys.autoDiscover] ?? 'true') === 'true';
   if (!autoDiscover) {
     return buildDevProxy(env);
   }
@@ -98,13 +92,13 @@ export async function buildDevProxyWithDiscovery(
     return buildDevProxy({ ...env, [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']: String(cachedDiscoveredPort) });
   }
 
-  const candidatesRaw = (env.DEV_PROXY_DISCOVERY_PORTS || '3100,3000,8080')
+  const candidatesRaw = (env[keys.discoveryPorts] || '3100,3000,8080')
     .split(',')
     .map(p => Number(p.trim()))
     .filter(p => Number.isFinite(p));
   const candidatePorts = Array.from(new Set([fallbackPort, ...candidatesRaw]));
-  const discoveryTimeoutMs = Number(env.DEV_PROXY_DISCOVERY_TIMEOUT_MS || 10000);
-  const probeTimeoutMs = Number(env.DEV_PROXY_PROBE_TIMEOUT_MS || 2000);
+  const discoveryTimeoutMs = Number(env[keys.discoveryTimeoutMs] || 10000);
+  const probeTimeoutMs = Number(env[keys.probeTimeoutMs] || 2000);
 
   const svc = new PortDiscoveryService();
   const result = await svc.discoverBackendPort({
@@ -120,7 +114,7 @@ export async function buildDevProxyWithDiscovery(
   }
   return buildDevProxy({
     ...env,
-    [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
+    [httpsEnabled ? keys.httpsPort : keys.httpPort]:
       String(result.port),
   });
 }
