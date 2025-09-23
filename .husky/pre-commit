@@ -49,3 +49,14 @@ else
 fi
 
 echo "🎉 All pre-commit checks passed"
+
+# Optional: validate proxy drift when relevant files are staged
+if git diff --cached --name-only | grep -E "^packages/shared/src/config/proxyRegistry\.ts$|^packages/client/vite\.config\.ts$|^scripts/generate-proxy-(env-example|docs)\.mjs$|^scripts/validate-proxy-drift\.mjs$" >/dev/null 2>&1; then
+	echo "🔍 Validating proxy registry alignment..."
+	if pnpm -w validate:proxy >/dev/null 2>&1; then
+		echo "✅ Proxy registry alignment OK"
+	else
+		echo "❌ Proxy registry drift detected – run: pnpm -w generate:proxy-docs && pnpm -w generate:proxy-env && pnpm -w validate:proxy" >&2
+		exit 1
+	fi
+fi

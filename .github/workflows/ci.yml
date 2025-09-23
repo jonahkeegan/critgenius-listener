@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (fail on warnings)
+        run: pnpm run lint:ci
+
+      - name: Type check
+        run: pnpm run type-check
+
+      - name: Unit tests
+        run: pnpm run test
+
+      - name: Build shared package (for generators)
+        run: pnpm --filter @critgenius/shared run build
+
+      - name: Validate proxy alignment
+        run: pnpm run validate:proxy

@@ -28,7 +28,7 @@
     "lint": "pnpm --recursive run lint",
     "lint:fix": "pnpm --recursive run lint:fix",
     "lint:all": "eslint \"packages/**/*.{ts,tsx,js,jsx}\" --max-warnings 0",
-    "lint:ci": "node scripts/lint-ci.mjs",
+  "lint:ci": "node scripts/lint-ci.mjs",
     "lint:client": "pnpm --filter @critgenius/client lint",
     "lint:server": "pnpm --filter @critgenius/server lint",
     "lint:shared": "pnpm --filter @critgenius/shared lint",
@@ -57,7 +57,10 @@
     "validate:filenames:fix": "node scripts/filename-validator.mjs --fix",
     "certs:setup": "node scripts/setup-https-certs.mjs",
     "certs:setup:force": "node scripts/setup-https-certs.mjs --force",
-    "certs:check": "node scripts/check-cert-expiration.mjs"
+    "certs:check": "node scripts/check-cert-expiration.mjs",
+    "generate:proxy-env": "node scripts/generate-proxy-env-example.mjs",
+    "generate:proxy-docs": "node scripts/generate-proxy-docs.mjs",
+    "validate:proxy": "node scripts/validate-proxy-drift.mjs"
   },
   "critgenius": {
     "ecosystem": {
