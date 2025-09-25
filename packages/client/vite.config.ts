@@ -75,13 +75,11 @@ export default defineConfig(async ({ mode, command }) => {
           key: fs.readFileSync(httpsKey),
         };
       } else {
-        
         console.warn(
           '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
         );
       }
     } catch (e) {
-      
       console.warn(
         '[vite:https] Failed to load certificates – falling back to HTTP:',
         e instanceof Error ? e.message : e
