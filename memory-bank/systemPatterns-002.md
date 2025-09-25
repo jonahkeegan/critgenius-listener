@@ -116,7 +116,7 @@ Features: timing metrics, detailed errors (variable + format only), env utility 
 - Testability (no static env cache)
 
 ### Env Template Drift Guard & Deterministic Loader Precedence (Task 2.10.3)
-Pattern: Schema-driven generation of canonical `.env.example` + minimal per-environment override templates with drift detection, combined with a deterministic, non‑mutative layered dotenv loading strategy.
+Pattern: Schema-driven generation of canonical `.env.example` + minimal per-environment override templates with drift detection, combined with a deterministic, non-mutative layered dotenv loading strategy.
 
 Context: Manual edits to `.env.example` risked divergence from evolving Zod schemas and proxy-managed variables; prior loader implicitly mutated `process.env`, obscuring test boundaries and precedence ordering.
 
