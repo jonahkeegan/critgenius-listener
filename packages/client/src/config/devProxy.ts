@@ -34,8 +34,12 @@ export function buildDevProxy(
 
   // Keep-alive agents for better streaming performance
   const httpAgent = new http.Agent({ keepAlive: true });
-  const httpsAgent = new https.Agent({ keepAlive: true, rejectUnauthorized: !rejectUnauthorized });
-  const agent = httpsEnabled ? (httpsAgent as unknown as http.Agent) : httpAgent;
+  const httpsAgent = new https.Agent({
+    keepAlive: true,
+    rejectUnauthorized: !rejectUnauthorized,
+  });
+  // Use a precise union type instead of double casting through unknown.
+  const agent: http.Agent | https.Agent = httpsEnabled ? httpsAgent : httpAgent;
   const base: Record<string, ProxyOptions> = {};
   for (const r of routes) {
     if (r.optional && r.enableEnvVar && env[r.enableEnvVar] === 'false') continue;
@@ -61,7 +65,8 @@ export function buildDevProxy(
       target: 'https://api.assemblyai.com',
       changeOrigin: true,
       ws: false,
-      rewrite: p => p.replace(assemblyAIPath, ''),
+      // Explicit parameter type to satisfy no-unsafe-member-access / implicit any guards.
+      rewrite: (p: string) => p.replace(assemblyAIPath, ''),
       timeout: proxyTimeout,
     } as ProxyOptions;
   }

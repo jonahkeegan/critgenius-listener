@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
+import { getProxyRegistry, resolveTargetFromEnv } from '@critgenius/shared/config/proxyRegistry';
 import { buildDevProxy, buildDevProxyWithDiscovery } from './src/config/devProxy';
 import { envReloadPlugin } from './src/dev/envReloadPlugin';
 
@@ -47,6 +48,13 @@ export default defineConfig(async ({ mode, command }) => {
   const httpsCert = process.env.HTTPS_CERT_PATH;
   const httpsKey = process.env.HTTPS_KEY_PATH;
   const httpsPort = Number(process.env.HTTPS_PORT || 5174);
+
+  // Align protocol decisions with centralized proxy registry (single source of truth)
+  // Touch the proxy registry to ensure config alignment (single source of truth)
+  getProxyRegistry();
+  const upstream = resolveTargetFromEnv(
+    process.env as Record<string, string | undefined>
+  );
   // Prefer dynamic discovery when running dev server; build remains sync
   const devProxy =
     command === 'serve'
@@ -54,12 +62,39 @@ export default defineConfig(async ({ mode, command }) => {
           process.env as Record<string, string | undefined>
         )
       : buildDevProxy(process.env as Record<string, string | undefined>);
+
+  // HTTPS options: only enable when explicitly requested and cert files exist
+  let httpsOptions: { cert: Buffer; key: Buffer } | undefined;
+  if (httpsEnabled && httpsCert && httpsKey) {
+    try {
+      const certExists = fs.existsSync(httpsCert);
+      const keyExists = fs.existsSync(httpsKey);
+      if (certExists && keyExists) {
+        httpsOptions = {
+          cert: fs.readFileSync(httpsCert),
+          key: fs.readFileSync(httpsKey),
+        };
+      } else {
+        console.warn(
+          '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
+        );
+      }
+    } catch (e) {
+      console.warn(
+        '[vite:https] Failed to load certificates – falling back to HTTP:',
+        e instanceof Error ? e.message : e
+      );
+    }
+  }
+
   const config: UserConfig = {
     define: {
       ...Object.entries(define).reduce(
         (acc, [k, v]) => ({ ...acc, [k]: JSON.stringify(v) }),
         {}
       ),
+      __UPSTREAM_PROTOCOL__: JSON.stringify(upstream.protocol),
+      __UPSTREAM_PORT__: JSON.stringify(upstream.port),
       'import.meta.vitest': 'undefined',
     },
     plugins: [
@@ -77,40 +112,19 @@ export default defineConfig(async ({ mode, command }) => {
       port: httpsEnabled ? httpsPort : clientPort,
       host: true,
       open: false,
-      hmr: { overlay: true },
+      // HMR-over-WSS when server HTTPS is active; avoids mixed-content issues
+      hmr: {
+        overlay: true,
+        protocol: httpsOptions ? 'wss' : 'ws',
+        host: 'localhost',
+        port: httpsEnabled ? httpsPort : clientPort,
+      },
       watch: {
         // Exclude build output + tests from triggering unnecessary reloads
         ignored: ['**/dist/**', '**/coverage/**'],
       },
       ...(devProxy ? { proxy: devProxy } : {}),
-      ...(httpsEnabled && httpsCert && httpsKey
-        ? (() => {
-            try {
-              const certExists = fs.existsSync(httpsCert);
-              const keyExists = fs.existsSync(httpsKey);
-              if (!certExists || !keyExists) {
-                 
-                console.warn(
-                  '[vite:https] HTTPS requested but certificate files missing – falling back to HTTP.'
-                );
-                return {};
-              }
-              return {
-                https: {
-                  cert: fs.readFileSync(httpsCert),
-                  key: fs.readFileSync(httpsKey),
-                },
-              } as const;
-            } catch (e) {
-               
-              console.warn(
-                '[vite:https] Failed to load certificates – falling back to HTTP:',
-                e instanceof Error ? e.message : e
-              );
-              return {};
-            }
-          })()
-        : {}),
+      ...(httpsOptions ? { https: httpsOptions } : {}),
     },
     build: {
       outDir: 'dist',

@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-20 **Version:** 2.23.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-25 **Version:** 2.24.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -82,7 +82,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-20)
+### Latest Updates (2025-09-25)
+
+- INFRASTRUCTURE / CONFIGURATION: Env Template Generation & Deterministic Loader Precedence (Task 2.10.3)
+  - Added schema-driven generators (`generate-env-template.mjs`, `generate-env-overrides.mjs`) producing canonical categorized `.env.example` (managed proxy section) + minimal per-env overrides; both support `--check` drift mode
+  - Implemented deterministic non‑mutative dotenv precedence: parse base `.env`, then `.env.{NODE_ENV}`, then overlay existing `process.env`; merged snapshot validated (improves predictability & testability)
+  - Added dev flag coercion (interprets literal "true" for designated dev-only booleans) reducing friction while retaining strict production validation
+  - Inserted conditional pre-commit drift guard (runs only when schema/templates/scripts touched)
+  - Updated docs (`environment-configuration-guide.md`, `pre-commit-workflow.md`), authored task completion report & reflection entry
+  - Outcomes: Eliminated schema/template drift, clarified precedence semantics, improved developer ergonomics, preserved privacy (no secret logging)
+  - Follow-Ups: CI `generate:env:check` stage, integration test for precedence layering, JSON output mode, ADR documenting rationale & managed section delimitation
+
+### Previous Updates (2025-09-20)
 
 - SECURITY / DEV EXPERIENCE: Dev Proxy Dynamic Port Discovery (Task 2.10.2-1)
   - Added shared dev env schema for discovery: `DEV_PROXY_AUTO_DISCOVER`, `DEV_PROXY_DISCOVERY_PORTS`, `DEV_PROXY_DISCOVERY_TIMEOUT_MS`, `DEV_PROXY_PROBE_TIMEOUT_MS`
