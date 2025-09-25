@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-09-20  
-**Version:** 1.14.0  
+**Last Updated:** 2025-09-25  
+**Version:** 1.16.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-003.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~210  
-**Last Updated:** 2025-09-20
+**Current Row Count:** ~240  
+**Last Updated:** 2025-09-23
 
 ## File Registry
 
@@ -45,6 +45,9 @@
 - Archive segment by marking status Archived and freezing its header metadata
 
 ## Recent Changes
+
+- 2025-09-25: Completed Task 2.10.3 (Env Template Generation & Deterministic Loader Precedence): added schema-driven `.env.example` + per-env override generators with `--check` drift guard, deterministic non‑mutative dotenv precedence loader (base → env-specific → process.env) with dev flag coercion, conditional pre-commit drift validation block, docs & task report; all quality gates green
+- 2025-09-21: Completed Task 2.10.3 (HTTPS Dev Protocol & Drift Guard): aligned Vite HTTPS/HMR with proxy registry; added generators (`--check`) for `.env.example` and proxy docs; validator and pre-commit wiring; all gates passing
 
 - 2025-09-20: Added Centralized Proxy Registry (Task 2.10.2-2): shared registry for routes/env keys, client proxy builder refactor, tests; enables future doc/.env generators
 
