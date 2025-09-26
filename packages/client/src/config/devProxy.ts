@@ -33,9 +33,11 @@ export function buildDevProxy(
     .split(',')
     .map(h => h.trim())
     .filter(Boolean);
-  const upstream = resolveTargetFromEnv(env);
-  const protocol = upstream.protocol;
-  const proxyTargetPort = upstream.port;
+  const upstreamRaw = resolveTargetFromEnv(env);
+  const protocol = typeof upstreamRaw.protocol === 'string' ? upstreamRaw.protocol : 'http';
+  const proxyTargetPort = typeof upstreamRaw.port === 'number' && Number.isFinite(upstreamRaw.port)
+    ? upstreamRaw.port
+    : 3000;
   const assemblyAIEnabled = readBool(keys.assemblyAIEnabled, true);
   const assemblyAIPath = read(keys.assemblyAIPath) || '/proxy/assemblyai';
   const proxyTimeout = Number(read(keys.timeoutMs) || 30000);
@@ -114,7 +116,10 @@ export async function buildDevProxyWithDiscovery(
   if (!proxyEnabled) return undefined;
   const httpsEnabled = readBool(keys.httpsEnabled, false);
 
-  const fallbackPort = resolveTargetFromEnv(env).port;
+  const upstreamRaw = resolveTargetFromEnv(env);
+  const fallbackPort = typeof upstreamRaw.port === 'number' && Number.isFinite(upstreamRaw.port)
+    ? upstreamRaw.port
+    : 3000;
   const autoDiscover = readBool(keys.autoDiscover, true);
   if (!autoDiscover) return buildDevProxy(env);
 
