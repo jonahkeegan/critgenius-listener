@@ -9,19 +9,36 @@ export type DevProxyConfig = Record<string, string | ProxyOptions> | undefined;
 export function buildDevProxy(
   env: Record<string, string | undefined>
 ): DevProxyConfig {
-  const { env: keys, routes } = getProxyRegistry();
-  const proxyEnabled = env[keys.enabled] !== 'false';
+  const registry: ReturnType<typeof getProxyRegistry> = getProxyRegistry();
+  const keys = registry.env;
+  const routes = registry.routes;
+
+  // Helper to safely read string env values
+  const read = (key: string): string | undefined => {
+    const val = env[key];
+    return typeof val === 'string' ? val : undefined;
+  };
+  const readBool = (key: string, defaultTrue = true): boolean => {
+    const v = read(key);
+    if (v === undefined) return defaultTrue;
+    return v === 'true';
+  };
+
+  const proxyEnabled = readBool(keys.enabled); // default true unless explicitly 'false'
   if (!proxyEnabled) return undefined;
-  const httpsEnabled = env[keys.httpsEnabled] === 'true';
-  const rejectUnauthorized = env[keys.rejectUnauthorized] === 'true';
-  const allowedHosts = (env[keys.allowedHosts] || 'localhost,127.0.0.1')
+  const httpsEnabled = readBool(keys.httpsEnabled, false);
+  const rejectUnauthorized = readBool(keys.rejectUnauthorized, true) === true;
+  const allowedHostsRaw = read(keys.allowedHosts) || 'localhost,127.0.0.1';
+  const allowedHosts = allowedHostsRaw
     .split(',')
     .map(h => h.trim())
     .filter(Boolean);
-  const { protocol, port: proxyTargetPort } = resolveTargetFromEnv(env);
-  const assemblyAIEnabled = env[keys.assemblyAIEnabled] !== 'false';
-  const assemblyAIPath = env[keys.assemblyAIPath] || '/proxy/assemblyai';
-  const proxyTimeout = Number(env[keys.timeoutMs] || 30000);
+  const upstream = resolveTargetFromEnv(env);
+  const protocol = upstream.protocol;
+  const proxyTargetPort = upstream.port;
+  const assemblyAIEnabled = readBool(keys.assemblyAIEnabled, true);
+  const assemblyAIPath = read(keys.assemblyAIPath) || '/proxy/assemblyai';
+  const proxyTimeout = Number(read(keys.timeoutMs) || 30000);
   const host = 'localhost';
   if (!allowedHosts.includes(host)) {
     // Refuse to build proxy to disallowed target host
@@ -41,34 +58,35 @@ export function buildDevProxy(
   // Use a precise union type instead of double casting through unknown.
   const agent: http.Agent | https.Agent = httpsEnabled ? httpsAgent : httpAgent;
   const base: Record<string, ProxyOptions> = {};
-  for (const r of routes) {
-    if (r.optional && r.enableEnvVar && env[r.enableEnvVar] === 'false') continue;
-    base[r.path] = {
-      target: r.id === 'assemblyai' ? 'https://api.assemblyai.com' : proxyTargetOrigin,
+  for (const route of routes) {
+    const { id, path: routePath, ws, optional, enableEnvVar } = route;
+    if (optional && enableEnvVar && read(enableEnvVar) === 'false') continue;
+    const isAssembly = id === 'assemblyai';
+    base[routePath] = {
+      target: isAssembly ? 'https://api.assemblyai.com' : proxyTargetOrigin,
       changeOrigin: true,
-      ws: r.ws,
-      ...(r.id !== 'assemblyai'
+      ws,
+      ...(isAssembly
         ? {
+            rewrite: (p: string) => p.replace(assemblyAIPath, ''),
+            timeout: proxyTimeout,
+          }
+        : {
             headers: { 'X-Forwarded-Proto': protocol },
             secure: !httpsEnabled ? undefined : !rejectUnauthorized,
             agent,
             timeout: proxyTimeout,
-          }
-        : {
-            rewrite: (p: string) => p.replace(assemblyAIPath, ''),
-            timeout: proxyTimeout,
           }),
-    } as ProxyOptions;
+    } satisfies ProxyOptions;
   }
   if (assemblyAIEnabled) {
     base[assemblyAIPath] = {
       target: 'https://api.assemblyai.com',
       changeOrigin: true,
       ws: false,
-      // Explicit parameter type to satisfy no-unsafe-member-access / implicit any guards.
       rewrite: (p: string) => p.replace(assemblyAIPath, ''),
       timeout: proxyTimeout,
-    } as ProxyOptions;
+    } satisfies ProxyOptions;
   }
   return base;
 }
@@ -81,31 +99,42 @@ let cachedDiscoveredPort: number | undefined;
 export async function buildDevProxyWithDiscovery(
   env: Record<string, string | undefined>
 ): Promise<DevProxyConfig> {
-  const { env: keys } = getProxyRegistry();
-  const proxyEnabled = env[keys.enabled] !== 'false';
+  const registry: ReturnType<typeof getProxyRegistry> = getProxyRegistry();
+  const keys = registry.env;
+  const read = (key: string): string | undefined => {
+    const val = env[key];
+    return typeof val === 'string' ? val : undefined;
+  };
+  const readBool = (key: string, defaultTrue = true): boolean => {
+    const v = read(key);
+    if (v === undefined) return defaultTrue;
+    return v === 'true';
+  };
+  const proxyEnabled = readBool(keys.enabled);
   if (!proxyEnabled) return undefined;
-  const httpsEnabled = env[keys.httpsEnabled] === 'true';
+  const httpsEnabled = readBool(keys.httpsEnabled, false);
 
   const fallbackPort = resolveTargetFromEnv(env).port;
-
-  const autoDiscover = (env[keys.autoDiscover] ?? 'true') === 'true';
-  if (!autoDiscover) {
-    return buildDevProxy(env);
-  }
+  const autoDiscover = readBool(keys.autoDiscover, true);
+  if (!autoDiscover) return buildDevProxy(env);
 
   if (cachedDiscoveredPort) {
-    return buildDevProxy({ ...env, [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']: String(cachedDiscoveredPort) });
+    return buildDevProxy({
+      ...env,
+      [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
+        String(cachedDiscoveredPort),
+    });
   }
 
-  const candidatesRaw = (env[keys.discoveryPorts] || '3100,3000,8080')
+  const candidatesRaw = (read(keys.discoveryPorts) || '3100,3000,8080')
     .split(',')
     .map(p => Number(p.trim()))
     .filter(p => Number.isFinite(p));
   const candidatePorts = Array.from(new Set([fallbackPort, ...candidatesRaw]));
-  const discoveryTimeoutMs = Number(env[keys.discoveryTimeoutMs] || 10000);
-  const probeTimeoutMs = Number(env[keys.probeTimeoutMs] || 2000);
+  const discoveryTimeoutMs = Number(read(keys.discoveryTimeoutMs) || 10000);
+  const probeTimeoutMs = Number(read(keys.probeTimeoutMs) || 2000);
 
-  const svc = new PortDiscoveryService();
+  const svc: PortDiscoveryService = new PortDiscoveryService();
   const result = await svc.discoverBackendPort({
     autoDiscover: true,
     candidatePorts,
