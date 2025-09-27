@@ -27,6 +27,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Build shared first so downstream packages can type-check against its emitted d.ts
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 
@@ -39,10 +43,3 @@ jobs:
       # Env drift guard: ensure docs and .env.example stay in sync with proxy registry
       - name: Env drift check (proxy registry & templates)
         run: pnpm run validate:proxy
-
-      - name: Build shared package (for generators)
-        run: pnpm --filter @critgenius/shared run build
-
-      - name: Build shared package (for generators)
-        if: failure()
-        run: pnpm --filter @critgenius/shared run build
