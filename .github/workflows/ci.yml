@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: ["**"]
   pull_request:
 
 jobs:
@@ -36,8 +36,13 @@ jobs:
       - name: Unit tests
         run: pnpm run test
 
+      # Env drift guard: ensure docs and .env.example stay in sync with proxy registry
+      - name: Env drift check (proxy registry & templates)
+        run: pnpm run validate:proxy
+
       - name: Build shared package (for generators)
         run: pnpm --filter @critgenius/shared run build
 
-      - name: Validate proxy alignment
-        run: pnpm run validate:proxy
+      - name: Build shared package (for generators)
+        if: failure()
+        run: pnpm --filter @critgenius/shared run build
