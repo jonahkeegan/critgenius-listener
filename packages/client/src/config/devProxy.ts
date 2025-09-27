@@ -100,7 +100,12 @@ function isUpstream(x: unknown): x is Upstream {
 export function buildDevProxy(
   env: Record<string, string | undefined>
 ): DevProxyConfig {
-  const registryUnknown: unknown = getProxyRegistry() as unknown;
+  // Guard external function calls to avoid unsafe-call on potentially any-typed imports
+  const maybeGetRegistry: unknown = getProxyRegistry as unknown;
+  const registryUnknown: unknown =
+    typeof maybeGetRegistry === 'function'
+      ? (maybeGetRegistry as () => unknown)()
+      : undefined;
   const keys = isProxyRegistrySummary(registryUnknown)
     ? (registryUnknown.env as Record<string, string>)
     : DEFAULT_PROXY_ENV_KEYS;
@@ -129,7 +134,11 @@ export function buildDevProxy(
     .split(',')
     .map(h => h.trim())
     .filter(Boolean);
-  const upstreamUnknown: unknown = resolveTargetFromEnv(env) as unknown;
+  const maybeResolve: unknown = resolveTargetFromEnv as unknown;
+  const upstreamUnknown: unknown =
+    typeof maybeResolve === 'function'
+      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(env)
+      : undefined;
   let protocol: 'http' | 'https' = 'http';
   let proxyTargetPort = 3000;
   if (isUpstream(upstreamUnknown)) {
@@ -201,7 +210,11 @@ let cachedDiscoveredPort: number | undefined;
 export async function buildDevProxyWithDiscovery(
   env: Record<string, string | undefined>
 ): Promise<DevProxyConfig> {
-  const registryUnknown: unknown = getProxyRegistry() as unknown;
+  const maybeGetRegistry: unknown = getProxyRegistry as unknown;
+  const registryUnknown: unknown =
+    typeof maybeGetRegistry === 'function'
+      ? (maybeGetRegistry as () => unknown)()
+      : undefined;
   const keys = isProxyRegistrySummary(registryUnknown)
     ? (registryUnknown.env as Record<string, string>)
     : DEFAULT_PROXY_ENV_KEYS;
@@ -219,7 +232,11 @@ export async function buildDevProxyWithDiscovery(
   if (!proxyEnabled) return undefined;
   const httpsEnabled = readBool(keys.httpsEnabled, false);
 
-  const upstreamUnknown: unknown = resolveTargetFromEnv(env) as unknown;
+  const maybeResolve: unknown = resolveTargetFromEnv as unknown;
+  const upstreamUnknown: unknown =
+    typeof maybeResolve === 'function'
+      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(env)
+      : undefined;
   const fallbackPort = isUpstream(upstreamUnknown) && Number.isFinite(upstreamUnknown.port)
     ? upstreamUnknown.port
     : 3000;
@@ -242,11 +259,24 @@ export async function buildDevProxyWithDiscovery(
   const discoveryTimeoutMs = Number(read(keys.discoveryTimeoutMs) || 10000);
   const probeTimeoutMs = Number(read(keys.probeTimeoutMs) || 2000);
 
-  let svc: PortDiscoveryService | undefined;
-  if (typeof (PortDiscoveryService as unknown) === 'function') {
-    svc = new PortDiscoveryService();
+  // Construct discovery service only if constructable, and ensure method presence before use
+  type DiscoverySvc = { discoverBackendPort: (cfg: PortDiscoveryConfig) => Promise<unknown> };
+  const maybeCtor: unknown = PortDiscoveryService as unknown;
+  let svc: unknown;
+  if (typeof maybeCtor === 'function') {
+    const Ctor = maybeCtor as new () => unknown;
+    try {
+      svc = new Ctor();
+    } catch {
+      svc = undefined;
+    }
   }
-  if (!svc) {
+  const hasDiscovery = (obj: unknown): obj is DiscoverySvc => {
+    if (typeof obj !== 'object' || obj === null) return false;
+    const rec = obj as Record<string, unknown>;
+    return typeof rec['discoverBackendPort'] === 'function';
+  };
+  if (!hasDiscovery(svc)) {
     return buildDevProxy(env);
   }
   const discoveryCfg: PortDiscoveryConfig = {
@@ -257,7 +287,7 @@ export async function buildDevProxyWithDiscovery(
     fallbackPort,
     https: httpsEnabled,
   };
-  const resultUnknown = await svc.discoverBackendPort(discoveryCfg as PortDiscoveryConfig);
+  const resultUnknown = await (svc as DiscoverySvc).discoverBackendPort(discoveryCfg);
   if (isDiscoveryResult(resultUnknown)) {
     if (resultUnknown.discovered) {
       cachedDiscoveredPort = resultUnknown.port;
