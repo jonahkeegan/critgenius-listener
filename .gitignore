@@ -17,6 +17,10 @@ node_modules/
 packages/*/dist/
 packages/*/build/
 
+# Safety: never ignore source files or workflows (narrow scope of rules above)
+!packages/*/src/**
+!.github/**
+
 
 # Testing
 /coverage/
