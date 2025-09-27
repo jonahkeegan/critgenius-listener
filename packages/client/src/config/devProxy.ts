@@ -2,23 +2,119 @@ import type { ProxyOptions } from 'vite';
 import http from 'node:http';
 import https from 'node:https';
 import { PortDiscoveryService } from './portDiscovery';
+import type { PortDiscoveryConfig, DiscoveryResult } from './portDiscovery';
 import { getProxyRegistry, resolveTargetFromEnv } from '@critgenius/shared/config/proxyRegistry';
 
 export type DevProxyConfig = Record<string, string | ProxyOptions> | undefined;
 
+// Default fallbacks if registry types are unavailable at lint time
+const DEFAULT_PROXY_ENV_KEYS = {
+  enabled: 'DEV_PROXY_ENABLED',
+  httpPort: 'DEV_PROXY_TARGET_PORT',
+  httpsPort: 'DEV_PROXY_TARGET_HTTPS_PORT',
+  httpsEnabled: 'DEV_PROXY_HTTPS_ENABLED',
+  allowedHosts: 'DEV_PROXY_ALLOWED_HOSTS',
+  rejectUnauthorized: 'DEV_PROXY_REJECT_UNAUTHORIZED',
+  timeoutMs: 'DEV_PROXY_TIMEOUT_MS',
+  assemblyAIEnabled: 'DEV_PROXY_ASSEMBLYAI_ENABLED',
+  assemblyAIPath: 'DEV_PROXY_ASSEMBLYAI_PATH',
+  autoDiscover: 'DEV_PROXY_AUTO_DISCOVER',
+  discoveryPorts: 'DEV_PROXY_DISCOVERY_PORTS',
+  discoveryTimeoutMs: 'DEV_PROXY_DISCOVERY_TIMEOUT_MS',
+  probeTimeoutMs: 'DEV_PROXY_PROBE_TIMEOUT_MS',
+} as const;
+
+const DEFAULT_ROUTES: Array<{
+  id: 'api' | 'ws' | 'assemblyai';
+  path: string;
+  ws: boolean;
+  optional: boolean;
+  enableEnvVar?: string;
+}> = [
+  { id: 'api', path: '/api', ws: false, optional: false },
+  { id: 'ws', path: '/socket.io', ws: true, optional: false },
+  {
+    id: 'assemblyai',
+    path: '/proxy/assemblyai',
+    ws: false,
+    optional: true,
+    enableEnvVar: 'DEV_PROXY_ASSEMBLYAI_ENABLED',
+  },
+];
+
+function isRecordString(x: unknown): x is Record<string, string> {
+  if (typeof x !== 'object' || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  for (const v of Object.values(rec)) {
+    if (typeof v !== 'string') return false;
+  }
+  return true;
+}
+
+function isRouteEntry(x: unknown): x is {
+  id: 'api' | 'ws' | 'assemblyai';
+  path: string;
+  ws: boolean;
+  optional: boolean;
+  enableEnvVar?: string;
+} {
+  if (typeof x !== 'object' || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  const id = rec['id'];
+  const path = rec['path'];
+  const ws = rec['ws'];
+  const optional = rec['optional'];
+  if (id !== 'api' && id !== 'ws' && id !== 'assemblyai') return false;
+  return (
+    typeof path === 'string' &&
+    typeof ws === 'boolean' &&
+    typeof optional === 'boolean'
+  );
+}
+
+function isProxyRegistrySummary(x: unknown): x is {
+  env: Record<string, string>;
+  routes: unknown[];
+} {
+  if (typeof x !== 'object' || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  return isRecordString(rec['env']) && Array.isArray(rec['routes']);
+}
+
+function isDiscoveryResult(x: unknown): x is Pick<DiscoveryResult, 'discovered' | 'port'> {
+  if (typeof x !== 'object' || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  return typeof rec['discovered'] === 'boolean' && typeof rec['port'] === 'number';
+}
+
+type Upstream = { protocol: 'http' | 'https'; port: number };
+function isUpstream(x: unknown): x is Upstream {
+  if (typeof x !== 'object' || x === null) return false;
+  const rec = x as Record<string, unknown>;
+  const protocol = rec['protocol'];
+  const port = rec['port'];
+  if (protocol !== 'http' && protocol !== 'https') return false;
+  return typeof port === 'number';
+}
+
 export function buildDevProxy(
   env: Record<string, string | undefined>
 ): DevProxyConfig {
-  const registry: ReturnType<typeof getProxyRegistry> = getProxyRegistry();
-  const keys = registry.env;
-  const routes = registry.routes;
+  const registryUnknown: unknown = getProxyRegistry() as unknown;
+  const keys = isProxyRegistrySummary(registryUnknown)
+    ? (registryUnknown.env as Record<string, string>)
+    : DEFAULT_PROXY_ENV_KEYS;
+  const routes = isProxyRegistrySummary(registryUnknown)
+    ? (registryUnknown.routes as unknown[]).filter(isRouteEntry)
+    : DEFAULT_ROUTES;
 
   // Helper to safely read string env values
-  const read = (key: string): string | undefined => {
+  const read = (key: unknown): string | undefined => {
+    if (typeof key !== 'string') return undefined;
     const val = env[key];
     return typeof val === 'string' ? val : undefined;
   };
-  const readBool = (key: string, defaultTrue = true): boolean => {
+  const readBool = (key: unknown, defaultTrue = true): boolean => {
     const v = read(key);
     if (v === undefined) return defaultTrue;
     return v === 'true';
@@ -33,11 +129,15 @@ export function buildDevProxy(
     .split(',')
     .map(h => h.trim())
     .filter(Boolean);
-  const upstreamRaw = resolveTargetFromEnv(env);
-  const protocol = typeof upstreamRaw.protocol === 'string' ? upstreamRaw.protocol : 'http';
-  const proxyTargetPort = typeof upstreamRaw.port === 'number' && Number.isFinite(upstreamRaw.port)
-    ? upstreamRaw.port
-    : 3000;
+  const upstreamUnknown: unknown = resolveTargetFromEnv(env) as unknown;
+  let protocol: 'http' | 'https' = 'http';
+  let proxyTargetPort = 3000;
+  if (isUpstream(upstreamUnknown)) {
+    protocol = upstreamUnknown.protocol;
+    proxyTargetPort = Number.isFinite(upstreamUnknown.port)
+      ? upstreamUnknown.port
+      : 3000;
+  }
   const assemblyAIEnabled = readBool(keys.assemblyAIEnabled, true);
   const assemblyAIPath = read(keys.assemblyAIPath) || '/proxy/assemblyai';
   const proxyTimeout = Number(read(keys.timeoutMs) || 30000);
@@ -101,13 +201,16 @@ let cachedDiscoveredPort: number | undefined;
 export async function buildDevProxyWithDiscovery(
   env: Record<string, string | undefined>
 ): Promise<DevProxyConfig> {
-  const registry: ReturnType<typeof getProxyRegistry> = getProxyRegistry();
-  const keys = registry.env;
-  const read = (key: string): string | undefined => {
+  const registryUnknown: unknown = getProxyRegistry() as unknown;
+  const keys = isProxyRegistrySummary(registryUnknown)
+    ? (registryUnknown.env as Record<string, string>)
+    : DEFAULT_PROXY_ENV_KEYS;
+  const read = (key: unknown): string | undefined => {
+    if (typeof key !== 'string') return undefined;
     const val = env[key];
     return typeof val === 'string' ? val : undefined;
   };
-  const readBool = (key: string, defaultTrue = true): boolean => {
+  const readBool = (key: unknown, defaultTrue = true): boolean => {
     const v = read(key);
     if (v === undefined) return defaultTrue;
     return v === 'true';
@@ -116,9 +219,9 @@ export async function buildDevProxyWithDiscovery(
   if (!proxyEnabled) return undefined;
   const httpsEnabled = readBool(keys.httpsEnabled, false);
 
-  const upstreamRaw = resolveTargetFromEnv(env);
-  const fallbackPort = typeof upstreamRaw.port === 'number' && Number.isFinite(upstreamRaw.port)
-    ? upstreamRaw.port
+  const upstreamUnknown: unknown = resolveTargetFromEnv(env) as unknown;
+  const fallbackPort = isUpstream(upstreamUnknown) && Number.isFinite(upstreamUnknown.port)
+    ? upstreamUnknown.port
     : 3000;
   const autoDiscover = readBool(keys.autoDiscover, true);
   if (!autoDiscover) return buildDevProxy(env);
@@ -139,21 +242,36 @@ export async function buildDevProxyWithDiscovery(
   const discoveryTimeoutMs = Number(read(keys.discoveryTimeoutMs) || 10000);
   const probeTimeoutMs = Number(read(keys.probeTimeoutMs) || 2000);
 
-  const svc: PortDiscoveryService = new PortDiscoveryService();
-  const result = await svc.discoverBackendPort({
+  let svc: PortDiscoveryService | undefined;
+  if (typeof (PortDiscoveryService as unknown) === 'function') {
+    svc = new PortDiscoveryService();
+  }
+  if (!svc) {
+    return buildDevProxy(env);
+  }
+  const discoveryCfg: PortDiscoveryConfig = {
     autoDiscover: true,
     candidatePorts,
     discoveryTimeoutMs,
     probeTimeoutMs,
     fallbackPort,
     https: httpsEnabled,
-  });
-  if (result.discovered) {
-    cachedDiscoveredPort = result.port;
+  };
+  const resultUnknown = await svc.discoverBackendPort(discoveryCfg as PortDiscoveryConfig);
+  if (isDiscoveryResult(resultUnknown)) {
+    if (resultUnknown.discovered) {
+      cachedDiscoveredPort = resultUnknown.port;
+    }
+    return buildDevProxy({
+      ...env,
+      [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
+        String(resultUnknown.port),
+    });
   }
+  // Fallback if result is malformed
   return buildDevProxy({
     ...env,
     [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
-      String(result.port),
+      String(fallbackPort),
   });
 }
