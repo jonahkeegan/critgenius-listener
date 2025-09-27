@@ -160,8 +160,8 @@ docker-compose.override.yml
 
 # Files with trailing dots or spaces (Windows incompatible)
 **/*.
-**/*" "
-**/* 
+# Match filenames ending with a space (escape trailing space so git doesn't trim it)
+**/*\ 
 
 # Other
 .nyc_output
