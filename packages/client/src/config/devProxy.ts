@@ -289,13 +289,14 @@ export async function buildDevProxyWithDiscovery(
   };
   const resultUnknown = await (svc as DiscoverySvc).discoverBackendPort(discoveryCfg);
   if (isDiscoveryResult(resultUnknown)) {
+    const port = typeof resultUnknown.port === 'number' ? resultUnknown.port : fallbackPort;
     if (resultUnknown.discovered) {
-      cachedDiscoveredPort = resultUnknown.port;
+      cachedDiscoveredPort = port;
     }
     return buildDevProxy({
       ...env,
       [httpsEnabled ? 'DEV_PROXY_TARGET_HTTPS_PORT' : 'DEV_PROXY_TARGET_PORT']:
-        String(resultUnknown.port),
+        String(port),
     });
   }
   // Fallback if result is malformed
