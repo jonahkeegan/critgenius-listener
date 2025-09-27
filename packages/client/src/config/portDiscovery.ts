@@ -96,7 +96,7 @@ export class PortDiscoveryService {
     const begin = Date.now();
     const options: http.RequestOptions = {
       protocol,
-      hostname: 'localhost',
+      hostname: '127.0.0.1',
       port,
       path: this.HEALTH_PATH,
       method: 'GET',
