@@ -17,6 +17,14 @@ node_modules/
 packages/*/dist/
 packages/*/build/
 
+# Safety: never ignore source files or workflows (narrow scope of rules above)
+!packages/*/src/**
+!.github/**
+!scripts/**
+!services/**
+!.env.example
+!docs/development-proxy.routes.md
+
 
 # Testing
 /coverage/
@@ -106,6 +114,9 @@ scripts/install-global.ps1
 scripts/README.md
 temp-backup-untracked/
 
+# Ensure GitHub workflow files are tracked
+!.github/
+
 # Database
 *.sqlite
 *.sqlite3
@@ -157,8 +168,8 @@ docker-compose.override.yml
 
 # Files with trailing dots or spaces (Windows incompatible)
 **/*.
-**/*" "
-**/* 
+# Match filenames ending with a space (escape trailing space so git doesn't trim it)
+**/*\ 
 
 # Other
 .nyc_output

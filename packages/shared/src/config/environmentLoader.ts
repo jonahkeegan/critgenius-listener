@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import fs from 'node:fs';
+import path from 'node:path';
+import { parse as parseDotenv } from 'dotenv';
 import {
   getSchemaForEnvironment,
   type EnvironmentConfig,
@@ -65,6 +68,61 @@ function loadProcessEnv(): Record<string, string> {
 }
 
 /**
+ * Non-mutative dotenv preload with deterministic precedence:
+ * 1) .env
+ * 2) .env.{NODE_ENV}
+ * 3) existing process.env (wins)
+ */
+function loadDeterministicEnvSnapshot(): Record<string, unknown> {
+  const cwd = typeof process !== 'undefined' ? process.cwd() : '.';
+  const processEnv = loadProcessEnv();
+  const nodeEnv = processEnv.NODE_ENV || 'development';
+
+  const basePath = path.resolve(cwd, '.env');
+  const envPath = path.resolve(cwd, `.env.${nodeEnv}`);
+
+  const baseFile = fs.existsSync(basePath) ? fs.readFileSync(basePath, 'utf8') : '';
+  const envFile = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
+
+  const baseParsed = baseFile ? parseDotenv(baseFile) : {};
+  const envParsed = envFile ? parseDotenv(envFile) : {};
+
+  // Ensure only string values are included from parsed dotenv files
+  const sanitize = (obj: Record<string, unknown>): Record<string, string> => {
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (typeof v === 'string') out[k] = v;
+    }
+    return out;
+  };
+
+  const snapshot: Record<string, unknown> = {
+    ...sanitize(baseParsed),
+    ...sanitize(envParsed),
+    ...processEnv, // process.env has highest precedence
+  };
+
+  // Development-only literal true flags: coerce to boolean true when absent or set to 'true'
+  if (nodeEnv === 'development') {
+    const devTrueKeys = [
+      'HOT_RELOAD',
+      'WATCH_FILES',
+      'DEV_PROXY_ENABLED',
+      'DEV_PROXY_ASSEMBLYAI_ENABLED',
+    ] as const;
+    for (const k of devTrueKeys) {
+      const v = snapshot[k];
+      if (v === undefined || v === 'true' || v === true) {
+        snapshot[k] = true;
+      }
+      // if explicitly 'false', leave as-is so validation fails (intentional)
+    }
+  }
+
+  return snapshot;
+}
+
+/**
  * Create detailed error message for validation failures
  */
 function createValidationErrorMessage(
@@ -111,7 +169,7 @@ function formatZodIssue(issue: z.ZodIssue): string {
  * Validate environment variables against schema
  */
 function validateEnvironment<T>(
-  env: Record<string, string>,
+  env: Record<string, unknown>,
   schema: z.ZodSchema<T>,
   environment: string
 ): T {
@@ -138,8 +196,8 @@ function validateEnvironment<T>(
  * Automatically detects environment from NODE_ENV and applies appropriate schema
  */
 export function loadEnvironment(): EnvironmentConfig {
-  const env = loadProcessEnv();
-  const nodeEnv = env.NODE_ENV || 'development';
+  const env = loadDeterministicEnvSnapshot();
+  const nodeEnv = typeof env.NODE_ENV === 'string' ? env.NODE_ENV : 'development';
   const schema = getSchemaForEnvironment(nodeEnv);
 
   return validateEnvironment(env, schema, nodeEnv);
@@ -149,7 +207,7 @@ export function loadEnvironment(): EnvironmentConfig {
  * Load development environment configuration
  */
 export function loadDevelopmentEnvironment(): DevelopmentConfig {
-  const env = loadProcessEnv();
+  const env = loadDeterministicEnvSnapshot();
   const schema = getSchemaForEnvironment('development');
   return validateEnvironment(env, schema, 'development') as DevelopmentConfig;
 }
@@ -158,7 +216,7 @@ export function loadDevelopmentEnvironment(): DevelopmentConfig {
  * Load staging environment configuration
  */
 export function loadStagingEnvironment(): StagingConfig {
-  const env = loadProcessEnv();
+  const env = loadDeterministicEnvSnapshot();
   const schema = getSchemaForEnvironment('staging');
   return validateEnvironment(env, schema, 'staging') as StagingConfig;
 }
@@ -167,7 +225,7 @@ export function loadStagingEnvironment(): StagingConfig {
  * Load production environment configuration
  */
 export function loadProductionEnvironment(): ProductionConfig {
-  const env = loadProcessEnv();
+  const env = loadDeterministicEnvSnapshot();
   const schema = getSchemaForEnvironment('production');
   return validateEnvironment(env, schema, 'production') as ProductionConfig;
 }
@@ -176,7 +234,7 @@ export function loadProductionEnvironment(): ProductionConfig {
  * Load test environment configuration
  */
 export function loadTestEnvironment(): TestConfig {
-  const env = loadProcessEnv();
+  const env = loadDeterministicEnvSnapshot();
   const schema = getSchemaForEnvironment('test');
   return validateEnvironment(env, schema, 'test') as TestConfig;
 }
@@ -189,15 +247,16 @@ export function validateEnvironmentVariables(
   env?: Record<string, string>
 ): { valid: true } | { valid: false; errors: z.ZodIssue[]; message: string } {
   try {
-    const envVars = env || loadProcessEnv();
-    const nodeEnv = envVars.NODE_ENV || 'development';
+    const envVars: Record<string, unknown> = env || loadDeterministicEnvSnapshot();
+    const nodeEnv = typeof envVars.NODE_ENV === 'string' ? envVars.NODE_ENV : 'development';
     const schema = getSchemaForEnvironment(nodeEnv);
 
     schema.parse(envVars);
     return { valid: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const nodeEnv = (env || loadProcessEnv()).NODE_ENV || 'development';
+      const snap = (env as Record<string, unknown>) || loadDeterministicEnvSnapshot();
+      const nodeEnv = typeof snap.NODE_ENV === 'string' ? snap.NODE_ENV : 'development';
       const message = createValidationErrorMessage(error.issues, nodeEnv);
       return {
         valid: false,

@@ -50,4 +50,21 @@ services:
     healthPath: "/"
     startupTimeoutMs: 20000
     dependencies: ["server"]
+    executionConfig:
+      packageManager: "pnpm"
+      workspaceFilter: "@critgenius/client"
+      fallbackCommands: ["pnpm", "corepack pnpm", "npx pnpm"]
+      retryAttempts: 3
+      retryDelayMs: 1000
     restart:
+      baseMs: 500
+      maxMs: 10000
+      maxAttempts: 5
+      circuitCooldownMs: 60000
+    environment:
+      PORT: "${port}"
+      NODE_ENV: "development"
+      VITE_PORT: "${port}"
+      DEV_PROXY_ENABLED: "true"
+      DEV_PROXY_AUTO_DISCOVER: "true"
+      DEV_PROXY_DISCOVERY_PORTS: "3100,3000,8080"

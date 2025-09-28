@@ -2,12 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: ["**"]
   pull_request:
 
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
+    env:
+      CI: true
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +30,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Build shared first so downstream packages can type-check against its emitted d.ts
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 
@@ -36,8 +43,14 @@ jobs:
       - name: Unit tests
         run: pnpm run test
 
-      - name: Build shared package (for generators)
-        run: pnpm --filter @critgenius/shared run build
+      - name: Validate service manifest
+        run: node scripts/service-manifest-loader.mjs --manifest ./services.yaml
 
-      - name: Validate proxy alignment
+      # Env drift guard: ensure docs and .env.example stay in sync with proxy registry
+      - name: Generate proxy artifacts
+        run: |
+          node scripts/generate-proxy-env-example.mjs
+          node scripts/generate-proxy-docs.mjs
+
+      - name: Env drift check (proxy registry & templates)
         run: pnpm run validate:proxy
