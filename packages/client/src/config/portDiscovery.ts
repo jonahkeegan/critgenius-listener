@@ -91,7 +91,7 @@ export class PortDiscoveryService {
   ): Promise<ProbeResult> {
     const protocol = httpsMode ? 'https:' : 'http:';
     const agent = httpsMode
-      ? new https.Agent({ keepAlive: true, rejectUnauthorized: false })
+      ? new https.Agent({ keepAlive: true })
       : new http.Agent({ keepAlive: true });
     const begin = Date.now();
     const options: http.RequestOptions = {
