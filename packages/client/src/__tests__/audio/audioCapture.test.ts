@@ -65,7 +65,7 @@ describe('audioCaptureController.start', () => {
     const controller = createAudioCaptureController({
       guard,
       audioContextFactory: () => audioContext,
-      now: () => 1000,
+      timeProvider: () => 1000,
       reporter: vi.fn(),
     });
 
@@ -94,7 +94,10 @@ describe('audioCaptureController.start', () => {
       status: 'blocked',
       reason: 'permission-denied',
     });
-    const controller = createAudioCaptureController({ guard, now: () => 1000 });
+    const controller = createAudioCaptureController({
+      guard,
+      timeProvider: () => 1000,
+    });
 
     const result = await controller.start();
 
@@ -116,7 +119,7 @@ describe('audioCaptureController.start', () => {
     const controller = createAudioCaptureController({
       guard,
       audioContextFactory: () => audioContext,
-      now: () => 0,
+      timeProvider: () => 0,
     });
 
     const first = await controller.start();
@@ -144,7 +147,7 @@ describe('audioCaptureController.stop', () => {
     const controller = createAudioCaptureController({
       guard,
       audioContextFactory: () => audioContext,
-      now: () => 5,
+      timeProvider: () => 5,
     });
 
     const startResult = await controller.start();
@@ -175,7 +178,7 @@ describe('audioCaptureController performance', () => {
     const controller = createAudioCaptureController({
       guard,
       audioContextFactory: () => audioContext,
-      now: () => 0,
+      timeProvider: () => 0,
     });
 
     const result = await controller.start();
@@ -183,6 +186,60 @@ describe('audioCaptureController performance', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.latencyMs).toBeLessThan(500);
+    }
+  });
+});
+
+describe('audioCaptureController configuration flags', () => {
+  it('disables latency tracking when flag is false', async () => {
+    const stream = createMockStream();
+    const requestResult: MicrophoneAccessRequestResult = {
+      status: 'granted',
+      stream,
+      trackCount: 1,
+      latencyMs: 25,
+    };
+    const guard = createGuardMock(SUPPORTED_EVALUATION, requestResult);
+    const { audioContext } = createAudioContextMock();
+    const controller = createAudioCaptureController({
+      guard,
+      audioContextFactory: () => audioContext,
+      enableLatencyTracking: false,
+    });
+
+    const result = await controller.start();
+
+    expect(result.success).toBe(true);
+    expect(controller.getState().latencyMs).toBeUndefined();
+  });
+
+  it('retries requestAccess when retry policy is configured', async () => {
+    const stream = createMockStream();
+    const guard: MicrophoneAccessGuard = {
+      evaluate: vi.fn().mockResolvedValue(SUPPORTED_EVALUATION),
+      requestAccess: vi
+        .fn<MicrophoneAccessGuard['requestAccess']>()
+        .mockResolvedValueOnce({ status: 'error', reason: 'unknown' })
+        .mockResolvedValueOnce({
+          status: 'granted',
+          stream,
+          trackCount: 1,
+          latencyMs: 12,
+        }),
+    } satisfies MicrophoneAccessGuard;
+    const { audioContext } = createAudioContextMock();
+    const controller = createAudioCaptureController({
+      guard,
+      audioContextFactory: () => audioContext,
+      retryPolicy: { maxAttempts: 2, backoffMs: 0 },
+    });
+
+    const result = await controller.start();
+
+    expect(result.success).toBe(true);
+    expect(guard.requestAccess).toHaveBeenCalledTimes(2);
+    if (result.success) {
+      expect(result.latencyMs).toBe(12);
     }
   });
 });

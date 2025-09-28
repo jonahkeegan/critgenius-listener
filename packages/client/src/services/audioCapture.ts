@@ -33,13 +33,44 @@ export interface AudioCaptureEvent {
 
 export type AudioCaptureReporter = (event: AudioCaptureEvent) => void;
 
-export interface AudioCaptureDependencies {
+export interface AudioCaptureRetryConfiguration {
+  maxAttempts: number;
+  backoffMs: number;
+}
+
+export interface AudioCaptureFeatureFlags {
+  enableDiagnostics: boolean;
+  enableLatencyTracking: boolean;
+}
+
+export interface AudioCaptureConfiguration {
+  guard: MicrophoneAccessGuard;
+  reporter: AudioCaptureReporter;
+  audioContextFactory: () => AudioContext;
+  defaultConstraints: MediaStreamConstraints;
+  timeProvider: () => number;
+  featureFlags: AudioCaptureFeatureFlags;
+  retryPolicy?: AudioCaptureRetryConfiguration | undefined;
+}
+
+export interface AudioCaptureConfigurationOptions {
   guard?: MicrophoneAccessGuard;
   guardOptions?: MicrophoneAccessGuardOptions;
   audioContextFactory?: () => AudioContext;
   reporter?: AudioCaptureReporter;
+  defaultConstraints?: MediaStreamConstraints;
+  timeProvider?: () => number;
+  /** @deprecated Use timeProvider instead. */
   now?: () => number;
+  enableDiagnostics?: boolean;
+  enableLatencyTracking?: boolean;
+  retryPolicy?: AudioCaptureRetryConfiguration;
 }
+
+/**
+ * @deprecated Use AudioCaptureConfigurationOptions instead.
+ */
+export type AudioCaptureDependencies = AudioCaptureConfigurationOptions;
 
 export interface AudioCaptureStartOptions {
   constraints?: MediaStreamConstraints;
@@ -94,6 +125,76 @@ function defaultAudioContextFactory(): AudioContext {
     throw new Error('AudioContextUnavailable');
   }
   return new AudioContextCtor();
+}
+
+function createAudioCaptureGuard(
+  options: AudioCaptureConfigurationOptions,
+  reporter: AudioCaptureReporter,
+  timeProvider: () => number,
+  diagnosticsEnabled: boolean
+): MicrophoneAccessGuard {
+  if (options.guard) {
+    return options.guard;
+  }
+
+  const guardReporter = options.guardOptions?.reporter;
+  const now = options.guardOptions?.now ?? timeProvider;
+
+  const reporterWrapper: MicrophoneAccessGuardOptions['reporter'] = event => {
+    guardReporter?.(event);
+    if (diagnosticsEnabled) {
+      reporter({
+        type: 'diagnostic',
+        timestamp: timeProvider(),
+        detail: {
+          phase: event.phase,
+          status: event.status,
+          permission: event.permission,
+          errorCode: event.errorCode,
+        },
+      });
+    }
+  };
+
+  return createMicrophoneAccessGuard({
+    ...options.guardOptions,
+    reporter: reporterWrapper,
+    now,
+  });
+}
+
+export function createAudioCaptureConfiguration(
+  options: AudioCaptureConfigurationOptions = {}
+): AudioCaptureConfiguration {
+  const reporter = options.reporter ?? defaultReporter;
+  const timeProvider = options.timeProvider ?? options.now ?? defaultNow;
+  const diagnosticsEnabled = options.enableDiagnostics ?? true;
+  const latencyTrackingEnabled = options.enableLatencyTracking ?? true;
+
+  const guard = createAudioCaptureGuard(
+    options,
+    reporter,
+    timeProvider,
+    diagnosticsEnabled
+  );
+
+  const audioContextFactory =
+    options.audioContextFactory ?? defaultAudioContextFactory;
+
+  const defaultConstraints = options.defaultConstraints ?? DEFAULT_CONSTRAINTS;
+
+  return {
+    guard,
+    reporter,
+    audioContextFactory,
+    defaultConstraints,
+    timeProvider,
+    featureFlags: {
+      enableDiagnostics: diagnosticsEnabled,
+      enableLatencyTracking: latencyTrackingEnabled,
+    },
+    retryPolicy: options.retryPolicy,
+  };
 }
 
 function mapGuardResultToError(
@@ -179,31 +280,17 @@ function createErrorFromEvaluation(
 }
 
 export function createAudioCaptureController(
-  dependencies: AudioCaptureDependencies = {}
+  configurationOptions: AudioCaptureConfigurationOptions = {}
 ): AudioCaptureController {
-  const reporter = dependencies.reporter ?? defaultReporter;
-  const now = dependencies.now ?? defaultNow;
-  const guardReporter = (event: Parameters<AudioCaptureReporter>[0]) => {
-    reporter(event);
-  };
-  const guard =
-    dependencies.guard ??
-    createMicrophoneAccessGuard({
-      ...dependencies.guardOptions,
-      reporter: event => {
-        guardReporter({
-          type: 'diagnostic',
-          timestamp: now(),
-          detail: {
-            phase: event.phase,
-            status: event.status,
-            permission: event.permission,
-          },
-        });
-      },
-    });
-  const audioContextFactory =
-    dependencies.audioContextFactory ?? defaultAudioContextFactory;
+  const config = createAudioCaptureConfiguration(configurationOptions);
+  const {
+    guard,
+    reporter,
+    audioContextFactory,
+    defaultConstraints,
+    timeProvider,
+  } = config;
+  const latencyTrackingEnabled = config.featureFlags.enableLatencyTracking;
 
   let currentState: AudioCaptureState = { status: 'idle' };
   let currentStream: MediaStream | undefined;
@@ -215,7 +302,7 @@ export function createAudioCaptureController(
   };
 
   const start: AudioCaptureController['start'] = async options => {
-    const constraints = options?.constraints ?? DEFAULT_CONSTRAINTS;
+    const constraints = options?.constraints ?? defaultConstraints;
 
     if (options?.reuseExistingStream && currentStream) {
       return {
@@ -236,20 +323,44 @@ export function createAudioCaptureController(
       updateState({ status: 'error', error });
       reporter({
         type: 'error',
-        timestamp: now(),
+        timestamp: timeProvider(),
         detail: { code: error.code },
       });
       return { success: false, evaluation, error };
     }
 
-    const requestResult = await guard.requestAccess(constraints);
+    let attempt = 0;
+    const maxAttempts = config.retryPolicy?.maxAttempts ?? 1;
+    const backoffMs = config.retryPolicy?.backoffMs ?? 0;
+    let requestResult: MicrophoneAccessRequestResult | undefined;
+
+    while (attempt < maxAttempts) {
+      requestResult = await guard.requestAccess(constraints);
+      if (requestResult.status === 'granted') {
+        break;
+      }
+      if (requestResult.status === 'blocked') {
+        break;
+      }
+      attempt += 1;
+      if (attempt >= maxAttempts) {
+        break;
+      }
+      if (backoffMs > 0) {
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    if (!requestResult) {
+      throw new Error('UnexpectedRequestState');
+    }
 
     if (requestResult.status !== 'granted') {
       const error = mapGuardResultToError(evaluation, requestResult);
       updateState({ status: 'error', error });
       reporter({
         type: 'error',
-        timestamp: now(),
+        timestamp: timeProvider(),
         detail: { code: error.code },
       });
       return { success: false, evaluation, error };
@@ -280,7 +391,7 @@ export function createAudioCaptureController(
       updateState({ status: 'error', error: captureError });
       reporter({
         type: 'error',
-        timestamp: now(),
+        timestamp: timeProvider(),
         detail: { code: captureError.code },
       });
       return { success: false, evaluation, error: captureError };
@@ -288,12 +399,12 @@ export function createAudioCaptureController(
 
     updateState({
       status: 'capturing',
-      latencyMs: requestResult.latencyMs,
+      latencyMs: latencyTrackingEnabled ? requestResult.latencyMs : undefined,
       error: undefined,
     });
     reporter({
       type: 'start',
-      timestamp: now(),
+      timestamp: timeProvider(),
       detail: { latencyMs: requestResult.latencyMs },
     });
 
@@ -326,7 +437,7 @@ export function createAudioCaptureController(
       currentAudioContext = undefined;
     }
     updateState({ status: 'idle', latencyMs: undefined });
-    reporter({ type: 'stop', timestamp: now() });
+    reporter({ type: 'stop', timestamp: timeProvider() });
   };
 
   const getState: AudioCaptureController['getState'] = () => currentState;
