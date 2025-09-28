@@ -20,6 +20,10 @@ packages/*/build/
 # Safety: never ignore source files or workflows (narrow scope of rules above)
 !packages/*/src/**
 !.github/**
+!scripts/**
+!services/**
+!.env.example
+!docs/development-proxy.routes.md
 
 
 # Testing

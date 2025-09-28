@@ -43,6 +43,14 @@ jobs:
       - name: Unit tests
         run: pnpm run test
 
+      - name: Validate service manifest
+        run: node scripts/service-manifest-loader.mjs --manifest ./services.yaml
+
       # Env drift guard: ensure docs and .env.example stay in sync with proxy registry
+      - name: Generate proxy artifacts
+        run: |
+          node scripts/generate-proxy-env-example.mjs
+          node scripts/generate-proxy-docs.mjs
+
       - name: Env drift check (proxy registry & templates)
         run: pnpm run validate:proxy
