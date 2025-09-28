@@ -3,8 +3,14 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 import { loadEnvironment, getClientRuntimeConfig } from '@critgenius/shared';
-import { getProxyRegistry, resolveTargetFromEnv } from '@critgenius/shared/config/proxyRegistry';
-import { buildDevProxy, buildDevProxyWithDiscovery } from './src/config/devProxy';
+import {
+  getProxyRegistry,
+  resolveTargetFromEnv,
+} from '@critgenius/shared/config/proxyRegistry';
+import {
+  buildDevProxy,
+  buildDevProxyWithDiscovery,
+} from './src/config/devProxy';
 import { envReloadPlugin } from './src/dev/envReloadPlugin';
 
 // Build-time environment resolution (Node context) – guarded for safety
@@ -44,7 +50,8 @@ export default defineConfig(async ({ mode, command }) => {
   loadEnv(mode, process.cwd(), '');
   const define = resolveClientDefine(mode);
   const clientPort = Number(process.env.CLIENT_PORT || 5173);
-  const httpsEnabled = (process.env.HTTPS_ENABLED || 'false').toString() === 'true';
+  const httpsEnabled =
+    (process.env.HTTPS_ENABLED || 'false').toString() === 'true';
   const httpsCert = process.env.HTTPS_CERT_PATH;
   const httpsKey = process.env.HTTPS_KEY_PATH;
   const httpsPort = Number(process.env.HTTPS_PORT || 5174);
@@ -87,6 +94,9 @@ export default defineConfig(async ({ mode, command }) => {
     }
   }
 
+  // Derive HMR protocol for readability
+  const hmrProtocol = httpsOptions ? 'wss' : 'ws';
+
   const config: UserConfig = {
     define: {
       ...Object.entries(define).reduce(
@@ -115,7 +125,7 @@ export default defineConfig(async ({ mode, command }) => {
       // HMR-over-WSS when server HTTPS is active; avoids mixed-content issues
       hmr: {
         overlay: true,
-        protocol: httpsOptions ? 'wss' : 'ws',
+        protocol: hmrProtocol,
         host: 'localhost',
         port: httpsEnabled ? httpsPort : clientPort,
       },
