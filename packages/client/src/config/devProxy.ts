@@ -3,7 +3,10 @@ import http from 'node:http';
 import https from 'node:https';
 import { PortDiscoveryService } from './portDiscovery';
 import type { PortDiscoveryConfig, DiscoveryResult } from './portDiscovery';
-import { getProxyRegistry, resolveTargetFromEnv } from '@critgenius/shared/config/proxyRegistry';
+import {
+  getProxyRegistry,
+  resolveTargetFromEnv,
+} from '@critgenius/shared/config/proxyRegistry';
 
 export type DevProxyConfig = Record<string, string | ProxyOptions> | undefined;
 
@@ -81,10 +84,14 @@ function isProxyRegistrySummary(x: unknown): x is {
   return isRecordString(rec['env']) && Array.isArray(rec['routes']);
 }
 
-function isDiscoveryResult(x: unknown): x is Pick<DiscoveryResult, 'discovered' | 'port'> {
+function isDiscoveryResult(
+  x: unknown
+): x is Pick<DiscoveryResult, 'discovered' | 'port'> {
   if (typeof x !== 'object' || x === null) return false;
   const rec = x as Record<string, unknown>;
-  return typeof rec['discovered'] === 'boolean' && typeof rec['port'] === 'number';
+  return (
+    typeof rec['discovered'] === 'boolean' && typeof rec['port'] === 'number'
+  );
 }
 
 type Upstream = { protocol: 'http' | 'https'; port: number };
@@ -128,7 +135,7 @@ export function buildDevProxy(
   const proxyEnabled = readBool(keys.enabled); // default true unless explicitly 'false'
   if (!proxyEnabled) return undefined;
   const httpsEnabled = readBool(keys.httpsEnabled, false);
-  const rejectUnauthorized = readBool(keys.rejectUnauthorized, true) === true;
+  const rejectUnauthorized = readBool(keys.rejectUnauthorized, true);
   const allowedHostsRaw = read(keys.allowedHosts) || 'localhost,127.0.0.1';
   const allowedHosts = allowedHostsRaw
     .split(',')
@@ -137,7 +144,9 @@ export function buildDevProxy(
   const maybeResolve: unknown = resolveTargetFromEnv as unknown;
   const upstreamUnknown: unknown =
     typeof maybeResolve === 'function'
-      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(env)
+      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(
+          env
+        )
       : undefined;
   let protocol: 'http' | 'https' = 'http';
   let proxyTargetPort = 3000;
@@ -235,11 +244,14 @@ export async function buildDevProxyWithDiscovery(
   const maybeResolve: unknown = resolveTargetFromEnv as unknown;
   const upstreamUnknown: unknown =
     typeof maybeResolve === 'function'
-      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(env)
+      ? (maybeResolve as (e: Record<string, string | undefined>) => unknown)(
+          env
+        )
       : undefined;
-  const fallbackPort = isUpstream(upstreamUnknown) && Number.isFinite(upstreamUnknown.port)
-    ? upstreamUnknown.port
-    : 3000;
+  const fallbackPort =
+    isUpstream(upstreamUnknown) && Number.isFinite(upstreamUnknown.port)
+      ? upstreamUnknown.port
+      : 3000;
   const autoDiscover = readBool(keys.autoDiscover, true);
   if (!autoDiscover) return buildDevProxy(env);
 
@@ -260,7 +272,9 @@ export async function buildDevProxyWithDiscovery(
   const probeTimeoutMs = Number(read(keys.probeTimeoutMs) || 2000);
 
   // Construct discovery service only if constructable, and ensure method presence before use
-  type DiscoverySvc = { discoverBackendPort: (cfg: PortDiscoveryConfig) => Promise<unknown> };
+  type DiscoverySvc = {
+    discoverBackendPort: (cfg: PortDiscoveryConfig) => Promise<unknown>;
+  };
   const maybeCtor: unknown = PortDiscoveryService as unknown;
   let svc: unknown;
   if (typeof maybeCtor === 'function') {
@@ -287,9 +301,14 @@ export async function buildDevProxyWithDiscovery(
     fallbackPort,
     https: httpsEnabled,
   };
-  const resultUnknown = await (svc as DiscoverySvc).discoverBackendPort(discoveryCfg);
+  const resultUnknown = await (svc as DiscoverySvc).discoverBackendPort(
+    discoveryCfg
+  );
   if (isDiscoveryResult(resultUnknown)) {
-    const port = typeof resultUnknown.port === 'number' ? resultUnknown.port : fallbackPort;
+    const port =
+      typeof resultUnknown.port === 'number'
+        ? resultUnknown.port
+        : fallbackPort;
     if (resultUnknown.discovered) {
       cachedDiscoveredPort = port;
     }
