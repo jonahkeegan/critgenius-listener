@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-09-25  
-**Version:** 1.16.0  
+**Last Updated:** 2025-09-28  
+**Version:** 1.17.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-003.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~240  
-**Last Updated:** 2025-09-23
+**Current Row Count:** ~260  
+**Last Updated:** 2025-09-28
 
 ## File Registry
 
@@ -33,10 +33,10 @@
 ### progress-003.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~200
+- **Row Count:** ~220
 - **Date Range:** 2025-08-30 17:07 PST to Present
-- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), Local HTTPS Enablement (Task 2.10.1), Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2), pending infra carry-over tasks initialization
-- **Description:** Segment tracking late-stage infrastructure refinements (reload validation, interface enhancement, secure context + hardened proxy) while preparing for audio pipeline architecture
+- **Primary Topics:** Dev Server Validation & Documentation (Task 2.9.4), Local HTTPS Enablement (Task 2.10.1), Dev HTTPS Proxy Hardening & Diagnostics (Task 2.10.2), Unified Audio Capture Configuration (Task 2.10.3), pending infra carry-over tasks initialization
+- **Description:** Segment tracking late-stage infrastructure refinements (reload validation, secure context, hardened proxy) while activating audio capture architecture modernization
 
 ## Maintenance Protocol
 
@@ -46,6 +46,7 @@
 
 ## Recent Changes
 
+- 2025-09-28: Completed Task 2.10.3 (Unified Audio Capture Configuration): added configuration builder with feature flags and retry policy, refactored controller dependencies, updated unit tests for latency disablement and retry flow, documented outcomes and reflections
 - 2025-09-25: Completed Task 2.10.3 (Env Template Generation & Deterministic Loader Precedence): added schema-driven `.env.example` + per-env override generators with `--check` drift guard, deterministic non‑mutative dotenv precedence loader (base → env-specific → process.env) with dev flag coercion, conditional pre-commit drift validation block, docs & task report; all quality gates green
 - 2025-09-21: Completed Task 2.10.3 (HTTPS Dev Protocol & Drift Guard): aligned Vite HTTPS/HMR with proxy registry; added generators (`--check`) for `.env.example` and proxy docs; validator and pre-commit wiring; all gates passing
 

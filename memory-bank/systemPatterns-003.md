@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-09-17 | Segment Version: 1.1.0
+Last Updated: 2025-09-28 | Segment Version: 1.2.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -23,6 +23,19 @@ Parent Index: `systemPatterns-index.md`
 - Pattern: Multi-layer processing with quality gates
 - Layers: Input → Streaming → Processing → Output
 - Quality Gates: Permission handling, quality detection, error resilience
+
+### Audio Capture Configuration Pattern (Task 2.10.3)
+
+- Pattern: Configuration-driven dependency injection with feature-flagged telemetry and optional
+  retry semantics for microphone capture
+- Implementation: `createAudioCaptureConfiguration` centralizes guard creation, reporter plumbing,
+  audio context factory, default constraints, and time provider selection while exposing feature
+  flags (diagnostics, latency tracking) and retry policy (max attempts + backoff)
+- Benefits: Deterministic tests via injected dependencies, per-environment customization without
+  code forks, predictable handling of transient `getUserMedia` failures, and backward compatibility
+  through legacy option support
+- Validation: Expanded unit tests (`audioCapture.test.ts`) asserting latency disablement, retry
+  success path, and primary capture lifecycle behavior under mocks
 
 ## Data Flow Patterns
 
@@ -143,6 +156,7 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-09-28: Added Audio Capture Configuration pattern (Task 2.10.3); version bump 1.2.0
 - 2025-09-20: Added Centralized Proxy Registry infrastructure pattern (Task 2.10.2-2)
 - 2025-09-20: Added Dynamic Port Discovery dev ergonomics pattern (Task 2.10.2-1)
 - 2025-09-17: Added Dev HTTPS Proxy Hardening & Diagnostics security pattern (Task 2.10.2); version

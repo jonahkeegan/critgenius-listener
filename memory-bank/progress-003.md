@@ -2,7 +2,7 @@
 
 **Date Range:** 2025-08-30 17:07 PST → Present  
 **Segment:** 003  
-**Last Updated:** 2025-09-25 11:05 PST  
+**Last Updated:** 2025-09-28 10:20 PST  
 **Predecessor:** `progress-002.md`  
 **Segment Start Anchor:** Post progress-002 completion at 353 lines
 
@@ -14,6 +14,25 @@ Continuation from progress-002 segment. Infrastructure phase substantially compl
 - [ ] Task 2.1.3: Install TypeScript foundation packages (typescript, @types/react, @types/node)
 
 ## Completed Tasks (This Segment)
+
+### 2025-09-28 – Task 2.10.3 Unified Audio Capture Configuration
+Summary: Refactored the client audio capture controller to assemble dependencies through a single configuration builder with optional feature flags and retry semantics. Introduced `createAudioCaptureConfiguration` to wire the microphone guard, reporter, audio context factory, default constraints, and time provider while preserving the legacy `now` alias for backward compatibility. Added per-run feature toggles for diagnostics and latency tracking plus a retry policy (max attempts + backoff) handled directly within `start`. Expanded unit tests to validate latency disablement, retry flow, and the primary capture lifecycle while relying on injected mocks to keep execution deterministic.
+
+Key Artifacts:
+- Service: `packages/client/src/services/audioCapture.ts` (configuration builder, feature flag plumbing, retry-aware start logic)
+- Tests: `packages/client/src/__tests__/audio/audioCapture.test.ts` (latency flag + retry assertions)
+- Docs: `task-completion-reports/2025-09-28-dev-infra-2-10-4-1-audio-capture-configuration.md`; reflection captured in `memory-bank/raw_reflection_log.md`
+
+Outcomes:
+- Dependency injection for audio capture simplifies future feature toggles and deterministic testing
+- Diagnostics and latency tracking now gated by explicit feature flags (disabled in tests w/out extra wiring)
+- Transient `getUserMedia` failures handled predictably via configurable retry policy
+- Maintains compatibility with existing call sites through legacy option support
+
+Follow-Ups:
+- Surface the configuration builder inside React hooks to enable per-room diagnostics and retry toggles
+- Add integration coverage asserting diagnostic reporter output when enabled
+- Consider extracting the retry policy typing into shared utilities for reuse across capture services
 
 ### 2025-09-25 – Task 2.10.3 Environment Template Generation & Deterministic Loader Precedence
 Summary: Implemented schema-driven environment template generation and drift guards plus deterministic dotenv precedence. Added `scripts/generate-env-template.mjs` (canonical `.env.example` with categorized groups + managed proxy section) and `scripts/generate-env-overrides.mjs` (minimal per-environment override examples). Both support `--check` mode for CI / pre-commit drift detection. Enhanced `environmentLoader` to perform non‑mutative layered load: parse base `.env`, then `.env.{NODE_ENV}` (if present), then overlay `process.env` values, producing a merged snapshot passed into Zod validation. Introduced development flag coercion (interprets literal "true" for legacy boolean dev-only flags to reduce friction). Added conditional pre-commit hook block running drift checks only when schema, generator scripts, or template files are staged. Updated docs (`environment-configuration-guide.md`, `pre-commit-workflow.md`) and authored task completion report plus reflection entry.
