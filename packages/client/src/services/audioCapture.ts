@@ -6,32 +6,27 @@ import {
   type MicrophoneAccessGuardOptions,
   type MicrophoneAccessRequestResult,
 } from './microphoneAccessGuard';
+import {
+  createStructuredEventReporter,
+  type StructuredEventReporter,
+} from './diagnostics';
 
 export type AudioCaptureStatus = 'idle' | 'starting' | 'capturing' | 'error';
 
-export interface AudioCaptureError {
-  code:
-    | 'SECURE_CONTEXT_REQUIRED'
-    | 'UNSUPPORTED'
-    | 'PERMISSION_BLOCKED'
-    | 'STREAM_ERROR';
-  message: string;
-}
+export type AudioCaptureErrorCode =
+  | 'SECURE_CONTEXT_REQUIRED'
+  | 'PERMISSION_BLOCKED'
+  | 'UNSUPPORTED'
+  | 'STREAM_ERROR'
+  | 'AUDIO_CONTEXT_FAILED'
+  | 'RETRY_EXHAUSTED';
 
 export interface AudioCaptureState {
   status: AudioCaptureStatus;
   evaluation?: MicrophoneAccessEvaluation | undefined;
   latencyMs?: number | undefined;
-  error?: AudioCaptureError | undefined;
+  errorCode?: AudioCaptureErrorCode | undefined;
 }
-
-export interface AudioCaptureEvent {
-  type: 'start' | 'stop' | 'error' | 'diagnostic';
-  timestamp: number;
-  detail?: Record<string, unknown> | undefined;
-}
-
-export type AudioCaptureReporter = (event: AudioCaptureEvent) => void;
 
 export interface AudioCaptureRetryConfiguration {
   maxAttempts: number;
@@ -45,7 +40,7 @@ export interface AudioCaptureFeatureFlags {
 
 export interface AudioCaptureConfiguration {
   guard: MicrophoneAccessGuard;
-  reporter: AudioCaptureReporter;
+  reporter: StructuredEventReporter;
   audioContextFactory: () => AudioContext;
   defaultConstraints: MediaStreamConstraints;
   timeProvider: () => number;
@@ -57,7 +52,7 @@ export interface AudioCaptureConfigurationOptions {
   guard?: MicrophoneAccessGuard;
   guardOptions?: MicrophoneAccessGuardOptions;
   audioContextFactory?: () => AudioContext;
-  reporter?: AudioCaptureReporter;
+  reporter?: StructuredEventReporter;
   defaultConstraints?: MediaStreamConstraints;
   timeProvider?: () => number;
   /** @deprecated Use timeProvider instead. */
@@ -83,12 +78,12 @@ export type AudioCaptureStartResult =
       stream: MediaStream;
       audioContext?: AudioContext | undefined;
       evaluation: MicrophoneAccessEvaluation;
-      latencyMs: number;
+      latencyMs?: number;
     }
   | {
       success: false;
       evaluation: MicrophoneAccessEvaluation;
-      error: AudioCaptureError;
+      errorCode: AudioCaptureErrorCode;
     };
 
 export interface AudioCaptureController {
@@ -106,12 +101,29 @@ const DEFAULT_CONSTRAINTS: MediaStreamConstraints = {
   },
 };
 
-const defaultReporter: AudioCaptureReporter = event => {
-  const { type, timestamp, detail } = event;
-  console.info('[audio-capture]', { type, timestamp, detail });
+const defaultNow = () => Date.now();
+
+const sanitizeConstraints = (
+  constraints: MediaStreamConstraints | undefined
+): Record<string, unknown> | undefined => {
+  if (!constraints) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(JSON.stringify(constraints)) as Record<string, unknown>;
+  } catch {
+    return undefined;
+  }
 };
 
-const defaultNow = () => Date.now();
+const delay = (ms: number) =>
+  new Promise<void>(resolve => {
+    if (ms <= 0) {
+      resolve();
+      return;
+    }
+    setTimeout(resolve, ms);
+  });
 
 function defaultAudioContextFactory(): AudioContext {
   if (typeof window === 'undefined') {
@@ -129,7 +141,7 @@ function defaultAudioContextFactory(): AudioContext {
 
 function createAudioCaptureGuard(
   options: AudioCaptureConfigurationOptions,
-  reporter: AudioCaptureReporter,
+  reporter: StructuredEventReporter,
   timeProvider: () => number,
   diagnosticsEnabled: boolean
 ): MicrophoneAccessGuard {
@@ -143,14 +155,20 @@ function createAudioCaptureGuard(
   const reporterWrapper: MicrophoneAccessGuardOptions['reporter'] = event => {
     guardReporter?.(event);
     if (diagnosticsEnabled) {
-      reporter({
-        type: 'diagnostic',
-        timestamp: timeProvider(),
-        detail: {
-          phase: event.phase,
+      reporter.emit({
+        event:
+          event.phase === 'evaluate'
+            ? 'audio.capture.guard.evaluate'
+            : 'audio.capture.guard.request',
+        level: 'debug',
+        code: event.phase === 'evaluate' ? 'GUARD_EVALUATE' : 'GUARD_REQUEST',
+        operation: `guard.${event.phase}`,
+        metadata: {
           status: event.status,
           permission: event.permission,
           errorCode: event.errorCode,
+          secureContext: event.secureContext,
+          reason: event.reason,
         },
       });
     }
@@ -166,7 +184,7 @@ function createAudioCaptureGuard(
 export function createAudioCaptureConfiguration(
   options: AudioCaptureConfigurationOptions = {}
 ): AudioCaptureConfiguration {
-  const reporter = options.reporter ?? defaultReporter;
+  const reporter = options.reporter ?? createStructuredEventReporter();
   const timeProvider = options.timeProvider ?? options.now ?? defaultNow;
   const diagnosticsEnabled = options.enableDiagnostics ?? true;
   const latencyTrackingEnabled = options.enableLatencyTracking ?? true;
@@ -197,85 +215,47 @@ export function createAudioCaptureConfiguration(
   };
 }
 
-function mapGuardResultToError(
+function mapGuardResultToErrorCode(
   evaluation: MicrophoneAccessEvaluation,
   request: MicrophoneAccessRequestResult
-): AudioCaptureError {
+): AudioCaptureErrorCode {
   if (request.status === 'blocked') {
     if (request.reason === 'insecure-context') {
-      return {
-        code: 'SECURE_CONTEXT_REQUIRED',
-        message: 'Microphone access requires a secure (HTTPS) context.',
-      };
+      return 'SECURE_CONTEXT_REQUIRED';
     }
-    return {
-      code: 'PERMISSION_BLOCKED',
-      message:
-        'Microphone permission was blocked. Please enable access in browser settings.',
-    };
+    return 'PERMISSION_BLOCKED';
   }
   if (request.status === 'error') {
     if (request.reason === 'unsupported') {
-      return {
-        code: 'UNSUPPORTED',
-        message: 'Microphone access is unavailable in this browser.',
-      };
+      return 'UNSUPPORTED';
     }
-    return {
-      code: 'STREAM_ERROR',
-      message: 'Unexpected error requesting microphone access. Try again.',
-    };
+    return 'STREAM_ERROR';
   }
 
   switch (evaluation.status) {
     case MICROPHONE_ACCESS_STATUS.SECURE_CONTEXT_REQUIRED:
-      return {
-        code: 'SECURE_CONTEXT_REQUIRED',
-        message: 'Secure context required for microphone access.',
-      };
+      return 'SECURE_CONTEXT_REQUIRED';
     case MICROPHONE_ACCESS_STATUS.PERMISSION_BLOCKED:
-      return {
-        code: 'PERMISSION_BLOCKED',
-        message: 'Microphone permission denied by the user.',
-      };
+      return 'PERMISSION_BLOCKED';
     case MICROPHONE_ACCESS_STATUS.UNAVAILABLE:
-      return {
-        code: 'UNSUPPORTED',
-        message: 'Microphone access is unavailable in this environment.',
-      };
+      return 'UNSUPPORTED';
     default:
-      return {
-        code: 'STREAM_ERROR',
-        message: 'Failed to start microphone capture.',
-      };
+      return 'STREAM_ERROR';
   }
 }
 
-function createErrorFromEvaluation(
+function createErrorCodeFromEvaluation(
   evaluation: MicrophoneAccessEvaluation
-): AudioCaptureError {
+): AudioCaptureErrorCode {
   switch (evaluation.status) {
     case MICROPHONE_ACCESS_STATUS.SECURE_CONTEXT_REQUIRED:
-      return {
-        code: 'SECURE_CONTEXT_REQUIRED',
-        message: 'Microphone access requires HTTPS in supported browsers.',
-      };
+      return 'SECURE_CONTEXT_REQUIRED';
     case MICROPHONE_ACCESS_STATUS.PERMISSION_BLOCKED:
-      return {
-        code: 'PERMISSION_BLOCKED',
-        message:
-          'Microphone permission denied. Update browser permissions to proceed.',
-      };
+      return 'PERMISSION_BLOCKED';
     case MICROPHONE_ACCESS_STATUS.UNAVAILABLE:
-      return {
-        code: 'UNSUPPORTED',
-        message: 'Microphone access is unavailable on this device or browser.',
-      };
+      return 'UNSUPPORTED';
     default:
-      return {
-        code: 'STREAM_ERROR',
-        message: 'Unknown microphone access state.',
-      };
+      return 'STREAM_ERROR';
   }
 }
 
@@ -283,13 +263,7 @@ export function createAudioCaptureController(
   configurationOptions: AudioCaptureConfigurationOptions = {}
 ): AudioCaptureController {
   const config = createAudioCaptureConfiguration(configurationOptions);
-  const {
-    guard,
-    reporter,
-    audioContextFactory,
-    defaultConstraints,
-    timeProvider,
-  } = config;
+  const { guard, reporter, audioContextFactory, defaultConstraints } = config;
   const latencyTrackingEnabled = config.featureFlags.enableLatencyTracking;
 
   let currentState: AudioCaptureState = { status: 'idle' };
@@ -305,49 +279,83 @@ export function createAudioCaptureController(
     const constraints = options?.constraints ?? defaultConstraints;
 
     if (options?.reuseExistingStream && currentStream) {
-      return {
-        success: true,
+      const evaluation = currentState.evaluation ?? (await guard.evaluate());
+      if (!currentState.evaluation) {
+        updateState({ evaluation });
+      }
+      const baseResult = {
+        success: true as const,
         stream: currentStream,
         audioContext: currentAudioContext,
-        evaluation: currentState.evaluation!,
-        latencyMs: currentState.latencyMs ?? 0,
+        evaluation,
       };
+
+      if (typeof currentState.latencyMs === 'number') {
+        return { ...baseResult, latencyMs: currentState.latencyMs };
+      }
+
+      return baseResult;
     }
 
-    updateState({ status: 'starting', error: undefined });
+    updateState({ status: 'starting', errorCode: undefined });
+    reporter.emit({
+      event: 'audio.capture.start',
+      level: 'info',
+      code: 'OPERATION_INIT',
+      operation: 'start',
+      metadata: {
+        constraints: sanitizeConstraints(constraints),
+      },
+    });
+
     const evaluation = await guard.evaluate();
     updateState({ evaluation });
 
     if (evaluation.status !== MICROPHONE_ACCESS_STATUS.SUPPORTED) {
-      const error = createErrorFromEvaluation(evaluation);
-      updateState({ status: 'error', error });
-      reporter({
-        type: 'error',
-        timestamp: timeProvider(),
-        detail: { code: error.code },
+      const errorCode = createErrorCodeFromEvaluation(evaluation);
+      updateState({ status: 'error', errorCode });
+      reporter.emit({
+        event: 'audio.capture.error',
+        level: 'error',
+        code: errorCode,
+        operation: 'guard.evaluate',
+        metadata: {
+          evaluationStatus: evaluation.status,
+        },
       });
-      return { success: false, evaluation, error };
+      return { success: false, evaluation, errorCode };
     }
 
-    let attempt = 0;
-    const maxAttempts = config.retryPolicy?.maxAttempts ?? 1;
+    const maxAttempts = Math.max(config.retryPolicy?.maxAttempts ?? 1, 1);
     const backoffMs = config.retryPolicy?.backoffMs ?? 0;
     let requestResult: MicrophoneAccessRequestResult | undefined;
+    let finalAttempt = 1;
 
-    while (attempt < maxAttempts) {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      finalAttempt = attempt + 1;
+      if (attempt > 0) {
+        reporter.emit({
+          event: 'audio.capture.retry',
+          level: 'warn',
+          code: 'RETRY_ATTEMPT',
+          operation: 'start',
+          metadata: { attempt: finalAttempt },
+        });
+      }
+
       requestResult = await guard.requestAccess(constraints);
       if (requestResult.status === 'granted') {
         break;
       }
-      if (requestResult.status === 'blocked') {
+
+      const shouldBreak =
+        requestResult.status === 'blocked' || attempt === maxAttempts - 1;
+      if (shouldBreak) {
         break;
       }
-      attempt += 1;
-      if (attempt >= maxAttempts) {
-        break;
-      }
+
       if (backoffMs > 0) {
-        await new Promise(resolve => setTimeout(resolve, backoffMs));
+        await delay(backoffMs);
       }
     }
 
@@ -355,15 +363,35 @@ export function createAudioCaptureController(
       throw new Error('UnexpectedRequestState');
     }
 
+    const attemptNumber = finalAttempt;
+
     if (requestResult.status !== 'granted') {
-      const error = mapGuardResultToError(evaluation, requestResult);
-      updateState({ status: 'error', error });
-      reporter({
-        type: 'error',
-        timestamp: timeProvider(),
-        detail: { code: error.code },
+      let errorCode: AudioCaptureErrorCode;
+      if (requestResult.status === 'blocked') {
+        errorCode = mapGuardResultToErrorCode(evaluation, requestResult);
+      } else if (requestResult.reason === 'unsupported') {
+        errorCode = 'UNSUPPORTED';
+      } else if (maxAttempts > 1 && attemptNumber === maxAttempts) {
+        errorCode = 'RETRY_EXHAUSTED';
+      } else {
+        errorCode = 'STREAM_ERROR';
+      }
+
+      updateState({ status: 'error', errorCode });
+      reporter.emit({
+        event: 'audio.capture.error',
+        level: 'error',
+        code: errorCode,
+        operation: 'start',
+        metadata: {
+          attempt: attemptNumber,
+          reason:
+            requestResult.status === 'blocked'
+              ? requestResult.reason
+              : requestResult.reason,
+        },
       });
-      return { success: false, evaluation, error };
+      return { success: false, evaluation, errorCode };
     }
 
     currentStream?.getTracks().forEach(track => track.stop());
@@ -380,41 +408,51 @@ export function createAudioCaptureController(
       currentSourceNode =
         currentAudioContext.createMediaStreamSource(currentStream);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to initialize audio context.';
-      const captureError: AudioCaptureError = {
-        code: 'STREAM_ERROR',
-        message,
-      };
-      updateState({ status: 'error', error: captureError });
-      reporter({
-        type: 'error',
-        timestamp: timeProvider(),
-        detail: { code: captureError.code },
+      const errorCode: AudioCaptureErrorCode = 'AUDIO_CONTEXT_FAILED';
+      updateState({ status: 'error', errorCode });
+      reporter.emit({
+        event: 'audio.capture.error',
+        level: 'error',
+        code: errorCode,
+        operation: 'start',
+        metadata: {
+          attempt: attemptNumber,
+          reason:
+            error instanceof Error ? (error.name ?? error.message) : 'unknown',
+        },
       });
-      return { success: false, evaluation, error: captureError };
+      return { success: false, evaluation, errorCode };
     }
 
+    const latencyMs = requestResult.latencyMs;
     updateState({
       status: 'capturing',
-      latencyMs: latencyTrackingEnabled ? requestResult.latencyMs : undefined,
-      error: undefined,
+      latencyMs: latencyTrackingEnabled ? latencyMs : undefined,
+      errorCode: undefined,
     });
-    reporter({
-      type: 'start',
-      timestamp: timeProvider(),
-      detail: { latencyMs: requestResult.latencyMs },
+    reporter.emit({
+      event: 'audio.capture.success',
+      level: 'info',
+      code: 'STREAM_ACTIVE',
+      operation: 'start',
+      metadata: {
+        latencyMs,
+        attempt: attemptNumber,
+      },
     });
 
-    return {
-      success: true,
+    const baseResult = {
+      success: true as const,
       stream: currentStream,
       audioContext: currentAudioContext,
       evaluation,
-      latencyMs: requestResult.latencyMs,
     };
+
+    if (typeof latencyMs === 'number') {
+      return { ...baseResult, latencyMs };
+    }
+
+    return baseResult;
   };
 
   const stop: AudioCaptureController['stop'] = async () => {
@@ -436,8 +474,13 @@ export function createAudioCaptureController(
       }
       currentAudioContext = undefined;
     }
-    updateState({ status: 'idle', latencyMs: undefined });
-    reporter({ type: 'stop', timestamp: timeProvider() });
+    updateState({ status: 'idle', latencyMs: undefined, errorCode: undefined });
+    reporter.emit({
+      event: 'audio.capture.stop',
+      level: 'info',
+      code: 'CAPTURE_STOPPED',
+      operation: 'stop',
+    });
   };
 
   const getState: AudioCaptureController['getState'] = () => currentState;

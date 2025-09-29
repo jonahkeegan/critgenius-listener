@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-28 | Version: 1.14.0 | System Status: Active
+Last Updated: 2025-09-28 | Version: 1.15.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -43,6 +43,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Dev HTTPS Proxy Hardening & Diagnostics | 003 |
 | Centralized Proxy Registry | 002 |
 | Audio Capture Configuration (Feature Flags + Retry) | 001 |
+| Structured Audio Diagnostics & Error Codes | 001 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -55,6 +56,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-28: Added Structured Audio Diagnostics & Error Codes topic (Task 2.10.4.2) to segment 001
 - 2025-09-28: Added Audio Capture Configuration topic (Task 2.10.3) to segment 001
 - 2025-09-20: Added Centralized Proxy Registry topic (Task 2.10.2-2: shared proxy route/env key registry, client proxy builder refactor; tests; future generators)
 - 2025-09-20: Added Dev Proxy Dynamic Port Discovery topic (Task 2.10.2-1: shared env schema, PortDiscoveryService, async proxy builder, Vite serve integration, unit tests, docs; sanitized logging)

@@ -45,3 +45,27 @@ Improvements_Identified_For_Consolidation:
 - Consider extracting the retry policy schema into shared utilities to stay consistent across future capture services.
 
 
+Date: 2025-09-28
+TaskRef: "Dev Infra 2.10.4.2 – Enhance Audio Capture Diagnostics & Error Handling"
+
+Learnings:
+- Validating audio capture telemetry with a Zod schema immediately surfaced shape drift during development and kept the reporter contract explicit.
+- Returning `AudioCaptureErrorCode` values independently of UI strings makes downstream localization and analytics significantly simpler.
+- Capturing retry attempts and guard outcomes as structured events provides lightweight observability without needing backend instrumentation yet.
+
+Success Patterns:
+- Reused the task plan’s event naming hierarchy to keep emitted telemetry consistent across controller, guard, and tests.
+- Leaned on dependency injection for the reporter so diagnostics remained testable and we could assert emissions deterministically.
+- Expanded existing Vitest suites instead of spinning up new harnesses, keeping execution time low while adding behavior coverage.
+
+Implementation Excellence:
+- `StructuredEventReporter` sanitizes context and timestamps centrally, ensuring every emission is schema-compliant before hitting transports.
+- The controller’s retry loop now records attempt counts and distinguishes hard-block errors from transient failures, simplifying debugging.
+- UI-facing helpers map codes to localized copy + action steps, eliminating string duplication across components.
+
+Improvements_Identified_For_Consolidation:
+- Wire the new message mapper into the live UI flows so user prompts leverage the centralized localization table.
+- Stream structured audio events into the monitoring pipeline once socket listeners can consume them.
+- Share `AudioCaptureErrorCode` definitions through `@critgenius/shared` if other packages need awareness of the taxonomy.
+
+

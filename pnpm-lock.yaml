@@ -109,6 +109,9 @@ importers:
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
+      zod:
+        specifier: ^4.0.17
+        version: 4.0.17
     devDependencies:
       "@playwright/test":
         specifier: ^1.40.0

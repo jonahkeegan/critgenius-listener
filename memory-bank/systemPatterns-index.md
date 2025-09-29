@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-09-28 | Index Version: 1.5.0 | Status: Active
+Last Updated: 2025-09-28 | Index Version: 1.6.0 | Status: Active
 
 ## Segment Registry
 
@@ -32,6 +32,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Env Template Drift Guard & Deterministic Loader Precedence | 002     |
 | HTTPS Dev Protocol Alignment & Drift Guard                 | 003     |
 | Audio Capture Configuration (Feature Flags + Retry)        | 003     |
+| Structured Audio Diagnostics & Error Codes                 | 003     |
 | Scalability & Deployment                                   | 003     |
 
 ## Maintenance Protocol
@@ -49,6 +50,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-09-28: Added Structured Audio Diagnostics pattern (Task 2.10.4.2) to segment 003
 - 2025-09-28: Added Audio Capture Configuration pattern (Task 2.10.3) to segment 003
 - 2025-09-25: Added Env Template Drift Guard & Deterministic Loader Precedence pattern (Task 2.10.3)
 - 2025-09-20: Added Centralized Proxy Registry pattern (Task 2.10.2-2)

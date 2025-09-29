@@ -9,6 +9,10 @@ import {
   createAudioCaptureController,
   type AudioCaptureStartResult,
 } from '../../services/audioCapture';
+import {
+  createStructuredEventReporter,
+  type StructuredAudioEvent,
+} from '../../services/diagnostics';
 
 const SUPPORTED_EVALUATION: MicrophoneAccessEvaluation = {
   status: MICROPHONE_ACCESS_STATUS.SUPPORTED,
@@ -62,11 +66,15 @@ describe('audioCaptureController.start', () => {
     };
     const guard = createGuardMock(SUPPORTED_EVALUATION, requestResult);
     const { audioContext } = createAudioContextMock();
+    const events: StructuredAudioEvent[] = [];
     const controller = createAudioCaptureController({
       guard,
       audioContextFactory: () => audioContext,
       timeProvider: () => 1000,
-      reporter: vi.fn(),
+      reporter: createStructuredEventReporter({
+        transports: [event => events.push(event)],
+        timeProvider: () => 1000,
+      }),
     });
 
     const result = (await controller.start()) as AudioCaptureStartResult;
@@ -80,6 +88,12 @@ describe('audioCaptureController.start', () => {
     }
     expect(guard.evaluate).toHaveBeenCalledTimes(1);
     expect(guard.requestAccess).toHaveBeenCalledTimes(1);
+    expect(
+      events.find(event => event.event === 'audio.capture.start')
+    ).toBeDefined();
+    expect(
+      events.find(event => event.event === 'audio.capture.success')
+    ).toBeDefined();
   });
 
   it('surfaces errors when guard blocks permission', async () => {
@@ -103,7 +117,7 @@ describe('audioCaptureController.start', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.code).toBe('PERMISSION_BLOCKED');
+      expect(result.errorCode).toBe('PERMISSION_BLOCKED');
     }
   });
 

@@ -2,7 +2,7 @@
 
 **Date Range:** 2025-08-30 17:07 PST → Present  
 **Segment:** 003  
-**Last Updated:** 2025-09-28 10:20 PST  
+**Last Updated:** 2025-09-28 17:45 PST  
 **Predecessor:** `progress-002.md`  
 **Segment Start Anchor:** Post progress-002 completion at 353 lines
 
@@ -14,6 +14,26 @@ Continuation from progress-002 segment. Infrastructure phase substantially compl
 - [ ] Task 2.1.3: Install TypeScript foundation packages (typescript, @types/react, @types/node)
 
 ## Completed Tasks (This Segment)
+
+### 2025-09-28 – Task 2.10.4.2 Audio Diagnostics & Error-Code Separation
+Summary: Delivered structured audio capture diagnostics with schema-enforced events and decoupled error taxonomy. Added `AudioEventSchema` (Zod) and a `StructuredEventReporter` that sanitizes payloads, timestamps, and emits telemetry via injected transports. Refactored the audio capture controller to emit retry attempt counts, guard outcomes, and machine-readable `AudioCaptureErrorCode` values independently of UI strings. Introduced UI helpers (`LocalizedMessages`, `ErrorMessageMapper`) to translate codes into actionable copy without duplicating constants. Expanded test coverage to assert schema validation, reporter emissions, retry metadata, and localized message mapping.
+
+Key Artifacts:
+- Diagnostics: `packages/client/src/services/diagnostics/AudioEventSchema.ts`, `StructuredEventReporter.ts`, `index.ts`
+- Controller: `packages/client/src/services/audioCapture.ts` (structured events + error codes)
+- UI: `packages/client/src/components/audio/LocalizedMessages.ts`, `ErrorMessageMapper.ts`
+- Tests: `packages/client/src/__tests__/audio/structuredEvents.test.ts`, `audioMessageMapper.test.ts`, and updates to `audioCapture.test.ts`
+- Report & Reflection: `task-completion-reports/2025-09-28-dev-infra-2-10-4-2-enhance-audio-capture-diag-error-handling.md`, `memory-bank/raw_reflection_log.md`
+
+Outcomes:
+- Runtime emits schema-validated telemetry capturing retry attempts, guard decisions, and final outcomes without leaking sensitive detail
+- Error handling decouples machine codes from localized strings, simplifying analytics and internationalization pathways
+- Structured reporter keeps diagnostics testable by injecting transports and centralizing sanitization logic
+
+Follow-Ups:
+- Wire localized error mapper into the live UI notification surfaces
+- Forward structured events into monitoring once real-time listeners are available
+- Consider promoting `AudioCaptureErrorCode` and event typings into `@critgenius/shared` for cross-package reuse
 
 ### 2025-09-28 – Task 2.10.3 Unified Audio Capture Configuration
 Summary: Refactored the client audio capture controller to assemble dependencies through a single configuration builder with optional feature flags and retry semantics. Introduced `createAudioCaptureConfiguration` to wire the microphone guard, reporter, audio context factory, default constraints, and time provider while preserving the legacy `now` alias for backward compatibility. Added per-run feature toggles for diagnostics and latency tracking plus a retry policy (max attempts + backoff) handled directly within `start`. Expanded unit tests to validate latency disablement, retry flow, and the primary capture lifecycle while relying on injected mocks to keep execution deterministic.
@@ -283,6 +303,8 @@ New progress segment initiated. Updates will be appended chronologically.
 ---
 
 ## Changelog (Segment 003)
+- 2025-09-28: Recorded completion of Task 2.10.4.2 (Audio Diagnostics & Error-Code Separation)
+- 2025-09-28: Recorded completion of Task 2.10.3 (Unified Audio Capture Configuration)
 - 2025-08-30: Segment initiated from progress-002 at 353 lines
 - 2025-08-31: Recorded completion of Task 2.9.4 (Dev Server Validation & Documentation)
 - 2025-09-20: Recorded completion of Task 2.10.2-1 (Dev Proxy Dynamic Port Discovery)
