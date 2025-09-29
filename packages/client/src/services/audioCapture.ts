@@ -385,10 +385,7 @@ export function createAudioCaptureController(
         operation: 'start',
         metadata: {
           attempt: attemptNumber,
-          reason:
-            requestResult.status === 'blocked'
-              ? requestResult.reason
-              : requestResult.reason,
+          reason: requestResult.reason,
         },
       });
       return { success: false, evaluation, errorCode };
