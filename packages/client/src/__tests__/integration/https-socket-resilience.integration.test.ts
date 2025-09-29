@@ -30,6 +30,11 @@ describeMaybe('integration:https socket resilience', () => {
   let port: number;
   let socketService: SocketServiceInstance;
   let originalWebSocket: typeof globalThis.WebSocket;
+  let originalNodeTlsRejectUnauthorized: string | undefined;
+  let originalClientSocketDisableTlsBypass: string | undefined;
+  let originalGlobalAgentRejectUnauthorized: boolean | undefined;
+  let originalGlobalAgentCa: typeof https.globalAgent.options.ca;
+  let trustedAuthorityCertificate: Buffer;
 
   beforeAll(async () => {
     port = await allocatePort();
@@ -42,6 +47,22 @@ describeMaybe('integration:https socket resilience', () => {
     );
     const key = fs.readFileSync(path.join(fixtureDir, 'localhost-key.pem'));
     const cert = fs.readFileSync(path.join(fixtureDir, 'localhost.pem'));
+    trustedAuthorityCertificate = cert;
+
+    originalNodeTlsRejectUnauthorized =
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    originalClientSocketDisableTlsBypass =
+      process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS;
+    originalGlobalAgentRejectUnauthorized =
+      https.globalAgent.options.rejectUnauthorized;
+    originalGlobalAgentCa = https.globalAgent.options.ca;
+
+    https.globalAgent.options.ca = buildCaBundle(
+      originalGlobalAgentCa,
+      trustedAuthorityCertificate
+    );
+    https.globalAgent.options.rejectUnauthorized = true;
+    process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS = 'true';
 
     httpsServer = https.createServer({ key, cert });
     ioServer = new SocketIOServer(httpsServer, {
@@ -82,20 +103,44 @@ describeMaybe('integration:https socket resilience', () => {
 
     vi.resetModules();
     ({ default: socketService } = await import('../../services/socketService'));
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS = 'false';
     socketService.connect();
   }, 20000);
 
   afterEach(() => {
     socketService?.disconnect();
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    delete process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS;
+    process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS = 'true';
+    https.globalAgent.options.ca = buildCaBundle(
+      originalGlobalAgentCa,
+      trustedAuthorityCertificate
+    );
+    https.globalAgent.options.rejectUnauthorized = true;
   });
 
   afterAll(async () => {
     delete (globalThis as GlobalWithClientEnv).__CLIENT_ENV__;
-    delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    if (originalNodeTlsRejectUnauthorized === undefined) {
+      delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    } else {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED =
+        originalNodeTlsRejectUnauthorized;
+    }
+    if (originalClientSocketDisableTlsBypass === undefined) {
+      delete process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS;
+    } else {
+      process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS =
+        originalClientSocketDisableTlsBypass;
+    }
+    https.globalAgent.options.ca = originalGlobalAgentCa;
+    if (typeof originalGlobalAgentRejectUnauthorized === 'boolean') {
+      https.globalAgent.options.rejectUnauthorized =
+        originalGlobalAgentRejectUnauthorized;
+    } else {
+      delete (
+        https.globalAgent.options as typeof https.globalAgent.options & {
+          rejectUnauthorized?: boolean;
+        }
+      ).rejectUnauthorized;
+    }
     if (originalWebSocket) {
       (
         globalThis as typeof globalThis & {
@@ -131,8 +176,9 @@ describeMaybe('integration:https socket resilience', () => {
     });
 
     process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS = 'true';
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+    https.globalAgent.options.ca = buildCaBundle(originalGlobalAgentCa);
 
+    socketService.disconnect();
     socketService.connect();
 
     try {
@@ -145,6 +191,11 @@ describeMaybe('integration:https socket resilience', () => {
       throw new Error(
         `Expected TLS error did not surface. Last state: ${JSON.stringify(state)}`
       );
+    } finally {
+      https.globalAgent.options.ca = buildCaBundle(
+        originalGlobalAgentCa,
+        trustedAuthorityCertificate
+      );
     }
 
     const failureState: SocketConnectionState =
@@ -153,8 +204,7 @@ describeMaybe('integration:https socket resilience', () => {
     expect(failureState.error?.retryInMs).toBe(200);
     expect(failureState.isConnected).toBe(false);
 
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS = 'false';
+    socketService.connect();
 
     try {
       await waitFor(
@@ -183,6 +233,30 @@ async function allocatePort(): Promise<number> {
       srv.close(() => resolve(port));
     });
   });
+}
+
+type CaValue = typeof https.globalAgent.options.ca;
+type CaEntry = string | Buffer;
+
+function normalizeCa(value: CaValue): CaEntry[] {
+  if (!value) return [];
+  return Array.isArray(value) ? [...value] : [value];
+}
+
+function buildCaBundle(base: CaValue, extra?: Buffer): CaValue {
+  const entries = normalizeCa(base);
+  if (extra) {
+    const alreadyPresent = entries.some(entry =>
+      Buffer.isBuffer(entry) ? entry.equals(extra) : false
+    );
+    if (!alreadyPresent) {
+      entries.push(extra);
+    }
+  }
+  if (entries.length === 0) {
+    return undefined;
+  }
+  return entries.length === 1 ? entries[0] : entries;
 }
 
 async function waitFor(
