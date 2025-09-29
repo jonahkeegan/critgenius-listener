@@ -40,8 +40,8 @@ export function envReloadPlugin(options: EnvReloadPluginOptions = {}): Plugin {
     apply: 'serve' as const,
     configureServer(server: ViteDevServer) {
       rootRef = options.rootDir || server.config.root || process.cwd();
-  const baseFiles = ['.env', '.env.local', '.env.development'];
-  baseFiles.forEach(f => addWatch(f));
+      const baseFiles = ['.env', '.env.local', '.env.development'];
+      baseFiles.forEach(f => addWatch(f));
 
       // 1) Explicit extraWatchPaths option (preferred)
       if (options.extraWatchPaths && options.extraWatchPaths.length > 0) {
@@ -57,7 +57,7 @@ export function envReloadPlugin(options: EnvReloadPluginOptions = {}): Plugin {
           .forEach(seg => addWatch(seg));
       }
 
-  watched.forEach(abs => server.watcher.add(abs));
+      watched.forEach(abs => server.watcher.add(abs));
 
       const trigger = (file: string): void => {
         server.ws.send({ type: 'full-reload' });

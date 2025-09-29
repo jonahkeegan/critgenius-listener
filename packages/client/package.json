@@ -13,6 +13,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:browser": "playwright test",
+    "test:browser:headed": "playwright test --headed",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "lint:a11y": "eslint src --ext .tsx --rule 'jsx-a11y/*:error'",
@@ -29,7 +31,8 @@
     "@mui/material": "^7.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",
@@ -44,7 +47,8 @@
     "@types/socket.io": "^3.0.2",
     "supertest": "^7.1.4",
     "typescript": "^5.2.2",
-  "vite": "^5.4.20",
+    "esbuild": "^0.25.9",
+    "vite": "^5.4.20",
     "vitest": "^3.2.4",
     "@playwright/test": "^1.40.0",
     "playwright": "^1.40.0"

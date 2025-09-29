@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-20 | Version: 1.13.0 | System Status: Active
+Last Updated: 2025-09-28 | Version: 1.15.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -42,6 +42,8 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Risk Register | 003 |
 | Dev HTTPS Proxy Hardening & Diagnostics | 003 |
 | Centralized Proxy Registry | 002 |
+| Audio Capture Configuration (Feature Flags + Retry) | 001 |
+| Structured Audio Diagnostics & Error Codes | 001 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -54,13 +56,15 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-28: Added Structured Audio Diagnostics & Error Codes topic (Task 2.10.4.2) to segment 001
+- 2025-09-28: Added Audio Capture Configuration topic (Task 2.10.3) to segment 001
 - 2025-09-20: Added Centralized Proxy Registry topic (Task 2.10.2-2: shared proxy route/env key registry, client proxy builder refactor; tests; future generators)
 - 2025-09-20: Added Dev Proxy Dynamic Port Discovery topic (Task 2.10.2-1: shared env schema, PortDiscoveryService, async proxy builder, Vite serve integration, unit tests, docs; sanitized logging)
 - 2025-09-17: Added dev HTTPS proxy hardening & diagnostics topic (Task 2.10.2: HTTPS proxy env vars, proxy builder enhancements, preflight diagnostics script, docs updates)
 - 2025-09-14: Added local dev HTTPS certificate enablement topic (Task 2.10.1: dev-only HTTPS env vars, mkcert/OpenSSL scripts, conditional Vite https, docs & tests)
 - 2025-09-06: Added envReloadPlugin interface enhancement topic (explicit options + canonicalization & dedup; Task 2.9.4 enhancement)
 - 2025-09-03: Added env reload integration test topic (Task 2.9.4 extension: real Vite + Playwright navigation-based reload detection scaffold)
-- 2025-08-31: Added dev server validation & documentation topic (Task 2.9.4: plugin extraction, test-centric validation, simulated HMR harness, proxy forwarding integration test)
+- 2025-08-31: Added dev server validation & documentation topic (Task 2.9.4: plugin extraction, test-centric validation, simulated HMR harness, documentation update)
 - 2025-08-30: Added enhanced health endpoint & intelligent restart backoff (Task 2.9.3 resilience enhancement)
 - 2025-08-30: Refined coordinated dev orchestration → declarative manifest model (Task 2.9.3 enhancement)
 - 2025-08-29: Added coordinated dev orchestration topic (Task 2.9.3)

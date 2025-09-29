@@ -208,7 +208,7 @@
   - [ ] 2.10 Set up local HTTPS development server for Web Audio API testing requirements
     - [x] 2.10.1 Generate local SSL certificates and configure certificate management for development HTTPS server - Create self-signed certificates or use mkcert for trusted local certificates, configure certificate storage and management in development environment, set up certificate paths and permissions for secure development workflow
     - [x] 2.10.2 Configure Vite development server with HTTPS support and update proxy settings for secure API integration - Update Vite configuration to enable HTTPS with generated certificates, modify existing proxy settings to work with HTTPS endpoints, configure secure WebSocket connections for Socket.IO integration
-      - [ ] 2.10.3 Update HTTPS dev config to use centralized proxy registry
+      - [x] 2.10.3 Update HTTPS dev config to use centralized proxy registry
             - Align with centralized proxy registry as source of truth: import from `@critgenius/shared/config/proxyRegistry` (see `getProxyRegistry`, `PROXY_ENV_KEYS`, `resolveTargetFromEnv`) instead of ad-hoc env reads
             - Ensure .env templates contain the registry-defined DEV_PROXY_* keys (no duplication elsewhere):
                   - DEV_PROXY_ENABLED, DEV_PROXY_HTTPS_ENABLED, DEV_PROXY_TARGET_PORT, DEV_PROXY_TARGET_HTTPS_PORT
@@ -221,7 +221,7 @@
                   - scripts/generate-proxy-docs.mjs → outputs `docs/development-proxy.routes.md`
                   - scripts/generate-proxy-env-example.mjs → updates `.env.example`
             - Reference: `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md` for background and usage notes
-    - [ ] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
+    - [x] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
     - [ ] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
     - [ ] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
 

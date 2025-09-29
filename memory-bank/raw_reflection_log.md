@@ -13,158 +13,59 @@ Date: YYYY-MM-DD
 TaskRef: "<Task ID / Descriptive Title>"
 
 Learnings:
-- <bullet>
-
-Technical Discoveries:
-- <bullet>
 
 Success Patterns:
-- <bullet>
 
 Implementation Excellence:
-- <bullet>
 
 Improvements_Identified_For_Consolidation:
-- <bullet>
-```
-
----
-
-*Ready for new entries.*
 
 
-Date: 2025-09-14
-TaskRef: "Dev Infra Task 2.10.1 – Local HTTPS Certificates"
+Date: 2025-09-28
+TaskRef: "Dev Infra 2.10.3 – Unified Audio Capture Configuration"
 
 Learnings:
-- Local HTTPS is a prerequisite for consistent microphone permission flows in some browsers; securing early avoids downstream user confusion during audio capture testing.
-- Embedding optional HTTPS vars directly in the shared schema (with safe defaults) minimizes conditional logic proliferation elsewhere.
-- Literal booleans enforced in environment extension schemas (development override with z.literal(true)) require tests to supply those values explicitly; otherwise Zod errors surface unexpectedly.
-- Graceful fallback design (warn + continue) preserves developer velocity and prevents friction when cert assets are temporarily absent.
-
-Technical Discoveries:
-- Adding duplicate keys via spread composition in Zod schemas silently compiles until TypeScript surfaces TS2783; early schema review prevents rework.
-- mkcert idempotent `-install` flag simplifies automation; no need to branch logic for pre-installed root CA.
-- OpenSSL single-command generation with `-addext subjectAltName` eliminates multi-step CSR dance for dev use cases.
-- Reading PEM cert expiry via `openssl x509 -enddate -noout` is lightweight and avoids adding parsing libraries.
+- Centralizing audio capture dependencies via a configuration factory keeps guard/reporting/constraints wiring coherent while still honoring legacy entry points.
+- Feature flags for diagnostics and latency tracking let us tune telemetry cost per environment without code forks.
+- Embedding retry semantics directly in the controller smooths over transient `getUserMedia` failures and clarifies backoff behavior in tests.
 
 Success Patterns:
-- One-command setup (`pnpm certs:setup`) lowers onboarding friction and matches existing dev workflow conventions.
-- Documentation sections added adjacent to already-referenced dev server guides increased discoverability without creating a new doc surface.
-- Test-first adjustment for HTTPS schema prevented future regressions (defaults + enabled scenario).
-- Using warning-level console output (not errors) for fallback maintains clarity while avoiding false failure signals in tooling.
+- Applied the Continuous Improvement Protocol by reusing the reflection template and calling out reusable dependency-injection seams.
+- Extended existing unit tests rather than introducing new fixtures, keeping validation fast and focused.
+- Preserved backward compatibility (e.g., `now` alias) to de-risk adoption while encouraging migration to the new `timeProvider` API.
 
 Implementation Excellence:
-- Scripts avoid leaking absolute paths or system-specific noise; only purposeful output presented.
-- Permissions tightening attempted on POSIX while tolerating Windows divergence—pragmatic cross-platform handling.
-- Cert directory git-ignored early to avert accidental secret drift (defense-in-depth though dev certs low risk).
-- Chose adjacent port (5174) to reduce context switching for developers coming from default Vite expectations.
+- `createAudioCaptureConfiguration` encapsulates reporter plumbing and time provider sourcing, making diagnostics deterministic.
+- Retry-aware `start` logic halts by design on hard permission denials, preventing infinite loops.
+- Test cases assert both latency flag disablement and retry success, proving the new flags and policy work under controlled mocks.
 
 Improvements_Identified_For_Consolidation:
-- Add optional orchestration pre-flight that auto-runs `certs:check` when HTTPS is enabled.
-- Provide PowerShell helper or docs snippet for mkcert install on Windows for first-time setup.
-- Potential integration test to assert Vite https object presence using ephemeral generated cert pair.
-- Consider colorized terminal output or structured JSON mode for CI parse if feature set expands.
+- Surface configuration builder usage inside React hooks so room-level feature toggles become straightforward.
+- Promote diagnostic reporter assertions into higher-level integration tests once Socket.IO wiring is ready.
+- Consider extracting the retry policy schema into shared utilities to stay consistent across future capture services.
 
-Date: 2025-09-17
-TaskRef: "Dev Infra Task 2.10.2 – Vite HTTPS Dev Proxy Hardening"
+
+Date: 2025-09-28
+TaskRef: "Dev Infra 2.10.4.2 – Enhance Audio Capture Diagnostics & Error Handling"
 
 Learnings:
-- Early HTTPS proxy integration surfaced implicit assumptions in client/WebSocket code paths that were cheaper to adjust now.
-- Centralizing dev-only HTTPS proxy variables in the shared schema prevents config drift and scattered conditional logic.
-- Preflight automation shortens feedback loops versus manual curl/browser iteration.
-- Distinguishing Vite server HTTPS from upstream backend HTTPS avoids premature coupling and clarifies migration stages.
-- Simple host allowlisting (DEV_PROXY_ALLOWED_HOSTS) meaningfully reduces accidental local tunneling risk.
-
-Technical Discoveries:
-- Vite proxy honors custom keep-alive agents—improves streaming stability without code changes elsewhere.
-- Injecting `X-Forwarded-Proto` supplies downstream services with correct scheme context without terminating TLS there.
-- Lightweight WebSocket upgrade probing (no full Socket.IO handshake) is sufficient to catch most TLS/route misconfigurations.
-- Consistent handling of `secure` + `rejectUnauthorized` across HTTP and WS paths prevents subtle mismatch errors.
-- Zod dev-only fields stay out of client bundle so long as projection helper remains curated.
+- Validating audio capture telemetry with a Zod schema immediately surfaced shape drift during development and kept the reporter contract explicit.
+- Returning `AudioCaptureErrorCode` values independently of UI strings makes downstream localization and analytics significantly simpler.
+- Capturing retry attempts and guard outcomes as structured events provides lightweight observability without needing backend instrumentation yet.
 
 Success Patterns:
-- Incremental enhancement (reuse of proxy builder) kept diff minimal while adding resilience.
-- Targeted tests (HTTPS path + allowlist) locked intent and prevented regression.
-- `.env.example` alignment test continues to guard doc drift at near-zero maintenance cost.
-- Preflight script output remained sanitized (no secrets) but actionable.
-- Default values ensured full backward compatibility (HTTPS is opt-in).
+- Reused the task plan’s event naming hierarchy to keep emitted telemetry consistent across controller, guard, and tests.
+- Leaned on dependency injection for the reporter so diagnostics remained testable and we could assert emissions deterministically.
+- Expanded existing Vitest suites instead of spinning up new harnesses, keeping execution time low while adding behavior coverage.
 
 Implementation Excellence:
-- Achieved feature + hardening in <50 LOC net change to proxy builder.
-- No new runtime dependencies; preflight relies solely on Node core.
-- Removed unnecessary eslint-disable to preserve zero-warning standard.
-- Docs updated surgically to satisfy structure tests—maintains test-as-truth model.
-- Uniform naming across schema, docs, tests, and env example improved discoverability.
+- `StructuredEventReporter` sanitizes context and timestamps centrally, ensuring every emission is schema-compliant before hitting transports.
+- The controller’s retry loop now records attempt counts and distinguishes hard-block errors from transient failures, simplifying debugging.
+- UI-facing helpers map codes to localized copy + action steps, eliminating string duplication across components.
 
 Improvements_Identified_For_Consolidation:
-- Add integration test harness with mock HTTPS upstream + real WS upgrade to validate end-to-end secure flow.
-- Extend preflight: assert explicit 101 status + record latency metrics.
-- Dev overlay panel to visualize live proxy config (protocol, ports, allowlist state).
-- Negative-path tests (forced timeout, intentional self-signed rejection) to measure resilience + error clarity.
-- Optional metrics hook (upgrade latency, retry counts) behind dev flag for future performance tuning.
-
-
-Date: 2025-09-20
-TaskRef: "Dev Infra Task 2.10.2.1 – Dynamic Port Discovery" (guided by CI protocol: C:\Users\jonah\OneDrive\Documents\Cline\Rules\07-cline-continuous-improvement-protocol.md)
-
-Learnings:
-- Auto-discovery meaningfully reduces dev friction; fast fallback to static config is essential to avoid blocking starts.
-- Privacy-first logging (no response bodies/headers; ports + timings only) sustains safe diagnostics in shared consoles.
-- Constraining probes to localhost with strict timeouts preserves safety and performance; one-session caching prevents repeated probing.
-- Async Vite config works reliably for dev-only dynamic setup; keep build path synchronous for predictability.
-
-Technical Discoveries:
-- Combining a global discovery deadline with per-port timeouts yields predictable upper bounds on startup latency.
-- Minimal HTTP(S) probe using Node core + res.resume() avoids buffering and cleans sockets; rejectUnauthorized=false is needed for local https.
-- Deduping and prioritizing candidates (fallback first) shortens happy path; injecting result back into legacy proxy builder preserves DRY.
-- Allowed-host guard continues to protect against accidental non-local targets even in discovery mode.
-
-Success Patterns:
-- Backward compatibility maintained (static builder intact, dynamic is opt-in via env + only during serve).
-- Tests isolate behavior with a tiny local health server; docs and .env.example updated alongside code to prevent drift.
-- Session-level cache minimizes probing without persisting state.
-
-Implementation Excellence:
-- No new runtime deps; <100 LOC across service, wiring, and tests.
-- Strong typing from Zod schema to service config; sanitized logs by design.
-- Clear separation: discovery service (pure-ish I/O), proxy builder (composition), Vite integration (mode-gated async).
-
-Improvements_Identified_For_Consolidation:
-- Add integration test exercising buildDevProxyWithDiscovery end-to-end with multiple candidates and https.
-- Expose optional discovery metrics (attempt count, total duration) in dev overlay for faster troubleshooting.
-- Troubleshooting matrix in docs (e.g., firewall, conflicting services, localhost vs 127.0.0.1 differences on Windows).
-- Consider capped parallel probes (small fan-out) for faster worst-case while respecting rate limits.
-
-
-Date: 2025-09-20
-TaskRef: "Dev Infra Task 2.10.2-2 – Centralized Proxy Registry" (guided by CI protocol: C:\Users\jonah\OneDrive\Documents\Cline\Rules\07-cline-continuous-improvement-protocol.md)
-
-Learnings:
-- Centralizing proxy routes and env keys into a shared registry eliminates drift and simplifies maintenance across client/server surfaces.
-- Keeping behavior backward-compatible while refactoring enables safe incremental rollout and lowers coordination costs.
-- A small helper (resolveTargetFromEnv) standardizes protocol/port resolution, reducing edge-case handling in callers.
-- Registry as a single source of truth unlocks generators (docs and .env examples) without duplicating knowledge.
-
-Technical Discoveries:
-- Iterating a typed route registry to build both HTTP and WS proxy entries keeps Vite config coherent and reduces subtle mismatches.
-- Subpath exports from shared ("./config/proxyRegistry") provide clean, tree-shakeable imports for consumers.
-- Unit tests at the shared layer catch shape/contract regressions early before client wiring is affected.
-
-Success Patterns:
-- Quality gates stayed green across packages (lint, type-check, tests), validating the refactor’s non-breaking intent.
-- AssemblyAI path remained untouched; focused changes minimized regression surface while preserving existing rewrites.
-- Clear env key consolidation improved developer onboarding and discoverability.
-
-Implementation Excellence:
-- No new runtime dependencies; small, well-typed additions with zero ESLint warnings.
-- Privacy respected: no secrets logged; sanitized summaries only.
-- Clean separation: shared registry (types/config) → client proxy builder (consumes) → future generators (optional).
-
-Improvements_Identified_For_Consolidation:
-- Add generators: proxy routes doc table and selective .env.example updater; include a minimal doc test.
-- Integration test matrix for HTTPS and multiple candidate ports.
-- Lightweight dev overlay for discovery/registry visibility and bounded probing metrics.
-- Author a short ADR capturing decision, alternatives, and migration considerations.
+- Wire the new message mapper into the live UI flows so user prompts leverage the centralized localization table.
+- Stream structured audio events into the monitoring pipeline once socket listeners can consume them.
+- Share `AudioCaptureErrorCode` definitions through `@critgenius/shared` if other packages need awareness of the taxonomy.
 
 

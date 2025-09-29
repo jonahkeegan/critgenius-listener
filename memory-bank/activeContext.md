@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-25 **Version:** 2.24.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-28 **Version:** 2.26.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -63,6 +63,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Development server functional with theme integration (localhost:5173)
   - ✅ Vitest testing framework compatibility confirmed
   - ✅ Advanced UX features: search highlighting, auto-scroll, filter management
+  - ✅ Audio capture controller refactored with configuration-driven dependency injection, feature flags, and retry semantics for deterministic testing
+  - ✅ Audio diagnostics pipeline emits schema-validated events with structured error codes decoupled from UI messaging (Task 2.10.4.2)
 
 ### Ready for Technical Planning & Remaining Infra
 
@@ -82,7 +84,25 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-25)
+### Latest Updates (2025-09-28 – Audio Diagnostics & Error Codes)
+
+- AUDIO DIAGNOSTICS & ERROR-CODE SEPARATION: Structured Telemetry for Audio Capture (Task 2.10.4.2)
+  - Introduced `AudioEventSchema` (Zod) and `StructuredEventReporter` to sanitize and validate capture lifecycle events (retry attempts, guard outcomes, terminal statuses) before emission
+  - Reworked the audio capture controller to emit machine-readable `AudioCaptureErrorCode` values independent of UI strings, capturing retry metadata and guard context for observability without leaking sensitive info
+  - Added UI helpers (`LocalizedMessages`, `ErrorMessageMapper`) so localized prompts map directly from codes; consolidated Vitest coverage for schema conformance, reporter emissions, retry telemetry, and copy mapping
+  - Outcomes: Diagnostics pipeline now produces consistent, privacy-aware telemetry that feeds future monitoring and analytics while simplifying localization
+  - Follow-Ups: Integrate mapper into live UI notifications, route structured events to monitoring consumers, and consider promoting the error code taxonomy to `@critgenius/shared`
+
+### Previous Updates (2025-09-28 – Audio Capture Configuration)
+
+- AUDIO CAPTURE CONFIGURATION MODERNIZATION: Unified Audio Capture Configuration (Task 2.10.3)
+  - Implemented `createAudioCaptureConfiguration` to centralize guard, reporter, audio context factory, default constraints, feature flags, and retry policy wiring while preserving the legacy `now` alias for backward compatibility
+  - Added opt-in diagnostics and latency tracking flags plus configurable retry handling (max attempts + backoff) within the controller `start` workflow
+  - Expanded unit tests to validate latency disablement scenarios, retry success, and the standard capture lifecycle using injected mocks for deterministic execution
+  - Outcomes: Dependency injection enables per-environment customization, diagnostics toggles avoid code forks, transient microphone failures retried predictably, and future React hook integration gains a stable configuration surface
+  - Follow-Ups: Surface the builder inside React capture hooks, add integration coverage asserting diagnostic reporter emissions, and extract retry policy typing into shared utilities if reuse emerges
+
+### Previous Updates (2025-09-25)
 
 - INFRASTRUCTURE / CONFIGURATION: Env Template Generation & Deterministic Loader Precedence (Task 2.10.3)
   - Added schema-driven generators (`generate-env-template.mjs`, `generate-env-overrides.mjs`) producing canonical categorized `.env.example` (managed proxy section) + minimal per-env overrides; both support `--check` drift mode

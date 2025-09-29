@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
+import { configDefaults as vitestConfigDefaults } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 // Minimal inline client env injection for tests to avoid pulling server/shared runtime logic.
 function clientDefine() {
@@ -21,6 +22,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
     css: true,
+    exclude: [...vitestConfigDefaults.exclude, 'tests/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

@@ -1,10 +1,16 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-08-28 22:20 PST **Version:** 1.4.0 **System Status:** Active
+**Last Updated:** 2025-09-28 17:30 PST **Version:** 1.5.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-006.md` **Status:** Active **Current Row Count:** 193 **Last Updated:** 2025-09-06
+**Currently Active:** `consolidated-learnings-006.md` **Status:** Active **Current Row Count:** 309
+**Last Updated:** 2025-09-28
+
+**Update Log:**
+
+- 2025-09-28 17:30 PST — Consolidated raw reflections into `consolidated-learnings-006.md`; row
+  count now 309.
 
 ## File Registry
 
@@ -81,6 +87,23 @@
   real-time communication bridge patterns, security-focused configuration templates, and advanced
   development workflow optimization (simulation, benchmarking, conditional gating) for Node.js
   monorepo applications.
+
+### consolidated-learnings-006.md
+
+- **Status:** Active – Orchestration, Dev Server Validation, HTTPS/Proxy Hardening, Secure
+  Microphone Validation
+- **Row Count:** 309
+- **Created:** 2025-09-06 09:30 PST
+- **Last Updated:** 2025-09-28 17:30 PST
+- **Primary Topics:** Manifest-Driven Orchestration, Restart & Circuit Breaking Strategy, Dev Server
+  Reload Architecture, HTTPS Certificate Workflow, Proxy Drift Guard Automation, Dynamic Port
+  Discovery, Centralized Proxy Registry, Secure Microphone Validation Harness, Synthetic Media
+  Shims, Cross-Browser Playwright Automation
+- **Description:** Aggregates phased orchestration refactors, dev server validation patterns, HTTPS
+  & proxy hardening, and the new secure microphone validation harness. Captures manifest topology
+  management, restart scheduling, environment interpolation, reload plugin evolution,
+  registry-driven HTTPS proxy alignment, and cross-browser microphone guard testing under secure
+  contexts.
 
 ## Topic Index
 
