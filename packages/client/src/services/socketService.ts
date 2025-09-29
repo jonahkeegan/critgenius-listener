@@ -102,17 +102,6 @@ class SocketService {
       typeof process !== 'undefined' &&
       typeof process.versions === 'object' &&
       typeof process.versions.node === 'string';
-    const shouldDisableTlsBypass =
-      isNodeRuntime &&
-      typeof process.env !== 'undefined' &&
-      process.env.CLIENT_SOCKET_DISABLE_TLS_BYPASS === 'true';
-    const shouldApplyInsecureBypass =
-      isNodeRuntime && isHttps && !shouldDisableTlsBypass;
-    if (isNodeRuntime && isHttps) {
-      if (shouldApplyInsecureBypass) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-      }
-    }
     const transports: ManagerOptions['transports'] =
       isNodeRuntime && isHttps ? ['websocket'] : ['websocket', 'polling'];
     const socketOptions: Partial<ManagerOptions & SocketOptions> = {
@@ -123,37 +112,12 @@ class SocketService {
       timeout: 20000,
       withCredentials: true,
       ...(isHttps ? { secure: true } : {}),
-      ...(shouldApplyInsecureBypass
-        ? {
-            rejectUnauthorized: false,
-            transportOptions: {
-              websocket: {
-                rejectUnauthorized: false,
-              },
-            },
-          }
-        : {}),
     };
     if (isNodeRuntime && isHttps) {
       const initializeWithAgent = (httpsModule: NodeHttpsModule): void => {
-        if (shouldApplyInsecureBypass) {
-          const agent = new httpsModule.Agent({ rejectUnauthorized: false });
-          httpsModule.globalAgent.options.rejectUnauthorized = false;
-          const httpsOptions: Partial<ManagerOptions & SocketOptions> = {
-            ...socketOptions,
-            rejectUnauthorized: false,
-            transportOptions: {
-              websocket: {
-                agent,
-                rejectUnauthorized: false,
-              },
-            },
-          };
-          (httpsOptions as Record<string, unknown>).agent = agent;
-          this.establishSocketConnection(url, httpsOptions);
-          return;
+        if (httpsModule.globalAgent.options.rejectUnauthorized !== true) {
+          httpsModule.globalAgent.options.rejectUnauthorized = true;
         }
-        httpsModule.globalAgent.options.rejectUnauthorized = true;
         this.establishSocketConnection(url, socketOptions);
       };
 
