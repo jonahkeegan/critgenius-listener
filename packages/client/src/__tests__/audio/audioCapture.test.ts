@@ -55,6 +55,13 @@ function createAudioContextMock() {
   return { audioContext, disconnect, source };
 }
 
+function createReporter(collector?: StructuredAudioEvent[]) {
+  return createStructuredEventReporter({
+    transports: collector ? [event => collector.push(event)] : [() => {}],
+    timeProvider: () => 1000,
+  });
+}
+
 describe('audioCaptureController.start', () => {
   it('returns granted stream and initializes audio context', async () => {
     const stream = createMockStream();
@@ -71,10 +78,7 @@ describe('audioCaptureController.start', () => {
       guard,
       audioContextFactory: () => audioContext,
       timeProvider: () => 1000,
-      reporter: createStructuredEventReporter({
-        transports: [event => events.push(event)],
-        timeProvider: () => 1000,
-      }),
+      reporter: createReporter(events),
     });
 
     const result = (await controller.start()) as AudioCaptureStartResult;
@@ -108,9 +112,11 @@ describe('audioCaptureController.start', () => {
       status: 'blocked',
       reason: 'permission-denied',
     });
+    const events: StructuredAudioEvent[] = [];
     const controller = createAudioCaptureController({
       guard,
       timeProvider: () => 1000,
+      reporter: createReporter(events),
     });
 
     const result = await controller.start();
@@ -119,6 +125,9 @@ describe('audioCaptureController.start', () => {
     if (!result.success) {
       expect(result.errorCode).toBe('PERMISSION_BLOCKED');
     }
+
+    const errorEvent = events.find(evt => evt.event === 'audio.capture.error');
+    expect(errorEvent?.code).toBe('PERMISSION_BLOCKED');
   });
 
   it('reuses existing stream when requested', async () => {
@@ -134,6 +143,7 @@ describe('audioCaptureController.start', () => {
       guard,
       audioContextFactory: () => audioContext,
       timeProvider: () => 0,
+      reporter: createReporter(),
     });
 
     const first = await controller.start();
@@ -162,6 +172,7 @@ describe('audioCaptureController.stop', () => {
       guard,
       audioContextFactory: () => audioContext,
       timeProvider: () => 5,
+      reporter: createReporter(),
     });
 
     const startResult = await controller.start();
@@ -193,6 +204,7 @@ describe('audioCaptureController performance', () => {
       guard,
       audioContextFactory: () => audioContext,
       timeProvider: () => 0,
+      reporter: createReporter(),
     });
 
     const result = await controller.start();
@@ -219,6 +231,7 @@ describe('audioCaptureController configuration flags', () => {
       guard,
       audioContextFactory: () => audioContext,
       enableLatencyTracking: false,
+      reporter: createReporter(),
     });
 
     const result = await controller.start();
@@ -246,6 +259,7 @@ describe('audioCaptureController configuration flags', () => {
       guard,
       audioContextFactory: () => audioContext,
       retryPolicy: { maxAttempts: 2, backoffMs: 0 },
+      reporter: createReporter(),
     });
 
     const result = await controller.start();
