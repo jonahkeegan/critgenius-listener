@@ -10,6 +10,7 @@
 | Circuit opened message; no restarts                  | Exceeded `maxAttempts`             | Increase `restart.maxAttempts` or investigate root cause                     |
 | ENV vars missing (SERVICE_NAME, TIMEOUT)             | Loader injection skipped           | Ensure loader version (2.0) and no name collision with empty string          |
 | Wrong startup order                                  | Incorrect dependencies             | Add missing dependency entries to manifest                                   |
+| Cycle detected in service dependency graph           | Circular dependencies              | Break the cycle in your `dependencies`/`dependsOn` entries                   |
 | High restart thrash                                  | Low baseMs / high failure rate     | Increase `restart.baseMs` or fix stability issues                            |
 | Smoke mode slow                                      | Missing `smokeStartupTimeoutMs`    | Add per-service smoke timeouts / lighter `smokeCommand`                      |
 
@@ -62,6 +63,22 @@ env keys are indented beneath `environment:`.
       env:
         NODE_OPTIONS: '--enable-source-maps'
   ```
+
+- **Cycle detected in service dependency graph:** At least two services depend on each other
+  directly or indirectly. Inspect the `dependencies` (or legacy `dependsOn`) arrays for every
+  service in `services.yaml` and ensure the graph flows in one direction. A simple cycle to watch
+  for:
+
+  ```yaml
+  api:
+    dependencies: ['web']
+  web:
+    dependencies: ['api']
+  ```
+
+  Break the loop by removing or reordering the relationship—for example, keep only the dependency
+  that reflects the actual startup order. After editing, rerun
+  `node scripts/service-manifest-loader.mjs` to confirm the loader no longer reports a cycle.
 
 ### When Services Should Not Restart
 
