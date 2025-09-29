@@ -20,6 +20,7 @@ const nodeHttpsModulePromise: Promise<NodeHttpsModule> | null =
   typeof window === 'undefined'
     ? import(/* @vite-ignore */ 'node:https')
     : null;
+// This eager promise avoids repeated dynamic imports when the service reconnects in Node.
 
 type QueueItem<
   K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
