@@ -81,6 +81,8 @@ export interface MicrophoneAccessGuard {
   ): Promise<MicrophoneAccessRequestResult>;
 }
 
+export const MAX_ERROR_MESSAGE_LENGTH = 120;
+
 const defaultReporter: MicrophoneAccessGuardReporter = event => {
   const { phase, status, secureContext, permission, errorCode, reason } = event;
   console.info('[microphone-guard]', {
@@ -145,7 +147,11 @@ function sanitizeErrorMessage(input: unknown): string | undefined {
   }
   if (typeof input === 'string') {
     // Limit to alphanumeric + basic punctuation to prevent leaking sensitive detail.
-    return input.replace(/[^A-Za-z0-9 _.-]/g, '').slice(0, 120) || undefined;
+    return (
+      input
+        .replace(/[^A-Za-z0-9 _.-]/g, '')
+        .slice(0, MAX_ERROR_MESSAGE_LENGTH) || undefined
+    );
   }
   return undefined;
 }
