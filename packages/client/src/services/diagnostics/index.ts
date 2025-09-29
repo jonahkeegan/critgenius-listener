@@ -8,4 +8,7 @@ export type {
 } from './StructuredEventReporter';
 
 export { createStructuredEventReporter } from './StructuredEventReporter';
-export { structuredAudioEventSchema } from './AudioEventSchema';
+export {
+  AUDIO_CAPTURE_COMPONENT,
+  structuredAudioEventSchema,
+} from './AudioEventSchema';

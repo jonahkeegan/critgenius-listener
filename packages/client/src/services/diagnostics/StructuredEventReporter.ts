@@ -1,5 +1,6 @@
 import type { ZodError } from 'zod';
 import {
+  AUDIO_CAPTURE_COMPONENT,
   structuredAudioEventSchema,
   type StructuredAudioEvent,
 } from './AudioEventSchema';
@@ -51,7 +52,7 @@ const mergeContext = (
   base: StructuredAudioEvent['context'] | undefined,
   update: Partial<StructuredAudioEvent['context']> | undefined
 ): StructuredAudioEvent['context'] => ({
-  component: 'audio-capture',
+  component: AUDIO_CAPTURE_COMPONENT,
   ...base,
   ...update,
 });
@@ -128,7 +129,9 @@ export const createStructuredEventReporter = (
   const timeProvider = options.timeProvider ?? (() => Date.now());
   const context = options.context
     ? mergeContext(undefined, options.context)
-    : ({ component: 'audio-capture' } as StructuredAudioEvent['context']);
+    : ({
+        component: AUDIO_CAPTURE_COMPONENT,
+      } as StructuredAudioEvent['context']);
 
   return new StructuredEventReporterImpl(
     transports,

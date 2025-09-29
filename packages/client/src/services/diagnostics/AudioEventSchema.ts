@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const AUDIO_CAPTURE_COMPONENT = 'audio-capture' as const;
+
 export const structuredAudioEventSchema = z.object({
   event: z.string().min(1),
   level: z.enum(['debug', 'info', 'warn', 'error']),
@@ -22,7 +24,7 @@ export const structuredAudioEventSchema = z.object({
   context: z
     .object({
       sessionId: z.string().max(120).optional(),
-      component: z.literal('audio-capture'),
+      component: z.literal(AUDIO_CAPTURE_COMPONENT),
       version: z.string().max(32).optional(),
     })
     .partial()
