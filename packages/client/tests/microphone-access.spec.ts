@@ -197,7 +197,7 @@ test('microphone guard grants access over HTTPS', async ({
         (!createGuard || !statusEnum) &&
         typeof bootstrapSource === 'string'
       ) {
-        (0, eval)(bootstrapSource);
+        new Function(bootstrapSource)();
         createGuard = (
           window as { __createMicrophoneAccessGuard?: () => GuardInstance }
         ).__createMicrophoneAccessGuard;
