@@ -130,7 +130,8 @@ shell verification scripts maintained.
 
 ## 4. Configuration Matrix
 
-| Variable                     | Scope | Required       | Default      | Purpose                            |
+<!-- prettier-ignore -->
+| Variable | Scope | Required | Default | Purpose |
 | ---------------------------- | ----- | -------------- | ------------ | ---------------------------------- |
 | DEV_PROXY_ENABLED            | Dev   | Conditional    | –            | Enable HTTP proxy layer            |
 | DEV_PROXY_TARGET_PORT        | Dev   | With proxy     | 3000         | Upstream API/server port           |
