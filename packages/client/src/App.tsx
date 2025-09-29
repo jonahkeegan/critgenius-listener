@@ -346,7 +346,10 @@ function App() {
                       display='block'
                       sx={{ mt: 1 }}
                     >
-                      {error}
+                      {`[${error.code}] ${error.message}`}
+                      {typeof error.retryInMs === 'number'
+                        ? ` · retrying in ${Math.round(error.retryInMs)}ms`
+                        : ''}
                     </Typography>
                   )}
                 </Box>

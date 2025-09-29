@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-28 **Version:** 2.26.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-29 **Version:** 2.27.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -84,7 +84,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-28 – Audio Diagnostics & Error Codes)
+### Latest Updates (2025-09-29 – HTTPS Socket.IO Verification)
+
+- TLS RESILIENCE & TEST AUTOMATION: Secure WebSocket Handshake Coverage (Task 2.10.5)
+  - Added `CLIENT_SOCKET_DISABLE_TLS_BYPASS` guard in `socketService`, ensuring self-signed cert bypassing remains opt-in while enabling automated TLS failure simulations.
+  - Updated HTTPS integration suites to execute under Vitest’s Node environment, enforcing the Node TLS agent path and validating both successful WSS handshakes and recovery from intentional cert rejections.
+  - Hardened shared test setup to guard browser-only APIs when running outside jsdom, preserving stability across mixed-environment suites.
+  - Outcomes: HTTPS handshake and TLS resilience scenarios now covered by automated tests; groundwork laid for AssemblyAI HTTPS and audio secure-context validations.
+  - Follow-Ups: Extend integration coverage across AssemblyAI streaming endpoints, secure audio context verification, and end-to-end encrypted pipeline tests per task plan.
+
+### Previous Updates (2025-09-28 – Audio Diagnostics & Error Codes)
 
 - AUDIO DIAGNOSTICS & ERROR-CODE SEPARATION: Structured Telemetry for Audio Capture (Task 2.10.4.2)
   - Introduced `AudioEventSchema` (Zod) and `StructuredEventReporter` to sanitize and validate capture lifecycle events (retry attempts, guard outcomes, terminal statuses) before emission

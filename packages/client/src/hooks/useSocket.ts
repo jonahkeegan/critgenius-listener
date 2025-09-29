@@ -58,21 +58,11 @@ export const useSocket = () => {
   );
 
   useEffect(() => {
-    const cleanup = on(
-      'connectionStatus',
-      (status: 'connected' | 'disconnected') => {
-        setConnectionState(prev => ({
-          ...prev,
-          isConnected: status === 'connected',
-          isConnecting: status === 'connected' ? false : prev.isConnecting,
-          error: status === 'disconnected' ? prev.error : null,
-        }));
-      }
-    );
+    const cleanup = on('connectionStatus', () => {
+      setConnectionState(SocketService.getConnectionState());
+    });
 
-    // Initialize connection state
-    const initialState = SocketService.getConnectionState();
-    setConnectionState(initialState);
+    setConnectionState(SocketService.getConnectionState());
 
     return () => {
       cleanup();

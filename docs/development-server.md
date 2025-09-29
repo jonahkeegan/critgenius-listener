@@ -93,22 +93,22 @@ pnpm test
 
 ### Environment Reload Plugin
 
-Watches `.env*` and supports explicit extra watch paths via `extraWatchPaths` in Vite config.
-Also honors legacy `ENV_RELOAD_EXTRA` (comma-separated) for backward compatibility. Emits
+Watches `.env*` and supports explicit extra watch paths via `extraWatchPaths` in Vite config. Also
+honors legacy `ENV_RELOAD_EXTRA` (comma-separated) for backward compatibility. Emits
 `{ type: 'full-reload' }` via Vite WS—never logs contents.
 
 Example usage in `packages/client/vite.config.ts`:
 
 ```ts
 plugins: [
-	react(),
-	envReloadPlugin({
-		extraWatchPaths: [
-			// '../server/.env',
-			// '../shared/config/app.json',
-		],
-	}),
-]
+  react(),
+  envReloadPlugin({
+    extraWatchPaths: [
+      // '../server/.env',
+      // '../shared/config/app.json',
+    ],
+  }),
+];
 ```
 
 ### Manual Chunk Grouping
@@ -130,15 +130,15 @@ shell verification scripts maintained.
 
 ## 4. Configuration Matrix
 
-| Variable | Scope | Required | Default | Purpose |
-| --- | --- | --- | --- | --- |
-| DEV_PROXY_ENABLED | Dev | Conditional | – | Enable HTTP proxy layer |
-| DEV_PROXY_TARGET_PORT | Dev | With proxy | 3000 | Upstream API/server port |
-| DEV_PROXY_ASSEMBLYAI_ENABLED | Dev | No | false | Future AssemblyAI passthrough flag |
-| DEV_PROXY_ASSEMBLYAI_PATH | Dev | If passthrough | /v2/realtime | Socket path reservation |
-| DEV_PROXY_TIMEOUT_MS | Dev | No | 5000 | Upstream timeout guard |
-| ENV_RELOAD_EXTRA | Dev | No | – | Additional file to watch |
-| (client) extraWatchPaths | Dev | No | – | Explicit additional watch paths |
+| Variable                     | Scope | Required       | Default      | Purpose                            |
+| ---------------------------- | ----- | -------------- | ------------ | ---------------------------------- |
+| DEV_PROXY_ENABLED            | Dev   | Conditional    | –            | Enable HTTP proxy layer            |
+| DEV_PROXY_TARGET_PORT        | Dev   | With proxy     | 3000         | Upstream API/server port           |
+| DEV_PROXY_ASSEMBLYAI_ENABLED | Dev   | No             | false        | Future AssemblyAI passthrough flag |
+| DEV_PROXY_ASSEMBLYAI_PATH    | Dev   | If passthrough | /v2/realtime | Socket path reservation            |
+| DEV_PROXY_TIMEOUT_MS         | Dev   | No             | 5000         | Upstream timeout guard             |
+| ENV_RELOAD_EXTRA             | Dev   | No             | –            | Additional file to watch           |
+| (client) extraWatchPaths     | Dev   | No             | –            | Explicit additional watch paths    |
 
 Validated via shared environment schema (see `docs/environment-configuration-guide.md`).
 
@@ -146,14 +146,16 @@ Validated via shared environment schema (see `docs/environment-configuration-gui
 
 ## 5. Validation & Test Harness
 
-| Test                      | Path                                                                 | Assertion                       |
-| ------------------------- | -------------------------------------------------------------------- | ------------------------------- |
-| Env reload plugin         | `packages/client/src/__tests__/dev-server/env-reload.plugin.test.ts` | Change ⇒ full reload WS event   |
-| Env reload plugin (IT)    | `packages/client/src/__tests__/integration/env-reload-plugin.integration.test.ts` | Real Vite + browser; enable with `RUN_CLIENT_IT=true` |
-| Proxy forwarding          | (integration test)                                                   | Status + header preservation    |
-| Manual chunks             | (config test)                                                        | Bucket mapping invariants       |
-| HMR retention (simulated) | (harness)                                                            | State preserved or soft warning |
-| Documentation integrity   | `tests/docs/development-server-doc.test.ts`                          | Required sections + links valid |
+| Test                         | Path                                                                                    | Assertion                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Env reload plugin            | `packages/client/src/__tests__/dev-server/env-reload.plugin.test.ts`                    | Change ⇒ full reload WS event                                                   |
+| Env reload plugin (IT)       | `packages/client/src/__tests__/integration/env-reload-plugin.integration.test.ts`       | Real Vite + browser; enable with `RUN_CLIENT_IT=true`                           |
+| HTTPS socket handshake (IT)  | `packages/client/src/__tests__/integration/https-socket.integration.test.ts`            | Verifies WSS handshake + event flow over local HTTPS (set `RUN_CLIENT_IT=true`) |
+| HTTPS socket resilience (IT) | `packages/client/src/__tests__/integration/https-socket-resilience.integration.test.ts` | Simulates TLS failure + structured backoff recovery (`RUN_CLIENT_IT=true`)      |
+| Proxy forwarding             | (integration test)                                                                      | Status + header preservation                                                    |
+| Manual chunks                | (config test)                                                                           | Bucket mapping invariants                                                       |
+| HMR retention (simulated)    | (harness)                                                                               | State preserved or soft warning                                                 |
+| Documentation integrity      | `tests/docs/development-server-doc.test.ts`                                             | Required sections + links valid                                                 |
 
 Philosophy: Tests own truth; docs summarize.
 
@@ -198,12 +200,12 @@ Deferred items (tracked for incremental hardening):
 Secure context is required by some browsers for full microphone API access. Local HTTPS is now
 supported via optional environment variables:
 
-| Variable         | Default                                | Purpose                                  |
-| ---------------- | -------------------------------------- | ---------------------------------------- |
-| HTTPS_ENABLED    | false                                  | Toggle HTTPS dev server                  |
-| HTTPS_CERT_PATH  | ./certificates/dev/dev-cert.pem        | Certificate file (PEM)                   |
-| HTTPS_KEY_PATH   | ./certificates/dev/dev-key.pem         | Private key file (PEM)                   |
-| HTTPS_PORT       | 5174                                   | Alternate port used when HTTPS enabled   |
+| Variable        | Default                         | Purpose                                |
+| --------------- | ------------------------------- | -------------------------------------- |
+| HTTPS_ENABLED   | false                           | Toggle HTTPS dev server                |
+| HTTPS_CERT_PATH | ./certificates/dev/dev-cert.pem | Certificate file (PEM)                 |
+| HTTPS_KEY_PATH  | ./certificates/dev/dev-key.pem  | Private key file (PEM)                 |
+| HTTPS_PORT      | 5174                            | Alternate port used when HTTPS enabled |
 
 Generation script:
 
@@ -223,6 +225,19 @@ HTTPS_KEY_PATH=./certificates/dev/dev-key.pem
 
 If cert files are missing or unreadable, Vite silently falls back to HTTP with a console warning.
 Certificates are git‑ignored (`certificates/`) and safe to regenerate at any time.
+
+### HTTPS Verification Workflow
+
+Run the gated integration tests to exercise secure Socket.IO connectivity and TLS resilience logic:
+
+```bash
+RUN_CLIENT_IT=true pnpm --filter @critgenius/client test
+```
+
+The suite boots a local HTTPS server with the provided self-signed fixtures, confirms the client
+negotiates WSS, and verifies structured retries when TLS handshakes fail (`TLS_HANDSHAKE_FAILED`
+error surfaces with backoff metadata). Use this flow after regenerating certificates or updating
+Socket.IO configuration.
 
 ---
 
