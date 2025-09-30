@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-09-28 | Segment Version: 1.3.0
+Last Updated: 2025-09-29 | Segment Version: 1.4.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -79,9 +79,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
    - Preflight diagnostics script surfaces misconfig (health probe + WS upgrade heuristic)
      pre-interaction
    - Backward compatible defaults retain HTTP path until explicit opt-in
-5. Privacy compliance (local processing options)
-6. Secure API key management (no logging)
-7. Client input validation & XSS protection
+5. HTTPS Socket.IO TLS Resilience (Task 2.10.5)
+   - `CLIENT_SOCKET_DISABLE_TLS_BYPASS` flag keeps self-signed certificate bypass opt-in, while
+     allowing automated TLS failure simulations during tests.
+   - Socket service now injects an HTTPS agent only when bypassing verification and restores the
+     global agent when disabled, preventing latent insecure state.
+   - Node-environment integration suites assert secure handshake success, structured TLS failure
+     errors, and automatic recovery behavior; shared test setup guards browser-only globals for
+     stability.
+6. Privacy compliance (local processing options)
+7. Secure API key management (no logging)
+8. Client input validation & XSS protection
 
 ### Infrastructure Pattern: Centralized Proxy Registry (Task 2.10.2-2)
 
@@ -168,6 +176,7 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-09-29: Added HTTPS Socket.IO TLS resilience pattern (Task 2.10.5); version bump 1.4.0
 - 2025-09-28: Added Structured Audio Diagnostics pattern (Task 2.10.4.2); version bump 1.3.0
 - 2025-09-28: Added Audio Capture Configuration pattern (Task 2.10.3); version bump 1.2.0
 - 2025-09-20: Added Centralized Proxy Registry infrastructure pattern (Task 2.10.2-2)

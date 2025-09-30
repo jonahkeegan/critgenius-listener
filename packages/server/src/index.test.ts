@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
+import { ERROR_MESSAGES } from '@critgenius/shared';
 import app from './index.js';
 
 // Mock environment validation to avoid actual startup validation in tests
@@ -41,6 +42,6 @@ describe('Server', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
-    expect(response.body.error).toBe('No files uploaded');
+    expect(response.body.error).toBe(ERROR_MESSAGES.MISSING_MULTIPART_BOUNDARY);
   });
 });

@@ -12,10 +12,24 @@ export type {
 } from '../../../server/src/types/socket-events.js';
 
 // Client-specific socket types
+export type SocketResilienceErrorCode =
+  | 'TLS_HANDSHAKE_FAILED'
+  | 'CONNECTION_TIMEOUT'
+  | 'CONNECTION_REFUSED'
+  | 'NETWORK_OFFLINE'
+  | 'UNKNOWN_ERROR';
+
+export interface SocketConnectionError {
+  code: SocketResilienceErrorCode;
+  message: string;
+  retryInMs?: number;
+  timestamp: number;
+}
+
 export interface SocketConnectionState {
   isConnected: boolean;
   isConnecting: boolean;
-  error: string | null;
+  error: SocketConnectionError | null;
 }
 
 export interface SocketContextType {

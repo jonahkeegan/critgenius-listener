@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-09-28 | Version: 1.15.0 | System Status: Active
+Last Updated: 2025-09-29 | Version: 1.16.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -44,6 +44,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Centralized Proxy Registry | 002 |
 | Audio Capture Configuration (Feature Flags + Retry) | 001 |
 | Structured Audio Diagnostics & Error Codes | 001 |
+| HTTPS Socket.IO Verification & TLS Resilience | 003 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -56,6 +57,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-09-29: Added HTTPS Socket.IO verification & TLS resilience topic (Task 2.10.5) to segment 003
 - 2025-09-28: Added Structured Audio Diagnostics & Error Codes topic (Task 2.10.4.2) to segment 001
 - 2025-09-28: Added Audio Capture Configuration topic (Task 2.10.3) to segment 001
 - 2025-09-20: Added Centralized Proxy Registry topic (Task 2.10.2-2: shared proxy route/env key registry, client proxy builder refactor; tests; future generators)

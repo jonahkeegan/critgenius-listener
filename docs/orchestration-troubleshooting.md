@@ -4,11 +4,13 @@
 
 | Symptom                                              | Likely Cause                       | Fix                                                                          |
 | ---------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------- |
+| Service manifest not found                           | Wrong path / missing file          | Confirm `services.yaml` exists or pass correct path to orchestrator / loader |
 | Immediate exit with validation errors                | Malformed `services.yaml`          | Run loader: `node scripts/service-manifest-loader.mjs` and fix listed issues |
 | Service stuck at "starting" then restarts repeatedly | Health endpoint not returning <500 | Confirm `healthPath`, server actually listening, adjust timeout              |
 | Circuit opened message; no restarts                  | Exceeded `maxAttempts`             | Increase `restart.maxAttempts` or investigate root cause                     |
 | ENV vars missing (SERVICE_NAME, TIMEOUT)             | Loader injection skipped           | Ensure loader version (2.0) and no name collision with empty string          |
 | Wrong startup order                                  | Incorrect dependencies             | Add missing dependency entries to manifest                                   |
+| Cycle detected in service dependency graph           | Circular dependencies              | Break the cycle in your `dependencies`/`dependsOn` entries                   |
 | High restart thrash                                  | Low baseMs / high failure rate     | Increase `restart.baseMs` or fix stability issues                            |
 | Smoke mode slow                                      | Missing `smokeStartupTimeoutMs`    | Add per-service smoke timeouts / lighter `smokeCommand`                      |
 
@@ -40,6 +42,43 @@
 
 Mis-indented env vars create phantom services (e.g., `SERVICE_NAME:` aligned with `server:`). Ensure
 env keys are indented beneath `environment:`.
+
+### Service Manifest Errors
+
+- **File not found:** When the orchestrator or loader reports `Service manifest not found at ...`,
+  verify the path being passed matches the actual location. The default is `<repo>/services.yaml`;
+  override by invoking `node scripts/dev-orchestration.mjs --manifest ./path/to/services.yaml` or
+  passing the absolute path to `manifest-dump.cjs` / `service-manifest-loader.mjs`.
+- **executionConfig must be object:** Ensure each service uses an object map for `executionConfig`.
+  A minimal example:
+
+  ```yaml
+  svc:
+    command: 'pnpm --filter @example/app dev'
+    port: 4000
+    healthPath: '/health'
+    startupTimeoutMs: 10000
+    executionConfig:
+      command: 'pnpm'
+      env:
+        NODE_OPTIONS: '--enable-source-maps'
+  ```
+
+- **Cycle detected in service dependency graph:** At least two services depend on each other
+  directly or indirectly. Inspect the `dependencies` (or legacy `dependsOn`) arrays for every
+  service in `services.yaml` and ensure the graph flows in one direction. A simple cycle to watch
+  for:
+
+  ```yaml
+  api:
+    dependencies: ['web']
+  web:
+    dependencies: ['api']
+  ```
+
+  Break the loop by removing or reordering the relationship—for example, keep only the dependency
+  that reflects the actual startup order. After editing, rerun
+  `node scripts/service-manifest-loader.mjs` to confirm the loader no longer reports a cycle.
 
 ### When Services Should Not Restart
 

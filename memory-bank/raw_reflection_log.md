@@ -69,3 +69,27 @@ Improvements_Identified_For_Consolidation:
 - Share `AudioCaptureErrorCode` definitions through `@critgenius/shared` if other packages need awareness of the taxonomy.
 
 
+Date: 2025-09-29
+TaskRef: "Dev Infra 2.10.5 – Verify HTTPS Server & Socket.IO Real-Time Connection"
+
+Learnings:
+- Providing an explicit `CLIENT_SOCKET_DISABLE_TLS_BYPASS` switch lets us test TLS failure paths without sacrificing the day-to-day self-signed dev experience.
+- Running the HTTPS integration suites in Vitest’s Node environment avoids jsdom WebSocket interference and ensures the TLS agent wiring actually executes.
+- Guarding browser-only globals inside `test-setup.ts` keeps mixed environment test runs stable and prevents cross-suite flakiness.
+
+Success Patterns:
+- Followed the continuous improvement protocol by capturing granular learnings immediately after the task completion report.
+- Reused existing handshake/resilience specs instead of creating new fixtures, keeping coverage focused and execution time tight.
+- Leaned on environment flag toggles rather than invasive mocks to simulate real TLS behavior, preserving test realism.
+
+Implementation Excellence:
+- Socket service now injects a custom HTTPS agent only when bypassing TLS checks and restores the global agent once bypassing is disabled.
+- Integration tests explicitly clear and restore WebSocket globals, ensuring deterministic teardown across runs.
+- Resilience spec reuses the service singleton to verify structured error emission, backoff scheduling, and recovery in one pass.
+
+Improvements_Identified_For_Consolidation:
+- Extend the test matrix to cover AssemblyAI HTTPS streaming and secure audio context flows to complete the end-to-end story.
+- Document the new TLS bypass flag in developer onboarding materials so teammates know when and how to toggle it.
+- Evaluate adding an automated lint rule or test guard that fails if `NODE_TLS_REJECT_UNAUTHORIZED` is left disabled outside test scenarios.
+
+

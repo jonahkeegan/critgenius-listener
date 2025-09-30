@@ -143,17 +143,33 @@ function buildEvaluationResult(
 function sanitizeErrorMessage(input: unknown): string | undefined {
   if (!input) return undefined;
   if (input instanceof Error) {
-    return input.name === input.message ? input.name : input.name || 'Error';
+    const name = input.name?.trim();
+    const message = input.message?.trim();
+    if (!name && !message) {
+      return 'Error';
+    }
+    if (!name) {
+      return sanitizePlainText(message);
+    }
+    if (!message || name === message) {
+      return sanitizePlainText(name);
+    }
+    return sanitizePlainText(`${name}: ${message}`);
   }
   if (typeof input === 'string') {
     // Limit to alphanumeric + basic punctuation to prevent leaking sensitive detail.
-    return (
-      input
-        .replace(/[^A-Za-z0-9 _.-]/g, '')
-        .slice(0, MAX_ERROR_MESSAGE_LENGTH) || undefined
-    );
+    return sanitizePlainText(input);
   }
   return undefined;
+}
+
+function sanitizePlainText(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const sanitized = value
+    .replace(/[^A-Za-z0-9 _.-]/g, '')
+    .slice(0, MAX_ERROR_MESSAGE_LENGTH)
+    .trim();
+  return sanitized || undefined;
 }
 
 export function createMicrophoneAccessGuard(

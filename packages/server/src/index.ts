@@ -85,6 +85,44 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const requireMultipartBoundary: express.RequestHandler = (req, res, next) => {
+  const contentTypeHeader = req.headers['content-type'];
+  const contentType = Array.isArray(contentTypeHeader)
+    ? contentTypeHeader.join(';')
+    : contentTypeHeader;
+
+  if (!contentType) {
+    return res
+      .status(HTTP_STATUS.BAD_REQUEST)
+      .json(
+        createApiResponse(
+          false,
+          null,
+          ERROR_MESSAGES.MISSING_MULTIPART_BOUNDARY
+        )
+      );
+  }
+
+  const normalized = contentType.toLowerCase();
+
+  if (
+    !normalized.includes('multipart/form-data') ||
+    !normalized.includes('boundary=')
+  ) {
+    return res
+      .status(HTTP_STATUS.BAD_REQUEST)
+      .json(
+        createApiResponse(
+          false,
+          null,
+          ERROR_MESSAGES.MISSING_MULTIPART_BOUNDARY
+        )
+      );
+  }
+
+  return next();
+};
+
 // Health check endpoint
 app.get(API_ENDPOINTS.HEALTH, (_req, res) => {
   const healthCheck: HealthCheckResponse = {
@@ -102,59 +140,64 @@ app.get(API_ENDPOINTS.HEALTH, (_req, res) => {
 });
 
 // Audio upload endpoint
-app.post(API_ENDPOINTS.UPLOAD, upload.array('audio'), (req, res) => {
-  try {
-    const files = req.files as Express.Multer.File[];
+app.post(
+  API_ENDPOINTS.UPLOAD,
+  requireMultipartBoundary,
+  upload.array('audio'),
+  (req, res) => {
+    try {
+      const files = req.files as Express.Multer.File[];
 
-    // Handle case where no files were uploaded (files is undefined/null)
-    if (!files) {
+      // Handle case where no files were uploaded (files is undefined/null)
+      if (!files) {
+        return res
+          .status(HTTP_STATUS.BAD_REQUEST)
+          .json(createApiResponse(false, null, 'No files uploaded'));
+      }
+
+      // Runtime type validation to prevent type confusion attacks
+      if (!Array.isArray(files)) {
+        return res
+          .status(HTTP_STATUS.BAD_REQUEST)
+          .json(createApiResponse(false, null, 'Invalid file upload format'));
+      }
+
+      if (files.length === 0) {
+        return res
+          .status(HTTP_STATUS.BAD_REQUEST)
+          .json(createApiResponse(false, null, 'No files uploaded'));
+      }
+
+      // Process uploaded files
+      const uploadResults = files.map(file => ({
+        filename: file.filename,
+        originalName: file.originalname,
+        size: file.size,
+        sizeFormatted: formatFileSize(file.size),
+        mimetype: file.mimetype,
+        path: file.path,
+      }));
+
+      const response: ApiResponse = createApiResponse(
+        true,
+        {
+          uploadId: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          files: uploadResults,
+          totalFiles: files.length,
+          totalSize: files.reduce((acc, file) => acc + file.size, 0),
+        },
+        SUCCESS_MESSAGES.UPLOAD_SUCCESS
+      );
+
+      return res.status(HTTP_STATUS.CREATED).json(response);
+    } catch (error) {
+      console.error('Upload error:', error);
       return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json(createApiResponse(false, null, 'No files uploaded'));
+        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json(createApiResponse(false, null, ERROR_MESSAGES.UPLOAD_FAILED));
     }
-
-    // Runtime type validation to prevent type confusion attacks
-    if (!Array.isArray(files)) {
-      return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json(createApiResponse(false, null, 'Invalid file upload format'));
-    }
-
-    if (files.length === 0) {
-      return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json(createApiResponse(false, null, 'No files uploaded'));
-    }
-
-    // Process uploaded files
-    const uploadResults = files.map(file => ({
-      filename: file.filename,
-      originalName: file.originalname,
-      size: file.size,
-      sizeFormatted: formatFileSize(file.size),
-      mimetype: file.mimetype,
-      path: file.path,
-    }));
-
-    const response: ApiResponse = createApiResponse(
-      true,
-      {
-        uploadId: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        files: uploadResults,
-        totalFiles: files.length,
-        totalSize: files.reduce((acc, file) => acc + file.size, 0),
-      },
-      SUCCESS_MESSAGES.UPLOAD_SUCCESS
-    );
-
-    return res.status(HTTP_STATUS.CREATED).json(response);
-  } catch (error) {
-    console.error('Upload error:', error);
-    return res
-      .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      .json(createApiResponse(false, null, ERROR_MESSAGES.UPLOAD_FAILED));
   }
-});
+);
 
 // Processing status endpoint
 app.get(API_ENDPOINTS.STATUS + '/:uploadId', (req, res) => {
@@ -225,7 +268,13 @@ app.use(
     ) {
       return res
         .status(HTTP_STATUS.BAD_REQUEST)
-        .json(createApiResponse(false, null, 'No files uploaded'));
+        .json(
+          createApiResponse(
+            false,
+            null,
+            ERROR_MESSAGES.MISSING_MULTIPART_BOUNDARY
+          )
+        );
     }
 
     return res

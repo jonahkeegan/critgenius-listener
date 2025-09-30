@@ -162,7 +162,7 @@
     - [x] 2.5.8 Update memory bank with implementation patterns and lessons learned
     - [x] 2.5.9 Create configuration examples and documentation for development setup
     - [x] 2.5.10 Verify integration with existing Material-UI components and theme system
-- [ ] 2.6 Configure Socket.IO for real-time communication with connection resilience and
+- [x] 2.6 Configure Socket.IO for real-time communication with connection resilience and
       reconnection logic
   - [x] 2.6.1 Install and configure Socket.IO dependencies for both server and client packages
   - [x] 2.6.2 Implement basic Socket.IO server configuration with Express integration
@@ -194,13 +194,13 @@
           packages (client/server/shared) to use centralized environment management, configure
           build processes to handle environment-specific builds, and ensure compatibility with
           existing TypeScript and testing infrastructure
-  - [ ] 2.8 Create development scripts for linting, formatting, and pre-commit hooks using Husky
+  - [x] 2.8 Create development scripts for linting, formatting, and pre-commit hooks using Husky
       - [x] 2.8.1 Install Husky and lint-staged for pre-commit automation - Husky & lint-staged integrated at root with pre-commit (ESLint + Prettier) and commit-msg (Conventional Commits) hooks, documentation added (`docs/pre-commit-workflow.md`), and completion report created.
     - [x] 2.8.2 Configure ESLint scripts for code quality enforcement - Set up comprehensive ESLint scripts in package.json for all packages, configure ESLint rules for TypeScript, React, and accessibility compliance, and create workspace-level linting scripts that work across client/server/shared packages
       - [x] 2.8.3 Configure Prettier scripts for code formatting consistency - Added root scripts (format, format:write, format:check, format:packages, format:client/server/shared, format:staged, format:ci) plus package-level format & format:check in client/server/shared; performed initial repo normalization; removed deprecated option from Prettier config.
     - [x] 2.8.4 Integrate pre-commit hooks with comprehensive quality checks - Configure Husky pre-commit hooks to run ESLint, Prettier, and TypeScript compilation, set up lint-staged configuration to run appropriate tools on staged files, and integrate with existing TypeScript configuration for compilation checks
       - [x] 2.8.5 Validate development workflow and create documentation - Implemented simulation + validation + benchmarking scripts (`precommit:simulate`, `precommit:validate`, `precommit:benchmark`), added infrastructure test (`tests/infrastructure/precommit-workflow.test.ts`), authored comprehensive docs (`docs/development-workflow.md`, `docs/developer-onboarding.md` with sequence + flow diagrams, troubleshooting matrix, validation checklist). All quality gates (lint, type-check, tests) passing.
-  - [ ] 2.9 Configure hot-reload development server with proxy settings for API integration
+  - [x] 2.9 Configure hot-reload development server with proxy settings for API integration
       - [x] 2.9.1 Configure Vite development server with hot-reload and build optimization - Set up Vite dev server configuration with hot module replacement (HMR), configure build optimizations and source map generation for debugging, integrate with existing TypeScript and React setup from monorepo structure
     - [x] 2.9.2 Implement comprehensive API proxy configuration for development integration - Configure proxy settings for AssemblyAI API endpoints to handle CORS and development authentication, set up proxy routing for internal server API endpoints (Socket.IO, transcription services), implement environment-based proxy configuration using existing environment management system
       - [x] 2.9.3 Set up concurrent development orchestration for client-server coordination - Added `scripts/dev-orchestration.mjs` with sequenced server→client startup, health polling, optional monitoring & auto-restart, new scripts (`dev:coordinated`, `dev:coordinated:watch`), documentation section, guarded smoke test.
@@ -222,7 +222,7 @@
                   - scripts/generate-proxy-env-example.mjs → updates `.env.example`
             - Reference: `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md` for background and usage notes
     - [x] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
-    - [ ] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
+    - [x] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
     - [ ] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
 
 - [ ] 3.0 Testing Infrastructure and Quality Assurance Framework

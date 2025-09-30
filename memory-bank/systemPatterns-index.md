@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-09-28 | Index Version: 1.6.0 | Status: Active
+Last Updated: 2025-09-29 | Index Version: 1.7.0 | Status: Active
 
 ## Segment Registry
 
@@ -34,6 +34,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Audio Capture Configuration (Feature Flags + Retry)        | 003     |
 | Structured Audio Diagnostics & Error Codes                 | 003     |
 | Scalability & Deployment                                   | 003     |
+| HTTPS Socket.IO TLS Resilience                             | 003     |
 
 ## Maintenance Protocol
 
@@ -50,6 +51,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-09-29: Added HTTPS Socket.IO TLS resilience pattern (Task 2.10.5) to segment 003
 - 2025-09-28: Added Structured Audio Diagnostics pattern (Task 2.10.4.2) to segment 003
 - 2025-09-28: Added Audio Capture Configuration pattern (Task 2.10.3) to segment 003
 - 2025-09-25: Added Env Template Drift Guard & Deterministic Loader Precedence pattern (Task 2.10.3)

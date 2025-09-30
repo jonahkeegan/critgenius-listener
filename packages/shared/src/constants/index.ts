@@ -78,6 +78,7 @@ export const ERROR_MESSAGES = {
   SERVER_ERROR: 'Internal server error',
   NOT_FOUND: 'Resource not found',
   UNAUTHORIZED: 'Unauthorized access',
+  MISSING_MULTIPART_BOUNDARY: 'Missing multipart boundary',
 } as const;
 
 /**

@@ -4,12 +4,23 @@
  */
 
 import { io, Socket } from 'socket.io-client';
+import type { ManagerOptions, SocketOptions } from 'socket.io-client';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
   SocketConnectionState,
+  SocketConnectionError,
+  SocketResilienceErrorCode,
 } from '../types/socket';
 import { clientEnv } from '../config/environment';
+
+type NodeHttpsModule = typeof import('node:https');
+
+const nodeHttpsModulePromise: Promise<NodeHttpsModule> | null =
+  typeof window === 'undefined'
+    ? import(/* @vite-ignore */ 'node:https')
+    : null;
+// This eager promise avoids repeated dynamic imports when the service reconnects in Node.
 
 type QueueItem<
   K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
@@ -60,12 +71,7 @@ class SocketService {
   };
   private reconnectionAttempts = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-
-  private getListeners<K extends keyof ServerToClientEvents>(
-    event: K
-  ): Array<NonNullable<ServerToClientEvents[K]>> {
-    return this.listeners[event] as Array<NonNullable<ServerToClientEvents[K]>>;
-  }
+  private pendingReconnectDelay: number | null = null;
 
   private constructor() {}
 
@@ -76,30 +82,85 @@ class SocketService {
     return SocketService.instance;
   }
 
+  private getListeners<K extends keyof ServerToClientEvents>(
+    event: K
+  ): Array<NonNullable<ServerToClientEvents[K]>> {
+    return this.listeners[event] as Array<NonNullable<ServerToClientEvents[K]>>;
+  }
+
   public connect(): void {
     if (this.socket?.connected) return;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.pendingReconnectDelay = null;
     this.connectionState.isConnecting = true;
     this.emitStateChange();
     const url = clientEnv.CLIENT_SOCKET_URL || 'http://localhost:3001';
-    this.socket = io(url, {
-      transports: ['websocket', 'polling'],
+    const isHttps = url.startsWith('https://');
+    const isNodeRuntime =
+      typeof process !== 'undefined' &&
+      typeof process.versions === 'object' &&
+      typeof process.versions.node === 'string';
+    const transports: ManagerOptions['transports'] =
+      isNodeRuntime && isHttps ? ['websocket'] : ['websocket', 'polling'];
+    const socketOptions: Partial<ManagerOptions & SocketOptions> = {
+      transports,
       upgrade: true,
       rememberUpgrade: true,
       reconnection: false,
       timeout: 20000,
       withCredentials: true,
-    });
+      ...(isHttps ? { secure: true } : {}),
+    };
+    if (isNodeRuntime && isHttps) {
+      const initializeWithAgent = (httpsModule: NodeHttpsModule): void => {
+        if (httpsModule.globalAgent.options.rejectUnauthorized !== true) {
+          httpsModule.globalAgent.options.rejectUnauthorized = true;
+        }
+        this.establishSocketConnection(url, socketOptions);
+      };
+
+      if (nodeHttpsModulePromise) {
+        nodeHttpsModulePromise
+          .then(module => initializeWithAgent(module))
+          .catch(error => {
+            console.error('Failed to load HTTPS module for Socket.IO:', error);
+            this.establishSocketConnection(url, socketOptions);
+          });
+        return;
+      }
+    }
+
+    this.establishSocketConnection(url, socketOptions);
+  }
+
+  private establishSocketConnection(
+    url: string,
+    options: Partial<ManagerOptions & SocketOptions>
+  ): void {
+    this.socket = io(url, options);
     this.setupEventListeners();
   }
 
   public disconnect(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.pendingReconnectDelay = null;
+    this.reconnectionAttempts = 0;
+
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      this.connectionState.isConnected = false;
-      this.connectionState.isConnecting = false;
-      this.emitStateChange();
     }
+
+    this.connectionState.isConnected = false;
+    this.connectionState.isConnecting = false;
+    this.connectionState.error = null;
+    this.emitStateChange();
   }
 
   private setupEventListeners(): void {
@@ -109,27 +170,35 @@ class SocketService {
       this.connectionState.isConnected = true;
       this.connectionState.isConnecting = false;
       this.connectionState.error = null;
-      this.emitStateChange();
-      this.emitToInternalListeners('connectionStatus', 'connected');
-      this.reconnectionAttempts = 0;
-      this.flushQueue();
+      this.pendingReconnectDelay = null;
       if (this.reconnectTimer) {
         clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
       }
+      this.reconnectionAttempts = 0;
+      this.emitStateChange();
+      this.flushQueue();
     });
     this.socket.on('disconnect', () => {
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
       this.emitStateChange();
-      this.emitToInternalListeners('connectionStatus', 'disconnected');
       void this.checkNetworkStatus();
-      this.scheduleReconnect();
+      const delay = this.scheduleReconnect();
+      if (delay === null) {
+        this.connectionState.isConnecting = false;
+        this.emitStateChange();
+      }
     });
     this.socket.on('connect_error', error => {
       this.connectionState.isConnected = false;
       this.connectionState.isConnecting = false;
-      this.connectionState.error = error.message;
+      const preferredDelay = this.computeReconnectDelay();
+      const retryDelay = this.scheduleReconnect(preferredDelay);
+      this.connectionState.error = this.mapConnectionError(
+        error,
+        retryDelay ?? undefined
+      );
       this.emitStateChange();
     });
 
@@ -263,18 +332,116 @@ class SocketService {
     if (!this.socket) return;
     this.socket.emit(item.event, ...item.args);
   }
-  private scheduleReconnect(): void {
+  private computeReconnectDelay(): number {
+    const base = Math.max(this.resilienceConfig.initialReconnectionDelay, 0);
+    const jitter = Math.max(this.resilienceConfig.reconnectionDelayJitter, 0);
+    if (!jitter) {
+      return base;
+    }
+    return base + Math.floor(Math.random() * jitter);
+  }
+
+  private mapConnectionError(
+    error: unknown,
+    retryInMs?: number | null
+  ): SocketConnectionError {
+    const fallback = 'Unknown socket connection error';
+    const baseMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'string'
+          ? error
+          : fallback;
+    const description =
+      error && typeof error === 'object' && 'description' in error
+        ? (error as { description?: unknown }).description
+        : undefined;
+    const descriptionMessage =
+      typeof description === 'string'
+        ? description
+        : description &&
+            typeof description === 'object' &&
+            'message' in description &&
+            typeof (description as { message?: unknown }).message === 'string'
+          ? String((description as { message?: unknown }).message)
+          : undefined;
+    const message = descriptionMessage
+      ? `${baseMessage}: ${descriptionMessage}`
+      : baseMessage;
+    const normalized = message.toLowerCase();
+    let code: SocketResilienceErrorCode = 'UNKNOWN_ERROR';
+    if (
+      normalized.includes('self signed certificate') ||
+      normalized.includes('unable to verify') ||
+      normalized.includes('certificate') ||
+      normalized.includes('tls')
+    ) {
+      code = 'TLS_HANDSHAKE_FAILED';
+    } else if (normalized.includes('timeout')) {
+      code = 'CONNECTION_TIMEOUT';
+    } else if (
+      normalized.includes('econnrefused') ||
+      normalized.includes('connection refused')
+    ) {
+      code = 'CONNECTION_REFUSED';
+    } else if (!this.extendedState.networkStatus.isOnline) {
+      code = 'NETWORK_OFFLINE';
+    }
+
+    const retryDelay =
+      typeof retryInMs === 'number' && retryInMs >= 0 ? retryInMs : undefined;
+
+    return {
+      code,
+      message,
+      timestamp: Date.now(),
+      ...(retryDelay !== undefined ? { retryInMs: retryDelay } : {}),
+    };
+  }
+
+  private scheduleReconnect(preferredDelay?: number): number | null {
+    if (this.connectionState.isConnected) {
+      return null;
+    }
+
+    if (this.reconnectTimer) {
+      return this.pendingReconnectDelay;
+    }
+
     if (
       this.reconnectionAttempts >= this.resilienceConfig.maxReconnectionAttempts
-    )
-      return;
-    const base = this.resilienceConfig.initialReconnectionDelay;
-    const jitter = this.resilienceConfig.reconnectionDelayJitter;
-    const delay = base + (jitter ? Math.floor(Math.random() * jitter) : 0);
+    ) {
+      return null;
+    }
+
+    const delay =
+      typeof preferredDelay === 'number' && preferredDelay >= 0
+        ? preferredDelay
+        : this.computeReconnectDelay();
+
     this.reconnectionAttempts += 1;
+    this.pendingReconnectDelay = delay;
+    this.connectionState.isConnecting = true;
+    this.emitStateChange();
+
     this.reconnectTimer = setTimeout(() => {
-      this.connect();
+      this.reconnectTimer = null;
+      this.pendingReconnectDelay = null;
+
+      if (!this.socket) {
+        this.connect();
+        return;
+      }
+
+      try {
+        this.socket.connect();
+      } catch {
+        this.connectionState.isConnecting = false;
+        this.scheduleReconnect();
+      }
     }, delay);
+
+    return delay;
   }
 }
 

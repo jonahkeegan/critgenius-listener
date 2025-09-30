@@ -12,6 +12,7 @@ const { mockSocket, mockIo } = vi.hoisted(() => {
     off: vi.fn(),
     emit: vi.fn(),
     disconnect: vi.fn(),
+    connect: vi.fn(),
     // support chaining used by .timeout(...).emit(...)
     timeout: vi.fn().mockReturnThis(),
     connected: false,
@@ -55,6 +56,8 @@ describe('SocketService', () => {
 
   afterEach(() => {
     vi.clearAllTimers();
+    vi.useRealTimers();
+    mockNavigator.onLine = true;
     socketService.disconnect();
   });
 
@@ -91,8 +94,34 @@ describe('SocketService', () => {
       // Fast-forward time to trigger reconnection
       vi.advanceTimersByTime(500);
 
-      // Should attempt to reconnect
-      expect(mockIo).toHaveBeenCalledTimes(2);
+      // Should attempt to reconnect via underlying socket
+      expect(mockIo).toHaveBeenCalledTimes(1);
+      expect(mockSocket.connect).toHaveBeenCalledTimes(1);
+    });
+
+    it('maps TLS handshake failure to structured error and schedules retry', () => {
+      vi.useFakeTimers();
+      socketService.updateResilienceConfig({
+        initialReconnectionDelay: 300,
+        reconnectionDelayJitter: 0,
+        maxReconnectionAttempts: 2,
+      });
+
+      socketService.connect();
+
+      const connectErrorCallback = mockSocket.on.mock.calls.find(
+        (call: any) => call[0] === 'connect_error'
+      )?.[1];
+      expect(typeof connectErrorCallback).toBe('function');
+
+      connectErrorCallback?.(new Error('self signed certificate'));
+
+      const state = socketService.getConnectionState();
+      expect(state.error?.code).toBe('TLS_HANDSHAKE_FAILED');
+      expect(state.error?.retryInMs).toBe(300);
+
+      vi.advanceTimersByTime(300);
+      expect(mockSocket.connect).toHaveBeenCalledTimes(1);
     });
 
     it('should queue messages when disconnected', () => {
