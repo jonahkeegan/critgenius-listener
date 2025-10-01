@@ -1,9 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'fs';
-import path from 'path';
-import os from 'os';
-import net from 'net';
-import { envReloadPlugin } from '../../dev/envReloadPlugin';
+import { mkdtempSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import net from 'node:net';
+
+import { envReloadPlugin } from '../../src/dev/envReloadPlugin';
 
 /**
  * Integration test: spin up a real Vite dev server with envReloadPlugin and
@@ -20,12 +21,11 @@ describeMaybe('integration: envReloadPlugin full reload on .env change', () => {
   let browser: any;
   let page: any;
   let port: number;
-  const navigations: number[] = []; // timestamps
+  const navigations: number[] = [];
   const logs: string[] = [];
 
   beforeAll(async () => {
     tmpDir = mkdtempSync(path.join(os.tmpdir(), 'env-reload-it-'));
-    // minimal project structure
     writeFileSync(
       path.join(tmpDir, 'index.html'),
       '<!doctype html><html><head><title>IT</title></head><body><div id="app"></div><script type="module" src="/src/main.ts"></script></body></html>'
@@ -40,7 +40,7 @@ describeMaybe('integration: envReloadPlugin full reload on .env change', () => {
 
     port = await allocatePort();
 
-  const customLogger = {
+    const customLogger = {
       info(msg: string) {
         logs.push(msg);
       },
@@ -52,31 +52,31 @@ describeMaybe('integration: envReloadPlugin full reload on .env change', () => {
       },
       clearScreen: false,
       hasWarned: false,
-    } as any;
+    } as const;
 
-  const { default: react } = await import('@vitejs/plugin-react');
-  const { createServer } = await import('vite');
-  const { chromium } = await import('playwright');
+    const { default: react } = await import('@vitejs/plugin-react');
+    const { createServer } = await import('vite');
+    const { chromium } = await import('playwright');
 
-  const config: any = {
+    const config: Record<string, unknown> = {
       root: tmpDir,
       logLevel: 'silent',
       server: { port, strictPort: true },
       customLogger,
       plugins: [react(), envReloadPlugin({ rootDir: tmpDir })],
     };
+
     server = await createServer(config);
     await server.listen();
 
-  browser = await chromium.launch();
+    browser = await chromium.launch();
     page = await browser.newPage();
-  page.on('framenavigated', (f: any) => {
-      if (f === page.mainFrame()) navigations.push(Date.now());
+    page.on('framenavigated', (frame: any) => {
+      if (frame === page.mainFrame()) navigations.push(Date.now());
     });
     await page.goto(`http://localhost:${port}`);
-    // initial navigation recorded after goto resolves
     navigations.push(Date.now());
-  }, 15000);
+  }, 15_000);
 
   afterAll(async () => {
     await page?.close();
@@ -87,23 +87,22 @@ describeMaybe('integration: envReloadPlugin full reload on .env change', () => {
 
   it('triggers exactly one full reload within 2s after .env change', async () => {
     const start = Date.now();
-    // mutate .env
     writeFileSync(path.join(tmpDir, '.env'), 'VITE_FOO=bar\nVITE_BAR=baz');
 
-    // Wait for a second navigation (full reload) distinct from the initial one.
     let observed = false;
     while (Date.now() - start < 2000) {
       if (navigations.length >= 2) {
         observed = true;
         break;
       }
-      await new Promise(r => setTimeout(r, 50));
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
 
     expect(observed).toBe(true);
-    expect(navigations.length).toBe(2); // exactly one reload
-    // soft verify log emitted (do not fail if missing due to customLogger wrapping)
-    const logHit = logs.some(l => l.includes('[env-reload] full-reload'));
+    expect(navigations.length).toBe(2);
+    const logHit = logs.some(entry =>
+      entry.includes('[env-reload] full-reload')
+    );
     if (!logHit) {
       console.warn(
         '[integration] Expected env-reload log not observed; collected logs:',

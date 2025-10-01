@@ -83,6 +83,18 @@ When changing shared types used by server/client:
 3. Run targeted tests: `pnpm --filter @critgenius/shared test` etc.
 4. Ensure no downstream breakage before commit.
 
+## HTTPS Maintenance Routine
+
+To keep secure-context workflows healthy during development:
+
+1. Run `pnpm certs:check` weekly (add a personal reminder).
+2. Regenerate certificates with `pnpm certs:setup` when warned (<30 days) or after OS trust changes.
+3. Review `docs/https-development-setup.md` §8 for rotation details and
+   `docs/https-troubleshooting-guide.md` for symptom-driven resolutions.
+4. Re-run HTTPS integration tests
+   (`RUN_CLIENT_IT=true pnpm --filter @critgenius/client test -- --runTestsByPath ...https-socket.integration.test.ts`)
+   after certificate changes.
+
 ## Tooling Reference
 
 | Script                  | Purpose                                                                  |

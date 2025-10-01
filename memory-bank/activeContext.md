@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-29 **Version:** 2.27.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-09-30 **Version:** 2.28.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -84,7 +84,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-29 – HTTPS Socket.IO Verification)
+### Latest Updates (2025-09-30 – Vitest Configuration Standardization)
+
+- VITEST CONFIGURATION STANDARDIZATION: Shared Testing Infrastructure Hardening (Task 3.1.1)
+  - Added `loadConfig` helper to infrastructure suite so each `vitest.config.ts` is bundled via `bundleConfigFile` before assertions run, eliminating drift from compiled JavaScript leftovers.
+  - Removed the shebang from `scripts/validate-testing-standards.mjs` and exported the validator in a way that supports both CLI execution and Vitest imports, preventing duplicate entry points.
+  - Adjusted shared coverage typing and metadata writes in `vitest.shared.config.ts` to match Vitest 3 expectations while preserving coverage thresholds and CSS transformer compatibility under strict TypeScript rules.
+  - Outcomes: Infrastructure tests, validator script, and workspace type-check now validate the same TypeScript configuration surface; zero `any` escapes introduced; verification commands (`pnpm vitest run tests/infrastructure`, `pnpm validate:testing`, `pnpm -w type-check`) all pass post-refactor.
+  - Follow-Ups: Sweep legacy compiled `vitest.config.js` artifacts once downstream tooling stops emitting them; add documentation for the bundling helper and coverage typing nuances to prevent regressions.
+
+### Previous Updates (2025-09-29 – HTTPS Socket.IO Verification)
 
 - TLS RESILIENCE & TEST AUTOMATION: Secure WebSocket Handshake Coverage (Task 2.10.5)
   - Added `CLIENT_SOCKET_DISABLE_TLS_BYPASS` guard in `socketService`, ensuring self-signed cert bypassing remains opt-in while enabling automated TLS failure simulations.

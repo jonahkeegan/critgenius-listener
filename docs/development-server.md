@@ -198,6 +198,9 @@ Deferred items (tracked for incremental hardening):
 
 ### Local HTTPS (New)
 
+Full walkthrough, diagrams, and troubleshooting live in `docs/https-development-setup.md` and
+`docs/https-troubleshooting-guide.md`. Use this section as a quick-start summary.
+
 Secure context is required by some browsers for full microphone API access. Local HTTPS is now
 supported via optional environment variables:
 
@@ -208,7 +211,7 @@ supported via optional environment variables:
 | HTTPS_KEY_PATH  | ./certificates/dev/dev-key.pem  | Private key file (PEM)                 |
 | HTTPS_PORT      | 5174                            | Alternate port used when HTTPS enabled |
 
-Generation script:
+Generation script (see setup guide §3 for flow diagrams):
 
 ```bash
 pnpm certs:setup            # mkcert preferred, falls back to openssl
@@ -216,7 +219,7 @@ pnpm certs:setup:force      # Regenerate even if existing
 pnpm certs:check            # Warn if <30 days until expiration
 ```
 
-Enable in `.env`:
+Enable in `.env` (see setup guide §4 for validation workflow):
 
 ```bash
 HTTPS_ENABLED=true
@@ -225,7 +228,9 @@ HTTPS_KEY_PATH=./certificates/dev/dev-key.pem
 ```
 
 If cert files are missing or unreadable, Vite silently falls back to HTTP with a console warning.
-Certificates are git‑ignored (`certificates/`) and safe to regenerate at any time.
+Certificates are git‑ignored (`certificates/`) and safe to regenerate at any time. Consult the
+troubleshooting guide §2–5 for detailed resolution flows (certificate trust, port conflicts,
+Socket.IO TLS failures).
 
 ### HTTPS Verification Workflow
 

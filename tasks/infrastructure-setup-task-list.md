@@ -223,10 +223,15 @@
             - Reference: `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md` for background and usage notes
     - [x] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
     - [x] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
-    - [ ] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
+    - [x] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
 
 - [ ] 3.0 Testing Infrastructure and Quality Assurance Framework
-  - [ ] 3.1 Configure Jest testing framework with React Testing Library and TypeScript support
+  - [ ] 3.1 Enhanced Testing Infrastructure Foundation (Vitest/React Testing Library/TypeScript)
+    - [ ] 3.1.1 Standardize Vitest Configurations and Test Organization Patterns Across Client/Server/Shared Packages - Establish consistent Vitest configurations, test file naming conventions, directory structures, and environment setup/teardown patterns to ensure uniform testing practices across the monorepo
+    - [ ] 3.1.2 Create Shared Test Utilities Library with Helpers, Factories, Fixtures, and Async/Error Testing Patterns - Build a comprehensive @critgenius/test-utils package containing reusable test helpers, data factories, fixture management, WebSocket/async operation utilities, and circuit breaker/error scenario testing patterns
+    - [ ] 3.1.3 Implement Performance Testing Infrastructure with Latency Benchmarking and Regression Detection - Establish performance testing framework with sub-500ms latency assertions, baseline benchmarking, regression detection mechanisms, and integration with the engineering guide's real-time processing requirements
+    - [ ] 3.1.4 Establish Integration Test Patterns for Cross-Package Workflows and Real-Time Communication - Define standards for testing workflows that span multiple packages (client ↔ server ↔ shared), including Socket.IO interactions, AssemblyAI integration flows, and environment-aware test execution
+    - [ ] 3.1.5 Document Comprehensive Testing Standards, Patterns, and Best Practices Guide - Create thorough documentation capturing all testing patterns, utility usage examples, performance benchmarking procedures, and integration testing standards for current and future developers
   - [ ] 3.2 Set up test coverage reporting with minimum 90% coverage requirements and HTML reports
   - [ ] 3.3 Configure ESLint with TypeScript, React, and accessibility rules
         (eslint-plugin-jsx-a11y)

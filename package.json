@@ -55,6 +55,7 @@
     "precommit:benchmark": "node scripts/precommit-benchmark.mjs",
     "validate:filenames": "node scripts/filename-validator.mjs",
     "validate:filenames:fix": "node scripts/filename-validator.mjs --fix",
+    "validate:testing": "node scripts/validate-testing-standards.mjs",
     "certs:setup": "node scripts/setup-https-certs.mjs",
     "certs:setup:force": "node scripts/setup-https-certs.mjs --force",
     "certs:check": "node scripts/check-cert-expiration.mjs",

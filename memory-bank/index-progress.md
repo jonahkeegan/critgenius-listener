@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-09-29  
-**Version:** 1.19.0  
+**Last Updated:** 2025-09-30  
+**Version:** 1.20.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-004.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~70  
-**Last Updated:** 2025-09-29
+**Current Row Count:** ~85  
+**Last Updated:** 2025-09-30
 
 ## File Registry
 
@@ -41,9 +41,9 @@
 ### progress-004.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~70
+- **Row Count:** ~85
 - **Date Range:** 2025-09-28 21:01 PST to Present
-- **Primary Topics:** HTTPS Socket.IO verification, TLS resilience testing, upcoming AssemblyAI integration coverage
+- **Primary Topics:** HTTPS Socket.IO verification, TLS resilience testing, Vitest configuration standardization, upcoming AssemblyAI integration coverage
 - **Description:** New progress segment continuation from progress-003 with carried forward tasks; now tracking secure realtime verification milestones
 
 ## Maintenance Protocol
@@ -56,6 +56,7 @@
 
 - 2025-09-28: Incremented from progress-003 to progress-004; archived previous segment at 315 lines
 - 2025-09-29: Completed Task 2.10.5 (HTTPS Socket.IO Verification): added TLS bypass toggle, node-environment integration suites for secure handshake and resilience, documentation/reporting updates
+- 2025-09-30: Completed Task 3.1.1 (Vitest Configuration Standardization): infrastructure tests now bundle TS configs on demand, validator script importable from Vitest, shared coverage typing aligned with Vitest 3; progress log updated
 - 2025-09-28: Completed Task 2.10.4.2 (Audio Diagnostics & Error-Code Separation): introduced structured telemetry schema + reporter, error code taxonomy decoupled from UI strings, controller + UI wiring updates, expanded tests, documentation + reflections captured
 - 2025-09-28: Completed Task 2.10.3 (Unified Audio Capture Configuration): added configuration builder with feature flags and retry policy, refactored controller dependencies, updated unit tests for latency disablement and retry flow, documented outcomes and reflections
 - 2025-09-25: Completed Task 2.10.3 (Env Template Generation & Deterministic Loader Precedence): added schema-driven `.env.example` + per-env override generators with `--check` drift guard, deterministic non‑mutative dotenv precedence loader (base → env-specific → process.env) with dev flag coercion, conditional pre-commit drift validation block, docs & task report; all quality gates green

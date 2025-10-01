@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-09-29 | Segment Version: 1.4.0
+Last Updated: 2025-09-30 | Segment Version: 1.6.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -49,6 +49,21 @@ Parent Index: `systemPatterns-index.md`
 - Validation: Vitest suites assert schema conformance, reporter output, retry metadata emission, and
   localized messaging coverage via `structuredEvents.test.ts` and `audioMessageMapper.test.ts`.
 
+### Testing Infrastructure Pattern: Vitest Configuration Standardization (Task 3.1.1)
+
+- Pattern: Execute canonical TypeScript Vitest configs inside infrastructure tests while sharing a
+  single validator entry point across CLI and test environments.
+- Implementation: Infrastructure suite bundles each `vitest.config.ts` via `bundleConfigFile` before
+  evaluation, the testing standards validator sheds its shebang so it can be imported by Vitest, and
+  shared coverage typing is relaxed to match Vitest 3 while metadata writes flow through a typed
+  record.
+- Benefits: Eliminates stale compiled config drift, ensures validator parity between CLI and tests,
+  and keeps strict TypeScript checks green without `any` escapes while preserving coverage and CSS
+  transformer guarantees.
+- Validation: `pnpm vitest run tests/infrastructure`, `pnpm validate:testing`, and
+  `pnpm -w type-check` all pass under the new configuration pipeline; memoized bundling keeps suite
+  performance stable.
+
 ## Data Flow Patterns
 
 ```
@@ -87,9 +102,17 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
    - Node-environment integration suites assert secure handshake success, structured TLS failure
      errors, and automatic recovery behavior; shared test setup guards browser-only globals for
      stability.
-6. Privacy compliance (local processing options)
-7. Secure API key management (no logging)
-8. Client input validation & XSS protection
+6. HTTPS Documentation & Troubleshooting Playbook (Task 2.10.6)
+   - Dual-document strategy (`docs/https-development-setup.md`,
+     `docs/https-troubleshooting-guide.md`) codifies secure-context workflows with sequence
+     diagrams, integration validation, and maintenance cadence.
+   - Troubleshooting guide delivers scenario-driven diagnostics (certificate errors, port conflicts,
+     browser warnings, runtime TLS failures) with explicit sequence diagrams for fast resolution.
+   - Setup guide standardizes mkcert/OpenSSL provisioning, environment wiring, Socket.IO WSS checks,
+     and certificate rotation, reducing onboarding friction.
+7. Privacy compliance (local processing options)
+8. Secure API key management (no logging)
+9. Client input validation & XSS protection
 
 ### Infrastructure Pattern: Centralized Proxy Registry (Task 2.10.2-2)
 
@@ -176,6 +199,9 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-09-29: Documented HTTPS setup & troubleshooting playbook (Task 2.10.6); version bump 1.5.0
+- 2025-09-30: Added Vitest configuration standardization testing pattern (Task 3.1.1); version bump
+  1.6.0
 - 2025-09-29: Added HTTPS Socket.IO TLS resilience pattern (Task 2.10.5); version bump 1.4.0
 - 2025-09-28: Added Structured Audio Diagnostics pattern (Task 2.10.4.2); version bump 1.3.0
 - 2025-09-28: Added Audio Capture Configuration pattern (Task 2.10.3); version bump 1.2.0

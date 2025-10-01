@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const clientRoot = path.resolve(currentDir, '..');
+const clientRoot = path.resolve(currentDir, '../..');
 
 let httpsServer: https.Server | undefined;
 let httpsPort: number;
