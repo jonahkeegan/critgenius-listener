@@ -143,7 +143,7 @@ function stripJsonComments(input: string): string {
       continue;
     }
 
-    if (char === '"' && input[i - 1] !== '\\') {
+    if (char === '"' && (i === 0 || input[i - 1] !== '\\')) {
       insideString = !insideString;
     }
 
