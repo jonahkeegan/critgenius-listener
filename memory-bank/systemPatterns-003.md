@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-09-30 | Segment Version: 1.6.0
+Last Updated: 2025-10-02 | Segment Version: 1.8.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -63,6 +63,29 @@ Parent Index: `systemPatterns-index.md`
 - Validation: `pnpm vitest run tests/infrastructure`, `pnpm validate:testing`, and
   `pnpm -w type-check` all pass under the new configuration pipeline; memoized bundling keeps suite
   performance stable.
+
+### Testing Infrastructure Pattern: Unified Vitest Workspace Execution (Task 3.1.1.1)
+
+- Pattern: Centralized Vitest workspace orchestrating root infrastructure suites and all package
+  projects with deterministic discovery, resilient runtime guards, and shared CLI ergonomics.
+- Implementation: `vitest.workspace.ts` enumerates package manifests with local `vitest.config.ts`
+  files, injects a root `workspace-infrastructure` project, and sorts project names for stable
+  ordering. Root `vitest.config.ts` narrows include/exclude patterns to infrastructure tests only,
+  while package manifests continue to rely on shared config factories. Root npm scripts now delegate
+  to `vitest --config vitest.workspace.ts`, and coverage aggregation is driven by the CLI flag
+  `--coverage.reportsDirectory=coverage/workspace`.
+- 2025-10-02 Hardening: AssemblyAI realtime mocks were hoisted via `vi.hoisted` with centralized
+  reset helpers to keep workspace runs deterministic; the Playwright microphone E2E suite now
+  ensures `TextEncoder`/`TextDecoder` availability, dynamically loads `esbuild`, and self-skips
+  under Vitest while running fully under the Playwright harness.
+- Benefits: Single `pnpm test` executes every workspace project without per-package script drift,
+  unified reporters keep output coherent, package onboarding requires no script changes, and
+  coverage artifacts consolidate into `coverage/workspace` for downstream tooling. Hoisted mocks
+  prevent runtime failures, and runtime guards keep Node-based runners stable without sacrificing
+  browser coverage.
+- Validation: Infrastructure tests confirm workspace detection, deterministic ordering, and coverage
+  script configuration; `pnpm test`, `pnpm -w lint`, and `pnpm -w type-check` exercise the full
+  suite post-hardening.
 
 ## Data Flow Patterns
 
@@ -199,6 +222,9 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-02: Enhanced Vitest workspace execution pattern with hoisted AssemblyAI mocks and
+  Playwright runtime guard (Task 3.1.1.1); version bump 1.8.0
+- 2025-10-01: Added unified Vitest workspace execution pattern (Task 3.1.1.1); version bump 1.7.0
 - 2025-09-29: Documented HTTPS setup & troubleshooting playbook (Task 2.10.6); version bump 1.5.0
 - 2025-09-30: Added Vitest configuration standardization testing pattern (Task 3.1.1); version bump
   1.6.0

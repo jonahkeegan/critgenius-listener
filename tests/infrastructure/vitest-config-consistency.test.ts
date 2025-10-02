@@ -138,6 +138,14 @@ function normalizePaths(
 }
 
 describe('vitest config consistency', () => {
+  const rootIncludePatterns = defaultVitestIncludePatterns.filter(pattern =>
+    pattern.startsWith('tests/')
+  );
+  const rootExcludePatterns = new Set([
+    ...defaultVitestExcludePatterns,
+    'packages/**',
+  ]);
+
   it('marks every config as using the shared factory', () => {
     for (const testCase of resolvedCases) {
       expect(testCase.resolved[sharedVitestConfigMarkerKey]).toBe(true);
@@ -149,8 +157,13 @@ describe('vitest config consistency', () => {
       const include = new Set(testCase.resolved.test?.include ?? []);
       const exclude = new Set(testCase.resolved.test?.exclude ?? []);
 
-      expect(include).toEqual(new Set(defaultVitestIncludePatterns));
-      expect(exclude).toEqual(new Set(defaultVitestExcludePatterns));
+      if (testCase.name === 'workspace') {
+        expect(include).toEqual(new Set(rootIncludePatterns));
+        expect(exclude).toEqual(rootExcludePatterns);
+      } else {
+        expect(include).toEqual(new Set(defaultVitestIncludePatterns));
+        expect(exclude).toEqual(new Set(defaultVitestExcludePatterns));
+      }
     }
   });
 
