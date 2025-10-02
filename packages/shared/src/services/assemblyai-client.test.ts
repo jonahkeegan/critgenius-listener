@@ -18,7 +18,12 @@ import {
   DEFAULT_ASSEMBLYAI_CONFIG,
 } from '../config/assemblyai.js';
 
-// Hoist AssemblyAI SDK mocks so they are in place before module loading
+// Hoist AssemblyAI SDK mocks so they are in place before the module under test
+// is evaluated. Vitest clears mocks between tests, so keeping the factory at the
+// hoisted scope avoids race conditions where `vi.mock('assemblyai')` would
+// register before the mocked constructors exist. The `reset` helper re-primes
+// the factory implementations after each `vi.clearAllMocks()` call so every test
+// starts from a deterministic baseline without re-hoisting.
 const assemblyAiMocks = vi.hoisted(() => {
   const mockTranscriberConnect = vi.fn<() => Promise<void> | void>();
   const mockTranscriberSendAudio = vi.fn<(data: ArrayBuffer) => unknown>();
