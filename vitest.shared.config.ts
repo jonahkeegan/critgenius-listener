@@ -148,7 +148,9 @@ function stripJsonComments(input: string): string {
       continue;
     }
 
-    if (char === '"' && (i === 0 || input[i - 1] !== '\\')) {
+    const previousChar = i > 0 ? input[i - 1] : undefined;
+
+    if (char === '"' && previousChar !== '\\') {
       insideString = !insideString;
     }
 
