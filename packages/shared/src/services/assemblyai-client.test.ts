@@ -91,6 +91,9 @@ const {
   reset: resetAssemblyAIMocks,
 } = assemblyAiMocks;
 
+const isFunction = (value: unknown): value is (...args: any[]) => void =>
+  typeof value === 'function';
+
 // Mock process.env for configuration
 const originalEnv = process.env;
 
@@ -802,7 +805,7 @@ describe('AssemblyAI Client Implementation', () => {
     });
 
     it('should handle connection close events gracefully', async () => {
-      let closeCallback: ((...args: any[]) => void) | null = null;
+      let closeCallback: ((...args: any[]) => void) | undefined;
 
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'open') {
@@ -821,8 +824,8 @@ describe('AssemblyAI Client Implementation', () => {
       expect(client.getConnectionState()).toBe(ConnectionState.CONNECTED);
 
       // Simulate connection close from server
-      if (typeof closeCallback === 'function') {
-        (closeCallback as (...args: any[]) => void)();
+      if (isFunction(closeCallback)) {
+        closeCallback();
       }
 
       expect(client.getConnectionState()).toBe(ConnectionState.DISCONNECTED);
