@@ -16,9 +16,14 @@ quality gates and privacy principles.
 ```bash
 pnpm install
 pnpm -w lint && pnpm -w type-check && pnpm -w test   # Sanity baseline
+# Optional: pnpm certs:setup                          # Prepare HTTPS dev certs (see docs/https-development-setup.md)
 ```
 
 This installs all workspace deps and activates Husky via the `prepare` script.
+
+For secure-context features (microphone access, Socket.IO WSS), complete the
+`docs/https-development-setup.md` walkthrough after cloning. Troubleshooting resources live in
+`docs/https-troubleshooting-guide.md`.
 
 ## 3. Common Commands
 

@@ -15,14 +15,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Server as SocketIOServer } from 'socket.io';
-import type { ClientRuntimeConfig } from '../../config/environment';
-import type { ServerToClientEvents } from '../../types/socket';
+
+import type { ClientRuntimeConfig } from '../../src/config/environment';
+import type { ServerToClientEvents } from '../../src/types/socket';
 
 const runIntegration = process.env.RUN_CLIENT_IT === 'true';
 const describeMaybe = runIntegration ? describe : describe.skip;
 
 type SocketServiceInstance =
-  typeof import('../../services/socketService').default;
+  typeof import('../../src/services/socketService').default;
 
 describeMaybe('integration:https socket handshake', () => {
   let httpsServer: https.Server;
@@ -41,11 +42,7 @@ describeMaybe('integration:https socket handshake', () => {
     port = await allocatePort();
 
     const currentDir = path.dirname(fileURLToPath(import.meta.url));
-    const fixtureDir = path.resolve(
-      currentDir,
-      '../../..',
-      'tests/fixtures/devcert'
-    );
+    const fixtureDir = path.resolve(currentDir, '../fixtures/devcert');
     const key = fs.readFileSync(path.join(fixtureDir, 'localhost-key.pem'));
     const cert = fs.readFileSync(path.join(fixtureDir, 'localhost.pem'));
     trustedAuthorityCertificate = cert;
@@ -103,8 +100,10 @@ describeMaybe('integration:https socket handshake', () => {
     ).WebSocket;
 
     vi.resetModules();
-    ({ default: socketService } = await import('../../services/socketService'));
-  }, 20000);
+    ({ default: socketService } = await import(
+      '../../src/services/socketService'
+    ));
+  }, 20_000);
 
   afterEach(() => {
     while (teardownListeners.length) {
@@ -201,7 +200,7 @@ describeMaybe('integration:https socket handshake', () => {
     try {
       await waitFor(
         () => socketService.getConnectionState().isConnected,
-        10000
+        10_000
       );
     } catch {
       const state = socketService.getConnectionState();
@@ -224,7 +223,7 @@ describeMaybe('integration:https socket handshake', () => {
 
     socketService.joinSession('secure-session');
 
-    await waitFor(() => updates.length > 0, 5000);
+    await waitFor(() => updates.length > 0, 5_000);
 
     expect(updates[0]).toMatchObject({
       uploadId: 'secure-session',
@@ -232,7 +231,7 @@ describeMaybe('integration:https socket handshake', () => {
     });
 
     expect(statusChanges).toContain('connected');
-  }, 20000);
+  }, 20_000);
 });
 
 async function allocatePort(): Promise<number> {

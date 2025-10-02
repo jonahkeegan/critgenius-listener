@@ -1,14 +1,17 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-09-28 17:30 PST **Version:** 1.5.0 **System Status:** Active
+**Last Updated:** 2025-09-30 18:10 PST **Version:** 1.6.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-006.md` **Status:** Active **Current Row Count:** 309
-**Last Updated:** 2025-09-28
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 52
+**Last Updated:** 2025-09-30 21:43 PST
 
 **Update Log:**
 
+- 2025-09-30 18:10 PST — Consolidated audio capture configuration/diagnostics, HTTPS Socket.IO
+  verification, and Vitest config standardization reflections into `consolidated-learnings-006.md`;
+  row count now 509.
 - 2025-09-28 17:30 PST — Consolidated raw reflections into `consolidated-learnings-006.md`; row
   count now 309.
 
@@ -90,11 +93,10 @@
 
 ### consolidated-learnings-006.md
 
-- **Status:** Active – Orchestration, Dev Server Validation, HTTPS/Proxy Hardening, Secure
-  Microphone Validation
-- **Row Count:** 309
+- **Status:** Completed/Archived
+- **Row Count:** 509
 - **Created:** 2025-09-06 09:30 PST
-- **Last Updated:** 2025-09-28 17:30 PST
+- **Last Updated:** 2025-09-30 21:43 PST
 - **Primary Topics:** Manifest-Driven Orchestration, Restart & Circuit Breaking Strategy, Dev Server
   Reload Architecture, HTTPS Certificate Workflow, Proxy Drift Guard Automation, Dynamic Port
   Discovery, Centralized Proxy Registry, Secure Microphone Validation Harness, Synthetic Media
@@ -104,6 +106,16 @@
   management, restart scheduling, environment interpolation, reload plugin evolution,
   registry-driven HTTPS proxy alignment, and cross-browser microphone guard testing under secure
   contexts.
+
+### consolidated-learnings-007.md
+
+- **Status:** Active - Ready for New Consolidations
+- **Row Count:** 52
+- **Created:** 2025-09-30 21:43 PST
+- **Last Updated:** 2025-09-30 21:43 PST
+- **Primary Topics:** Awaiting first consolidation entries
+- **Description:** New consolidated learnings file ready to receive patterns and insights from raw
+  reflection log consolidation following established Memory Bank protocols
 
 ## Topic Index
 
@@ -183,9 +195,9 @@
 
 ## Pagination Status
 
-- **Total Files:** 6 (1 active, 5 archived)
-- **Active File Capacity:** 258 remaining rows (300 max)
-- **Next File Number:** 007
+- **Total Files:** 7 (1 active, 6 archived)
+- **Active File Capacity:** 248 remaining rows (300 max)
+- **Next File Number:** 008
 
 ## System Notes
 

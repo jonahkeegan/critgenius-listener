@@ -35,12 +35,19 @@ describe('documentation: development-server.md', () => {
 
   it('contains configuration matrix table headers', () => {
     // Accept either full spaced header or simplified compact header
-    expect(md).toMatch(/\| Variable \| Scope \| Required \| Default \| Purpose \|/);
+    expect(md).toMatch(
+      /\| Variable \| Scope \| Required \| Default \| Purpose \|/
+    );
   });
 
   it('contains sequence diagrams blocks', () => {
     const blocks = (md.match(/```sequenceDiagram/g) || []).length;
     expect(blocks).toBeGreaterThanOrEqual(3);
+  });
+
+  it('references HTTPS companion guides', () => {
+    expect(md).toContain('docs/https-development-setup.md');
+    expect(md).toContain('docs/https-troubleshooting-guide.md');
   });
 
   it('does not contain deprecated placeholder text', () => {

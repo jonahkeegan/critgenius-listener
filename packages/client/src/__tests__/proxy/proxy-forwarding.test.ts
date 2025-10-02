@@ -24,6 +24,7 @@ describe('dev proxy mapping purity', () => {
     });
     expect(map['/proxy/assemblyai']).toBeUndefined();
   });
+
   it('includes assembly when enabled', () => {
     const map = buildMappings({
       enabled: true,
