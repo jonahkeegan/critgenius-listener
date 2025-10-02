@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-09-30 | Index Version: 1.9.0 | Status: Active
+Last Updated: 2025-10-02 | Index Version: 1.10.0 | Status: Active
 
 ## Segment Registry
 
@@ -34,6 +34,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Audio Capture Configuration (Feature Flags + Retry)        | 003     |
 | Structured Audio Diagnostics & Error Codes                 | 003     |
 | Vitest Configuration Standardization                       | 003     |
+| Vitest Workspace Hardening & CI Readiness                  | 003     |
 | Scalability & Deployment                                   | 003     |
 | HTTPS Socket.IO TLS Resilience                             | 003     |
 | HTTPS Documentation & Troubleshooting Playbook             | 003     |
@@ -53,6 +54,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-02: Expanded Vitest workspace execution pattern with hoisted mocks + Playwright guard
+  (Task 3.1.1.1)
 - 2025-09-30: Added Vitest configuration standardization pattern (Task 3.1.1) to segment 003
 - 2025-09-29: Added HTTPS documentation & troubleshooting playbook (Task 2.10.6) to segment 003
 - 2025-09-29: Added HTTPS Socket.IO TLS resilience pattern (Task 2.10.5) to segment 003

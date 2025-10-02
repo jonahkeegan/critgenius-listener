@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-09-30 **Version:** 2.28.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-02 **Version:** 2.29.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -84,7 +84,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-09-30 – Vitest Configuration Standardization)
+### Latest Updates (2025-10-02 – Vitest Workspace Hardening & CI Readiness)
+
+- VITEST WORKSPACE HARDENING: Realtime Mock Resilience & Playwright Guard (Task 3.1.1.1)
+  - Hoisted AssemblyAI realtime mocks with `vi.hoisted`, added a deterministic reset helper, and guarded close-event callbacks so workspace aggregation no longer dereferences undefined transcribers.
+  - Introduced `ensureTextEncoding()` polyfill helper plus Playwright runtime detection, allowing the microphone E2E suite to self-skip under Vitest while dynamically importing `esbuild` when the real Playwright runner is active.
+  - Authored `vitest.workspace.ts`, tightened root include/exclude filters, and updated root scripts and infrastructure tests to enforce deterministic project discovery and coverage routing to `coverage/workspace`.
+  - Outcomes: `pnpm test`, `pnpm -w lint`, and `pnpm -w type-check` all pass using the unified workspace entry point; Playwright coverage remains intact while Vitest runs stay stable.
+  - Follow-Ups: Add dedicated Playwright CI job, consider tagging long-running AssemblyAI resilience cases, and refresh developer workflow docs with the new `pnpm test` semantics.
+
+### Previous Updates (2025-09-30 – Vitest Configuration Standardization)
 
 - VITEST CONFIGURATION STANDARDIZATION: Shared Testing Infrastructure Hardening (Task 3.1.1)
   - Added `loadConfig` helper to infrastructure suite so each `vitest.config.ts` is bundled via `bundleConfigFile` before assertions run, eliminating drift from compiled JavaScript leftovers.

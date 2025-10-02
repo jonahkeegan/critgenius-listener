@@ -18,34 +18,73 @@ import {
   DEFAULT_ASSEMBLYAI_CONFIG,
 } from '../config/assemblyai.js';
 
-// Create mock functions that can be accessed globally
-const mockTranscriberConnect = vi.fn();
-const mockTranscriberSendAudio = vi.fn();
-const mockTranscriberClose = vi.fn();
-const mockTranscriberOn = vi.fn();
+// Hoist AssemblyAI SDK mocks so they are in place before module loading
+const assemblyAiMocks = vi.hoisted(() => {
+  const mockTranscriberConnect = vi.fn<() => Promise<void> | void>();
+  const mockTranscriberSendAudio = vi.fn<(data: ArrayBuffer) => unknown>();
+  const mockTranscriberClose = vi.fn<() => Promise<void> | void>();
+  const mockTranscriberOn =
+    vi.fn<(event: string, callback: (...args: any[]) => void) => void>();
 
-const mockTranscriber = {
-  connect: mockTranscriberConnect,
-  sendAudio: mockTranscriberSendAudio,
-  close: mockTranscriberClose,
-  on: mockTranscriberOn,
-};
+  const mockTranscriber = {
+    connect: mockTranscriberConnect,
+    sendAudio: mockTranscriberSendAudio,
+    close: mockTranscriberClose,
+    on: mockTranscriberOn,
+  };
 
-// Mock AssemblyAI SDK
-vi.mock('assemblyai', () => {
+  const transcriberFactory = vi
+    .fn<(options?: Record<string, unknown>) => typeof mockTranscriber>()
+    .mockImplementation(() => mockTranscriber);
+
+  const createAssemblyAIInstance = () => ({
+    realtime: {
+      transcriber: transcriberFactory,
+    },
+  });
+
+  const mockAssemblyAI = vi.fn().mockImplementation(createAssemblyAIInstance);
+
+  const reset = () => {
+    mockTranscriberConnect.mockReset();
+    mockTranscriberSendAudio.mockReset();
+    mockTranscriberClose.mockReset();
+    mockTranscriberOn.mockReset();
+    transcriberFactory.mockReset();
+    transcriberFactory.mockImplementation(() => mockTranscriber);
+    mockAssemblyAI.mockReset();
+    mockAssemblyAI.mockImplementation(createAssemblyAIInstance);
+  };
+
   return {
-    AssemblyAI: vi.fn().mockImplementation(() => ({
-      realtime: {
-        transcriber: vi.fn().mockReturnValue(mockTranscriber),
-      },
-    })),
+    mockAssemblyAI,
+    mockTranscriber,
+    mockTranscriberConnect,
+    mockTranscriberSendAudio,
+    mockTranscriberClose,
+    mockTranscriberOn,
+    transcriberFactory,
+    reset,
+  };
+});
+
+vi.mock('assemblyai', () => {
+  const { mockAssemblyAI } = assemblyAiMocks;
+  return {
+    AssemblyAI: mockAssemblyAI,
     RealtimeTranscriber: vi.fn(),
   };
 });
 
-// Get mock references after importing the module
-import { AssemblyAI } from 'assemblyai';
-const mockAssemblyAI = vi.mocked(AssemblyAI);
+const {
+  mockAssemblyAI,
+  mockTranscriber,
+  mockTranscriberConnect,
+  mockTranscriberSendAudio,
+  mockTranscriberClose,
+  mockTranscriberOn,
+  reset: resetAssemblyAIMocks,
+} = assemblyAiMocks;
 
 // Mock process.env for configuration
 const originalEnv = process.env;
@@ -57,13 +96,8 @@ describe('AssemblyAI Client Implementation', () => {
   };
 
   beforeEach(() => {
-    // Clear call history without removing module mock implementations
     vi.clearAllMocks();
-    // Reset specific transcriber function mocks to remove prior implementations
-    mockTranscriberConnect.mockReset();
-    mockTranscriberSendAudio.mockReset();
-    mockTranscriberClose.mockReset();
-    mockTranscriberOn.mockReset();
+    resetAssemblyAIMocks();
     process.env = {
       ...originalEnv,
       ASSEMBLYAI_API_KEY: validConfig.apiKey,
@@ -763,7 +797,7 @@ describe('AssemblyAI Client Implementation', () => {
     });
 
     it('should handle connection close events gracefully', async () => {
-      let closeCallback: (() => void) | null = null;
+      let closeCallback: ((...args: any[]) => void) | null = null;
 
       mockTranscriberOn.mockImplementation((event, callback) => {
         if (event === 'open') {
@@ -782,8 +816,8 @@ describe('AssemblyAI Client Implementation', () => {
       expect(client.getConnectionState()).toBe(ConnectionState.CONNECTED);
 
       // Simulate connection close from server
-      if (closeCallback) {
-        closeCallback();
+      if (typeof closeCallback === 'function') {
+        (closeCallback as (...args: any[]) => void)();
       }
 
       expect(client.getConnectionState()).toBe(ConnectionState.DISCONNECTED);
