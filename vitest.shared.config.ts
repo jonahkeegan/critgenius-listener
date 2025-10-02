@@ -68,6 +68,11 @@ interface SharedTestOptions {
 
 type SharedUserConfig = UserConfig & { test: SharedTestOptions };
 
+type SharedConfigMetadata = {
+  [SHARED_MARKER_KEY]: true;
+  sourceTsconfig: string;
+};
+
 const DEFAULT_REPORTERS: Reporter[] = ['default', 'verbose'];
 
 type TestConfigOverrides = Partial<SharedTestOptions>;
@@ -143,7 +148,9 @@ function stripJsonComments(input: string): string {
       continue;
     }
 
-    if (char === '"' && input[i - 1] !== '\\') {
+    const previousChar = i > 0 ? input[i - 1] : undefined;
+
+    if (char === '"' && previousChar !== '\\') {
       insideString = !insideString;
     }
 
@@ -378,18 +385,30 @@ export function createVitestConfig(
     }
   }
 
-  const baseConfigRecord = baseConfig as unknown as Record<string, unknown>;
-  baseConfigRecord[SHARED_MARKER_KEY] = true;
-  baseConfigRecord.sourceTsconfig = tsconfigPath;
+  const configWithMetadata = Object.assign(baseConfig, {
+    [SHARED_MARKER_KEY]: true as const,
+    sourceTsconfig: tsconfigPath,
+  } satisfies SharedConfigMetadata);
 
-  return baseConfig;
+  return configWithMetadata;
+}
+
+function hasSharedConfigMetadata(
+  value: unknown
+): value is SharedConfigMetadata {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<SharedConfigMetadata>;
+
+  return candidate[SHARED_MARKER_KEY] === true;
 }
 
 export function assertUsesSharedConfig<T extends UserConfigExport>(
   config: T
 ): T {
-  const marker = (config as Record<string, unknown>)[SHARED_MARKER_KEY];
-  if (marker !== true) {
+  if (!hasSharedConfigMetadata(config)) {
     throw new Error(
       'Vitest configuration must be created via createVitestConfig() from vitest.shared.config.ts.\n' +
         'Ensure that package-level vitest.config.ts files import and invoke assertUsesSharedConfig.'

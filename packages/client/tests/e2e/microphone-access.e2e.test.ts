@@ -4,17 +4,13 @@ import fs from 'node:fs';
 import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 import { ensureTextEncoding } from '../helpers/text-encoding-polyfill';
+import { isPlaywrightRuntime } from '../helpers/playwright-runtime';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const clientRoot = path.resolve(currentDir, '../..');
-const isPlaywrightRuntime =
-  typeof process !== 'undefined' &&
-  (process.env.PLAYWRIGHT_TEST === '1' ||
-    process.env.PLAYWRIGHT_TEST === 'true' ||
-    typeof process.env.PW_TEST_SOURCE !== 'undefined' ||
-    typeof process.env.PLAYWRIGHT_JSON_OUTPUT_NAME !== 'undefined');
+const runningUnderPlaywright = isPlaywrightRuntime();
 
-if (!isPlaywrightRuntime) {
+if (!runningUnderPlaywright) {
   if (process?.env?.VITEST === 'true') {
     console.info(
       '[client:e2e] Skipping Playwright microphone access guard suite under Vitest runtime.'
