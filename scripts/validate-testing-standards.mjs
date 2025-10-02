@@ -67,6 +67,8 @@ function isSpecTestPattern(filePath) {
 }
 
 function ensureRelativeToWorkspace(filePath) {
+  // Defensive coding: some file traversal APIs may yield paths containing null bytes (\u0000).
+  // Only use the segment before the first null byte to avoid unexpected truncation issues downstream.
   return relative(workspaceRoot, filePath).split('\u0000')[0];
 }
 
