@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-10-02 | Segment Version: 1.8.0
+Last Updated: 2025-10-03 | Segment Version: 1.9.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -86,6 +86,24 @@ Parent Index: `systemPatterns-index.md`
 - Validation: Infrastructure tests confirm workspace detection, deterministic ordering, and coverage
   script configuration; `pnpm test`, `pnpm -w lint`, and `pnpm -w type-check` exercise the full
   suite post-hardening.
+
+### Testing Infrastructure Pattern: Shared Test Utilities Library (Task 3.1.2)
+
+- Pattern: Workspace-scoped testing toolkit packaging deterministic runtime setup, async utilities,
+  Socket.IO mocks, domain factories, fixtures, and Vitest matchers for reuse across packages.
+- Implementation: `@critgenius/test-utils` exposes runtime installers that seed fake timers,
+  register teardown hooks, polyfill encoders, and provide seeded randomness; helper suites supply
+  polling/retry utilities aware of fake timers, Socket.IO mock endpoints, and assertion helpers.
+  Domain factories build deterministic users, sessions, transcripts, and audio chunks while custom
+  matchers validate transcript structure, speaker labels, latency, and accuracy.
+- Integration: Root `tsconfig.json` path aliases and `tests/setup/common-vitest-hooks.ts` now
+  reference the package with dynamic fallbacks so consumers can import source prior to build. The
+  package ships its own Vitest config, README, and scripts for local development.
+- Benefits: Eliminates bespoke helper drift between packages, accelerates scenario authoring with
+  shared factories/fixtures, ensures all tests run under the same deterministic runtime, and reduces
+  flake by coordinating fake timer advancement.
+- Validation: `pnpm --filter @critgenius/test-utils test` exercises package suites (24 tests) and
+  `pnpm --filter @critgenius/test-utils build` verifies TypeScript emission.
 
 ## Data Flow Patterns
 
@@ -222,6 +240,7 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-03: Added shared test utilities library pattern (Task 3.1.2); version bump 1.9.0
 - 2025-10-02: Enhanced Vitest workspace execution pattern with hoisted AssemblyAI mocks and
   Playwright runtime guard (Task 3.1.1.1); version bump 1.8.0
 - 2025-10-01: Added unified Vitest workspace execution pattern (Task 3.1.1.1); version bump 1.7.0

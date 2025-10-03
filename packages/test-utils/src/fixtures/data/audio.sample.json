@@ -1,0 +1,5 @@
+{
+  "encoding": "pcm_s16le",
+  "sampleRate": 16000,
+  "payloadBase64": "AAAAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHw=="
+}

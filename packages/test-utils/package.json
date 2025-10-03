@@ -1,0 +1,80 @@
+{
+  "name": "@critgenius/test-utils",
+  "version": "0.1.0",
+  "description": "Shared Vitest utilities, factories, and fixtures for CritGenius Listener",
+  "type": "module",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./runtime": {
+      "import": "./dist/runtime/index.js",
+      "types": "./dist/runtime/index.d.ts"
+    },
+    "./helpers": {
+      "import": "./dist/helpers/index.js",
+      "types": "./dist/helpers/index.d.ts"
+    },
+    "./factories": {
+      "import": "./dist/factories/index.js",
+      "types": "./dist/factories/index.d.ts"
+    },
+    "./fixtures": {
+      "import": "./dist/fixtures/index.js",
+      "types": "./dist/fixtures/index.d.ts"
+    },
+    "./patterns": {
+      "import": "./dist/patterns/index.js",
+      "types": "./dist/patterns/index.d.ts"
+    },
+    "./matchers": {
+      "import": "./dist/matchers/index.js",
+      "types": "./dist/matchers/index.d.ts"
+    }
+  },
+  "files": ["dist/**/*", "package.json", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint \"src/**/!(*.test).{ts,tsx}\" --max-warnings 0",
+    "lint:fix": "eslint \"src/**/!(*.test).{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,json}\"",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@critgenius/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "critgenius": {
+    "ecosystem": {
+      "component": "listener",
+      "submodule": "test-utils",
+      "role": "testing-infrastructure"
+    },
+    "features": {
+      "async-helpers": true,
+      "runtime-harness": true,
+      "factories": true,
+      "fixtures": true,
+      "matchers": true
+    }
+  },
+  "keywords": ["critgenius", "vitest", "testing", "utilities", "factories"]
+}

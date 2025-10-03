@@ -24,6 +24,8 @@
     "paths": {
       "@critgenius/shared": ["./packages/shared/src/index.ts"],
       "@critgenius/shared/*": ["./packages/shared/src/*"],
+      "@critgenius/test-utils": ["./packages/test-utils/src/index.ts"],
+      "@critgenius/test-utils/*": ["./packages/test-utils/src/*"],
       "@client/*": ["./packages/client/src/*"],
       "@server/*": ["./packages/server/src/*"],
       "@shared/*": ["./packages/shared/src/*"],

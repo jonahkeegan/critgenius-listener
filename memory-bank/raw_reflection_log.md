@@ -49,3 +49,29 @@ Improvements_Identified_For_Consolidation:
 
 
 
+
+Date: 2025-10-02
+TaskRef: "Dev Infra 3.1.2 – Shared test utilities library"
+
+Learnings:
+- A dedicated `@critgenius/test-utils` package gives every workspace project the same deterministic Vitest runtime, eliminating drift between bespoke helpers.
+- Dynamic fallback imports in the global Vitest setup let consumers run against source before the package is built, keeping local dev and CI aligned.
+- Updating async polling helpers to advance fake timers only after scheduling delays prevents deterministic runs from hanging while still supporting real timers.
+
+Success Patterns:
+- Centralized factories, fixtures, and matchers accelerate scenario authoring and keep transcript/audio assertions domain-aware.
+- Shared runtime installation (fake timers, seeded randomness, teardown registry) enables low-latency tests without repeating boilerplate in each package.
+- Documenting usage directly in the package README encourages early adoption and clarifies setup expectations.
+
+Implementation Excellence:
+- Vitest config alias overrides and root `tsconfig` path mappings ensure both source and built consumers resolve the new module consistently.
+- The README and package scripts mirror existing workspace conventions, so contributors inherit familiar commands and lint/test expectations.
+- Async helper regression tests prove the deterministic runtime changes work under fake timers before rollout.
+
+Improvements_Identified_For_Consolidation:
+- Roll the shared utilities into client/server/shared test suites to retire duplicated helpers and measure adoption impact.
+- Track coverage metrics after migration and consider adding thresholds once suites stabilize on the new tooling.
+- Evaluate publishing prebuilt artifacts (or incremental build outputs) if tooling outside the monorepo needs these utilities.
+
+
+

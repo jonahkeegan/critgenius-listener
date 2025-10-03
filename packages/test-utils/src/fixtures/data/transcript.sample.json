@@ -1,0 +1,34 @@
+{
+  "sessionId": "session-fixture",
+  "segments": [
+    {
+      "segmentId": "segment-1",
+      "speakerId": "speaker-1",
+      "speakerName": "Aria",
+      "text": "Gather round heroes, the battle begins soon.",
+      "isFinal": true,
+      "confidence": 0.93,
+      "timestamp": "2024-01-03T20:00:00.000Z",
+      "words": [
+        { "start": 0, "end": 320, "text": "Gather", "confidence": 0.92 },
+        { "start": 330, "end": 610, "text": "round", "confidence": 0.94 },
+        { "start": 640, "end": 940, "text": "heroes", "confidence": 0.9 }
+      ]
+    },
+    {
+      "segmentId": "segment-2",
+      "speakerId": "speaker-2",
+      "speakerName": "Brom",
+      "text": "I've readied the map and torches for our descent.",
+      "isFinal": false,
+      "confidence": 0.88,
+      "timestamp": "2024-01-03T20:00:07.500Z",
+      "words": [
+        { "start": 0, "end": 200, "text": "I've", "confidence": 0.86 },
+        { "start": 210, "end": 460, "text": "readied", "confidence": 0.89 }
+      ]
+    }
+  ],
+  "createdAt": "2024-01-03T20:00:00.000Z",
+  "updatedAt": "2024-01-03T20:00:08.000Z"
+}

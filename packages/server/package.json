@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.7",
+    "@critgenius/test-utils": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
