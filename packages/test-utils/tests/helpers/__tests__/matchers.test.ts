@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestTranscript } from '../src/factories';
+import { createTestTranscript } from '../../../src/factories';
 
 describe('custom matchers', () => {
   it('validates transcript structure', () => {

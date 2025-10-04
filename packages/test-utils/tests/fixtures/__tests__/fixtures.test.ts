@@ -4,9 +4,9 @@ import {
   defaultFixtureLoader,
   loadSampleAudioFixture,
   loadTranscriptFixture,
-} from '../src/fixtures';
+} from '../../../src/fixtures';
 
-import { assertLatencyUnder } from '../src/helpers/assertion-helpers';
+import { assertLatencyUnder } from '../../../src/helpers/assertion-helpers';
 
 describe('fixtures', () => {
   it('loads transcript fixture with caching', async () => {

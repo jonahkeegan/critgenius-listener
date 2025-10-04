@@ -4,9 +4,9 @@ import {
   createCircuitBreakerHarness,
   createErrorScenarioBuilder,
   simulateRetry,
-} from '../src/patterns';
+} from '../../../src/patterns';
 
-import { advanceTimersAndFlush } from '../src/helpers';
+import { advanceTimersAndFlush } from '../../../src/helpers';
 
 describe('patterns', () => {
   it('simulates circuit breaker lifecycle', async () => {

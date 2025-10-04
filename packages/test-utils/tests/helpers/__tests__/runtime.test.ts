@@ -13,7 +13,7 @@ import {
   createTestRuntime,
   registerTestTeardown,
   withDeterministicClock,
-} from '../src/runtime';
+} from '../../../src/runtime';
 
 describe('test runtime', () => {
   it('uses fake timers by default', () => {

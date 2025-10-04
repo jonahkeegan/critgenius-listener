@@ -6,7 +6,7 @@ import {
   delay,
   retryAssertion,
   waitForCondition,
-} from '../src/helpers';
+} from '../../../src/helpers';
 
 describe('async helpers', () => {
   it('waits for condition to become true', async () => {
