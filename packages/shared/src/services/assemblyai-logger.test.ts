@@ -17,7 +17,6 @@ import {
   MetricsCollector,
   AlertingService,
   ConsoleLogOutput,
-  FileLogOutput,
   MemoryMetricsCollector,
   createAssemblyAILogger,
 } from './assemblyai-logger.js';
@@ -141,8 +140,7 @@ describe('AssemblyAI Logger Implementation', () => {
 
       alertLogger.logConnection('error', 'session-123', error);
 
-      // Wait for async alert
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockAlerting.sendErrorAlert).toHaveBeenCalledWith(error, {
         event: 'error',
@@ -235,8 +233,7 @@ describe('AssemblyAI Logger Implementation', () => {
         performance
       );
 
-      // Wait for async alert
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await Promise.resolve();
 
       expect(mockAlerting.sendPerformanceAlert).toHaveBeenCalledWith(
         'transcription_latency',

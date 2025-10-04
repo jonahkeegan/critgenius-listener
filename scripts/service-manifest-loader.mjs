@@ -85,7 +85,27 @@ function upgradeLegacy(doc) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  loadServiceManifest().then(manifest => {
+  const args = process.argv.slice(2);
+  let manifestOverride;
+
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+    if (value === '--manifest' || value === '-m') {
+      manifestOverride = args[index + 1];
+      index += 1;
+      continue;
+    }
+
+    if (!value.startsWith('-') && manifestOverride === undefined) {
+      manifestOverride = value;
+    }
+  }
+
+  const resolvedManifestPath = manifestOverride
+    ? path.resolve(process.cwd(), manifestOverride)
+    : undefined;
+
+  loadServiceManifest(resolvedManifestPath).then(manifest => {
     console.log(`Loaded service manifest v${manifest.version} with ${Object.keys(manifest.services).length} services.`);
     for (const [name, svc] of Object.entries(manifest.services)) {
       console.log(` - ${name} -> port ${svc.port}, deps: ${(svc.dependencies||[]).join(',')||'∅'}`);

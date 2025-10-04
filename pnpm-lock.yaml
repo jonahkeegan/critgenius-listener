@@ -113,6 +113,9 @@ importers:
         specifier: ^4.0.17
         version: 4.0.17
     devDependencies:
+      "@critgenius/test-utils":
+        specifier: workspace:*
+        version: link:../test-utils
       "@playwright/test":
         specifier: ^1.40.0
         version: 1.55.0
@@ -201,6 +204,9 @@ importers:
         specifier: ^8.17.0
         version: 8.18.3
     devDependencies:
+      "@critgenius/test-utils":
+        specifier: workspace:*
+        version: link:../test-utils
       "@types/cors":
         specifier: ^2.8.17
         version: 2.8.19
@@ -247,6 +253,9 @@ importers:
         specifier: ^4.0.17
         version: 4.0.17
     devDependencies:
+      "@critgenius/test-utils":
+        specifier: workspace:*
+        version: link:../test-utils
       "@types/node":
         specifier: ^24.2.1
         version: 24.2.1
@@ -255,6 +264,25 @@ importers:
         version: 5.0.10
       typescript:
         specifier: ^5.4.2
+        version: 5.9.2
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@24.2.1)(@vitest/ui@3.2.4)(jsdom@26.1.0)
+
+  packages/test-utils:
+    dependencies:
+      "@critgenius/shared":
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      "@types/node":
+        specifier: ^24.2.1
+        version: 24.2.1
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.10
+      typescript:
+        specifier: ^5.9.2
         version: 5.9.2
       vitest:
         specifier: ^3.2.4

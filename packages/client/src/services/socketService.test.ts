@@ -3,7 +3,16 @@
  * Tests connection resilience and reconnection logic
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import {
+  vi,
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  afterEach,
+} from 'vitest';
 
 // Use hoisted mocks so they are available inside vi.mock factory (which is hoisted by Vitest)
 const { mockSocket, mockIo } = vi.hoisted(() => {
@@ -38,8 +47,17 @@ const mockNavigator = {
 
 const mockFetch = vi.fn();
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
+
 describe('SocketService', () => {
   beforeEach(() => {
+    vi.useFakeTimers();
     // Reset mocks
     vi.clearAllMocks();
 
@@ -56,7 +74,6 @@ describe('SocketService', () => {
 
   afterEach(() => {
     vi.clearAllTimers();
-    vi.useRealTimers();
     mockNavigator.onLine = true;
     socketService.disconnect();
   });

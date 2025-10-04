@@ -22,23 +22,36 @@ async function loadProxyRegistry() {
 }
 
 function renderMarkdown(routes, env) {
-  const hdr = `# Development Proxy Routes\n\n` +
-    `This file is generated from the centralized proxy registry. Do not edit manually.\n\n`;
+  const hdr = '# Development Proxy Routes\n\n' +
+    'This file is generated from the centralized proxy registry. Do not edit manually.';
   const envList = Object.values(env).slice().sort();
   const envMd = ['## Environment Keys', '', ...envList.map(k => `- ${k}`), ''];
-  const routeRows = routes
+
+  const columns = ['id', 'path', 'ws', 'optional', 'enableEnvVar'];
+  const data = routes
     .slice()
     .sort((a, b) => a.path.localeCompare(b.path))
-    .map(r => `| ${r.id} | ${r.path} | ${r.ws ? 'yes' : 'no'} | ${r.optional ? 'yes' : 'no'} | ${r.enableEnvVar ?? ''} |`);
-  const routesMd = [
-    '## Routes',
-    '',
-    '| id | path | ws | optional | enableEnvVar |',
-    '|---|---|---|---|---|',
-    ...routeRows,
-    '',
-  ];
-  return [hdr, ...envMd, ...routesMd].join('\n');
+    .map(r => [
+      r.id,
+      r.path,
+      r.ws ? 'yes' : 'no',
+      r.optional ? 'yes' : 'no',
+      r.enableEnvVar ?? '',
+    ]);
+
+  const widths = columns.map((column, index) => {
+    const columnValues = data.map(row => row[index] ?? '');
+    const values = [column, ...columnValues];
+    return values.reduce((max, value) => Math.max(max, value.length), 0);
+  });
+
+  const formatRow = row => `| ${row.map((cell, index) => (cell ?? '').padEnd(widths[index], ' ')).join(' | ')} |`;
+  const headerRow = formatRow(columns);
+  const separatorRow = `| ${widths.map(width => '-'.repeat(width)).join(' | ')} |`;
+  const bodyRows = data.map(formatRow);
+
+  const routesMd = ['## Routes', '', headerRow, separatorRow, ...bodyRows, ''];
+  return [hdr, '', ...envMd, ...routesMd].join('\n');
 }
 
 async function main() {

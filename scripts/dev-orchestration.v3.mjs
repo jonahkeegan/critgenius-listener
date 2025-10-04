@@ -26,6 +26,49 @@ function log(msg, obj) {
 function error(msg, obj) { if (obj) console.error(`[orchestrator:v3][err] ${msg}`, obj); else console.error(`[orchestrator:v3][err] ${msg}`); }
 
 // --- Graph / Topology ---
+function normalizeDependencies(service) {
+  if (!service) return [];
+  const deps = Array.isArray(service.dependencies) ? service.dependencies : [];
+  return deps.filter((dep, index) => deps.indexOf(dep) === index);
+}
+
+function findDependencyCycle(services) {
+  const visiting = new Set();
+  const visited = new Set();
+  const path = [];
+
+  function dfs(node) {
+    if (visiting.has(node)) {
+      const startIndex = path.indexOf(node);
+      const cyclePath = startIndex >= 0 ? path.slice(startIndex) : [node];
+      return [...cyclePath, node];
+    }
+
+    if (visited.has(node)) return null;
+    visiting.add(node);
+    path.push(node);
+
+    const deps = normalizeDependencies(services[node]);
+    for (const dep of deps) {
+      if (!services[dep]) continue; // Unknown dependencies handled elsewhere
+      const found = dfs(dep);
+      if (found) return found;
+    }
+
+    visiting.delete(node);
+    path.pop();
+    visited.add(node);
+    return null;
+  }
+
+  for (const name of Object.keys(services)) {
+    const cycle = dfs(name);
+    if (cycle) return cycle;
+  }
+
+  return null;
+}
+
 function topologicalOrder(services) {
   const inDegree = new Map();
   const graph = new Map();
@@ -34,7 +77,7 @@ function topologicalOrder(services) {
     inDegree.set(name, 0);
   }
   for (const [name, svc] of Object.entries(services)) {
-    const deps = Array.isArray(svc.dependencies) ? svc.dependencies : [];
+    const deps = normalizeDependencies(svc);
     for (const dep of deps) {
       if (!graph.has(dep)) throw new Error(`Service ${name} depends on unknown service ${dep}`);
       // edge dep -> name
@@ -56,6 +99,12 @@ function topologicalOrder(services) {
     }
   }
   if (order.length !== Object.keys(services).length) {
+    const cycle = findDependencyCycle(services);
+    if (cycle) {
+      throw new Error(
+        `Cycle detected in service dependency graph: ${cycle.join(' -> ')}`
+      );
+    }
     throw new Error('Cycle detected in service dependency graph');
   }
   return order;

@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-02  
-**Version:** 1.21.0  
+**Last Updated:** 2025-10-03  
+**Version:** 1.22.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-004.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~115  
-**Last Updated:** 2025-10-02
+**Current Row Count:** ~125  
+**Last Updated:** 2025-10-03
 
 ## File Registry
 
@@ -56,6 +56,7 @@
 
 - 2025-09-28: Incremented from progress-003 to progress-004; archived previous segment at 315 lines
 - 2025-09-29: Completed Task 2.10.5 (HTTPS Socket.IO Verification): added TLS bypass toggle, node-environment integration suites for secure handshake and resilience, documentation/reporting updates
+- 2025-10-03: Completed Task 3.1.2 (Shared test utilities library): added `@critgenius/test-utils` package, centralized runtime/matchers, updated async helpers; memory bank synchronized
 - 2025-10-02: Completed Task 3.1.1.1 (Vitest workspace hardening & CI readiness): hoisted AssemblyAI mocks, added TextEncoder polyfill guard, authored workspace orchestrator, updated scripts/tests; progress log + memory bank entries refreshed
 - 2025-09-30: Completed Task 3.1.1 (Vitest Configuration Standardization): infrastructure tests now bundle TS configs on demand, validator script importable from Vitest, shared coverage typing aligned with Vitest 3; progress log updated
 - 2025-09-28: Completed Task 2.10.4.2 (Audio Diagnostics & Error-Code Separation): introduced structured telemetry schema + reporter, error code taxonomy decoupled from UI strings, controller + UI wiring updates, expanded tests, documentation + reflections captured
