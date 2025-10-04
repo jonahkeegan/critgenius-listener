@@ -90,6 +90,8 @@ export const createTestRuntime = (
   options: TestRuntimeOptions = {}
 ): TestRuntime => {
   const resolved = { ...defaultOptions, ...options };
+  // Tracks installation for this runtime instance only; each call to createTestRuntime gets an
+  // isolated flag so parallel runtimes remain independent.
   let runtimeInstalled = false;
   const registeredTeardowns: TeardownCallback[] = [];
   let originalRandom: (() => number) | null = null;

@@ -121,11 +121,7 @@ const waitInterval = async (ms: number): Promise<void> => {
     return;
   }
 
-  const pending = delay(ms);
   vi.advanceTimersByTime(ms);
-  await pending;
-  await flushPromises();
-  await waitForNextTick();
 };
 
 export const createDeferred = <T>(): Deferred<T> => {
