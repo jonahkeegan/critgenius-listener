@@ -30,6 +30,21 @@ describe('service-manifest-loader', () => {
     ).toThrow(/not found/);
   });
 
+  it('supports --manifest flag when run directly', () => {
+    const script = path.resolve(
+      process.cwd(),
+      'scripts/service-manifest-loader.mjs'
+    );
+
+    expect(() =>
+      execFileSync('node', [
+        script,
+        '--manifest',
+        path.resolve(process.cwd(), 'services.yaml'),
+      ])
+    ).not.toThrow();
+  });
+
   it('interpolates ${port} in environment', () => {
     const manifest = loadViaBridge(
       path.resolve(process.cwd(), 'services.yaml')
