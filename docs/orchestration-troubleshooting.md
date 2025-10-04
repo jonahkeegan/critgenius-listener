@@ -65,9 +65,10 @@ env keys are indented beneath `environment:`.
   ```
 
 - **Cycle detected in service dependency graph:** At least two services depend on each other
-  directly or indirectly. Inspect the `dependencies` (or legacy `dependsOn`) arrays for every
-  service in `services.yaml` and ensure the graph flows in one direction. A simple cycle to watch
-  for:
+  directly or indirectly. The orchestrator now prints the specific cycle path (for example,
+  `api -> worker -> api`) to speed diagnosis. Inspect the `dependencies` (or legacy `dependsOn`)
+  arrays for every service in `services.yaml` and ensure the graph flows in one direction. A simple
+  cycle to watch for:
 
   ```yaml
   api:

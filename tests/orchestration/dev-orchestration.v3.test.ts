@@ -30,6 +30,8 @@ describe('dev-orchestration.v3 topology', () => {
       b: { dependencies: ['a'] },
       c: { dependencies: ['b'] },
     };
-    expect(() => topo(services)).toThrow(/Cycle/);
+    expect(() => topo(services)).toThrow(
+      /Cycle detected in service dependency graph: a -> c -> b -> a/
+    );
   });
 });
