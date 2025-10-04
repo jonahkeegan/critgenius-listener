@@ -97,6 +97,60 @@ const isFunction = (value: unknown): value is (...args: any[]) => void =>
 // Mock process.env for configuration
 const originalEnv = process.env;
 
+const flushAllTimers = async (): Promise<void> => {
+  let iterations = 0;
+  // Allow pending microtasks (like immediate promise rejections) to queue timers
+  await Promise.resolve();
+  while (vi.getTimerCount() > 0 && iterations < 200) {
+    vi.runOnlyPendingTimers();
+    await Promise.resolve();
+    iterations += 1;
+  }
+  await Promise.resolve();
+};
+
+const waitForPromiseWithTimers = async <T>(promise: Promise<T>): Promise<T> => {
+  let resolvedValue: T | undefined;
+  let rejectedError: unknown;
+  let settled = false;
+
+  promise.then(
+    value => {
+      resolvedValue = value;
+      settled = true;
+    },
+    error => {
+      rejectedError = error;
+      settled = true;
+    }
+  );
+
+  let iterations = 0;
+  while (!settled && iterations < 500) {
+    await flushAllTimers();
+    await Promise.resolve();
+    iterations += 1;
+
+    if (!settled && vi.getTimerCount() === 0) {
+      await Promise.resolve();
+    }
+  }
+
+  if (!settled) {
+    throw new Error('Promise did not settle after flushing timers');
+  }
+
+  if (rejectedError !== undefined) {
+    throw rejectedError;
+  }
+
+  return resolvedValue as T;
+};
+
+const connectClient = async (instance: AssemblyAIClient): Promise<void> => {
+  await waitForPromiseWithTimers(instance.connect());
+};
+
 describe('AssemblyAI Client Implementation', () => {
   const validConfig: AssemblyAIConfig = {
     ...DEFAULT_ASSEMBLYAI_CONFIG,
@@ -234,7 +288,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
 
       expect(client.getConnectionState()).toBe(ConnectionState.CONNECTED);
       expect(connectionStateChanges).toContain(ConnectionState.CONNECTING);
@@ -246,6 +300,7 @@ describe('AssemblyAI Client Implementation', () => {
       const shortTimeoutConfig = {
         ...validConfig,
         connectionTimeout: 100,
+        maxRetries: 0,
       };
       const timeoutClient = new AssemblyAIClient(shortTimeoutConfig);
 
@@ -258,9 +313,10 @@ describe('AssemblyAI Client Implementation', () => {
         return new Promise(() => {});
       });
 
-      await expect(timeoutClient.connect()).rejects.toThrow(
-        AssemblyAIConnectionError
-      );
+      const timeoutConnect = timeoutClient.connect();
+      vi.advanceTimersByTime(shortTimeoutConfig.connectionTimeout + 1);
+      const timeoutPromise = waitForPromiseWithTimers(timeoutConnect);
+      await expect(timeoutPromise).rejects.toThrow(AssemblyAIConnectionError);
 
       expect(timeoutClient.getConnectionState()).toBe(ConnectionState.ERROR);
     }, 10000);
@@ -288,7 +344,7 @@ describe('AssemblyAI Client Implementation', () => {
         attemptCount++;
       });
 
-      await retryClient.connect();
+      await connectClient(retryClient);
 
       expect(retryAttempts.length).toBeGreaterThan(0);
       expect(retryClient.getConnectionState()).toBe(ConnectionState.CONNECTED);
@@ -301,7 +357,8 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect()).rejects.toThrow(AssemblyAIAuthError);
+      const authPromise = waitForPromiseWithTimers(client.connect());
+      await expect(authPromise).rejects.toThrow(AssemblyAIAuthError);
 
       expect(client.getConnectionState()).toBe(ConnectionState.ERROR);
     });
@@ -319,9 +376,10 @@ describe('AssemblyAI Client Implementation', () => {
         rateLimitEvents.push(retryAfter);
       });
 
-      await expect(rateLimitClient.connect()).rejects.toThrow(
-        AssemblyAIRateLimitError
+      const rateLimitPromise = waitForPromiseWithTimers(
+        rateLimitClient.connect()
       );
+      await expect(rateLimitPromise).rejects.toThrow(AssemblyAIRateLimitError);
 
       expect(rateLimitEvents.length).toBeGreaterThan(0);
     }, 3000);
@@ -337,7 +395,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
       expect(client.getConnectionState()).toBe(ConnectionState.CONNECTED);
 
       await client.disconnect();
@@ -354,9 +412,9 @@ describe('AssemblyAI Client Implementation', () => {
       });
 
       // Start multiple connection attempts
-      const connectionPromise1 = client.connect();
-      const connectionPromise2 = client.connect();
-      const connectionPromise3 = client.connect();
+      const connectionPromise1 = waitForPromiseWithTimers(client.connect());
+      const connectionPromise2 = waitForPromiseWithTimers(client.connect());
+      const connectionPromise3 = waitForPromiseWithTimers(client.connect());
 
       await Promise.all([
         connectionPromise1,
@@ -383,7 +441,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
     });
 
     afterEach(async () => {
@@ -509,10 +567,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
-
-      // Wait for transcript event
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await connectClient(client);
 
       expect(transcripts.length).toBeGreaterThan(0);
     });
@@ -529,7 +584,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
 
       expect(sessions).toContain('test-session-events');
     });
@@ -548,7 +603,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect()).resolves.not.toThrow();
+      await connectClient(client);
       expect(faultyListener).toHaveBeenCalled();
     });
   });
@@ -575,7 +630,7 @@ describe('AssemblyAI Client Implementation', () => {
       expect(initialStats.connectionAttempts).toBe(0);
       expect(initialStats.successfulConnections).toBe(0);
 
-      await client.connect();
+      await connectClient(client);
 
       const connectedStats = client.getStats();
       expect(connectedStats.connectionAttempts).toBe(1);
@@ -609,7 +664,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await retryClient.connect();
+      await connectClient(retryClient);
 
       const stats = retryClient.getStats();
       expect(stats.retryAttempts).toBeGreaterThan(0);
@@ -634,11 +689,8 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      try {
-        await client.connect();
-      } catch (error) {
-        // Expected to fail
-      }
+      const failedConnect = waitForPromiseWithTimers(client.connect());
+      await expect(failedConnect).rejects.toThrow();
 
       const healthCheck = await client.healthCheck();
       expect(healthCheck.healthy).toBe(false);
@@ -651,7 +703,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
       await client.disconnect();
 
       const stats = client.getStats();
@@ -721,7 +773,8 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect()).rejects.toThrow(AssemblyAIClientError);
+      const connectPromise = waitForPromiseWithTimers(client.connect());
+      await expect(connectPromise).rejects.toThrow(AssemblyAIClientError);
     }, 10000);
 
     it('should detect authentication errors from messages', async () => {
@@ -734,7 +787,8 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect()).rejects.toThrow(AssemblyAIAuthError);
+      const connectPromise = waitForPromiseWithTimers(client.connect());
+      await expect(connectPromise).rejects.toThrow(AssemblyAIAuthError);
     }, 10000);
 
     it('should detect rate limit errors from messages', async () => {
@@ -743,7 +797,8 @@ describe('AssemblyAI Client Implementation', () => {
         return Promise.reject(new Error('429 too many requests'));
       });
 
-      await expect(client.connect()).rejects.toThrow(AssemblyAIRateLimitError);
+      const connectPromise = waitForPromiseWithTimers(client.connect());
+      await expect(connectPromise).rejects.toThrow(AssemblyAIRateLimitError);
     }, 5000);
 
     it('should detect connection errors from messages', async () => {
@@ -759,7 +814,8 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await expect(client.connect()).rejects.toThrow(AssemblyAIConnectionError);
+      const connectPromise = waitForPromiseWithTimers(client.connect());
+      await expect(connectPromise).rejects.toThrow(AssemblyAIConnectionError);
     }, 10000);
   });
 
@@ -796,7 +852,7 @@ describe('AssemblyAI Client Implementation', () => {
         }
       });
 
-      await client.connect();
+      await connectClient(client);
 
       // Multiple disconnects should not throw errors
       await expect(client.disconnect()).resolves.not.toThrow();
@@ -820,7 +876,7 @@ describe('AssemblyAI Client Implementation', () => {
         sessionTerminated.push(true);
       });
 
-      await client.connect();
+      await connectClient(client);
       expect(client.getConnectionState()).toBe(ConnectionState.CONNECTED);
 
       // Simulate connection close from server
