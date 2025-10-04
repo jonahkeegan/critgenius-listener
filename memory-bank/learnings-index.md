@@ -4,8 +4,8 @@
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 52
-**Last Updated:** 2025-09-30 21:43 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 88
+**Last Updated:** 2025-10-03 15:34 PST
 
 **Update Log:**
 
@@ -14,6 +14,8 @@
   row count now 509.
 - 2025-09-28 17:30 PST — Consolidated raw reflections into `consolidated-learnings-006.md`; row
   count now 309.
+- 2025-10-03 15:34 PST — Added test runtime isolation and unhandled rejection handling patterns to
+  `consolidated-learnings-007.md`; row count now 88.
 
 ## File Registry
 
@@ -139,6 +141,7 @@
 - **React Responsive Hook System** (consolidated-learnings-001.md)
 - **Type-Safe Configuration Injection** (consolidated-learnings-005.md)
 - **Environment Loader Utilities** (consolidated-learnings-005.md)
+- **Test Runtime State Isolation** (consolidated-learnings-007.md)
 
 ### Project Management
 
@@ -175,6 +178,7 @@
 
 - **Mock-Based External Service Validation** (consolidated-learnings-005.md)
 - **Focused Unit Testing for External Connectors** (consolidated-learnings-005.md)
+- **Deterministic Test Runtime Validation Suite** (consolidated-learnings-007.md)
 
 ### External Service Integration
 

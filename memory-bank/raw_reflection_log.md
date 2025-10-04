@@ -75,3 +75,28 @@ Improvements_Identified_For_Consolidation:
 
 
 
+Date: 2025-10-03
+TaskRef: "Dev Infra 3.1.2.1 – Enhance test runtime state isolation"
+
+Learnings:
+- Encapsulating `runtimeInstalled`, teardown registries, and `Math.random` backups inside the `createTestRuntime` closure prevents cross-suite state leakage while preserving default runtime ergonomics.
+- New helpers (`drainTeardowns`, `dispatchUnhandledRejection`) expose deterministic seams for exercising runtime internals without depending on Vitest hook ordering or truly unhandled promises.
+- Callback-based unhandled rejection handling enables richer debugging workflows while retaining boolean opt-outs for teams that prefer legacy behavior.
+
+Success Patterns:
+- Closure-scoped state couples cleanly with a cached default runtime so shared setup stays simple, yet packages can spin up isolated runtimes for advanced scenarios.
+- Tests that drive the helpers directly run faster, avoid flake across node/browser runners, and document expectations more explicitly.
+- Draining teardowns through a helper keeps assertions localized and ensures teardown order stays predictable between suites.
+
+Implementation Excellence:
+- Added union typing for `failOnUnhandledRejection` with zero `any` leakage and maintained strict typing across runtime exports.
+- Extended runtime tests to cover isolation, listener disablement, and custom handler invocation while avoiding real process-level unhandled rejections.
+- Validated changes via `pnpm --filter @critgenius/test-utils test`, confirming the refactor ships green.
+
+Improvements_Identified_For_Consolidation:
+- Document the new helpers in the `@critgenius/test-utils` README to accelerate downstream adoption.
+- Sweep other packages for ad-hoc teardown helpers that could standardize on `drainTeardowns()`.
+- Evaluate exposing read-only snapshots of captured rejections if future diagnostics need more visibility without widening the public API.
+
+
+

@@ -22,8 +22,14 @@ export interface TestRuntimeOptions {
   autoClearMocks?: boolean;
   /** Reset module registry after each test */
   autoResetModules?: boolean;
-  /** Fail tests when unhandled rejections occur */
-  failOnUnhandledRejection?: boolean;
+  /**
+   * Fail tests when unhandled rejections occur. When a callback is provided it will be invoked
+   * for every unhandled rejection with the rejection reason and the current aggregate list of
+   * reasons. The callback is responsible for determining whether a test should fail.
+   */
+  failOnUnhandledRejection?:
+    | boolean
+    | ((reason: unknown, rejections: readonly unknown[]) => void);
 }
 
 export interface TestRuntime {
@@ -43,6 +49,10 @@ export interface TestRuntime {
     seed: string | number,
     callback: () => T | Promise<T>
   ): Promise<T> | T;
+  /** Immediately executes and clears any registered teardowns */
+  drainTeardowns(): Promise<void>;
+  /** Invokes the runtime's unhandled rejection handler directly */
+  dispatchUnhandledRejection(reason: unknown): void;
 }
 
 export interface DeterministicClockOptions {
@@ -50,10 +60,6 @@ export interface DeterministicClockOptions {
   advanceMs?: number;
   restore?: boolean;
 }
-
-let runtimeInstalled = false;
-const registeredTeardowns: TeardownCallback[] = [];
-let originalRandom: (() => number) | null = null;
 
 const defaultOptions: Required<
   Pick<
@@ -78,28 +84,64 @@ const defaultOptions: Required<
   failOnUnhandledRejection: true,
 };
 
+let defaultRuntime: TestRuntime | null = null;
+
 export const createTestRuntime = (
   options: TestRuntimeOptions = {}
 ): TestRuntime => {
   const resolved = { ...defaultOptions, ...options };
+  let runtimeInstalled = false;
+  const registeredTeardowns: TeardownCallback[] = [];
+  let originalRandom: (() => number) | null = null;
   let unhandledRejections: unknown[] = [];
+
+  const failSetting = resolved.failOnUnhandledRejection;
+  const shouldAttachUnhandledRejectionListener =
+    typeof failSetting === 'function' || failSetting !== false;
+  const shouldThrowOnUnhandledRejection =
+    failSetting === undefined || failSetting === true;
+  const customRejectionHandler =
+    typeof failSetting === 'function' ? failSetting : null;
 
   const onUnhandledRejection = (reason: unknown) => {
     unhandledRejections.push(reason);
+    if (customRejectionHandler) {
+      customRejectionHandler(reason, [...unhandledRejections]);
+    }
   };
 
   const ensureDeterministicRandom = () => {
     if (resolved.randomSeed === null || resolved.randomSeed === undefined) {
       return;
     }
-    applyDeterministicRandom(resolved.randomSeed);
+    if (!originalRandom) {
+      originalRandom = Math.random;
+    }
+    Math.random = createSeededRandom(resolved.randomSeed);
   };
 
   const resetDeterministicRandom = () => {
-    if (resolved.randomSeed === null || resolved.randomSeed === undefined) {
+    if (
+      (resolved.randomSeed === null || resolved.randomSeed === undefined) &&
+      originalRandom === null
+    ) {
       return;
     }
-    restoreRandom();
+    if (originalRandom) {
+      Math.random = originalRandom;
+      originalRandom = null;
+    }
+  };
+
+  const runRegisteredTeardowns = async (): Promise<void> => {
+    if (!registeredTeardowns.length) {
+      return;
+    }
+    const callbacks = [...registeredTeardowns];
+    registeredTeardowns.length = 0;
+    for (const teardown of callbacks.reverse()) {
+      await teardown();
+    }
   };
 
   return {
@@ -116,7 +158,7 @@ export const createTestRuntime = (
         if (resolved.timezone && !process.env.TZ) {
           process.env.TZ = resolved.timezone;
         }
-        if (resolved.failOnUnhandledRejection) {
+        if (shouldAttachUnhandledRejectionListener) {
           process.on('unhandledRejection', onUnhandledRejection);
         }
       });
@@ -160,19 +202,23 @@ export const createTestRuntime = (
         }
         resetDeterministicRandom();
 
-        if (resolved.failOnUnhandledRejection && unhandledRejections.length) {
+        if (shouldThrowOnUnhandledRejection && unhandledRejections.length) {
           const [first] = unhandledRejections;
           unhandledRejections = [];
           throw new Error(formatUnhandledRejection(first));
         }
+
+        unhandledRejections = [];
       });
 
       afterAll(async () => {
         await runRegisteredTeardowns();
         resetDeterministicRandom();
-        if (resolved.failOnUnhandledRejection) {
+        if (shouldAttachUnhandledRejectionListener) {
           process.off('unhandledRejection', onUnhandledRejection);
         }
+        registeredTeardowns.length = 0;
+        unhandledRejections = [];
         runtimeInstalled = false;
       });
     },
@@ -188,15 +234,28 @@ export const createTestRuntime = (
       seed: string | number,
       callback: () => Promise<T> | T
     ): Promise<T> | T => withDeterministicRandom(seed, callback),
+    drainTeardowns: async () => {
+      await runRegisteredTeardowns();
+    },
+    dispatchUnhandledRejection: (reason: unknown) => {
+      if (!shouldAttachUnhandledRejectionListener) {
+        return;
+      }
+      onUnhandledRejection(reason);
+    },
   };
 };
 
 export const installTestRuntime = (
   options?: TestRuntimeOptions
 ): TestRuntime => {
-  const runtime = createTestRuntime(options);
-  runtime.install();
-  return runtime;
+  if (!defaultRuntime) {
+    defaultRuntime = createTestRuntime(options);
+    defaultRuntime.install();
+    return defaultRuntime;
+  }
+
+  return defaultRuntime;
 };
 
 export const installTestGlobals = (): void => {
@@ -223,7 +282,7 @@ export const installTestGlobals = (): void => {
 };
 
 export const registerTestTeardown = (callback: TeardownCallback): void => {
-  registeredTeardowns.push(callback);
+  installTestRuntime().registerTeardown(callback);
 };
 
 export const withDeterministicClock = <T>(
@@ -287,17 +346,6 @@ const formatUnhandledRejection = (reason: unknown): string => {
   return `Unhandled promise rejection detected: ${String(reason)}`;
 };
 
-const runRegisteredTeardowns = async (): Promise<void> => {
-  if (!registeredTeardowns.length) {
-    return;
-  }
-  const callbacks = [...registeredTeardowns];
-  registeredTeardowns.length = 0;
-  for (const teardown of callbacks.reverse()) {
-    await teardown();
-  }
-};
-
 const resolveDate = (value: string | number | Date): Date => {
   if (value instanceof Date) {
     return value;
@@ -306,20 +354,6 @@ const resolveDate = (value: string | number | Date): Date => {
     return new Date(value);
   }
   return new Date(Date.parse(value));
-};
-
-const applyDeterministicRandom = (seed: string | number): void => {
-  if (!originalRandom) {
-    originalRandom = Math.random;
-  }
-  Math.random = createSeededRandom(seed);
-};
-
-const restoreRandom = (): void => {
-  if (originalRandom) {
-    Math.random = originalRandom;
-    originalRandom = null;
-  }
 };
 
 const createSeededRandom = (seed: string | number): (() => number) => {
