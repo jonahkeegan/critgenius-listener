@@ -75,22 +75,21 @@ function formatEnvLines(keys) {
     }
     return `${k}=${placeholder}`;
   });
-  return [...header, ...lines, '# --- End Managed Section ---', ''].join('\n');
+  return [...header, ...lines, '# --- End Managed Section ---'].join('\n');
 }
 
 function upsertManagedSection(original, managedBlock) {
   const begin = '# --- Proxy Registry Managed Section (do not edit manually) ---';
   const end = '# --- End Managed Section ---';
-  const startIdx = original.indexOf(begin);
-  const endIdx = original.indexOf(end);
-  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
-    const before = original.slice(0, startIdx);
-    const after = original.slice(endIdx + end.length);
-    return `${before}${managedBlock}${after}`;
+  const escapeForRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const blockPattern = new RegExp(`${escapeForRegex(begin)}[\\s\\S]*?${escapeForRegex(end)}`, 'm');
+  if (blockPattern.test(original)) {
+    return original.replace(blockPattern, managedBlock);
   }
-  // Append at the end with a separating newline
-  const trimmed = original.endsWith('\n') ? original : original + '\n';
-  return `${trimmed}${managedBlock}`;
+
+  const trimmed = original.replace(/[\r\n]*$/, '');
+  if (!trimmed) return managedBlock;
+  return `${trimmed}\n${managedBlock}`;
 }
 
 async function main() {
@@ -99,15 +98,18 @@ async function main() {
   const current = fs.readFileSync(envExamplePath, 'utf8');
   const managed = formatEnvLines(PROXY_ENV_KEYS);
   const next = upsertManagedSection(current, managed);
+  const normalize = (value) => (value.endsWith('\n') ? value : `${value}\n`);
+  const normalizedCurrent = normalize(current);
+  const normalizedNext = normalize(next);
   if (isCheck) {
-    if (next !== current) {
+    if (normalizedNext !== normalizedCurrent) {
       console.error('[generate-proxy-env-example] Drift detected in .env.example');
       process.exit(1);
     }
     return;
   }
-  if (next !== current) {
-    fs.writeFileSync(envExamplePath, next);
+  if (normalizedNext !== normalizedCurrent) {
+    fs.writeFileSync(envExamplePath, normalizedNext);
     console.log('[generate-proxy-env-example] .env.example updated');
   } else {
     console.log('[generate-proxy-env-example] .env.example up-to-date');
