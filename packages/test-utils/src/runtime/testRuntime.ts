@@ -261,20 +261,11 @@ export const installTestRuntime = (
 };
 
 export const installTestGlobals = (): void => {
-  const globalRef = globalThis as typeof globalThis & {
-    TextEncoder?: typeof TextEncoder;
-    TextDecoder?: typeof TextDecoder;
+  const globalRef = globalThis as GlobalWithEncoding & {
     crypto?: Crypto;
   };
 
-  if (!globalRef.TextEncoder) {
-    globalRef.TextEncoder =
-      TextEncoder as unknown as typeof globalRef.TextEncoder;
-  }
-  if (!globalRef.TextDecoder) {
-    globalRef.TextDecoder =
-      TextDecoder as unknown as typeof globalRef.TextDecoder;
-  }
+  applyWebEncodingPolyfill(globalRef);
   if (
     !globalRef.crypto ||
     typeof globalRef.crypto.getRandomValues !== 'function'
@@ -356,6 +347,64 @@ const resolveDate = (value: string | number | Date): Date => {
     return new Date(value);
   }
   return new Date(Date.parse(value));
+};
+
+type GlobalWithEncoding = typeof globalThis & {
+  TextEncoder?: typeof TextEncoder;
+  TextDecoder?: typeof TextDecoder;
+  Uint8Array?: typeof Uint8Array;
+  window?: typeof globalThis & {
+    TextEncoder?: typeof TextEncoder;
+    TextDecoder?: typeof TextDecoder;
+  };
+};
+
+const needsEncoderPatch = (globalRef: GlobalWithEncoding): boolean => {
+  try {
+    if (typeof globalRef.TextEncoder !== 'function') {
+      return true;
+    }
+    const encoder = new globalRef.TextEncoder();
+    const Uint8 = globalRef.Uint8Array ?? Uint8Array;
+    return !(encoder.encode('') instanceof Uint8);
+  } catch {
+    return true;
+  }
+};
+
+const needsDecoderPatch = (globalRef: GlobalWithEncoding): boolean => {
+  try {
+    if (typeof globalRef.TextDecoder !== 'function') {
+      return true;
+    }
+    const decoder = new globalRef.TextDecoder();
+    const Uint8 = globalRef.Uint8Array ?? Uint8Array;
+    return decoder.decode(new Uint8()) !== '';
+  } catch {
+    return true;
+  }
+};
+
+const applyWebEncodingPolyfill = (globalRef: GlobalWithEncoding): void => {
+  const windowRef = globalRef.window;
+
+  if (needsEncoderPatch(globalRef)) {
+    const candidate =
+      typeof windowRef?.TextEncoder === 'function'
+        ? windowRef.TextEncoder
+        : TextEncoder;
+    globalRef.TextEncoder =
+      candidate as unknown as typeof globalRef.TextEncoder;
+  }
+
+  if (needsDecoderPatch(globalRef)) {
+    const candidate =
+      typeof windowRef?.TextDecoder === 'function'
+        ? windowRef.TextDecoder
+        : TextDecoder;
+    globalRef.TextDecoder =
+      candidate as unknown as typeof globalRef.TextDecoder;
+  }
 };
 
 const createSeededRandom = (seed: string | number): (() => number) => {

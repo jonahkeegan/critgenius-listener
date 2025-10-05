@@ -12,6 +12,8 @@ configuration.
 - **Integration tests** belong in `tests/integration/` within their package and must be suffixed
   with `.integration.test.ts`.
 - **End-to-end (browser) tests** belong in `tests/e2e/` and end with `.e2e.test.ts`.
+- **Performance benchmarks** belong in `tests/performance/` and end with `.perf.test.ts`. These
+  suites run under the dedicated performance configuration and may carry longer timeouts.
 - **Fixtures** and **helpers** live under `tests/fixtures/` and `tests/helpers/` respectively.
   Non-test utilities should _not_ carry the `.test` suffix.
 - Deprecated patterns such as `*.spec.ts` and `*.spec.test.ts` are disallowed. The validation script
@@ -28,6 +30,7 @@ All packages now consume the shared factory defined in `vitest.shared.config.ts`
   - `tests/**/*.{test,spec}.{ts,tsx}`
   - `tests/**/*.integration.test.{ts,tsx}`
   - `tests/**/*.e2e.test.{ts,tsx}`
+  - `tests/**/*.perf.test.{ts,tsx}`
 - Shared exclusion list for build artefacts and fixtures.
 - Mandatory coverage thresholds of **90%** across statements, branches, functions, and lines.
 - Coverage exclusion defaults that remove setup scripts, generated types and fixtures.
@@ -92,6 +95,9 @@ Individual packages append their own setup logic via `src/test-setup.ts`.
   `.e2e.test.ts` to distinguish it from Vitest suites.
 - Legacy `.spec.ts` shims were removed; run `pnpm validate:testing --fix` to clean stale branches in
   downstream clones.
+- Performance suites execute through `pnpm test:performance` with coverage disabled by design to
+  minimise measurement overhead. Use the performance matcher set from
+  `@critgenius/test-utils/performance` to assert latency targets.
 
 Adhering to these conventions keeps linting, coverage, and documentation accurate across the
 monorepo.

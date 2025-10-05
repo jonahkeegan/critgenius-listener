@@ -173,7 +173,7 @@ function loadExpectedPackages(): Array<{
 
       return {
         name: packageName,
-        configPath: normalizePath(`./packages/${entry.name}`),
+        configPath: normalizePath(`./packages/${entry.name}/vitest.config.ts`),
         root: path.resolve(packageDir),
       };
     })

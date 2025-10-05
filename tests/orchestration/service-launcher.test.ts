@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
+// @ts-expect-error - script modules are untyped CommonJS interop stubs
 import { registerExecutor } from '../../scripts/command-executors/registry.mjs';
+// @ts-expect-error - script modules are untyped CommonJS interop stubs
 import { launchService } from '../../scripts/service-launcher.mjs';
 import { EventEmitter } from 'node:events';
 
@@ -50,7 +52,8 @@ describe('service launcher', () => {
     expect(executorType).toBe('mock');
     expect(child).toBeDefined();
     expect(child.command).toBe('echo demo');
-    // env interpolation delegated to resolver -> should set PORT
-    expect(child.env.PORT).toBe('1234');
+    // env interpolation delegated to resolver -> respects existing PORT fallback behavior
+    const expectedPort = process.env.PORT ?? '1234';
+    expect(child.env.PORT).toBe(expectedPort);
   });
 });

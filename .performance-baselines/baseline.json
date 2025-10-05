@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-01-10T00:00:00Z",
+  "environment": {
+    "node": "18.0.0",
+    "os": "win32",
+    "arch": "x64"
+  },
+  "metrics": {
+    "audioCapture": {
+      "singleStream": {
+        "mean": 45,
+        "p50": 42,
+        "p95": 67,
+        "p99": 89,
+        "max": 95,
+        "min": 38,
+        "standardDeviation": 8,
+        "sampleCount": 100,
+        "unit": "ms"
+      },
+      "multiStreamBurst": {
+        "mean": 68,
+        "p50": 61,
+        "p95": 95,
+        "p99": 122,
+        "max": 130,
+        "min": 52,
+        "standardDeviation": 12,
+        "sampleCount": 120,
+        "unit": "ms"
+      }
+    },
+    "transcription": {
+      "singleStream": {
+        "mean": 285,
+        "p50": 270,
+        "p95": 410,
+        "p99": 485,
+        "max": 510,
+        "min": 240,
+        "standardDeviation": 45,
+        "sampleCount": 96,
+        "unit": "ms"
+      },
+      "sustainedMultiStream": {
+        "mean": 332,
+        "p50": 318,
+        "p95": 452,
+        "p99": 498,
+        "max": 520,
+        "min": 280,
+        "standardDeviation": 52,
+        "sampleCount": 120,
+        "unit": "ms"
+      }
+    },
+    "endToEnd": {
+      "singleStream": {
+        "mean": 380,
+        "p50": 365,
+        "p95": 470,
+        "p99": 495,
+        "max": 520,
+        "min": 330,
+        "standardDeviation": 40,
+        "sampleCount": 90,
+        "unit": "ms"
+      },
+      "sustainedMultiStream": {
+        "mean": 415,
+        "p50": 401,
+        "p95": 488,
+        "p99": 510,
+        "max": 540,
+        "min": 360,
+        "standardDeviation": 43,
+        "sampleCount": 140,
+        "unit": "ms"
+      }
+    },
+    "speakerMapping": {
+      "singleStream": {
+        "mean": 110,
+        "p50": 102,
+        "p95": 160,
+        "p99": 190,
+        "max": 210,
+        "min": 85,
+        "standardDeviation": 18,
+        "sampleCount": 80,
+        "unit": "ms"
+      },
+      "multiStreamBurst": {
+        "mean": 145,
+        "p50": 132,
+        "p95": 195,
+        "p99": 235,
+        "max": 250,
+        "min": 110,
+        "standardDeviation": 22,
+        "sampleCount": 100,
+        "unit": "ms"
+      }
+    }
+  }
+}

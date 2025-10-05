@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-02 **Version:** 2.29.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-05 **Version:** 2.30.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -84,7 +84,16 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-10-02 – Vitest Workspace Hardening & CI Readiness)
+### Latest Updates (2025-10-05 – Performance Latency Benchmarking & Regression Detection)
+
+- PERFORMANCE REGRESSION HARNESS HARDENED (Task 3.1.3)
+  - Applied the established web encoding polyfill guard inside the shared deterministic test runtime so `TextEncoder`/`TextDecoder` invariants hold across client infrastructure suites, eliminating the esbuild-induced failure observed during performance benchmarks.
+  - Updated the orchestration service launcher test expectation to pass through environment-provided `PORT` values, aligning the spec with resolver semantics and preventing false negatives when smoke runs inject explicit ports.
+  - Treated `startVitest` as a long-lived instance inside `scripts/performance/run-tests.mjs`, awaiting `runningPromise`, invoking `close()`, honoring watch vs. batch modes, and surfacing accurate exit codes (including missing test files) for CI reliability.
+  - Verification: `pnpm --filter @critgenius/client test`, `pnpm vitest run tests/orchestration/service-launcher.test.ts`, `node scripts/performance/run-tests.mjs tests/performance/audio-processing.perf.test.ts`, `node scripts/performance/run-tests.mjs non-existent.test.ts`.
+  - Follow-Ups: Schedule recurring `pnpm test:performance` CI job once smoke suites stabilize, emit JSON regression summaries for dashboards, and build a watch-mode smoke harness atop the hardened runner.
+
+### Previous Updates (2025-10-02 – Vitest Workspace Hardening & CI Readiness)
 
 - VITEST WORKSPACE HARDENING: Realtime Mock Resilience & Playwright Guard (Task 3.1.1.1)
   - Hoisted AssemblyAI realtime mocks with `vi.hoisted`, added a deterministic reset helper, and guarded close-event callbacks so workspace aggregation no longer dereferences undefined transcribers.

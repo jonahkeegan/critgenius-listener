@@ -1,11 +1,11 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-09-30 18:10 PST **Version:** 1.6.0 **System Status:** Active
+**Last Updated:** 2025-10-05 12:45 PST **Version:** 1.7.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 88
-**Last Updated:** 2025-10-03 15:34 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 111
+**Last Updated:** 2025-10-05 12:45 PST
 
 **Update Log:**
 
@@ -16,6 +16,8 @@
   count now 309.
 - 2025-10-03 15:34 PST — Added test runtime isolation and unhandled rejection handling patterns to
   `consolidated-learnings-007.md`; row count now 88.
+- 2025-10-05 12:45 PST — Consolidated Vitest workspace hardening, shared test utilities rollout, and
+  performance benchmarking hardening into `consolidated-learnings-007.md`; row count now 111.
 
 ## File Registry
 

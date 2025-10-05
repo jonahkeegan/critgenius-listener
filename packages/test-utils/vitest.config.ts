@@ -24,9 +24,10 @@ export default defineConfig(
         exclude: ['src/matchers/vitest.d.ts'],
       },
       aliasOverrides: {
-        '@critgenius/test-utils': `${packageRoot}/src/index.ts`,
+        '@critgenius/test-utils': `${packageRoot}/src`,
         '@critgenius/test-utils/runtime': `${packageRoot}/src/runtime/index.ts`,
         '@critgenius/test-utils/matchers': `${packageRoot}/src/matchers/index.ts`,
+        '@critgenius/test-utils/performance': `${packageRoot}/src/performance/index.ts`,
       },
     })
   )

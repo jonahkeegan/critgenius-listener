@@ -15,6 +15,7 @@ const DEFAULT_INCLUDE_PATTERNS = [
   'tests/**/*.{test,spec}.{ts,tsx}',
   'tests/**/*.integration.test.{ts,tsx}',
   'tests/**/*.e2e.test.{ts,tsx}',
+  'tests/**/*.perf.test.{ts,tsx}',
 ];
 
 const DEFAULT_EXCLUDE_PATTERNS = [
@@ -106,6 +107,13 @@ interface TsconfigLike {
   extends?: string;
 }
 
+interface ResolvedTsconfig {
+  compilerOptions?: {
+    baseUrl?: string;
+    paths?: Record<string, string>;
+  };
+}
+
 /**
  * Remove both line (//) and block (/** * /) comments from JSONC content without
  * disturbing string literals.
@@ -184,10 +192,34 @@ function resolveExtendsPath(
   }
 }
 
+function resolveAliasTargets(
+  paths: Record<string, string[]> | undefined,
+  tsconfigDir: string,
+  baseUrl: string
+): Record<string, string> {
+  const resolved: Record<string, string> = {};
+  if (!paths) {
+    return resolved;
+  }
+
+  for (const [key, value] of Object.entries(paths)) {
+    const target = value?.[0];
+    if (!target) {
+      continue;
+    }
+
+    const normalizedTarget = normalizeAliasTarget(target);
+    const absoluteTarget = resolve(tsconfigDir, baseUrl, normalizedTarget);
+    resolved[key] = absoluteTarget;
+  }
+
+  return resolved;
+}
+
 function loadTsconfigRecursively(
   tsconfigPath: string,
   visited: Set<string> = new Set()
-): TsconfigLike {
+): ResolvedTsconfig {
   const normalizedPath = resolve(tsconfigPath);
 
   if (visited.has(normalizedPath)) {
@@ -204,8 +236,9 @@ function loadTsconfigRecursively(
 
   const fileContent = readFileSync(normalizedPath, 'utf8');
   const parsed = JSON.parse(stripJsonComments(fileContent)) as TsconfigLike;
+  const tsconfigDir = dirname(normalizedPath);
 
-  const baseConfig: TsconfigLike = parsed.extends
+  const baseConfig: ResolvedTsconfig = parsed.extends
     ? loadTsconfigRecursively(
         resolveExtendsPath(parsed.extends, dirname(normalizedPath)) ??
           parsed.extends,
@@ -213,20 +246,23 @@ function loadTsconfigRecursively(
       )
     : {};
 
-  const mergedPaths = {
-    ...(baseConfig.compilerOptions?.paths ?? {}),
-    ...(parsed.compilerOptions?.paths ?? {}),
-  };
-
-  const mergedBaseUrl =
-    parsed.compilerOptions?.baseUrl ??
-    baseConfig.compilerOptions?.baseUrl ??
-    '.';
+  const baseCompilerOptions = baseConfig.compilerOptions ?? {};
+  const basePaths = baseCompilerOptions.paths ?? {};
+  const currentBaseUrl = parsed.compilerOptions?.baseUrl ?? '.';
+  const currentPaths = resolveAliasTargets(
+    parsed.compilerOptions?.paths,
+    tsconfigDir,
+    currentBaseUrl
+  );
 
   return {
     compilerOptions: {
-      baseUrl: mergedBaseUrl,
-      paths: mergedPaths,
+      baseUrl:
+        parsed.compilerOptions?.baseUrl ?? baseCompilerOptions.baseUrl ?? '.',
+      paths: {
+        ...basePaths,
+        ...currentPaths,
+      },
     },
   };
 }
@@ -243,21 +279,14 @@ export function resolveTsconfigAliases(
 ): Record<string, string> {
   const config = loadTsconfigRecursively(tsconfigPath);
   const paths = config.compilerOptions?.paths ?? {};
-  const baseUrl = config.compilerOptions?.baseUrl ?? '.';
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const target = value?.[0];
+    const target = value;
     if (!target) {
       return null;
     }
-    const normalizedTarget = normalizeAliasTarget(target);
-    const resolvedTarget = resolve(
-      dirname(tsconfigPath),
-      baseUrl,
-      normalizedTarget
-    );
-    return [sanitizedKey, resolvedTarget] as const;
+    return [sanitizedKey, target] as const;
   });
 
   const aliases: Record<string, string> = {};
@@ -265,6 +294,18 @@ export function resolveTsconfigAliases(
     if (!entry) continue;
     const [aliasKey, aliasPath] = entry;
     aliases[aliasKey] = aliasPath;
+  }
+
+  const testUtilsAlias = aliases['@critgenius/test-utils'];
+  if (testUtilsAlias && !aliases['@critgenius/test-utils/performance']) {
+    const normalizedBase = testUtilsAlias.endsWith('.ts')
+      ? dirname(testUtilsAlias)
+      : testUtilsAlias;
+    aliases['@critgenius/test-utils/performance'] = resolve(
+      normalizedBase,
+      'performance',
+      'index.ts'
+    );
   }
 
   return aliases;
@@ -317,6 +358,22 @@ export function createVitestConfig(
     ...(aliasOverrides ?? {}),
   };
 
+  if (
+    aliases['@critgenius/test-utils'] &&
+    !aliases['@critgenius/test-utils/performance']
+  ) {
+    const testUtilsBase = aliases['@critgenius/test-utils'];
+    const normalizedBase = testUtilsBase.endsWith('.ts')
+      ? dirname(testUtilsBase)
+      : testUtilsBase;
+
+    aliases['@critgenius/test-utils/performance'] = resolve(
+      normalizedBase,
+      'performance',
+      'index.ts'
+    );
+  }
+
   const normalizedSetupFiles = setupFiles.map(file =>
     file.startsWith('file:') ? file : resolve(packageRoot, file)
   );
@@ -345,6 +402,10 @@ export function createVitestConfig(
       coverage: applyCoverageDefaults(packageRoot, coverageOverrides),
     },
   };
+
+  if (process.env.DEBUG_VITEST_ALIASES === 'true') {
+    console.log('[vitest config] alias mapping for', packageRoot, aliases);
+  }
 
   if (testOverrides) {
     baseConfig.test = {
