@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { configDefaults } from 'vitest/config';
@@ -92,16 +92,40 @@ type CoverageThresholds = {
 
 type CoverageOverrides = CoverageSettings;
 
+type PathInput = string | URL;
+
 interface CreateVitestConfigOptions {
-  packageRoot: string;
+  packageRoot: PathInput;
   environment: string;
-  setupFiles?: string[];
-  tsconfigPath?: string;
+  setupFiles?: PathInput[];
+  tsconfigPath?: PathInput;
   globals?: boolean;
   reporters?: Reporter[];
   testOverrides?: TestConfigOverrides;
   coverageOverrides?: CoverageOverrides;
   aliasOverrides?: Record<string, string>;
+}
+
+const FILE_PROTOCOL_PREFIX = 'file:';
+
+function normalizePathInput(input: PathInput, baseDirectory?: string): string {
+  if (input instanceof URL) {
+    return fileURLToPath(input);
+  }
+
+  if (typeof input !== 'string') {
+    throw new TypeError('Path input must be a string or URL instance');
+  }
+
+  if (input.startsWith(FILE_PROTOCOL_PREFIX)) {
+    return fileURLToPath(new URL(input));
+  }
+
+  if (baseDirectory && !isAbsolute(input)) {
+    return resolve(baseDirectory, input);
+  }
+
+  return input;
 }
 
 interface TsconfigLike {
@@ -354,7 +378,7 @@ export function createVitestConfig(
     packageRoot,
     environment,
     setupFiles = [],
-    tsconfigPath = resolve(packageRoot, 'tsconfig.json'),
+    tsconfigPath,
     globals = true,
     reporters = DEFAULT_REPORTERS,
     testOverrides,
@@ -362,8 +386,15 @@ export function createVitestConfig(
     aliasOverrides,
   } = options;
 
+  const normalizedPackageRoot = normalizePathInput(packageRoot);
+
+  const resolvedTsconfigPath =
+    tsconfigPath === undefined
+      ? resolve(normalizedPackageRoot, 'tsconfig.json')
+      : normalizePathInput(tsconfigPath, normalizedPackageRoot);
+
   const aliases = {
-    ...resolveTsconfigAliases(tsconfigPath),
+    ...resolveTsconfigAliases(resolvedTsconfigPath),
     ...(aliasOverrides ?? {}),
   };
 
@@ -384,11 +415,11 @@ export function createVitestConfig(
   }
 
   const normalizedSetupFiles = setupFiles.map(file =>
-    file.startsWith('file:') ? file : resolve(packageRoot, file)
+    normalizePathInput(file, normalizedPackageRoot)
   );
 
   const baseConfig: SharedUserConfig = {
-    root: packageRoot,
+    root: normalizedPackageRoot,
     resolve: {
       alias: aliases,
     },
@@ -408,7 +439,7 @@ export function createVitestConfig(
       testTimeout: DEFAULT_TEST_TIMEOUT_MS,
       hookTimeout: DEFAULT_HOOK_TIMEOUT_MS,
       teardownTimeout: DEFAULT_TEARDOWN_TIMEOUT_MS,
-      coverage: applyCoverageDefaults(packageRoot, coverageOverrides),
+      coverage: applyCoverageDefaults(normalizedPackageRoot, coverageOverrides),
     },
   };
 
@@ -457,7 +488,7 @@ export function createVitestConfig(
 
   const configWithMetadata = Object.assign(baseConfig, {
     [SHARED_MARKER_KEY]: true as const,
-    sourceTsconfig: tsconfigPath,
+    sourceTsconfig: resolvedTsconfigPath,
   } satisfies SharedConfigMetadata);
 
   return configWithMetadata;

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 function dump(contents: string) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'manifest-v2-'));
@@ -29,7 +30,7 @@ describe('service-manifest-loader v2 enhancements', () => {
     expect(manifest.global.defaultTimeout).toBeDefined();
   });
 
-  it('validates new executionConfig shape (fallbackCommands array)', () => {
+  it('validates new executionConfig shape (fallbackCommands array)', async () => {
     const bad = `
 version: "2.0"
 services:
@@ -42,9 +43,14 @@ services:
     executionConfig: 123
 `;
     const file = dump(bad);
-    const script = path.resolve(process.cwd(), 'scripts/manifest-dump.cjs');
-    expect(() =>
-      execFileSync('node', [script, file], { encoding: 'utf8' })
-    ).toThrow(/executionConfig must be object/);
+    const { loadServiceManifest } = await import(
+      pathToFileURL(
+        path.resolve(process.cwd(), 'scripts/service-manifest-loader.mjs')
+      ).href
+    );
+
+    await expect(loadServiceManifest(file)).rejects.toThrow(
+      /executionConfig must be object/
+    );
   });
 });
