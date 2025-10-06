@@ -187,7 +187,7 @@ export const createTestRuntime = (
       afterEach(async () => {
         await runRegisteredTeardowns();
 
-        if (resolved.useFakeTimers) {
+        if (resolved.useFakeTimers && vi.isFakeTimers()) {
           // ensures queued microtasks/timers drained so tests fail fast
           vi.runOnlyPendingTimers();
           vi.useRealTimers();

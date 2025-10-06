@@ -6,6 +6,7 @@ import {
   runWorkloadScenario,
   workloadScenarios,
 } from '@critgenius/test-utils/performance';
+import './setup';
 import type { BaselineFile } from '@critgenius/test-utils/performance';
 
 function delay(ms: number): Promise<void> {

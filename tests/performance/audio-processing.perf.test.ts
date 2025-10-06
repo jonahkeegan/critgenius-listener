@@ -5,6 +5,7 @@ import {
   runWorkloadScenario,
   workloadScenarios,
 } from '@critgenius/test-utils/performance';
+import './setup';
 
 function generateAudioFrame(size: number): Float32Array {
   const frame = new Float32Array(size);

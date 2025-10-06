@@ -5,6 +5,7 @@ import {
   runWorkloadScenario,
   workloadScenarios,
 } from '@critgenius/test-utils/performance';
+import './setup';
 
 interface SpeakerProfile {
   id: string;
