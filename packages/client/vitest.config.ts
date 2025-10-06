@@ -1,14 +1,19 @@
 /// <reference types="vitest" />
+import '../../tests/setup/install-test-globals';
+
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
 import type { PluginOption, UserConfig as ViteUserConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
 import {
   assertUsesSharedConfig,
   createVitestConfig,
 } from '../../vitest.shared.config';
+
+const { defineConfig } = (await import('vite')) as typeof import('vite');
+const { default: react } = (await import(
+  '@vitejs/plugin-react'
+)) as typeof import('@vitejs/plugin-react');
 
 const packageRoot = dirname(fileURLToPath(import.meta.url));
 

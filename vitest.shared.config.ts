@@ -279,14 +279,18 @@ export function resolveTsconfigAliases(
 ): Record<string, string> {
   const config = loadTsconfigRecursively(tsconfigPath);
   const paths = config.compilerOptions?.paths ?? {};
+  const tsconfigDir = dirname(resolve(tsconfigPath));
+  const baseUrl = config.compilerOptions?.baseUrl ?? '.';
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const target = value;
-    if (!target) {
+    const candidate = Array.isArray(value) ? value[0] : value;
+    if (!candidate) {
       return null;
     }
-    return [sanitizedKey, target] as const;
+    const normalizedTarget = normalizeAliasTarget(candidate);
+    const resolvedPath = resolve(tsconfigDir, baseUrl, normalizedTarget);
+    return [sanitizedKey, resolvedPath] as const;
   });
 
   const aliases: Record<string, string> = {};
