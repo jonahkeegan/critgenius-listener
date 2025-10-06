@@ -266,7 +266,7 @@ export function registerPerformanceMatchers(): void {
     const processRef = (globalThis as { process?: NodeJS.Process }).process;
     if (processRef?.env?.VITEST_WORKER_ID) {
       throw new Error(
-        'Vitest expect global is unavailable inside a Vitest worker. Ensure registerPerformanceMatchers runs after Vitest initialises globals.'
+        'Vitest expect global is unavailable inside a Vitest worker. Ensure registerPerformanceMatchers runs after Vitest initializes globals.'
       );
     }
     return;
