@@ -22,11 +22,7 @@ const normalizeEncoder = (ctor: typeof TextEncoder): typeof TextEncoder => {
     encode(input?: string): Uint8Array {
       const payload = input ?? '';
       const raw = super.encode(payload);
-      return (
-        raw instanceof Uint8Array
-          ? new Uint8Array(raw)
-          : new Uint8Array(raw as ArrayBufferLike)
-      ) as Uint8Array;
+      return new Uint8Array(raw.buffer);
     }
   }
 
