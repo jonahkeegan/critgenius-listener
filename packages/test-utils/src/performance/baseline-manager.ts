@@ -66,11 +66,16 @@ export class BaselineManager {
   }
 
   async load(): Promise<BaselineFile> {
-    if (!existsSync(this.baselinePath)) {
-      throw new BaselineMissingError(this.baselinePath);
+    let fileContents: string;
+    try {
+      fileContents = await readFile(this.baselinePath, 'utf8');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException)?.code === 'ENOENT') {
+        throw new BaselineMissingError(this.baselinePath);
+      }
+      throw error;
     }
 
-    const fileContents = await readFile(this.baselinePath, 'utf8');
     const parsed = JSON.parse(fileContents) as BaselineFile;
 
     if (!parsed.metrics) {
