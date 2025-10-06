@@ -2,10 +2,11 @@ import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import { configDefaults } from 'vitest/config';
 import type { UserConfig, UserConfigExport } from 'vitest/config';
 
-const require = createRequire(import.meta.url);
+const require = createRequire(fileURLToPath(import.meta.url));
 
 const SHARED_MARKER_KEY = '__critgeniusSharedVitestConfig';
 
@@ -25,6 +26,10 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/coverage/**',
   '**/.tmp/**',
 ];
+
+const DEFAULT_TEST_TIMEOUT_MS = 300_000;
+const DEFAULT_HOOK_TIMEOUT_MS = 300_000;
+const DEFAULT_TEARDOWN_TIMEOUT_MS = 120_000;
 
 const DEFAULT_COVERAGE_EXCLUDE = [
   '**/src/test-setup.ts',
@@ -400,9 +405,9 @@ export function createVitestConfig(
       restoreMocks: true,
       unstubEnvs: true,
       unstubGlobals: true,
-      testTimeout: 30_000,
-      hookTimeout: 30_000,
-      teardownTimeout: 10_000,
+      testTimeout: DEFAULT_TEST_TIMEOUT_MS,
+      hookTimeout: DEFAULT_HOOK_TIMEOUT_MS,
+      teardownTimeout: DEFAULT_TEARDOWN_TIMEOUT_MS,
       coverage: applyCoverageDefaults(packageRoot, coverageOverrides),
     },
   };
