@@ -21,8 +21,7 @@ const normalizeEncoder = (ctor: typeof TextEncoder): typeof TextEncoder => {
   class NormalizedTextEncoder extends Base {
     encode(input?: string): Uint8Array {
       const payload = input ?? '';
-      const raw = super.encode(payload);
-      return new Uint8Array(raw.buffer);
+      return super.encode(payload);
     }
   }
 
