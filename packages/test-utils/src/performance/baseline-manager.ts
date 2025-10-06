@@ -100,6 +100,9 @@ export class BaselineManager {
     scenario: string,
     summary: LatencySummary
   ): Promise<BaselineFile> {
+    BaselineManager.assertSafeObjectKey(category, 'baseline category');
+    BaselineManager.assertSafeObjectKey(scenario, 'baseline scenario');
+
     const baseline = await this.safeLoad();
 
     const metrics: BaselineScenarioMetrics = {
@@ -124,6 +127,18 @@ export class BaselineManager {
     await this.save(baseline);
 
     return baseline;
+  }
+
+  private static readonly unsafeKeys = new Set([
+    '__proto__',
+    'prototype',
+    'constructor',
+  ]);
+
+  private static assertSafeObjectKey(value: string, target: string): void {
+    if (BaselineManager.unsafeKeys.has(value)) {
+      throw new Error(`Refusing to use unsafe ${target} name: "${value}"`);
+    }
   }
 
   async safeLoad(): Promise<BaselineFile> {
