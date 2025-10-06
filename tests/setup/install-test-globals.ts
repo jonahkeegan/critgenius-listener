@@ -19,7 +19,7 @@ const globalRef = globalThis as GlobalWithPolyfills;
 const normalizeEncoder = (ctor: typeof TextEncoder): typeof TextEncoder => {
   const Base = ctor as unknown as typeof TextEncoder;
   class NormalizedTextEncoder extends Base {
-    encode(input?: string): Uint8Array {
+    encode(input?: string): ReturnType<typeof Base.prototype.encode> {
       const payload = input ?? '';
       return super.encode(payload);
     }
