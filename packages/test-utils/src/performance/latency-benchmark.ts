@@ -93,7 +93,7 @@ function calculatePercentile(
   percentile: number
 ): number {
   if (sortedSamples.length === 0) {
-    return 0;
+    return Number.NaN;
   }
 
   if (percentile <= 0) {
