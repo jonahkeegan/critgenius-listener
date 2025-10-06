@@ -5,7 +5,7 @@ import type {
 import type { TestTranscriptSegment } from '../factories/types';
 
 declare module 'vitest' {
-  interface Assertion<T = unknown> {
+  interface Assertion {
     toBeValidTranscript(options?: TranscriptMatcherOptions): this;
     toHaveSpeakerLabel(speaker: string): this;
     toMeetLatencyTarget(targetMs: number): this;
