@@ -279,7 +279,7 @@ export function registerPerformanceMatchers(): void {
 registerPerformanceMatchers();
 
 declare module 'vitest' {
-  interface Assertion<T = any> {
+  interface Assertion<T = unknown> {
     toBeWithinLatencyThreshold(threshold: LatencyThreshold): T;
     toNotRegress(
       baseline: BaselineScenarioMetrics,
