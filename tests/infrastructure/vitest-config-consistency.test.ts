@@ -91,8 +91,29 @@ async function resolveConfig(
   return config as ResolvedConfig;
 }
 
-async function loadConfig(configFile: string): Promise<VitestConfigExport> {
-  const url = `${pathToFileURL(configFile).href}?t=${Date.now()}`;
+function toConfigPath(input: string | URL): string {
+  if (input instanceof URL) {
+    return fileURLToPath(input);
+  }
+
+  if (input.startsWith('file://')) {
+    try {
+      return fileURLToPath(new URL(input));
+    } catch (error) {
+      throw new TypeError(
+        `Unable to convert file URL string to path: ${input}. ${String(error)}`
+      );
+    }
+  }
+
+  return input;
+}
+
+async function loadConfig(
+  configFile: string | URL
+): Promise<VitestConfigExport> {
+  const configPath = toConfigPath(configFile);
+  const url = `${pathToFileURL(configPath).href}?t=${Date.now()}`;
   const module = await import(url);
   return (module as { default?: VitestConfigExport }).default ?? module;
 }
