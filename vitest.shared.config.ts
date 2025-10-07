@@ -103,7 +103,7 @@ interface CreateVitestConfigOptions {
   reporters?: Reporter[];
   testOverrides?: TestConfigOverrides;
   coverageOverrides?: CoverageOverrides;
-  aliasOverrides?: Record<string, string>;
+  aliasOverrides?: Record<string, PathInput>;
 }
 
 const FILE_PROTOCOL_PREFIX = 'file:';
@@ -428,10 +428,15 @@ export function createVitestConfig(
       ? resolve(normalizedPackageRoot, 'tsconfig.json')
       : normalizePathInput(tsconfigPath, normalizedPackageRoot);
 
-  const aliases = {
-    ...resolveTsconfigAliases(resolvedTsconfigPath),
-    ...(aliasOverrides ?? {}),
-  };
+  const aliases: Record<string, string> = Object.fromEntries(
+    Object.entries({
+      ...resolveTsconfigAliases(resolvedTsconfigPath),
+      ...(aliasOverrides ?? {}),
+    }).map(([key, target]) => [
+      key,
+      normalizePathInput(target, normalizedPackageRoot),
+    ])
+  );
 
   if (
     aliases['@critgenius/test-utils'] &&
