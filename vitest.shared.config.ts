@@ -108,24 +108,59 @@ interface CreateVitestConfigOptions {
 
 const FILE_PROTOCOL_PREFIX = 'file:';
 
-function normalizePathInput(input: PathInput, baseDirectory?: string): string {
+function describeInput(value: unknown): string {
+  if (value instanceof URL) {
+    return `URL(${value.toString()})`;
+  }
+  if (typeof value === 'string') {
+    return `string(${value})`;
+  }
+  if (value === null) {
+    return 'null';
+  }
+  return `${typeof value}`;
+}
+
+function ensurePathString(input: PathInput, context: string): string {
   if (input instanceof URL) {
     return fileURLToPath(input);
   }
 
   if (typeof input !== 'string') {
-    throw new TypeError('Path input must be a string or URL instance');
+    throw new TypeError(
+      `${context} must be a string or URL instance. Received: ${describeInput(input)}`
+    );
   }
 
   if (input.startsWith(FILE_PROTOCOL_PREFIX)) {
-    return fileURLToPath(new URL(input));
-  }
-
-  if (baseDirectory && !isAbsolute(input)) {
-    return resolve(baseDirectory, input);
+    try {
+      return fileURLToPath(new URL(input));
+    } catch (error) {
+      throw new TypeError(
+        `${context} is not a valid file URL: ${describeInput(input)}. ${String(error)}`
+      );
+    }
   }
 
   return input;
+}
+
+function normalizePathInput(
+  input: PathInput,
+  baseDirectory?: PathInput
+): string {
+  const baseDirectoryPath =
+    baseDirectory === undefined
+      ? undefined
+      : ensurePathString(baseDirectory, 'baseDirectory');
+
+  const normalizedInput = ensurePathString(input, 'Path input');
+
+  if (baseDirectoryPath && !isAbsolute(normalizedInput)) {
+    return resolve(baseDirectoryPath, normalizedInput);
+  }
+
+  return normalizedInput;
 }
 
 interface TsconfigLike {
