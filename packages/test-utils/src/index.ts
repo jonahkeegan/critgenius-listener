@@ -5,3 +5,4 @@ export * from './patterns';
 export * from './matchers';
 export * from './runtime';
 export * from './performance';
+export * from './diagnostics';

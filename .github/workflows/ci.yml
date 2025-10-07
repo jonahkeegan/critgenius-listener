@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: true
+      DEBUG_VITEST_PATHS: "true"
+      DEBUG_VITEST_PATH_LEVEL: debug
+      DEBUG_VITEST_PATH_STACKS: "true"
+      DEBUG_VITEST_PATH_OUTPUT: ./artifacts/vitest-paths.log
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -43,9 +47,16 @@ jobs:
       - name: Type check
         run: pnpm run type-check
 
-      - name: Unit tests (temporary allow-fail)
+      - name: Unit tests
         run: pnpm run test
-        continue-on-error: true
+
+      - name: Upload path diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-path-diagnostics
+          path: artifacts/vitest-paths.log
+          if-no-files-found: ignore
 
       - name: Validate service manifest
         run: node scripts/service-manifest-loader.mjs --manifest ./services.yaml

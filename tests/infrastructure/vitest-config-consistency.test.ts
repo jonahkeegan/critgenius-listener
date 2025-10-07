@@ -8,11 +8,14 @@ import {
   defaultVitestIncludePatterns,
   resolveTsconfigAliases,
   sharedVitestConfigMarkerKey,
+  __pathDiagnostics,
 } from '../../vitest.shared.config';
+import { PathValidationError } from '@critgenius/test-utils/diagnostics';
 import type { UserConfigExport } from 'vitest/config';
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(testDirectory, '../..');
+const { ensurePathString } = __pathDiagnostics;
 
 type VitestConfigExport =
   | UserConfigExport
@@ -91,22 +94,33 @@ async function resolveConfig(
   return config as ResolvedConfig;
 }
 
-function toConfigPath(input: string | URL): string {
+function toConfigPath(input: string | URL | { href: string }): string {
   if (input instanceof URL) {
     return fileURLToPath(input);
   }
 
-  if (input.startsWith('file://')) {
+  if (typeof input === 'object' && input !== null && 'href' in input) {
+    const href = (input as { href: string }).href;
+    return fileURLToPath(new URL(href));
+  }
+
+  if (typeof input !== 'string') {
+    throw new TypeError(`Unsupported config path input type: ${typeof input}`);
+  }
+
+  const trimmed = input.trim();
+
+  if (trimmed.startsWith('file://')) {
     try {
-      return fileURLToPath(new URL(input));
+      return fileURLToPath(new URL(trimmed));
     } catch (error) {
       throw new TypeError(
-        `Unable to convert file URL string to path: ${input}. ${String(error)}`
+        `Unable to convert file URL string to path: ${trimmed}. ${String(error)}`
       );
     }
   }
 
-  return input;
+  return trimmed;
 }
 
 async function loadConfig(
@@ -257,6 +271,35 @@ describe('vitest config consistency', () => {
       );
 
       expect(actualAlias).toEqual(expectedAlias);
+    }
+  });
+});
+
+describe('toConfigPath diagnostics', () => {
+  it('converts URL instances into absolute path strings', () => {
+    const configUrl = pathToFileURL(
+      path.join(workspaceRoot, 'vitest.config.ts')
+    );
+    const result = toConfigPath(configUrl);
+    expect(result).toBe(fileURLToPath(configUrl));
+  });
+
+  it('rejects invalid file URL strings and surfaces TypeError', () => {
+    expect(() => toConfigPath('file://')).toThrow(TypeError);
+  });
+
+  it('rejects unsupported input types and preserves diagnostic context', () => {
+    expect(() => toConfigPath(123 as unknown as URL)).toThrow(TypeError);
+
+    try {
+      ensurePathString('', 'vitest-config-validation');
+      expect.fail('Expected ensurePathString to throw PathValidationError');
+    } catch (error) {
+      expect(error).toBeInstanceOf(PathValidationError);
+      const validationError = error as PathValidationError;
+      expect(validationError.context.operation).toBe(
+        'vitest-config-validation'
+      );
     }
   });
 });

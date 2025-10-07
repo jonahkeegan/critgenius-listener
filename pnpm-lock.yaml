@@ -10,6 +10,9 @@ overrides:
 importers:
   .:
     devDependencies:
+      "@critgenius/test-utils":
+        specifier: workspace:*
+        version: link:packages/test-utils
       "@eslint/eslintrc":
         specifier: ^3.3.1
         version: 3.3.1

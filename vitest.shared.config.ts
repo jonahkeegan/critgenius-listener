@@ -5,6 +5,13 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { configDefaults } from 'vitest/config';
 import type { UserConfig, UserConfigExport } from 'vitest/config';
+import {
+  createPathValidator,
+  PathValidationError as DiagnosticPathValidationError,
+  type DiagnosticConfig as PathDiagnosticConfig,
+  type LogLevel as PathLogLevel,
+  type PathNormalizationContext,
+} from '@critgenius/test-utils/diagnostics';
 
 const require = createRequire(fileURLToPath(import.meta.url));
 
@@ -94,6 +101,9 @@ type CoverageOverrides = CoverageSettings;
 
 type PathInput = string | URL;
 
+const PATH_DIAGNOSTIC_CONFIG = resolvePathDiagnosticConfig();
+const PATH_VALIDATOR = createPathValidator(PATH_DIAGNOSTIC_CONFIG);
+
 interface CreateVitestConfigOptions {
   packageRoot: PathInput;
   environment: string;
@@ -105,8 +115,6 @@ interface CreateVitestConfigOptions {
   coverageOverrides?: CoverageOverrides;
   aliasOverrides?: Record<string, PathInput>;
 }
-
-const FILE_PROTOCOL_PREFIX = 'file:';
 
 function describeInput(value: unknown): string {
   if (value instanceof URL) {
@@ -121,28 +129,149 @@ function describeInput(value: unknown): string {
   return `${typeof value}`;
 }
 
-function ensurePathString(input: PathInput, context: string): string {
-  if (input instanceof URL) {
-    return fileURLToPath(input);
+function resolvePathDiagnosticConfig(): PathDiagnosticConfig {
+  const enabled = coerceBooleanFlag(process.env.DEBUG_VITEST_PATHS, false);
+  const logLevel = coerceLogLevel(
+    process.env.DEBUG_VITEST_PATH_LEVEL,
+    enabled ? 'debug' : 'error'
+  );
+  const captureStackTraces = coerceBooleanFlag(
+    process.env.DEBUG_VITEST_PATH_STACKS,
+    enabled
+  );
+  const outputFile = sanitizeOutputFile(process.env.DEBUG_VITEST_PATH_OUTPUT);
+  const stackFrameLimit = coerceStackFrameLimit(
+    process.env.DEBUG_VITEST_PATH_STACK_DEPTH
+  );
+
+  const config: PathDiagnosticConfig = {
+    enabled,
+    logLevel,
+    captureStackTraces,
+  };
+
+  if (outputFile) {
+    config.outputFile = outputFile;
   }
 
-  if (typeof input !== 'string') {
-    throw new TypeError(
-      `${context} must be a string or URL instance. Received: ${describeInput(input)}`
+  if (typeof stackFrameLimit === 'number') {
+    config.stackFrameLimit = stackFrameLimit;
+  }
+
+  return config;
+}
+
+function coerceLogLevel(
+  value: string | undefined,
+  defaultLevel: PathLogLevel
+): PathLogLevel {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) {
+    return defaultLevel;
+  }
+
+  const allowed: PathLogLevel[] = ['debug', 'info', 'warn', 'error'];
+  return (allowed.find(level => level === normalized) ??
+    defaultLevel) as PathLogLevel;
+}
+
+function coerceBooleanFlag(
+  value: string | undefined,
+  defaultValue: boolean
+): boolean {
+  if (value === undefined || value === null) {
+    return defaultValue;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === '') {
+    return defaultValue;
+  }
+
+  return !['false', '0', 'no', 'off'].includes(normalized);
+}
+
+function coerceStackFrameLimit(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    return undefined;
+  }
+
+  return parsed;
+}
+
+function sanitizeOutputFile(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed === '') {
+    return undefined;
+  }
+
+  return isAbsolute(trimmed) ? trimmed : resolve(process.cwd(), trimmed);
+}
+
+function sanitizePathForLogging(path: string): string {
+  const trimmed = path.trim();
+  if (trimmed.length <= 260) {
+    return trimmed;
+  }
+  return `${trimmed.slice(0, 257)}...`;
+}
+
+function logPathOperation(
+  context: PathNormalizationContext,
+  details: Record<string, unknown> = {}
+): void {
+  if (!PATH_DIAGNOSTIC_CONFIG.enabled) {
+    return;
+  }
+
+  const payload: Record<string, unknown> = {
+    operation: context.operation,
+    inputType: context.inputType,
+    inputValue: context.inputValue,
+    environment: context.environment,
+    timestamp: new Date(context.timestamp).toISOString(),
+    environmentInfo: context.environmentInfo,
+    ...details,
+  };
+
+  if (context.stackTrace.length > 0) {
+    payload.stackTrace = context.stackTrace;
+  }
+
+  console.debug('[VitestPathDiagnostics]', payload);
+}
+
+function ensurePathString(input: PathInput, context: string): string {
+  const validation = PATH_VALIDATOR.validate(input, context);
+
+  if (!validation.isValid) {
+    const fallbackMessage = `${context} must be a string or URL instance. Received: ${describeInput(input)}`;
+    const primaryMessage = validation.errors[0];
+    const message = primaryMessage
+      ? `${context}: ${primaryMessage}`
+      : fallbackMessage;
+
+    throw new DiagnosticPathValidationError(
+      message,
+      validation.context,
+      validation.originalError
     );
   }
 
-  if (input.startsWith(FILE_PROTOCOL_PREFIX)) {
-    try {
-      return fileURLToPath(new URL(input));
-    } catch (error) {
-      throw new TypeError(
-        `${context} is not a valid file URL: ${describeInput(input)}. ${String(error)}`
-      );
-    }
-  }
+  logPathOperation(validation.context, {
+    normalizedPath: sanitizePathForLogging(validation.normalizedPath),
+  });
 
-  return input;
+  return validation.normalizedPath;
 }
 
 function normalizePathInput(
@@ -155,12 +284,29 @@ function normalizePathInput(
       : ensurePathString(baseDirectory, 'baseDirectory');
 
   const normalizedInput = ensurePathString(input, 'Path input');
+  let resolvedPath = normalizedInput;
 
   if (baseDirectoryPath && !isAbsolute(normalizedInput)) {
-    return resolve(baseDirectoryPath, normalizedInput);
+    resolvedPath = resolve(baseDirectoryPath, normalizedInput);
   }
 
-  return normalizedInput;
+  if (PATH_DIAGNOSTIC_CONFIG.enabled) {
+    const context = PATH_VALIDATOR.captureContext(
+      'normalizePathInput:result',
+      resolvedPath
+    );
+    const details: Record<string, unknown> = {
+      wasRelative: !isAbsolute(normalizedInput),
+    };
+
+    if (baseDirectoryPath) {
+      details.baseDirectory = sanitizePathForLogging(baseDirectoryPath);
+    }
+
+    logPathOperation(context, details);
+  }
+
+  return resolvedPath;
 }
 
 interface TsconfigLike {
@@ -378,6 +524,11 @@ export function resolveTsconfigAliases(
 
   return aliases;
 }
+
+export const __pathDiagnostics = {
+  ensurePathString,
+  normalizePathInput,
+};
 
 function applyCoverageDefaults(
   packageRoot: string,

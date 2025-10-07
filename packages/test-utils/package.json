@@ -38,6 +38,10 @@
     "./performance": {
       "import": "./dist/performance/index.js",
       "types": "./dist/performance/index.d.ts"
+    },
+    "./diagnostics": {
+      "import": "./dist/diagnostics/index.js",
+      "types": "./dist/diagnostics/index.d.ts"
     }
   },
   "files": ["dist/**/*", "package.json", "README.md"],

@@ -129,6 +129,7 @@
     }
   },
   "devDependencies": {
+    "@critgenius/test-utils": "workspace:*",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
     "@testing-library/jest-dom": "^6.6.4",
