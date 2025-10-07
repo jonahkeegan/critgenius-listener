@@ -129,11 +129,40 @@ function toAliasRecord(alias: unknown): Record<string, string> {
   return { ...(alias as Record<string, string>) };
 }
 
+function normalizePathValue(value: unknown, context: string): string {
+  if (value instanceof URL) {
+    return fileURLToPath(value);
+  }
+
+  if (typeof value === 'string') {
+    if (value.startsWith('file://')) {
+      try {
+        return fileURLToPath(new URL(value));
+      } catch (error) {
+        throw new TypeError(
+          `${context} received an invalid file URL string: ${value}. ${String(error)}`
+        );
+      }
+    }
+
+    return value;
+  }
+
+  throw new TypeError(
+    `${context} must resolve to a filesystem path string or file URL. Received ${String(
+      value
+    )}`
+  );
+}
+
 function normalizePaths(
   record: Record<string, string>
 ): Record<string, string> {
   return Object.fromEntries(
-    Object.entries(record).map(([key, value]) => [key, path.resolve(value)])
+    Object.entries(record).map(([key, value]) => [
+      key,
+      path.resolve(normalizePathValue(value, `alias mapping for ${key}`)),
+    ])
   );
 }
 
