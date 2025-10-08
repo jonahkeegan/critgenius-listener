@@ -1,11 +1,20 @@
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { configDefaults } from 'vitest/config';
+import { fileURLToPath, URL as NodeURL } from 'node:url';
 import type { UserConfig, UserConfigExport } from 'vitest/config';
+import {
+  createPathValidator,
+  PathValidationError as DiagnosticPathValidationError,
+  type DiagnosticConfig as PathDiagnosticConfig,
+  type LogLevel as PathLogLevel,
+  type PathNormalizationContext,
+} from '@critgenius/test-utils/diagnostics';
 
-const require = createRequire(import.meta.url);
+const require = createRequire(fileURLToPath(import.meta.url));
+
+const { configDefaults } = await importVitestConfigDefaults();
 
 const SHARED_MARKER_KEY = '__critgeniusSharedVitestConfig';
 
@@ -15,6 +24,7 @@ const DEFAULT_INCLUDE_PATTERNS = [
   'tests/**/*.{test,spec}.{ts,tsx}',
   'tests/**/*.integration.test.{ts,tsx}',
   'tests/**/*.e2e.test.{ts,tsx}',
+  'tests/**/*.perf.test.{ts,tsx}',
 ];
 
 const DEFAULT_EXCLUDE_PATTERNS = [
@@ -24,6 +34,10 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/coverage/**',
   '**/.tmp/**',
 ];
+
+const DEFAULT_TEST_TIMEOUT_MS = 300_000;
+const DEFAULT_HOOK_TIMEOUT_MS = 300_000;
+const DEFAULT_TEARDOWN_TIMEOUT_MS = 120_000;
 
 const DEFAULT_COVERAGE_EXCLUDE = [
   '**/src/test-setup.ts',
@@ -86,16 +100,243 @@ type CoverageThresholds = {
 
 type CoverageOverrides = CoverageSettings;
 
+type PathInput = string | URL;
+
+const PATH_DIAGNOSTIC_CONFIG = resolvePathDiagnosticConfig();
+const PATH_VALIDATOR = createPathValidator(PATH_DIAGNOSTIC_CONFIG);
+
+async function importVitestConfigDefaults(): Promise<
+  typeof import('vitest/config')
+> {
+  const originalURL = globalThis.URL;
+  const shouldSwap = originalURL !== NodeURL;
+
+  if (shouldSwap) {
+    Object.defineProperty(globalThis, 'URL', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: NodeURL,
+    });
+  }
+
+  try {
+    return await import('vitest/config');
+  } finally {
+    if (shouldSwap) {
+      Object.defineProperty(globalThis, 'URL', {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: originalURL,
+      });
+    }
+  }
+}
+
 interface CreateVitestConfigOptions {
-  packageRoot: string;
+  packageRoot: PathInput;
   environment: string;
-  setupFiles?: string[];
-  tsconfigPath?: string;
+  setupFiles?: PathInput[];
+  tsconfigPath?: PathInput;
   globals?: boolean;
   reporters?: Reporter[];
   testOverrides?: TestConfigOverrides;
   coverageOverrides?: CoverageOverrides;
-  aliasOverrides?: Record<string, string>;
+  aliasOverrides?: Record<string, PathInput>;
+}
+
+function describeInput(value: unknown): string {
+  if (value instanceof URL) {
+    return `URL(${value.toString()})`;
+  }
+  if (typeof value === 'string') {
+    return `string(${value})`;
+  }
+  if (value === null) {
+    return 'null';
+  }
+  return `${typeof value}`;
+}
+
+function resolvePathDiagnosticConfig(): PathDiagnosticConfig {
+  const enabled = coerceBooleanFlag(process.env.DEBUG_VITEST_PATHS, false);
+  const logLevel = coerceLogLevel(
+    process.env.DEBUG_VITEST_PATH_LEVEL,
+    enabled ? 'debug' : 'error'
+  );
+  const captureStackTraces = coerceBooleanFlag(
+    process.env.DEBUG_VITEST_PATH_STACKS,
+    enabled
+  );
+  const outputFile = sanitizeOutputFile(process.env.DEBUG_VITEST_PATH_OUTPUT);
+  const stackFrameLimit = coerceStackFrameLimit(
+    process.env.DEBUG_VITEST_PATH_STACK_DEPTH
+  );
+
+  const config: PathDiagnosticConfig = {
+    enabled,
+    logLevel,
+    captureStackTraces,
+  };
+
+  if (outputFile) {
+    config.outputFile = outputFile;
+  }
+
+  if (typeof stackFrameLimit === 'number') {
+    config.stackFrameLimit = stackFrameLimit;
+  }
+
+  return config;
+}
+
+function coerceLogLevel(
+  value: string | undefined,
+  defaultLevel: PathLogLevel
+): PathLogLevel {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) {
+    return defaultLevel;
+  }
+
+  const allowed: PathLogLevel[] = ['debug', 'info', 'warn', 'error'];
+  return (allowed.find(level => level === normalized) ??
+    defaultLevel) as PathLogLevel;
+}
+
+function coerceBooleanFlag(
+  value: string | undefined,
+  defaultValue: boolean
+): boolean {
+  if (value === undefined || value === null) {
+    return defaultValue;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === '') {
+    return defaultValue;
+  }
+
+  return !['false', '0', 'no', 'off'].includes(normalized);
+}
+
+function coerceStackFrameLimit(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  if (Number.isNaN(parsed) || parsed <= 0) {
+    return undefined;
+  }
+
+  return parsed;
+}
+
+function sanitizeOutputFile(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed === '') {
+    return undefined;
+  }
+
+  return isAbsolute(trimmed) ? trimmed : resolve(process.cwd(), trimmed);
+}
+
+function sanitizePathForLogging(path: string): string {
+  const trimmed = path.trim();
+  if (trimmed.length <= 260) {
+    return trimmed;
+  }
+  return `${trimmed.slice(0, 257)}...`;
+}
+
+function logPathOperation(
+  context: PathNormalizationContext,
+  details: Record<string, unknown> = {}
+): void {
+  if (!PATH_DIAGNOSTIC_CONFIG.enabled) {
+    return;
+  }
+
+  const payload: Record<string, unknown> = {
+    operation: context.operation,
+    inputType: context.inputType,
+    inputValue: context.inputValue,
+    environment: context.environment,
+    timestamp: new Date(context.timestamp).toISOString(),
+    environmentInfo: context.environmentInfo,
+    ...details,
+  };
+
+  if (context.stackTrace.length > 0) {
+    payload.stackTrace = context.stackTrace;
+  }
+
+  console.debug('[VitestPathDiagnostics]', payload);
+}
+
+function ensurePathString(input: PathInput, context: string): string {
+  const validation = PATH_VALIDATOR.validate(input, context);
+
+  if (!validation.isValid) {
+    const fallbackMessage = `${context} must be a string or URL instance. Received: ${describeInput(input)}`;
+    const primaryMessage = validation.errors[0];
+    const message = primaryMessage
+      ? `${context}: ${primaryMessage}`
+      : fallbackMessage;
+
+    throw new DiagnosticPathValidationError(
+      message,
+      validation.context,
+      validation.originalError
+    );
+  }
+
+  logPathOperation(validation.context, {
+    normalizedPath: sanitizePathForLogging(validation.normalizedPath),
+  });
+
+  return validation.normalizedPath;
+}
+
+function normalizePathInput(
+  input: PathInput,
+  baseDirectory?: PathInput
+): string {
+  const baseDirectoryPath =
+    baseDirectory === undefined
+      ? undefined
+      : ensurePathString(baseDirectory, 'baseDirectory');
+
+  const normalizedInput = ensurePathString(input, 'Path input');
+  let resolvedPath = normalizedInput;
+
+  if (baseDirectoryPath && !isAbsolute(normalizedInput)) {
+    resolvedPath = resolve(baseDirectoryPath, normalizedInput);
+  }
+
+  if (PATH_DIAGNOSTIC_CONFIG.enabled) {
+    const context = PATH_VALIDATOR.captureContext(
+      'normalizePathInput:result',
+      resolvedPath
+    );
+    const details: Record<string, unknown> = {
+      wasRelative: !isAbsolute(normalizedInput),
+    };
+
+    if (baseDirectoryPath) {
+      details.baseDirectory = sanitizePathForLogging(baseDirectoryPath);
+    }
+
+    logPathOperation(context, details);
+  }
+
+  return resolvedPath;
 }
 
 interface TsconfigLike {
@@ -104,6 +345,13 @@ interface TsconfigLike {
     paths?: Record<string, string[]>;
   };
   extends?: string;
+}
+
+interface ResolvedTsconfig {
+  compilerOptions?: {
+    baseUrl?: string;
+    paths?: Record<string, string>;
+  };
 }
 
 /**
@@ -184,10 +432,34 @@ function resolveExtendsPath(
   }
 }
 
+function resolveAliasTargets(
+  paths: Record<string, string[]> | undefined,
+  tsconfigDir: string,
+  baseUrl: string
+): Record<string, string> {
+  const resolved: Record<string, string> = {};
+  if (!paths) {
+    return resolved;
+  }
+
+  for (const [key, value] of Object.entries(paths)) {
+    const target = value?.[0];
+    if (!target) {
+      continue;
+    }
+
+    const normalizedTarget = normalizeAliasTarget(target);
+    const absoluteTarget = resolve(tsconfigDir, baseUrl, normalizedTarget);
+    resolved[key] = absoluteTarget;
+  }
+
+  return resolved;
+}
+
 function loadTsconfigRecursively(
   tsconfigPath: string,
   visited: Set<string> = new Set()
-): TsconfigLike {
+): ResolvedTsconfig {
   const normalizedPath = resolve(tsconfigPath);
 
   if (visited.has(normalizedPath)) {
@@ -204,8 +476,9 @@ function loadTsconfigRecursively(
 
   const fileContent = readFileSync(normalizedPath, 'utf8');
   const parsed = JSON.parse(stripJsonComments(fileContent)) as TsconfigLike;
+  const tsconfigDir = dirname(normalizedPath);
 
-  const baseConfig: TsconfigLike = parsed.extends
+  const baseConfig: ResolvedTsconfig = parsed.extends
     ? loadTsconfigRecursively(
         resolveExtendsPath(parsed.extends, dirname(normalizedPath)) ??
           parsed.extends,
@@ -213,20 +486,23 @@ function loadTsconfigRecursively(
       )
     : {};
 
-  const mergedPaths = {
-    ...(baseConfig.compilerOptions?.paths ?? {}),
-    ...(parsed.compilerOptions?.paths ?? {}),
-  };
-
-  const mergedBaseUrl =
-    parsed.compilerOptions?.baseUrl ??
-    baseConfig.compilerOptions?.baseUrl ??
-    '.';
+  const baseCompilerOptions = baseConfig.compilerOptions ?? {};
+  const basePaths = baseCompilerOptions.paths ?? {};
+  const currentBaseUrl = parsed.compilerOptions?.baseUrl ?? '.';
+  const currentPaths = resolveAliasTargets(
+    parsed.compilerOptions?.paths,
+    tsconfigDir,
+    currentBaseUrl
+  );
 
   return {
     compilerOptions: {
-      baseUrl: mergedBaseUrl,
-      paths: mergedPaths,
+      baseUrl:
+        parsed.compilerOptions?.baseUrl ?? baseCompilerOptions.baseUrl ?? '.',
+      paths: {
+        ...basePaths,
+        ...currentPaths,
+      },
     },
   };
 }
@@ -243,21 +519,18 @@ export function resolveTsconfigAliases(
 ): Record<string, string> {
   const config = loadTsconfigRecursively(tsconfigPath);
   const paths = config.compilerOptions?.paths ?? {};
+  const tsconfigDir = dirname(resolve(tsconfigPath));
   const baseUrl = config.compilerOptions?.baseUrl ?? '.';
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const target = value?.[0];
-    if (!target) {
+    const candidate = Array.isArray(value) ? value[0] : value;
+    if (!candidate) {
       return null;
     }
-    const normalizedTarget = normalizeAliasTarget(target);
-    const resolvedTarget = resolve(
-      dirname(tsconfigPath),
-      baseUrl,
-      normalizedTarget
-    );
-    return [sanitizedKey, resolvedTarget] as const;
+    const normalizedTarget = normalizeAliasTarget(candidate);
+    const resolvedPath = resolve(tsconfigDir, baseUrl, normalizedTarget);
+    return [sanitizedKey, resolvedPath] as const;
   });
 
   const aliases: Record<string, string> = {};
@@ -267,8 +540,25 @@ export function resolveTsconfigAliases(
     aliases[aliasKey] = aliasPath;
   }
 
+  const testUtilsAlias = aliases['@critgenius/test-utils'];
+  if (testUtilsAlias && !aliases['@critgenius/test-utils/performance']) {
+    const normalizedBase = testUtilsAlias.endsWith('.ts')
+      ? dirname(testUtilsAlias)
+      : testUtilsAlias;
+    aliases['@critgenius/test-utils/performance'] = resolve(
+      normalizedBase,
+      'performance',
+      'index.ts'
+    );
+  }
+
   return aliases;
 }
+
+export const __pathDiagnostics = {
+  ensurePathString,
+  normalizePathInput,
+};
 
 function applyCoverageDefaults(
   packageRoot: string,
@@ -304,7 +594,7 @@ export function createVitestConfig(
     packageRoot,
     environment,
     setupFiles = [],
-    tsconfigPath = resolve(packageRoot, 'tsconfig.json'),
+    tsconfigPath,
     globals = true,
     reporters = DEFAULT_REPORTERS,
     testOverrides,
@@ -312,17 +602,45 @@ export function createVitestConfig(
     aliasOverrides,
   } = options;
 
-  const aliases = {
-    ...resolveTsconfigAliases(tsconfigPath),
-    ...(aliasOverrides ?? {}),
-  };
+  const normalizedPackageRoot = normalizePathInput(packageRoot);
+
+  const resolvedTsconfigPath =
+    tsconfigPath === undefined
+      ? resolve(normalizedPackageRoot, 'tsconfig.json')
+      : normalizePathInput(tsconfigPath, normalizedPackageRoot);
+
+  const aliases: Record<string, string> = Object.fromEntries(
+    Object.entries({
+      ...resolveTsconfigAliases(resolvedTsconfigPath),
+      ...(aliasOverrides ?? {}),
+    }).map(([key, target]) => [
+      key,
+      normalizePathInput(target, normalizedPackageRoot),
+    ])
+  );
+
+  if (
+    aliases['@critgenius/test-utils'] &&
+    !aliases['@critgenius/test-utils/performance']
+  ) {
+    const testUtilsBase = aliases['@critgenius/test-utils'];
+    const normalizedBase = testUtilsBase.endsWith('.ts')
+      ? dirname(testUtilsBase)
+      : testUtilsBase;
+
+    aliases['@critgenius/test-utils/performance'] = resolve(
+      normalizedBase,
+      'performance',
+      'index.ts'
+    );
+  }
 
   const normalizedSetupFiles = setupFiles.map(file =>
-    file.startsWith('file:') ? file : resolve(packageRoot, file)
+    normalizePathInput(file, normalizedPackageRoot)
   );
 
   const baseConfig: SharedUserConfig = {
-    root: packageRoot,
+    root: normalizedPackageRoot,
     resolve: {
       alias: aliases,
     },
@@ -339,12 +657,16 @@ export function createVitestConfig(
       restoreMocks: true,
       unstubEnvs: true,
       unstubGlobals: true,
-      testTimeout: 30_000,
-      hookTimeout: 30_000,
-      teardownTimeout: 10_000,
-      coverage: applyCoverageDefaults(packageRoot, coverageOverrides),
+      testTimeout: DEFAULT_TEST_TIMEOUT_MS,
+      hookTimeout: DEFAULT_HOOK_TIMEOUT_MS,
+      teardownTimeout: DEFAULT_TEARDOWN_TIMEOUT_MS,
+      coverage: applyCoverageDefaults(normalizedPackageRoot, coverageOverrides),
     },
   };
+
+  if (process.env.DEBUG_VITEST_ALIASES === 'true') {
+    console.log('[vitest config] alias mapping for', packageRoot, aliases);
+  }
 
   if (testOverrides) {
     baseConfig.test = {
@@ -387,7 +709,7 @@ export function createVitestConfig(
 
   const configWithMetadata = Object.assign(baseConfig, {
     [SHARED_MARKER_KEY]: true as const,
-    sourceTsconfig: tsconfigPath,
+    sourceTsconfig: resolvedTsconfigPath,
   } satisfies SharedConfigMetadata);
 
   return configWithMetadata;

@@ -1,17 +1,29 @@
-import { describe, it, expect } from 'vitest';
-import { execFileSync } from 'node:child_process';
+import { beforeAll, describe, it, expect } from 'vitest';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
-function topo(services: Record<string, { dependencies?: string[] }>) {
-  const script = path.resolve(
-    process.cwd(),
-    'scripts/orchestration-v3-bridge.cjs'
+type ServiceGraph = Record<string, { dependencies?: string[] }>;
+
+let topologicalOrder: (services: ServiceGraph) => string[];
+let loadServiceManifest: (manifestPath?: string) => Promise<{
+  services: ServiceGraph;
+}>;
+
+beforeAll(async () => {
+  const orchestratorModule = await import(
+    pathToFileURL(
+      path.resolve(process.cwd(), 'scripts/dev-orchestration.v3.mjs')
+    ).href
   );
-  const out = execFileSync('node', [script, JSON.stringify(services)], {
-    encoding: 'utf8',
-  });
-  return JSON.parse(out);
-}
+  const manifestModule = await import(
+    pathToFileURL(
+      path.resolve(process.cwd(), 'scripts/service-manifest-loader.mjs')
+    ).href
+  );
+
+  topologicalOrder = orchestratorModule.topologicalOrder;
+  loadServiceManifest = manifestModule.loadServiceManifest;
+});
 
 describe('dev-orchestration.v3 topology', () => {
   it('orders simple dependency chain', () => {
@@ -20,7 +32,7 @@ describe('dev-orchestration.v3 topology', () => {
       b: { dependencies: ['a'] },
       c: { dependencies: ['b'] },
     };
-    const order = topo(services);
+    const order = topologicalOrder(services);
     expect(order).toEqual(['a', 'b', 'c']);
   });
 
@@ -30,8 +42,16 @@ describe('dev-orchestration.v3 topology', () => {
       b: { dependencies: ['a'] },
       c: { dependencies: ['b'] },
     };
-    expect(() => topo(services)).toThrow(
+    expect(() => topologicalOrder(services)).toThrow(
       /Cycle detected in service dependency graph: a -> c -> b -> a/
     );
+  });
+
+  it('ensures repository service manifest is acyclic', async () => {
+    const manifest = await loadServiceManifest(
+      path.resolve(process.cwd(), 'services.yaml')
+    );
+
+    expect(() => topologicalOrder(manifest.services)).not.toThrow();
   });
 });

@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@critgenius/shared": "workspace:*",
+    "@critgenius/test-utils": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.1",
@@ -39,7 +40,6 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-refresh": "^0.14.5",
-    "@critgenius/test-utils": "workspace:*",
     "@vitejs/plugin-react": "^4.2.1",
     "react-refresh": "^0.14.0",
     "express": "^4.19.2",

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vitest/config';
+import type { UserConfigExport } from 'vitest/config';
 
 type PackageManifest = {
   name?: string;
@@ -30,7 +30,7 @@ function loadPackageName(manifestPath: string, fallback: string): string {
   }
 }
 
-function resolvePackageProjects(): string[] {
+function resolvePackageProjects(): Array<{ name: string; configPath: string }> {
   if (!existsSync(packagesRoot)) {
     return [];
   }
@@ -53,34 +53,47 @@ function resolvePackageProjects(): string[] {
         `packages/${entry.name}`
       );
 
-      const projectPath = `./packages/${entry.name}`.replace(/\\/g, '/');
-
       return {
         name: packageName,
-        path: projectPath,
+        configPath: `./packages/${entry.name}/vitest.config.ts`.replace(
+          /\\/g,
+          '/'
+        ),
       };
     })
-    .filter((value): value is { name: string; path: string } => Boolean(value))
+    .filter((value): value is { name: string; configPath: string } =>
+      Boolean(value)
+    )
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map(entry => entry.path);
+    .map(entry => entry);
 }
 
 const packageProjects = resolvePackageProjects();
 
-const rootProject = {
-  extends: './vitest.config.ts',
-  test: {
-    name: 'workspace-infrastructure',
-  },
-};
-
-export default defineConfig({
-  test: {
-    reporters: ['default', 'verbose'],
-    coverage: {
-      reporter: ['text', 'json-summary', 'html'],
-      reportsDirectory: workspaceCoverageDirectory,
+const workspaceProjects = [
+  {
+    extends: './vitest.config.ts',
+    test: {
+      name: 'workspace-infrastructure',
+      reporters: ['default', 'verbose'],
+      coverage: {
+        reporter: ['text', 'json-summary', 'html'],
+        reportsDirectory: workspaceCoverageDirectory,
+      },
     },
-    projects: [rootProject, ...packageProjects],
   },
-});
+  ...packageProjects.map(project => ({
+    extends: project.configPath,
+    test: {
+      name: project.name,
+    },
+  })),
+];
+
+const workspaceConfig = {
+  test: {
+    projects: workspaceProjects,
+  },
+} satisfies UserConfigExport;
+
+export default workspaceConfig;

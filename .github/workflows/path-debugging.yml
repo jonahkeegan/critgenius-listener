@@ -1,0 +1,57 @@
+name: Path Diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      vitestPattern:
+        description: Optional Vitest pattern (e.g., tests/infrastructure)
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose-vitest-paths:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: true
+      DEBUG_VITEST_PATHS: "true"
+      DEBUG_VITEST_PATH_LEVEL: debug
+      DEBUG_VITEST_PATH_STACKS: "true"
+      DEBUG_VITEST_PATH_OUTPUT: ./artifacts/vitest-paths.log
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest with diagnostics
+        run: |
+          if [ -n "${{ inputs.vitestPattern }}" ]; then
+            pnpm run test -- ${{ inputs.vitestPattern }}
+          else
+            pnpm run test
+          fi
+
+      - name: Upload path diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-path-diagnostics
+          path: artifacts/vitest-paths.log
+          if-no-files-found: ignore

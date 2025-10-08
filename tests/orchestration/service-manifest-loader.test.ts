@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function loadViaBridge(p?: string) {
   const script = path.resolve(process.cwd(), 'scripts/manifest-dump.cjs');
@@ -19,15 +22,23 @@ describe('service-manifest-loader', () => {
     expect(manifest.services.client.dependencies).toContain('server');
   });
 
-  it('fails validation for missing file', () => {
-    const script = path.resolve(process.cwd(), 'scripts/manifest-dump.cjs');
-    expect(() =>
-      execFileSync(
-        'node',
-        [script, path.resolve(process.cwd(), 'nonexistent-services.yaml')],
-        { encoding: 'utf8' }
-      )
-    ).toThrow(/not found/);
+  it('fails validation for missing file', async () => {
+    const { loadServiceManifest } = await import(
+      pathToFileURL(
+        path.resolve(process.cwd(), 'scripts/service-manifest-loader.mjs')
+      ).href
+    );
+
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'missing-manifest-'));
+    const missingPath = path.join(tempDir, 'services.yaml');
+
+    try {
+      await expect(loadServiceManifest(missingPath)).rejects.toThrow(
+        /not found/
+      );
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 
   it('supports --manifest flag when run directly', () => {

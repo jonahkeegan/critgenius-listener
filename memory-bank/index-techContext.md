@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-02 | Version: 1.18.0 | System Status: Active
+Last Updated: 2025-10-05 | Version: 1.19.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -47,6 +47,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | HTTPS Socket.IO Verification & TLS Resilience | 003 |
 | Vitest Configuration Standardization | 002 |
 | Vitest Workspace Hardening & CI Readiness | 002 |
+| Performance Latency Benchmarking & Regression Detection Harness | 003 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -59,6 +60,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-10-05: Added performance benchmarking harness hardening topic (Task 3.1.3) to segment 003
 - 2025-10-02: Added Vitest workspace hardening & CI readiness topic (Task 3.1.1.1) to segment 002
 - 2025-09-30: Added Vitest configuration standardization topic (Task 3.1.1) to segment 002
 - 2025-09-29: Added HTTPS Socket.IO verification & TLS resilience topic (Task 2.10.5) to segment 003

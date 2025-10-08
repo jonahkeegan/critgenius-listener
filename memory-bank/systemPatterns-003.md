@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-10-03 | Segment Version: 1.9.0
+Last Updated: 2025-10-05 | Segment Version: 1.10.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -105,6 +105,26 @@ Parent Index: `systemPatterns-index.md`
 - Validation: `pnpm --filter @critgenius/test-utils test` exercises package suites (24 tests) and
   `pnpm --filter @critgenius/test-utils build` verifies TypeScript emission.
 
+### Performance Regression Harness Pattern (Task 3.1.3)
+
+- Pattern: Deterministic performance benchmarking pipeline that reuses shared runtime safeguards,
+  mirrors orchestration resolver behavior, and surfaces Vitest lifecycle failures via hardened
+  runner semantics.
+- Implementation: Integrated the proven web encoding polyfill into the shared deterministic test
+  runtime so `TextEncoder`/`TextDecoder` invariants hold during client infrastructure suites;
+  updated the service launcher spec to accept environment-provided `PORT` values consistent with
+  manifest resolution; refactored `scripts/performance/run-tests.mjs` to treat `startVitest` as a
+  long-lived instance (awaiting `runningPromise`, calling `close()`, honoring watch vs. batch flows)
+  and to propagate exit codes for missing or failing performance suites.
+- Benefits: Performance latency benchmarks now execute under real timers without esbuild
+  regressions, orchestration smoke tests align with runtime semantics preventing false negatives,
+  and CI receives accurate exit behavior enabling reliable regression detection and future
+  automation (JSON summaries, watch-mode harness).
+- Validation: `pnpm --filter @critgenius/client test`,
+  `pnpm vitest run tests/orchestration/service-launcher.test.ts`,
+  `node scripts/performance/run-tests.mjs tests/performance/audio-processing.perf.test.ts`, and a
+  negative run against a non-existent file confirm success and failure signaling.
+
 ## Data Flow Patterns
 
 ```
@@ -181,6 +201,8 @@ Character Assignment → Persistent Mapping → Cross-Session Recognition
 3. Redis caching for session & profiles
 4. Memory/resource management for sustained capture
 5. Horizontal load distribution readiness
+6. Deterministic performance benchmarking harness with real-timer execution and hardened Vitest
+   lifecycle management (Task 3.1.3)
 
 ## Error Handling Patterns
 
@@ -240,6 +262,7 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-05: Documented performance regression harness pattern (Task 3.1.3); version bump 1.10.0
 - 2025-10-03: Added shared test utilities library pattern (Task 3.1.2); version bump 1.9.0
 - 2025-10-02: Enhanced Vitest workspace execution pattern with hoisted AssemblyAI mocks and
   Playwright runtime guard (Task 3.1.1.1); version bump 1.8.0

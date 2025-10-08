@@ -30,6 +30,10 @@ const matcherModule = await importWithFallback<
   '../../packages/test-utils/src/matchers/index.ts'
 );
 
-const runtime = runtimeModule.installTestRuntime();
+const useFakeTimersEnv = process.env.CRITGENIUS_TEST_USE_FAKE_TIMERS;
+const runtime = runtimeModule.installTestRuntime({
+  useFakeTimers:
+    useFakeTimersEnv === undefined ? true : useFakeTimersEnv !== 'false',
+});
 runtime.installGlobals();
 matcherModule.registerMatchers();

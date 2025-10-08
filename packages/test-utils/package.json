@@ -34,13 +34,21 @@
     "./matchers": {
       "import": "./dist/matchers/index.js",
       "types": "./dist/matchers/index.d.ts"
+    },
+    "./performance": {
+      "import": "./dist/performance/index.js",
+      "types": "./dist/performance/index.d.ts"
+    },
+    "./diagnostics": {
+      "import": "./dist/diagnostics/index.js",
+      "types": "./dist/diagnostics/index.d.ts"
     }
   },
   "files": ["dist/**/*", "package.json", "README.md"],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc --watch --preserveWatchOutput",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -73,7 +81,8 @@
       "runtime-harness": true,
       "factories": true,
       "fixtures": true,
-      "matchers": true
+      "matchers": true,
+      "performance": true
     }
   },
   "keywords": ["critgenius", "vitest", "testing", "utilities", "factories"]

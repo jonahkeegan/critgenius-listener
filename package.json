@@ -22,6 +22,8 @@
     "test:coverage": "vitest run --config vitest.workspace.ts --coverage --coverage.reportsDirectory=coverage/workspace",
     "test:integration": "pnpm --recursive run test:integration",
     "test:eslint-config": "vitest run tests/eslint/eslint-config.test.ts",
+    "test:performance": "node scripts/performance/run-tests.mjs",
+    "test:performance:watch": "node scripts/performance/run-tests.mjs --watch",
     "test:client": "pnpm --filter @critgenius/client test",
     "test:server": "pnpm --filter @critgenius/server test",
     "test:shared": "pnpm --filter @critgenius/shared test",
@@ -48,7 +50,8 @@
     "format:ci": "pnpm run format:check",
     "clean": "pnpm --recursive run clean && rimraf dist coverage packages/**/dist packages/**/coverage",
     "setup": "pnpm install && pnpm run build",
-    "type-check": "pnpm --filter @critgenius/shared run build && pnpm --recursive run type-check",
+    "type-check": "pnpm --filter @critgenius/shared run build && pnpm --filter @critgenius/test-utils run build && pnpm run type-check:workspace",
+    "type-check:workspace": "pnpm --recursive run type-check",
     "prepare": "husky",
     "precommit:validate": "node scripts/precommit-validate.mjs",
     "precommit:simulate": "node scripts/precommit-simulate.mjs",
@@ -62,7 +65,10 @@
     "generate:proxy-env": "node scripts/generate-proxy-env-example.mjs",
     "generate:proxy-env-example": "node scripts/generate-proxy-env-example.mjs",
     "generate:proxy-docs": "node scripts/generate-proxy-docs.mjs",
-    "validate:proxy": "node scripts/validate-proxy-drift.mjs"
+    "validate:proxy": "node scripts/validate-proxy-drift.mjs",
+    "perf:baseline": "node scripts/performance/establish-baseline.mjs",
+    "perf:compare": "node scripts/performance/compare-performance.mjs",
+    "perf:report": "node scripts/performance/generate-report.mjs"
   },
   "critgenius": {
     "ecosystem": {
@@ -124,6 +130,7 @@
     }
   },
   "devDependencies": {
+    "@critgenius/test-utils": "workspace:*",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
     "@testing-library/jest-dom": "^6.6.4",

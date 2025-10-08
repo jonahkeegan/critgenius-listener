@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-03 | Index Version: 1.11.0 | Status: Active
+Last Updated: 2025-10-05 | Index Version: 1.12.0 | Status: Active
 
 ## Segment Registry
 
@@ -39,6 +39,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Scalability & Deployment                                   | 003     |
 | HTTPS Socket.IO TLS Resilience                             | 003     |
 | HTTPS Documentation & Troubleshooting Playbook             | 003     |
+| Performance Regression Harness (Latency Benchmarking)      | 003     |
 
 ## Maintenance Protocol
 
@@ -55,6 +56,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-05: Added performance regression harness pattern (Task 3.1.3) to segment 003
 - 2025-10-03: Added shared test utilities library pattern (Task 3.1.2) to segment 003
 - 2025-10-02: Expanded Vitest workspace execution pattern with hoisted mocks + Playwright guard
   (Task 3.1.1.1)

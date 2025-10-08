@@ -1,14 +1,33 @@
 /// <reference types="vitest" />
+import '../../tests/setup/install-test-globals';
+
 import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { fileURLToPath, URL as NodeURL } from 'node:url';
 import type { PluginOption, UserConfig as ViteUserConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
 import {
   assertUsesSharedConfig,
   createVitestConfig,
 } from '../../vitest.shared.config';
+
+async function importWithNodeURL<T>(load: () => Promise<T>): Promise<T> {
+  const originalURL = globalThis.URL;
+
+  try {
+    (globalThis as typeof globalThis & { URL: typeof URL }).URL =
+      NodeURL as unknown as typeof URL;
+    return await load();
+  } finally {
+    (globalThis as typeof globalThis & { URL: typeof URL }).URL = originalURL;
+  }
+}
+
+const { defineConfig } = (await importWithNodeURL(
+  () => import('vite')
+)) as typeof import('vite');
+const { default: react } = (await importWithNodeURL(
+  () => import('@vitejs/plugin-react')
+)) as typeof import('@vitejs/plugin-react');
 
 const packageRoot = dirname(fileURLToPath(import.meta.url));
 

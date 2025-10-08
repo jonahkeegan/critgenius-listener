@@ -187,7 +187,7 @@ export const createTestRuntime = (
       afterEach(async () => {
         await runRegisteredTeardowns();
 
-        if (resolved.useFakeTimers) {
+        if (resolved.useFakeTimers && vi.isFakeTimers()) {
           // ensures queued microtasks/timers drained so tests fail fast
           vi.runOnlyPendingTimers();
           vi.useRealTimers();
@@ -261,20 +261,11 @@ export const installTestRuntime = (
 };
 
 export const installTestGlobals = (): void => {
-  const globalRef = globalThis as typeof globalThis & {
-    TextEncoder?: typeof TextEncoder;
-    TextDecoder?: typeof TextDecoder;
+  const globalRef = globalThis as GlobalWithEncoding & {
     crypto?: Crypto;
   };
 
-  if (!globalRef.TextEncoder) {
-    globalRef.TextEncoder =
-      TextEncoder as unknown as typeof globalRef.TextEncoder;
-  }
-  if (!globalRef.TextDecoder) {
-    globalRef.TextDecoder =
-      TextDecoder as unknown as typeof globalRef.TextDecoder;
-  }
+  applyWebEncodingPolyfill(globalRef);
   if (
     !globalRef.crypto ||
     typeof globalRef.crypto.getRandomValues !== 'function'
@@ -356,6 +347,180 @@ const resolveDate = (value: string | number | Date): Date => {
     return new Date(value);
   }
   return new Date(Date.parse(value));
+};
+
+type GlobalWithEncoding = typeof globalThis & {
+  TextEncoder?: typeof TextEncoder;
+  TextDecoder?: typeof TextDecoder;
+  Uint8Array?: typeof Uint8Array;
+  window?: typeof globalThis & {
+    TextEncoder?: typeof TextEncoder;
+    TextDecoder?: typeof TextDecoder;
+  };
+};
+
+const ENCODER_PATCH_SYMBOL = Symbol.for('critgenius.TextEncoderPatched');
+const DECODER_PATCH_SYMBOL = Symbol.for('critgenius.TextDecoderPatched');
+
+const needsEncoderPatch = (globalRef: GlobalWithEncoding): boolean => {
+  try {
+    if (typeof globalRef.TextEncoder !== 'function') {
+      return true;
+    }
+    const encoder = new globalRef.TextEncoder();
+    const Uint8 = globalRef.Uint8Array ?? Uint8Array;
+    return !(encoder.encode('') instanceof Uint8);
+  } catch {
+    return true;
+  }
+};
+
+const needsDecoderPatch = (globalRef: GlobalWithEncoding): boolean => {
+  try {
+    if (typeof globalRef.TextDecoder !== 'function') {
+      return true;
+    }
+    const decoder = new globalRef.TextDecoder();
+    const Uint8 = globalRef.Uint8Array ?? Uint8Array;
+    return decoder.decode(new Uint8()) !== '';
+  } catch {
+    return true;
+  }
+};
+
+const applyWebEncodingPolyfill = (globalRef: GlobalWithEncoding): void => {
+  const windowRef = globalRef.window;
+
+  if (needsEncoderPatch(globalRef)) {
+    const candidate =
+      typeof windowRef?.TextEncoder === 'function'
+        ? windowRef.TextEncoder
+        : TextEncoder;
+    globalRef.TextEncoder =
+      candidate as unknown as typeof globalRef.TextEncoder;
+  }
+
+  normalizeTextEncoderPrototype(globalRef);
+
+  if (needsDecoderPatch(globalRef)) {
+    const candidate =
+      typeof windowRef?.TextDecoder === 'function'
+        ? windowRef.TextDecoder
+        : TextDecoder;
+    globalRef.TextDecoder =
+      candidate as unknown as typeof globalRef.TextDecoder;
+  }
+
+  normalizeTextDecoderPrototype(globalRef);
+};
+
+const normalizeTextEncoderPrototype = (globalRef: GlobalWithEncoding): void => {
+  const Encoder = globalRef.TextEncoder;
+  if (typeof Encoder !== 'function') {
+    return;
+  }
+
+  const prototype = Encoder.prototype as TextEncoder & {
+    [ENCODER_PATCH_SYMBOL]?: boolean;
+  };
+
+  if (prototype?.[ENCODER_PATCH_SYMBOL]) {
+    return;
+  }
+
+  const originalEncode = prototype.encode;
+  if (typeof originalEncode !== 'function') {
+    return;
+  }
+
+  Object.defineProperty(prototype, 'encode', {
+    configurable: true,
+    enumerable: false,
+    writable: true,
+    value(this: TextEncoder, input?: string): Uint8Array {
+      const payload = input ?? '';
+      const result = originalEncode.call(this, payload);
+      if (result instanceof Uint8Array) {
+        return result;
+      }
+      return new Uint8Array(result as ArrayBufferLike);
+    },
+  });
+
+  Object.defineProperty(prototype, ENCODER_PATCH_SYMBOL, {
+    configurable: true,
+    enumerable: false,
+    writable: true,
+    value: true,
+  });
+};
+
+const normalizeTextDecoderPrototype = (globalRef: GlobalWithEncoding): void => {
+  const Decoder = globalRef.TextDecoder;
+  if (typeof Decoder !== 'function') {
+    return;
+  }
+
+  const prototype = Decoder.prototype as TextDecoder & {
+    [DECODER_PATCH_SYMBOL]?: boolean;
+  };
+
+  if (prototype?.[DECODER_PATCH_SYMBOL]) {
+    return;
+  }
+
+  const originalDecode = prototype.decode;
+  if (typeof originalDecode !== 'function') {
+    return;
+  }
+
+  Object.defineProperty(prototype, 'decode', {
+    configurable: true,
+    enumerable: false,
+    writable: true,
+    value(
+      this: TextDecoder,
+      input?: Parameters<TextDecoder['decode']>[0],
+      options?: Parameters<TextDecoder['decode']>[1]
+    ): string {
+      if (
+        input === undefined ||
+        input === null ||
+        input instanceof Uint8Array
+      ) {
+        return originalDecode.call(this, input, options);
+      }
+
+      if (input instanceof ArrayBuffer) {
+        return originalDecode.call(this, new Uint8Array(input), options);
+      }
+
+      if (ArrayBuffer.isView(input)) {
+        const view = input as ArrayBufferView;
+        if (view instanceof Uint8Array) {
+          return originalDecode.call(this, view, options);
+        }
+        return originalDecode.call(
+          this,
+          new Uint8Array(view.buffer, view.byteOffset, view.byteLength),
+          options
+        );
+      }
+
+      return originalDecode.call(
+        this,
+        input as Parameters<TextDecoder['decode']>[0],
+        options
+      );
+    },
+  });
+
+  Object.defineProperty(prototype, DECODER_PATCH_SYMBOL, {
+    configurable: true,
+    enumerable: false,
+    writable: true,
+    value: true,
+  });
 };
 
 const createSeededRandom = (seed: string | number): (() => number) => {
