@@ -37,9 +37,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Build shared first so downstream packages can type-check against its emitted d.ts
-      - name: Build shared package
-        run: pnpm --filter @critgenius/shared run build
+      # Build packages that expose typed entrypoints before lint/type-check
+      - name: Build shared & test-utils packages
+        run: |
+          pnpm --filter @critgenius/shared run build
+          pnpm --filter @critgenius/test-utils run build
 
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci

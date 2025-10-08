@@ -48,7 +48,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc --watch --preserveWatchOutput",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
