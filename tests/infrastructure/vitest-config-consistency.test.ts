@@ -111,6 +111,11 @@ function toConfigPath(input: string | URL | { href: string }): string {
   const trimmed = input.trim();
 
   if (trimmed.startsWith('file://')) {
+    const fileUrlSuffix = trimmed.slice('file://'.length);
+    if (fileUrlSuffix.length === 0 || fileUrlSuffix === '/') {
+      throw new TypeError(`Invalid file URL string: ${trimmed}`);
+    }
+
     try {
       return fileURLToPath(trimmed);
     } catch (error) {
