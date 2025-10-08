@@ -66,7 +66,7 @@ describe('PathValidator', () => {
     const pathString = pathToFileURL(join(tmpdir(), 'file.ts')).toString();
     const result = validator.validate(pathString, 'file-protocol');
     expect(result.isValid).toBe(true);
-    expect(result.normalizedPath).toBe(fileURLToPath(new URL(pathString)));
+    expect(result.normalizedPath).toBe(fileURLToPath(pathString));
   });
 
   it('returns invalid result for empty path strings', () => {

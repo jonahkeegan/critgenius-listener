@@ -170,7 +170,7 @@ describe('CI environment simulation', () => {
       ).toString();
       const result = validator.validate(pathString, 'file-protocol');
       expect(result.isValid).toBe(true);
-      expect(result.normalizedPath).toBe(fileURLToPath(new URL(pathString)));
+      expect(result.normalizedPath).toBe(fileURLToPath(pathString));
     });
 
     it('rejects whitespace-only inputs and includes sanitized context', () => {

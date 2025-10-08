@@ -101,7 +101,7 @@ function toConfigPath(input: string | URL | { href: string }): string {
 
   if (typeof input === 'object' && input !== null && 'href' in input) {
     const href = (input as { href: string }).href;
-    return fileURLToPath(new URL(href));
+    return fileURLToPath(href);
   }
 
   if (typeof input !== 'string') {
@@ -112,7 +112,7 @@ function toConfigPath(input: string | URL | { href: string }): string {
 
   if (trimmed.startsWith('file://')) {
     try {
-      return fileURLToPath(new URL(trimmed));
+      return fileURLToPath(trimmed);
     } catch (error) {
       throw new TypeError(
         `Unable to convert file URL string to path: ${trimmed}. ${String(error)}`
@@ -172,7 +172,7 @@ function normalizePathValue(value: unknown, context: string): string {
   if (typeof value === 'string') {
     if (value.startsWith('file://')) {
       try {
-        return fileURLToPath(new URL(value));
+        return fileURLToPath(value);
       } catch (error) {
         throw new TypeError(
           `${context} received an invalid file URL string: ${value}. ${String(error)}`

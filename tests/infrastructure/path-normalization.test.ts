@@ -42,7 +42,7 @@ describe('ensurePathString', () => {
       join(workspaceRoot, 'README.md')
     ).toString();
     expect(ensurePathString(fileUrlString, 'file-protocol')).toBe(
-      fileURLToPath(new URL(fileUrlString))
+      fileURLToPath(fileUrlString)
     );
   });
 
@@ -106,7 +106,7 @@ describe('normalizePathInput', () => {
     const absoluteTarget = resolve(base, 'src/index.ts');
     const pathString = pathToFileURL(absoluteTarget).toString();
     const result = normalizePathInput(pathString, base);
-    expect(result).toBe(fileURLToPath(new URL(pathString)));
+    expect(result).toBe(fileURLToPath(pathString));
   });
 
   it('converts URL inputs then resolves relative to base', () => {
@@ -197,6 +197,6 @@ describe('normalizePathInput', () => {
       resolve(workspaceRoot, 'packages/client')
     ).toString();
     const result = normalizePathInput('src/app.tsx', base);
-    expect(result).toBe(resolve(fileURLToPath(new URL(base)), 'src/app.tsx'));
+    expect(result).toBe(resolve(fileURLToPath(base), 'src/app.tsx'));
   });
 });

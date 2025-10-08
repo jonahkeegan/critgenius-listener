@@ -272,7 +272,7 @@ export class PathValidator {
 
       const fileUrl = toFileUrl(input);
       this.assertFileUrl(fileUrl, context);
-      return fileURLToPath(fileUrl);
+      return fileURLToPath(fileUrl.toString());
     }
 
     if (typeof input !== 'string') {
@@ -298,7 +298,7 @@ export class PathValidator {
         if (this.config.captureStackTraces && context.stackTrace.length === 0) {
           context.stackTrace = captureStackTrace(this.config.stackFrameLimit);
         }
-        return fileURLToPath(url);
+        return fileURLToPath(url.toString());
       } catch (error) {
         throw new PathValidationError(
           `Invalid file URL path input: ${input}`,

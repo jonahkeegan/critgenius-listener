@@ -2,8 +2,7 @@ import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
-import { configDefaults } from 'vitest/config';
+import { fileURLToPath, URL as NodeURL } from 'node:url';
 import type { UserConfig, UserConfigExport } from 'vitest/config';
 import {
   createPathValidator,
@@ -14,6 +13,8 @@ import {
 } from '@critgenius/test-utils/diagnostics';
 
 const require = createRequire(fileURLToPath(import.meta.url));
+
+const { configDefaults } = await importVitestConfigDefaults();
 
 const SHARED_MARKER_KEY = '__critgeniusSharedVitestConfig';
 
@@ -103,6 +104,35 @@ type PathInput = string | URL;
 
 const PATH_DIAGNOSTIC_CONFIG = resolvePathDiagnosticConfig();
 const PATH_VALIDATOR = createPathValidator(PATH_DIAGNOSTIC_CONFIG);
+
+async function importVitestConfigDefaults(): Promise<
+  typeof import('vitest/config')
+> {
+  const originalURL = globalThis.URL;
+  const shouldSwap = originalURL !== NodeURL;
+
+  if (shouldSwap) {
+    Object.defineProperty(globalThis, 'URL', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: NodeURL,
+    });
+  }
+
+  try {
+    return await import('vitest/config');
+  } finally {
+    if (shouldSwap) {
+      Object.defineProperty(globalThis, 'URL', {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: originalURL,
+      });
+    }
+  }
+}
 
 interface CreateVitestConfigOptions {
   packageRoot: PathInput;
