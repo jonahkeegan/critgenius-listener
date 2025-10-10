@@ -230,7 +230,35 @@ async function readTextFile(path, io = defaultIO) {
 }
 
 function getValueAtPath(object, segments) {
-  return segments.reduce((acc, segment) => (acc && acc[segment] !== undefined ? acc[segment] : undefined), object);
+  return segments.reduce((acc, segment) => {
+    if (acc === null || acc === undefined) {
+      return undefined;
+    }
+
+    if (Array.isArray(acc)) {
+      const index = Number(segment);
+      if (Number.isInteger(index) && index >= 0 && index < acc.length) {
+        return acc[index];
+      }
+      return undefined;
+    }
+
+    if (typeof acc !== 'object') {
+      return undefined;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(acc, segment)) {
+      return undefined;
+    }
+
+    const value = acc[segment];
+
+    if (typeof value === 'function') {
+      return undefined;
+    }
+
+    return value;
+  }, object);
 }
 
 async function validateVersionSources(tool, io, logger, cache) {
