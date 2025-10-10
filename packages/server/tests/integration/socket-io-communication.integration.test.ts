@@ -9,11 +9,11 @@ import {
   waitForSocketEventWithTimeout as waitForSocketEvent,
 } from '@critgenius/test-utils/integration';
 import { waitForCondition } from '@critgenius/test-utils';
-import { environmentSchema } from '@critgenius/shared/config/environment';
 import {
   createIntegrationServer,
   type ServerUnderTest,
 } from '../helpers/createIntegrationServer.js';
+import { loadEnvironmentConfig } from '../helpers/loadEnvironmentConfig.js';
 
 const assemblyAIScenarioRef = vi.hoisted(() => ({
   value: undefined as AssemblyAITestScenario | undefined,
@@ -72,7 +72,7 @@ describe('Socket.IO communication integration', () => {
     harness.registerService({
       name: 'socket-server',
       start: async () => {
-        const env = environmentSchema.parse(process.env);
+        const env = loadEnvironmentConfig();
         server = createIntegrationServer(env);
         await server.start();
       },
