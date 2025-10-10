@@ -77,9 +77,8 @@ export class IntegrationTestHarness {
    */
   async setup(): Promise<IntegrationTestContext> {
     if (this.isSetup) {
-      throw new Error(
-        'IntegrationTestHarness.setup() called multiple times without teardown()'
-      );
+      // Idempotent: return the current context when setup has already completed.
+      return this.getContext();
     }
 
     const preset = resolveEnvironmentPreset(this.options.preset);
