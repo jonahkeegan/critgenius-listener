@@ -6,6 +6,8 @@ import {
   allocateAvailablePort,
   localDevelopmentPreset,
   mergePresets,
+  isProcessingUpdatePayload,
+  isTranscriptionStatusPayload,
   waitForSocketEventWithTimeout as waitForSocketEvent,
 } from '@critgenius/test-utils/integration';
 import { waitForCondition } from '@critgenius/test-utils';
@@ -110,34 +112,6 @@ describe('Socket.IO communication integration', () => {
       confidence?: number;
     };
 
-    const isProcessingUpdate = (
-      value: unknown
-    ): value is { uploadId: string; status: string } => {
-      if (typeof value !== 'object' || value === null) {
-        return false;
-      }
-
-      const candidate = value as { uploadId?: unknown; status?: unknown };
-      return (
-        typeof candidate.uploadId === 'string' &&
-        typeof candidate.status === 'string'
-      );
-    };
-
-    const isTranscriptionStatus = (
-      value: unknown
-    ): value is { sessionId: string; status: string } => {
-      if (typeof value !== 'object' || value === null) {
-        return false;
-      }
-
-      const candidate = value as { sessionId?: unknown; status?: unknown };
-      return (
-        typeof candidate.sessionId === 'string' &&
-        typeof candidate.status === 'string'
-      );
-    };
-
     const transcriptionPromise = waitForSocketEvent<TranscriptionUpdate>(
       client!,
       'transcriptionUpdate',
@@ -155,7 +129,7 @@ describe('Socket.IO communication integration', () => {
       timeoutMs: 5_000,
       message: 'Timeout waiting for join session acknowledgement',
       filter: payload =>
-        isProcessingUpdate(payload) &&
+        isProcessingUpdatePayload(payload) &&
         payload.uploadId === sessionId &&
         payload.status === 'pending',
     });
@@ -166,7 +140,7 @@ describe('Socket.IO communication integration', () => {
       timeoutMs: 5_000,
       message: 'Timeout waiting for transcription status running update',
       filter: payload =>
-        isTranscriptionStatus(payload) &&
+        isTranscriptionStatusPayload(payload) &&
         payload.sessionId === sessionId &&
         payload.status === 'running',
     });

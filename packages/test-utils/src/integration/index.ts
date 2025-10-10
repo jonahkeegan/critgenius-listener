@@ -9,6 +9,7 @@ export {
   DEFAULT_SOCKET_EVENT_TIMEOUT_MS,
   type WaitForSocketEventOptions,
 } from './socket/socketEventHelper';
+export * from './socket/socketPayloadGuards';
 export * from './assemblyai/assemblyAITestScenarios';
 export * from './resilience/resilienceScenarioBuilder';
 export * from './timeoutPromise';
