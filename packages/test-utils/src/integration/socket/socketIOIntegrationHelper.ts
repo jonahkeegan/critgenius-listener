@@ -28,6 +28,23 @@ export type SocketIntegrationContext = {
 };
 
 const DEFAULT_TIMEOUT_MS = 5_000;
+const IGNORABLE_SERVER_CODES = new Set(['ERR_SERVER_NOT_RUNNING']);
+
+function isIgnorableServerError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const { code } = error as Partial<NodeJS.ErrnoException>;
+  return typeof code === 'string' && IGNORABLE_SERVER_CODES.has(code);
+}
+
+function logCleanupError(stage: 'socket.io' | 'http', error: unknown): void {
+  console.error(
+    `[socketIOIntegrationHelper] Unexpected ${stage} shutdown error during integration test cleanup`,
+    error
+  );
+}
 
 async function waitForSocketEvent<T = unknown>(
   socket: {
@@ -112,10 +129,8 @@ export async function createSocketIntegrationContext(
 
       await new Promise<void>((resolve, reject) => {
         io.close(error => {
-          if (
-            error &&
-            (error as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING'
-          ) {
+          if (error && !isIgnorableServerError(error)) {
+            logCleanupError('socket.io', error);
             reject(error);
             return;
           }
@@ -125,10 +140,8 @@ export async function createSocketIntegrationContext(
 
       await new Promise<void>((resolve, reject) => {
         httpServer.close(error => {
-          if (
-            error &&
-            (error as NodeJS.ErrnoException).code !== 'ERR_SERVER_NOT_RUNNING'
-          ) {
+          if (error && !isIgnorableServerError(error)) {
+            logCleanupError('http', error);
             reject(error);
             return;
           }
