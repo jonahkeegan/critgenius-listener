@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-05 | Index Version: 1.12.0 | Status: Active
+Last Updated: 2025-10-10 | Index Version: 1.14.0 | Status: Active
 
 ## Segment Registry
 
@@ -40,6 +40,9 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | HTTPS Socket.IO TLS Resilience                             | 003     |
 | HTTPS Documentation & Troubleshooting Playbook             | 003     |
 | Performance Regression Harness (Latency Benchmarking)      | 003     |
+| Path Diagnostics & Normalization Guardrails                | 003     |
+| Socket.IO Integration Timeout Stabilization                | 003     |
+| Integration Testing Harness & Cross-Package Workflows      | 003     |
 
 ## Maintenance Protocol
 
@@ -56,6 +59,12 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-10: Added integration testing harness & cross-package workflow pattern (Task 3.1.4) to
+  segment 003
+- 2025-10-10: Added Socket.IO integration timeout stabilization pattern (Task 3.1.3 latency harness
+  work) to segment 003
+- 2025-10-08: Added path diagnostics & normalization guardrail pattern (Task 3.1.3 Path TypeError
+  investigation) to segment 003
 - 2025-10-05: Added performance regression harness pattern (Task 3.1.3) to segment 003
 - 2025-10-03: Added shared test utilities library pattern (Task 3.1.2) to segment 003
 - 2025-10-02: Expanded Vitest workspace execution pattern with hoisted mocks + Playwright guard

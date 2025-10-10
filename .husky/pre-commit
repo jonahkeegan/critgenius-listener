@@ -5,7 +5,15 @@ set -e
 
 echo "🚦 Pre-commit quality gate starting..."
 
-echo "🔧 Running lint-staged (ESLint + Prettier on staged files)..."
+echo "�️ Validating tooling versions against policy..."
+if node scripts/validate-versions.mjs --pre-commit; then
+	echo "✅ Tool versions aligned"
+else
+	echo "❌ Tool version validation failed – see output above"
+	exit 1
+fi
+
+echo "�🔧 Running lint-staged (ESLint + Prettier on staged files)..."
 if npx lint-staged; then
 	echo "✅ Lint & format passed"
 else

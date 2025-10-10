@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-05 **Version:** 2.30.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-10 **Version:** 2.32.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -84,7 +84,24 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - API design and integration strategies
 - Deployment and infrastructure patterns
 
-### Latest Updates (2025-10-05 – Performance Latency Benchmarking & Regression Detection)
+### Latest Updates (2025-10-10 – Socket.IO Integration Timeout Stabilization)
+
+- LATENCY BENCHMARK REGRESSION HARNESS HARDENED (Task 3.1.3 Socket.IO Integration Flow)
+  - Awaited Socket.IO join acknowledgements, `transcriptionStatus` transitions, and AssemblyAI chunk ingestion inside integration tests to eliminate the 300 s timeout and guarantee deterministic assertions.
+  - Promoted `waitForSocketEventWithTimeout` as the canonical typed helper within `@critgenius/test-utils`, removing duplicate exports and `any` escapes while updating documentation and all downstream suites.
+  - Guarded orchestration teardown (`httpServer.close()`) to avoid `ERR_SERVER_NOT_RUNNING` noise and froze AssemblyAI mock buffers so assertions operate on stable snapshots; dedicated unit tests lock in the copy semantics.
+  - Verification: `pnpm --filter @critgenius/server test`, `pnpm --filter @critgenius/test-utils test`, `pnpm -w lint`, `pnpm -w type-check`.
+
+### Latest Updates (2025-10-08 – Node 18 Path TypeError Diagnostics & Guardrails)
+
+- PATH NORMALIZATION HARDENING (Task 3.1.3 Path TypeError Investigation Enhancement)
+  - Reproduced the GitHub Actions URL-based `TypeError` locally by matching Node v18.20.4, confirming CI parity prior to remediation.
+  - Added `EnvironmentDetector` and `PathValidator` utilities in `@critgenius/test-utils` to sanitize diagnostics, capture stack traces, and normalize URL/`file://` inputs across Vitest entry points.
+  - Updated `vitest.shared.config.ts` and `packages/client/vitest.config.ts` to require string paths, temporarily swap `globalThis.URL` during dynamic imports, and pipe alias resolution through the validator.
+  - Authored infrastructure suites (`path-normalization`, `path-validator`, `ci-simulation`) and enabled DEBUG artifact uploads in CI for regression visibility; restored infra checklist item 3.1.4.5 and extended ESLint regression timeout for slow runners.
+  - Follow-Ups: Monitor DEBUG artifact noise, evaluate shipping a CLI wrapper for the validator, and track the longer ESLint timeout for further tuning.
+
+### Previous Updates (2025-10-05 – Performance Latency Benchmarking & Regression Detection)
 
 - PERFORMANCE REGRESSION HARNESS HARDENED (Task 3.1.3)
   - Applied the established web encoding polyfill guard inside the shared deterministic test runtime so `TextEncoder`/`TextDecoder` invariants hold across client infrastructure suites, eliminating the esbuild-induced failure observed during performance benchmarks.

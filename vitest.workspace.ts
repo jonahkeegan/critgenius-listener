@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { UserConfigExport } from 'vitest/config';
+import { defineWorkspace } from 'vitest/config';
 
 type PackageManifest = {
   name?: string;
@@ -89,11 +89,4 @@ const workspaceProjects = [
     },
   })),
 ];
-
-const workspaceConfig = {
-  test: {
-    projects: workspaceProjects,
-  },
-} satisfies UserConfigExport;
-
-export default workspaceConfig;
+export default defineWorkspace(workspaceProjects);
