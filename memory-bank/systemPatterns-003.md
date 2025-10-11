@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-10-10 | Segment Version: 1.12.0
+Last Updated: 2025-10-11 | Segment Version: 1.14.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -127,7 +127,26 @@ Parent Index: `systemPatterns-index.md`
 
 ### Path Diagnostics & Normalization Guardrail Pattern (Task 3.1.3 Path TypeError Investigation)
 
--### Integration Testing Harness & Cross-Package Workflow Pattern (Task 3.1.4)
+### Documentation Validation Harness Pattern (Task 3.1.5)
+
+- Pattern: Self-validating documentation pipeline ensuring the comprehensive testing guide remains
+  accurate, complete, and aligned with Continuous Improvement Protocol requirements.
+- Implementation: `docs/comprehensive-testing-guide.md` codifies a nine-section hierarchy
+  (philosophy, quick starts, infrastructure deep dive, utilities library, integration handbook,
+  performance testing, best practices, troubleshooting, quality gates) enriched with four sequence
+  diagrams, 50+ TypeScript D&D-domain examples, 20+ bash commands, and cross-references to five
+  supplemental documents. Companion suite `tests/infrastructure/comprehensive-testing-guide.test.ts`
+  runs 92 assertions (23 per package) covering structure, diagram counts, code samples, references,
+  npm scripts, troubleshooting content, formatting, and completeness.
+- Benefits: Guarantees onboarding and expert developers rely on current, high-signal documentation;
+  prevents silent drift through automated CI gating; encodes troubleshooting knowledge (symptom →
+  resolution) and realistic scenarios so contributors mirror production workflows.
+- Validation: `pnpm vitest run tests/infrastructure/comprehensive-testing-guide.test.ts` verifies
+  structure & references; package-specific runs
+  (`pnpm --filter @critgenius/client|server|shared|test-utils test`) ensure helper imports remain
+  accurate; lint/type-check gates keep documentation scripts type-safe.
+
+### Integration Testing Harness & Cross-Package Workflow Pattern (Task 3.1.4)
 
 - Pattern: Deterministic integration harness coordinating environment presets, service lifecycles,
   Socket.IO pairs, AssemblyAI mocks, and resilience metrics for workflows spanning client ↔ server
@@ -144,6 +163,33 @@ Parent Index: `systemPatterns-index.md`
 - Validation: `pnpm --filter @critgenius/test-utils test`, `pnpm --filter @critgenius/server test`,
   and `pnpm vitest run tests/infrastructure/integration-test-standards.test.ts` verify harness
   integrity, example suites, and documentation coverage.
+
+### Performance Testing Architecture Decision Pattern (Task 3.1.4.5)
+
+- Pattern: Evidence-based architecture evaluation process using pattern analysis, cost-benefit
+  matrices, and weighted decision scoring to determine whether proposed refactorings deliver
+  meaningful value.
+- Decision: DEFER file-based performance result decoupling in favor of maintaining current
+  import-based architecture with documentation enhancements (ADR-001).
+- Analysis Process: Three-phase evaluation (Pattern Analysis → Cost-Benefit Evaluation →
+  Architecture Decision) produced comprehensive documentation (40,000+ characters across 3
+  documents) with 248 passing validation tests, quantitative decision matrix scoring (-0.515
+  strongly negative), and formal ADR with re-evaluation triggers.
+- Implementation: Current architecture uses direct imports where `compare-performance.mjs` and
+  `generate-report.mjs` execute `metrics-runner.mjs` for in-memory benchmark results; proposed
+  file-based decoupling would require 18 hours implementation + 10-15% ongoing maintenance for zero
+  tangible benefits addressing only speculative future scenarios.
+- Benefits: Maintains recently stabilized infrastructure (Oct 2025), avoids HIGH regression risk,
+  frees 18 hours for higher-value work, preserves 2-minute benchmark execution time, and delivers
+  3-hour documentation enhancement with 9:1 value ratio over refactoring.
+- Re-evaluation Triggers: Benchmark time exceeds 10 minutes, historical trend analysis becomes
+  requirement, multiple runs per cycle become necessary, cross-team sharing emerges, coupling causes
+  friction, or implementation cost drops below 5 hours.
+- Documentation: `docs/architecture-decisions/adr-001-performance-testing-architecture.md`,
+  `docs/performance-architecture-analysis.md` (20K+ chars),
+  `docs/performance-architecture-cost-benefit-evaluation.md` (15K+ chars).
+- Validation: 248 passing tests (112 for pattern analysis + 136 for cost-benefit evaluation) confirm
+  comprehensive evaluation methodology and documentation quality.
 
 - Pattern: Cross-workspace path validation and diagnostics layer that enforces string-only inputs,
   captures environment-aware telemetry, and neutralizes URL-derived Vitest config regressions on
@@ -297,6 +343,9 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-11: Documented documentation validation harness pattern (Task 3.1.5); version bump 1.14.0
+- 2025-10-11: Added performance testing architecture decision pattern (Task 3.1.4.5); version bump
+  1.13.0
 - 2025-10-08: Added path diagnostics & normalization guardrail pattern (Task 3.1.3 Path TypeError
   investigation); version bump 1.11.0
 - 2025-10-10: Documented integration testing harness & cross-package workflow pattern (Task 3.1.4);
