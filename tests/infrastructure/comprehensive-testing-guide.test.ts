@@ -11,7 +11,9 @@ describe('comprehensive testing guide validation', () => {
   let guideContent: string;
 
   beforeAll(() => {
+    expect(existsSync(GUIDE_PATH)).toBe(true);
     guideContent = readFileSync(GUIDE_PATH, 'utf8');
+    expect(guideContent.length).toBeGreaterThan(0);
   });
 
   describe('document structure validation', () => {
@@ -232,7 +234,11 @@ describe('comprehensive testing guide validation', () => {
 
     it('includes version history section', () => {
       expect(guideContent).toContain('## Version History');
-      expect(guideContent).toContain('| Version | Date | Changes |');
+      const versionHistorySection =
+        guideContent.split('## Version History')[1] || '';
+      expect(versionHistorySection).toMatch(
+        /\|\s*Version\s*\|\s*Date\s*\|\s*Changes\s*\|/
+      );
     });
 
     it('has proper markdown table formatting', () => {
