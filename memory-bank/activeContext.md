@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-10 **Version:** 2.32.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-11 **Version:** 2.33.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -65,6 +65,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Advanced UX features: search highlighting, auto-scroll, filter management
   - ✅ Audio capture controller refactored with configuration-driven dependency injection, feature flags, and retry semantics for deterministic testing
   - ✅ Audio diagnostics pipeline emits schema-validated events with structured error codes decoupled from UI messaging (Task 2.10.4.2)
+  - ✅ Comprehensive testing guide (`docs/comprehensive-testing-guide.md`) stays self-validating via 92-test infrastructure suite guarding structure, diagrams, code examples, troubleshooting, and cross-references (Task 3.1.5)
 
 ### Ready for Technical Planning & Remaining Infra
 
@@ -83,6 +84,13 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-11 – Comprehensive Testing Guide Validation Refresh)
+
+- DOCUMENTATION SUSTAINMENT & VALIDATION (Task 3.1.5 – Comprehensive Testing Guide)
+  - Re-ran the 92-test validation suite (`tests/infrastructure/comprehensive-testing-guide.test.ts`) to confirm the comprehensive testing guide retains all required sections, diagrams, realistic TypeScript examples, bash commands, and cross-references demanded by the Continuous Improvement Protocol.
+  - Documented the nine-section hierarchy, four sequence diagrams, 50+ D&D-aligned examples, and troubleshooting matrices in the Memory Bank for onboarding alignment; captured sustainment actions to add performance scenarios, expanded E2E coverage, and potential interactive walkthroughs as the test surface grows.
+  - Verification: `pnpm vitest run tests/infrastructure/comprehensive-testing-guide.test.ts`, `pnpm --filter @critgenius/test-utils test`, `pnpm -w lint`, `pnpm -w type-check`.
 
 ### Latest Updates (2025-10-10 – Socket.IO Integration Timeout Stabilization)
 

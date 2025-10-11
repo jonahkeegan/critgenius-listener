@@ -1,23 +1,25 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-10-05 12:45 PST **Version:** 1.7.0 **System Status:** Active
+**Last Updated:** 2025-10-11 09:35 PST **Version:** 1.8.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 111
-**Last Updated:** 2025-10-05 12:45 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 172
+**Last Updated:** 2025-10-11 09:35 PST
 
 **Update Log:**
 
+- 2025-10-11 09:35 PST — Consolidated integration harness evolution, realtime stability hardening,
+  and documentation validation learnings into `consolidated-learnings-007.md`; row count now 172.
+- 2025-10-05 12:45 PST — Consolidated Vitest workspace hardening, shared test utilities rollout, and
+  performance benchmarking hardening into `consolidated-learnings-007.md`; row count now 111.
+- 2025-10-03 15:34 PST — Added test runtime isolation and unhandled rejection handling patterns to
+  `consolidated-learnings-007.md`; row count now 88.
 - 2025-09-30 18:10 PST — Consolidated audio capture configuration/diagnostics, HTTPS Socket.IO
   verification, and Vitest config standardization reflections into `consolidated-learnings-006.md`;
   row count now 509.
 - 2025-09-28 17:30 PST — Consolidated raw reflections into `consolidated-learnings-006.md`; row
   count now 309.
-- 2025-10-03 15:34 PST — Added test runtime isolation and unhandled rejection handling patterns to
-  `consolidated-learnings-007.md`; row count now 88.
-- 2025-10-05 12:45 PST — Consolidated Vitest workspace hardening, shared test utilities rollout, and
-  performance benchmarking hardening into `consolidated-learnings-007.md`; row count now 111.
 
 ## File Registry
 

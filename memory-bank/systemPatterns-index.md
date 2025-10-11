@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-10 | Index Version: 1.14.0 | Status: Active
+Last Updated: 2025-10-11 | Index Version: 1.15.0 | Status: Active
 
 ## Segment Registry
 
@@ -43,6 +43,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Path Diagnostics & Normalization Guardrails                | 003     |
 | Socket.IO Integration Timeout Stabilization                | 003     |
 | Integration Testing Harness & Cross-Package Workflows      | 003     |
+| Documentation Validation Harness (Comprehensive Guide)     | 003     |
 
 ## Maintenance Protocol
 
@@ -59,6 +60,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-11: Added documentation validation harness pattern (Task 3.1.5) to segment 003
 - 2025-10-10: Added integration testing harness & cross-package workflow pattern (Task 3.1.4) to
   segment 003
 - 2025-10-10: Added Socket.IO integration timeout stabilization pattern (Task 3.1.3 latency harness
