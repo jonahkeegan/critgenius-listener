@@ -23,6 +23,7 @@ export { version, getVersionInfo } from './version';
 export * from './config/environment';
 export * from './config/environmentLoader';
 export * from './config/proxyRegistry';
+export * from './config/toolingVersionPolicy';
 
 // Export AssemblyAI configuration (explicit import to avoid naming conflicts)
 export {

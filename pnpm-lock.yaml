@@ -234,6 +234,9 @@ importers:
       nodemon:
         specifier: ^3.1.7
         version: 3.1.10
+      socket.io-client:
+        specifier: ^4.8.1
+        version: 4.8.1
       tsx:
         specifier: ^4.7.1
         version: 4.20.3
@@ -277,6 +280,12 @@ importers:
       "@critgenius/shared":
         specifier: workspace:*
         version: link:../shared
+      socket.io:
+        specifier: ^4.8.1
+        version: 4.8.1
+      socket.io-client:
+        specifier: ^4.8.1
+        version: 4.8.1
     devDependencies:
       "@types/node":
         specifier: ^24.2.1
@@ -3731,7 +3740,6 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
-    dev: false
 
   /engine.io-parser@5.2.3:
     resolution:
@@ -7000,7 +7008,6 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
-    dev: false
 
   /socket.io-parser@4.2.4:
     resolution:
@@ -8073,7 +8080,6 @@ packages:
         integrity: sha512-TEU+nJVUUnA4CYJFLvK5X9AOeH4KvDvhIfm0vV1GaQRtchnG0hgK5p8hw/xjv8cunWYCsiPCSDzObPyhEwq3KQ==,
       }
     engines: { node: ">=0.4.0" }
-    dev: false
 
   /xtend@4.0.2:
     resolution:

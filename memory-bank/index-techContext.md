@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-05 | Version: 1.19.0 | System Status: Active
+Last Updated: 2025-10-10 | Version: 1.21.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -48,6 +48,9 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Vitest Configuration Standardization | 002 |
 | Vitest Workspace Hardening & CI Readiness | 002 |
 | Performance Latency Benchmarking & Regression Detection Harness | 003 |
+| Path Diagnostics & Normalization Guardrails | 003 |
+| Socket.IO Integration Timeout Stabilization | 003 |
+| Integration Testing Harness & Cross-Package Workflows | 003 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -60,6 +63,9 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-10-10: Added integration testing harness & cross-package workflow topic (Task 3.1.4) to segment 003
+- 2025-10-10: Added Socket.IO integration timeout stabilization topic (Task 3.1.3 latency harness hardening) to segment 003
+- 2025-10-08: Added path diagnostics & normalization guardrail topic (Task 3.1.3 Path TypeError investigation) to segment 003
 - 2025-10-05: Added performance benchmarking harness hardening topic (Task 3.1.3) to segment 003
 - 2025-10-02: Added Vitest workspace hardening & CI readiness topic (Task 3.1.1.1) to segment 002
 - 2025-09-30: Added Vitest configuration standardization topic (Task 3.1.1) to segment 002

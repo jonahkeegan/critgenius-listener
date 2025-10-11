@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-10-05 | Segment Version: 1.10.0
+Last Updated: 2025-10-10 | Segment Version: 1.12.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -124,6 +124,41 @@ Parent Index: `systemPatterns-index.md`
   `pnpm vitest run tests/orchestration/service-launcher.test.ts`,
   `node scripts/performance/run-tests.mjs tests/performance/audio-processing.perf.test.ts`, and a
   negative run against a non-existent file confirm success and failure signaling.
+
+### Path Diagnostics & Normalization Guardrail Pattern (Task 3.1.3 Path TypeError Investigation)
+
+-### Integration Testing Harness & Cross-Package Workflow Pattern (Task 3.1.4)
+
+- Pattern: Deterministic integration harness coordinating environment presets, service lifecycles,
+  Socket.IO pairs, AssemblyAI mocks, and resilience metrics for workflows spanning client ↔ server
+  ↔ shared packages.
+- Implementation: `IntegrationTestHarness` applies named presets, restores `process.env`, and wraps
+  `ServiceLifecycleManager` which enforces ordered startup/teardown with structured
+  `IntegrationServiceError`s; helpers include `allocateAvailablePort`, timeout-aware socket
+  listeners, `createMockAssemblyAIScenario`, resilience scenario builders, and environment-aware
+  describe/test wrappers that skip suites with contextual reasons.
+- Benefits: Integration suites allocate ports dynamically, configure mock-only AssemblyAI flows,
+  inject latency/failure modes, and assert transcript/error payloads without bespoke setup.
+  Environment gating prevents CI surprises, and documentation/meta-tests codify approved patterns
+  for future contributors.
+- Validation: `pnpm --filter @critgenius/test-utils test`, `pnpm --filter @critgenius/server test`,
+  and `pnpm vitest run tests/infrastructure/integration-test-standards.test.ts` verify harness
+  integrity, example suites, and documentation coverage.
+
+- Pattern: Cross-workspace path validation and diagnostics layer that enforces string-only inputs,
+  captures environment-aware telemetry, and neutralizes URL-derived Vitest config regressions on
+  Node 18.
+- Implementation: `EnvironmentDetector` and `PathValidator` in `@critgenius/test-utils` sanitize
+  diagnostics, record stack traces when URL inputs appear, and convert URL/`file://` values via
+  `fileURLToPath`; `vitest.shared.config.ts` and `packages/client/vitest.config.ts` now route all
+  path inputs through the validator while temporarily swapping `globalThis.URL` during dynamic
+  imports to guarantee Node 18 semantics.
+- Benefits: Eliminates CI-only `TypeError` failures, preserves privacy by masking environment
+  context, produces actionable DEBUG artifacts, and keeps alias resolution consistent across
+  packages and operating systems.
+- Validation: `pnpm -w lint`, `pnpm -w type-check`, focused infrastructure suites
+  (`tests/infrastructure/path-normalization.test.ts`, `path-validator.test.ts`,
+  `ci-simulation.test.ts`), and CI artifact uploads confirm guardrail effectiveness.
 
 ## Data Flow Patterns
 
@@ -262,6 +297,10 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-08: Added path diagnostics & normalization guardrail pattern (Task 3.1.3 Path TypeError
+  investigation); version bump 1.11.0
+- 2025-10-10: Documented integration testing harness & cross-package workflow pattern (Task 3.1.4);
+  version bump 1.12.0
 - 2025-10-05: Documented performance regression harness pattern (Task 3.1.3); version bump 1.10.0
 - 2025-10-03: Added shared test utilities library pattern (Task 3.1.2); version bump 1.9.0
 - 2025-10-02: Enhanced Vitest workspace execution pattern with hoisted AssemblyAI mocks and

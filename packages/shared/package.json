@@ -15,6 +15,10 @@
       "import": "./dist/config/proxyRegistry.js",
       "types": "./dist/config/proxyRegistry.d.ts"
     },
+    "./config/toolingVersionPolicy": {
+      "import": "./dist/config/toolingVersionPolicy.js",
+      "types": "./dist/config/toolingVersionPolicy.d.ts"
+    },
     "./types": {
       "import": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"

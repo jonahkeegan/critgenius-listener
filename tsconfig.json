@@ -48,7 +48,7 @@
     "allowJs": false,
     "checkJs": false
   },
-  "include": ["packages/*/src/**/*", "packages/*/tests/**/*", "**/*.ts", "**/*.tsx"],
+  "include": ["packages/*/src/**/*", "packages/*/tests/**/*", "**/*.ts", "**/*.tsx", "**/*.d.ts"],
   "exclude": ["node_modules", "dist", "**/node_modules", "**/dist", "**/build", "**/*.js", "**/*.jsx"],
   "references": [{ "path": "./packages/shared" }, { "path": "./packages/server" }, { "path": "./packages/client" }]
 }

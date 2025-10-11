@@ -7,86 +7,75 @@ type PackageManifest = {
   name?: string;
 };
 
-type WorkspaceProjectExport =
+type ProjectEntry =
   | string
   | {
       extends?: string;
       test?: {
         name?: string;
-        root?: string;
       };
     };
 
-type WorkspaceExport =
-  | WorkspaceProjectExport[]
-  | {
-      projects?: WorkspaceProjectExport[];
-      test?: {
-        projects?: WorkspaceProjectExport[];
-        coverage?: unknown;
-        reporters?: unknown;
-      };
+interface RootVitestConfig {
+  root?: string;
+  test?: {
+    name?: string;
+    coverage?: {
+      reportsDirectory?: string;
     };
+    projects?: ProjectEntry[];
+  };
+}
 
-interface ResolvedWorkspaceProject {
+interface NormalizedProject {
   extends: string;
   name: string;
-  root: string;
 }
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = path.resolve(testDirectory, '../..');
 const packagesRoot = path.join(workspaceRoot, 'packages');
-const workspaceFilePath = path.join(workspaceRoot, 'vitest.workspace.ts');
+const rootConfigPath = path.join(workspaceRoot, 'vitest.config.ts');
 
-let workspaceProjects: ResolvedWorkspaceProject[] = [];
+let rootConfig: RootVitestConfig;
+let normalizedProjects: NormalizedProject[] = [];
 
-async function importWorkspaceConfig(): Promise<WorkspaceExport> {
-  const workspaceModule = await import(
-    `${pathToFileURL(workspaceFilePath).href}?t=${Date.now()}`
+async function importRootConfig(): Promise<RootVitestConfig> {
+  const module = await import(
+    `${pathToFileURL(rootConfigPath).href}?t=${Date.now()}`
   );
-  const exported = (workspaceModule as { default?: WorkspaceExport }).default;
-  return exported ?? workspaceModule;
+  const exported = (module as { default?: RootVitestConfig }).default;
+  return (exported ?? module) as RootVitestConfig;
 }
 
-async function resolveWorkspaceProjects(): Promise<ResolvedWorkspaceProject[]> {
-  const config = await importWorkspaceConfig();
-  const projects = Array.isArray(config)
-    ? config
-    : (config.projects ?? config.test?.projects ?? []);
+function normalizeProject(
+  entry: ProjectEntry | undefined
+): NormalizedProject | null {
+  if (!entry) {
+    return null;
+  }
 
-  return projects
-    .map(project => {
-      if (typeof project === 'string') {
-        return {
-          extends: project,
-          test: {},
-        } as { extends: string; test: Record<string, unknown> };
-      }
-      return project ?? {};
-    })
-    .map(project => {
-      const normalizedExtends = normalizePath(project.extends ?? '');
-      const name =
-        typeof project.test?.name === 'string' && project.test.name.length > 0
-          ? project.test.name
-          : resolveProjectNameFromPath(normalizedExtends);
-      const resolvedRoot = resolveProjectRoot(
-        normalizedExtends,
-        project.test?.root
-      );
+  if (typeof entry === 'string') {
+    return {
+      extends: entry.replace(/\\/g, '/'),
+      name: '',
+    } satisfies NormalizedProject;
+  }
 
-      return {
-        extends: normalizedExtends,
-        name,
-        root: resolvedRoot,
-      } satisfies ResolvedWorkspaceProject;
-    })
-    .filter(project => project.extends.length > 0);
-}
+  const extendsPath = (entry.extends ?? '').replace(/\\/g, '/');
+  if (!extendsPath) {
+    return null;
+  }
 
-function normalizePath(input: string): string {
-  return input.replace(/\\/g, '/');
+  const name =
+    typeof entry.test?.name === 'string' && entry.test.name.length > 0
+      ? entry.test.name
+      : resolveProjectNameFromPath(extendsPath);
+
+  return {
+    extends: extendsPath,
+    name,
+  } satisfies NormalizedProject;
 }
 
 function resolveProjectNameFromPath(projectPath: string): string {
@@ -112,140 +101,111 @@ function resolveProjectNameFromPath(projectPath: string): string {
   }
 }
 
-function resolveProjectRoot(projectPath: string, override: unknown): string {
-  if (typeof override === 'string' && override.length > 0) {
-    const isRelative = override.startsWith('.');
-    const basePath = isRelative
-      ? path.join(workspaceRoot, override.replace(/^\.\//, ''))
-      : override;
-    return path.resolve(basePath);
-  }
-
-  if (!projectPath) {
-    return workspaceRoot;
-  }
-
-  const sanitizedPath = projectPath.replace(/^\.\//, '');
-  if (!sanitizedPath) {
-    return workspaceRoot;
-  }
-
-  const resolvedPath = sanitizedPath.endsWith('.ts')
-    ? path.dirname(path.join(workspaceRoot, sanitizedPath))
-    : path.join(workspaceRoot, sanitizedPath);
-
-  return path.resolve(resolvedPath);
-}
-
-function loadExpectedPackages(): Array<{
-  name: string;
-  configPath: string;
-  root: string;
-}> {
+function loadExpectedPackages(): Array<{ name: string; configPath: string }> {
   if (!existsSync(packagesRoot)) {
     return [];
   }
 
   const entries = readdirSync(packagesRoot, { withFileTypes: true });
-  const packages = entries.filter(entry => entry.isDirectory());
 
-  return packages
+  return entries
+    .filter(entry => entry.isDirectory())
     .map(entry => {
       const packageDir = path.join(packagesRoot, entry.name);
       const vitestConfigPath = path.join(packageDir, 'vitest.config.ts');
+
       if (!existsSync(vitestConfigPath)) {
         return null;
       }
 
       const manifestPath = path.join(packageDir, 'package.json');
-      let packageName = `packages/${entry.name}`;
-
-      if (existsSync(manifestPath)) {
-        try {
-          const manifest = JSON.parse(
-            readFileSync(manifestPath, 'utf8')
-          ) as PackageManifest;
-          packageName = manifest.name ?? packageName;
-        } catch {
-          packageName = `packages/${entry.name}`;
-        }
-      }
+      const packageName = loadPackageName(
+        manifestPath,
+        `packages/${entry.name}`
+      );
 
       return {
         name: packageName,
-        configPath: normalizePath(`./packages/${entry.name}/vitest.config.ts`),
-        root: path.resolve(packageDir),
+        configPath: `./packages/${entry.name}/vitest.config.ts`.replace(
+          /\\/g,
+          '/'
+        ),
       };
     })
-    .filter(
-      (
-        value
-      ): value is {
-        name: string;
-        configPath: string;
-        root: string;
-      } => Boolean(value)
+    .filter((value): value is { name: string; configPath: string } =>
+      Boolean(value)
     )
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function loadPackageName(manifestPath: string, fallback: string): string {
+  if (!existsSync(manifestPath)) {
+    return fallback;
+  }
+
+  try {
+    const manifest = JSON.parse(
+      readFileSync(manifestPath, 'utf8')
+    ) as PackageManifest;
+    return manifest.name ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 beforeAll(async () => {
-  workspaceProjects = await resolveWorkspaceProjects();
+  rootConfig = await importRootConfig();
+  const projects = rootConfig.test?.projects ?? [];
+  normalizedProjects = projects
+    .map(project => normalizeProject(project))
+    .filter((project): project is NormalizedProject => project !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
 });
 
-describe('vitest workspace configuration', () => {
-  it('includes the infrastructure project at the root', () => {
-    const infrastructureProject = workspaceProjects.find(
-      project => project.extends === './vitest.config.ts'
-    );
-
-    expect(infrastructureProject).toBeDefined();
-    expect(infrastructureProject?.extends).toBe('./vitest.config.ts');
-    expect(infrastructureProject?.name).toBe('workspace-infrastructure');
-    expect(infrastructureProject?.root).toBe(workspaceRoot);
+describe('vitest root configuration', () => {
+  it('labels the infrastructure project at the root', () => {
+    expect(rootConfig.root).toBe(workspaceRoot);
+    expect(rootConfig.test?.name).toBe('workspace-infrastructure');
   });
 
-  it('registers each workspace package with deterministic ordering', () => {
+  it('includes package-level projects with deterministic ordering', () => {
     const expectedPackages = loadExpectedPackages();
 
+    expect(normalizedProjects.length).toBe(expectedPackages.length);
+
     for (const expected of expectedPackages) {
-      const project = workspaceProjects.find(
+      const project = normalizedProjects.find(
         candidate => candidate.name === expected.name
       );
 
       expect(project, `Missing project for ${expected.name}`).toBeDefined();
       expect(project?.extends).toBe(expected.configPath);
-      expect(project?.root).toBe(expected.root);
     }
 
-    const packageNames = workspaceProjects
-      .filter(project => project.name !== 'workspace-infrastructure')
-      .map(project => project.name);
-
-    const sortedNames = [...packageNames].sort((a, b) => a.localeCompare(b));
-    expect(packageNames).toEqual(sortedNames);
+    const names = normalizedProjects.map(project => project.name);
+    const sorted = [...names].sort((a, b) => a.localeCompare(b));
+    expect(names).toEqual(sorted);
   });
 
-  it('only includes projects with explicit vitest configuration', () => {
+  it('only lists packages that provide explicit vitest configuration', () => {
     const expectedPackages = loadExpectedPackages();
-    const expectedProjectCount = expectedPackages.length + 1; // +1 for root infrastructure
+    const expectedNames = new Set(expectedPackages.map(pkg => pkg.name));
 
-    expect(workspaceProjects.length).toBe(expectedProjectCount);
-
-    for (const project of workspaceProjects) {
-      if (project.name === 'workspace-infrastructure') {
-        continue;
-      }
-
-      const expected = expectedPackages.find(
-        candidate => candidate.name === project.name
-      );
-
-      expect(expected, `Unexpected project ${project.name}`).toBeDefined();
+    for (const project of normalizedProjects) {
+      expect(expectedNames.has(project.name)).toBe(true);
     }
   });
 
-  it('configures workspace-wide coverage aggregation', () => {
+  it('configures workspace-wide coverage aggregation via root config and scripts', () => {
+    const expectedCoverageDir = path.join(
+      workspaceRoot,
+      'coverage',
+      'workspace'
+    );
+    expect(rootConfig.test?.coverage?.reportsDirectory).toBe(
+      expectedCoverageDir
+    );
+
     const packageJsonPath = path.join(workspaceRoot, 'package.json');
     const packageJsonRaw = readFileSync(packageJsonPath, 'utf8');
     const packageJson = JSON.parse(packageJsonRaw) as {
@@ -253,10 +213,6 @@ describe('vitest workspace configuration', () => {
     };
 
     const coverageScript = packageJson.scripts?.['test:coverage'];
-    expect(coverageScript).toBeDefined();
-    expect(coverageScript).toContain('--config vitest.workspace.ts');
-    expect(coverageScript).toContain(
-      '--coverage.reportsDirectory=coverage/workspace'
-    );
+    expect(coverageScript).toBe('vitest run --coverage');
   });
 });

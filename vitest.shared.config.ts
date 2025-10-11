@@ -21,10 +21,10 @@ const SHARED_MARKER_KEY = '__critgeniusSharedVitestConfig';
 const DEFAULT_INCLUDE_PATTERNS = [
   'src/**/*.{test,spec}.{ts,tsx}',
   'src/**/__tests__/**/*.{test,spec}.{ts,tsx}',
-  'tests/**/*.{test,spec}.{ts,tsx}',
-  'tests/**/*.integration.test.{ts,tsx}',
-  'tests/**/*.e2e.test.{ts,tsx}',
-  'tests/**/*.perf.test.{ts,tsx}',
+  'tests/**/*.{test,spec}.{ts,tsx,js,mjs}',
+  'tests/**/*.integration.test.{ts,tsx,js,mjs}',
+  'tests/**/*.e2e.test.{ts,tsx,js,mjs}',
+  'tests/**/*.perf.test.{ts,tsx,js,mjs}',
 ];
 
 const DEFAULT_EXCLUDE_PATTERNS = [

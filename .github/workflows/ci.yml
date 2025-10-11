@@ -44,6 +44,17 @@ jobs:
       - name: Build test-utils package
         run: pnpm --filter @critgenius/test-utils run build
 
+      - name: Tooling version consistency
+        run: node scripts/validate-versions.mjs --ci-mode --base-ref "${{ github.base_ref || 'origin/main' }}"
+
+      - name: Upload tooling version report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tooling-version-validation
+          path: artifacts/version-validation.json
+          if-no-files-found: warn
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 

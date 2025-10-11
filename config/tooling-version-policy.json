@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2025-10-08T00:00:00.000Z",
+  "tools": [
+    {
+      "id": "node",
+      "displayName": "Node.js",
+      "category": "runtime",
+      "expected": {
+        "version": "18.20.4",
+        "minimum": "18.0.0"
+      },
+      "detection": {
+        "fileGlobs": [
+          "package.json",
+          ".github/workflows/**/*.yml",
+          ".github/workflows/**/*.yaml",
+          "Dockerfile",
+          "Dockerfile.*"
+        ]
+      },
+      "versionSources": [
+        {
+          "type": "json",
+          "file": "package.json",
+          "propertyPath": ["engines", "node"],
+          "comparison": "minimum",
+          "required": true
+        },
+        {
+          "type": "text-includes",
+          "file": ".github/workflows/ci.yml",
+          "snippet": "node-version: 18",
+          "required": true
+        }
+      ],
+      "cliChecks": [
+        {
+          "command": ["node", "--version"],
+          "comparison": "minimum"
+        }
+      ],
+      "remediation": [
+        {
+          "label": "Using nvm",
+          "command": "nvm install 18.20.4 && nvm use 18.20.4",
+          "platforms": ["macos", "linux"]
+        },
+        {
+          "label": "Using Volta",
+          "command": "volta install node@18.20.4",
+          "platforms": ["macos", "linux", "windows"]
+        },
+        {
+          "label": "Direct download",
+          "command": "https://nodejs.org/dist/v18.20.4/",
+          "platforms": ["macos", "linux", "windows"]
+        }
+      ]
+    },
+    {
+      "id": "pnpm",
+      "displayName": "pnpm",
+      "category": "package-manager",
+      "expected": {
+        "version": "8.15.8"
+      },
+      "detection": {
+        "fileGlobs": ["package.json", ".github/workflows/**/*.yml", ".github/workflows/**/*.yaml"]
+      },
+      "versionSources": [
+        {
+          "type": "json",
+          "file": "package.json",
+          "propertyPath": ["packageManager"],
+          "comparison": "exact",
+          "required": true
+        },
+        {
+          "type": "text-includes",
+          "file": ".github/workflows/ci.yml",
+          "snippet": "pnpm/action-setup@v4",
+          "required": true
+        }
+      ],
+      "cliChecks": [
+        {
+          "command": ["pnpm", "--version"],
+          "comparison": "exact"
+        }
+      ],
+      "remediation": [
+        {
+          "label": "Using corepack",
+          "command": "corepack prepare pnpm@8.15.8 --activate",
+          "platforms": ["macos", "linux", "windows"]
+        },
+        {
+          "label": "Global install",
+          "command": "npm install -g pnpm@8.15.8",
+          "platforms": ["macos", "linux", "windows"]
+        }
+      ]
+    }
+  ]
+}
