@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
@@ -22,6 +22,19 @@ export default defineConfig(
       tsconfigPath: `${packageRoot}/tsconfig.json`,
       coverageOverrides: {
         exclude: ['scripts/**'],
+        reportsDirectory: resolve(
+          packageRoot,
+          '..',
+          '..',
+          'coverage',
+          'server'
+        ),
+        thresholds: {
+          statements: 50,
+          branches: 50,
+          functions: 50,
+          lines: 50,
+        },
       },
     })
   )

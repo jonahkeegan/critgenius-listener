@@ -106,6 +106,12 @@ const baseConfigExport = assertUsesSharedConfig(
     },
     coverageOverrides: {
       reportsDirectory: workspaceCoverageDirectory,
+      thresholds: {
+        statements: 30,
+        branches: 30,
+        functions: 30,
+        lines: 30,
+      },
     },
   })
 );

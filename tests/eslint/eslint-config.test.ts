@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { beforeAll, describe, it, expect } from 'vitest';
 import { ESLint, Linter } from 'eslint';
 import path from 'node:path';
 
@@ -9,7 +9,8 @@ const isSlowRunner =
   process.env.CI === 'true' ||
   process.env.VITEST_SLOW_RUNNER === 'true';
 
-const ACCESSIBILITY_TIMEOUT_MS = isSlowRunner ? 45000 : 15000;
+const ACCESSIBILITY_TIMEOUT_MS = isSlowRunner ? 60000 : 20000;
+const ESLINT_WARMUP_TARGET = 'tests/eslint/__fixtures__/a11y-valid.tsx';
 
 async function runLint(file: string) {
   const eslint = new ESLint({ cwd: root });
@@ -19,6 +20,10 @@ async function runLint(file: string) {
 }
 
 describe('ESLint accessibility rule regression', () => {
+  beforeAll(async () => {
+    await runLint(ESLINT_WARMUP_TARGET);
+  });
+
   // Increased timeout due to cold ESLint startup cost in CI/Windows environments
   it(
     'flags intentional accessibility violations',

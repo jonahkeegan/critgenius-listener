@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
@@ -22,6 +22,19 @@ export default defineConfig(
       tsconfigPath: `${packageRoot}/tsconfig.json`,
       coverageOverrides: {
         exclude: ['src/matchers/vitest.d.ts'],
+        reportsDirectory: resolve(
+          packageRoot,
+          '..',
+          '..',
+          'coverage',
+          'test-utils'
+        ),
+        thresholds: {
+          statements: 30,
+          branches: 30,
+          functions: 30,
+          lines: 30,
+        },
       },
       aliasOverrides: {
         '@critgenius/test-utils': `${packageRoot}/src`,

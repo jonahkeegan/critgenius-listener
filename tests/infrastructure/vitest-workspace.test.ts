@@ -213,6 +213,6 @@ describe('vitest root configuration', () => {
     };
 
     const coverageScript = packageJson.scripts?.['test:coverage'];
-    expect(coverageScript).toBe('vitest run --coverage');
+    expect(coverageScript).toBe('pnpm test:coverage:workspace');
   });
 });

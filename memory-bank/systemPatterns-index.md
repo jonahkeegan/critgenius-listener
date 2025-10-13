@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-11 | Index Version: 1.15.0 | Status: Active
+Last Updated: 2025-10-12 | Index Version: 1.16.0 | Status: Active
 
 ## Segment Registry
 
@@ -9,6 +9,7 @@ Last Updated: 2025-10-11 | Index Version: 1.15.0 | Status: Active
 | systemPatterns-001.md | 001     | Active | <200               | Architectural foundations & ADR-001→007                        |
 | systemPatterns-002.md | 002     | Active | <250               | Development & infrastructure (ADR-008→014, env, orchestration) |
 | systemPatterns-003.md | 003     | Active | <180               | Runtime & operational (design, performance, resilience)        |
+| systemPatterns-004.md | 004     | Active | <120               | Quality gates, coverage orchestration, and lint resilience     |
 
 Row counts maintained under 300-line cap policy. Future Segment 004 to be created only if a new
 thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scopes.
@@ -44,6 +45,10 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Socket.IO Integration Timeout Stabilization                | 003     |
 | Integration Testing Harness & Cross-Package Workflows      | 003     |
 | Documentation Validation Harness (Comprehensive Guide)     | 003     |
+| Tiered Coverage Enforcement & Thematic Reporting           | 004     |
+| ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
+| Vitest Timeout Governance & Dialog Resilience              | 004     |
+| CI-Only Coverage Enforcement Strategy                      | 004     |
 
 ## Maintenance Protocol
 
@@ -60,6 +65,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-12: Added tiered coverage enforcement, thematic reporting, and lint stabilization patterns
+  (Task 3.2.1) to segment 004
 - 2025-10-11: Added documentation validation harness pattern (Task 3.1.5) to segment 003
 - 2025-10-10: Added integration testing harness & cross-package workflow pattern (Task 3.1.4) to
   segment 003

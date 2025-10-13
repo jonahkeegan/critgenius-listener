@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import '../../tests/setup/install-test-globals';
 
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath, URL as NodeURL } from 'node:url';
 import type { PluginOption, UserConfig as ViteUserConfig } from 'vite';
 
@@ -52,6 +52,13 @@ const sharedConfig = createVitestConfig({
   tsconfigPath: `${packageRoot}/tsconfig.json`,
   coverageOverrides: {
     exclude: ['tests/**'],
+    reportsDirectory: resolve(packageRoot, '..', '..', 'coverage', 'client'),
+    thresholds: {
+      statements: 50,
+      branches: 50,
+      functions: 50,
+      lines: 50,
+    },
   },
 }) as ViteUserConfig;
 

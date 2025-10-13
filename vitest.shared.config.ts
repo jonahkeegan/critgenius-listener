@@ -35,9 +35,9 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/.tmp/**',
 ];
 
-const DEFAULT_TEST_TIMEOUT_MS = 300_000;
-const DEFAULT_HOOK_TIMEOUT_MS = 300_000;
-const DEFAULT_TEARDOWN_TIMEOUT_MS = 120_000;
+const DEFAULT_TEST_TIMEOUT_MS = 10_000;
+const DEFAULT_HOOK_TIMEOUT_MS = 15_000;
+const DEFAULT_TEARDOWN_TIMEOUT_MS = 10_000;
 
 const DEFAULT_COVERAGE_EXCLUDE = [
   '**/src/test-setup.ts',
@@ -98,7 +98,9 @@ type CoverageThresholds = {
   lines?: number;
 };
 
-type CoverageOverrides = CoverageSettings;
+type CoverageOverrides = CoverageSettings & {
+  provider?: 'v8';
+};
 
 type PathInput = string | URL;
 
@@ -584,7 +586,11 @@ function applyCoverageDefaults(
     },
   };
 
-  return coverage;
+  const provider = overrides?.provider ?? 'v8';
+
+  return Object.assign({}, coverage, {
+    provider,
+  }) as unknown as CoverageSettings;
 }
 
 export function createVitestConfig(

@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-11 **Version:** 2.33.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-12 **Version:** 2.34.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -51,6 +51,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Success metrics and validation criteria established
 - ✅ Technology stack direction identified
 - ✅ Risk assessment framework in place
+- ✅ Tiered coverage policy enforced with automation and CI gating (Task 3.2.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - ✅ Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - ✅ Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -84,6 +85,15 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-12 – Tiered Coverage Enforcement & ESLint Stability)
+
+- COVERAGE GOVERNANCE & QUALITY GATES (Task 3.2.1 Tiered Coverage Enforcement)
+  - Embedded the tiered coverage policy (Shared ≥75 %, Client/Server ≥50 %, Workspace & Test-Utils ≥30 %) inside every `vitest.config.ts`, guarded by updated infrastructure suites (`coverage-validation`, new `coverage-thresholds`, and refreshed config consistency checks) plus `scripts/coverage/run-coverage.mjs` orchestration that now emits per-theme HTML and `coverage/thematic-summary.json` for CI dashboards.
+  - Reaffirmed the CI-only enforcement decision so pre-commit hooks stay fast; coverage status now surfaces through required CI checks that read the thematic summary to flag gaps while developers rely on fast lint/format hooks locally.
+  - Reduced global Vitest timeouts to 10 s/15 s/10 s, rebuilt dialog/layout suites with typed observer mocks, and elevated client coverage to 55.49 % statements (≥50 % gate) while keeping responsive/layout tests resilient under the tighter limits.
+  - Stabilized the ESLint regression harness by priming caches via warm-up run and expanding the slow-runner timeout to 60 s, resolving Windows flake without concealing genuine lint failures.
+  - Validation: `pnpm vitest run tests/infrastructure/coverage-validation.test.ts`, `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts`, `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts tests/eslint/eslint-config.test.ts`, `pnpm --filter @critgenius/client test -- --coverage`, `pnpm test:coverage:summary`, `pnpm -w test`.
 
 ### Latest Updates (2025-10-11 – Comprehensive Testing Guide Validation Refresh)
 

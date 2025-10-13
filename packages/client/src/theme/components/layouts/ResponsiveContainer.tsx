@@ -151,6 +151,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
   // Render helper for custom maxWidth handling (e.g., 'xxl' or raw pixel values)
   const renderCustomMaxWidthContainer = () => (
     <Container
+      {...props}
       maxWidth={false}
       sx={{
         px: getContainerPadding() as string | number,

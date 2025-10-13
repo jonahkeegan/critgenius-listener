@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-11  
-**Version:** 1.27.0  
+**Last Updated:** 2025-10-12  
+**Version:** 1.28.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-004.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~185  
-**Last Updated:** 2025-10-11
+**Current Row Count:** ~205  
+**Last Updated:** 2025-10-12
 
 ## File Registry
 
@@ -54,6 +54,7 @@
 
 ## Recent Changes
 
+- 2025-10-12: Logged Task 3.2.1 tiered coverage enforcement & ESLint stability; updated progress log with coverage orchestration automation, CI-only gating decision, Vitest timeout tuning, and ESLint warm-up adjustments.
 - 2025-10-11: Logged Task 3.1.5 comprehensive testing guide validation refresh; reasserted self-validating documentation suite and captured sustainment follow-ups inside the progress log.
 - 2025-10-10: Completed Task 3.1.4 integration test patterns & cross-package workflows: shipped integration harness/presets, resilience tooling, canonical Socket.IO & AssemblyAI suites, documentation + meta-test guardrails
 - 2025-10-10: Completed Task 3.1.3 latency benchmark regression harness stabilization: stabilized Socket.IO integration waits, introduced typed timeout helper, hardened teardown sequencing, froze AssemblyAI mock buffers, and refreshed shared docs/tests
