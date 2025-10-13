@@ -133,7 +133,9 @@ describe('TranscriptWindow', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /filter by speaker/i }));
     fireEvent.click(screen.getByRole('menuitem', { name: /Captain Selene/i }));
-    expect(screen.getByText('Captain Selene')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Prepare the crew for departure.')
+    ).not.toBeInTheDocument();
   });
 
   it('shows empty state when no entries exist', () => {

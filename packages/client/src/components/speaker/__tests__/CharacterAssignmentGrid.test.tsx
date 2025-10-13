@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, within, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -116,82 +122,109 @@ describe('CharacterAssignmentGrid', () => {
   });
 
   it('creates a character through dialog workflow', async () => {
-    const user = userEvent.setup();
-    const handleCreate = vi.fn();
+    vi.useRealTimers();
+    try {
+      const user = userEvent.setup();
+      const handleCreate = vi.fn();
 
-    renderWithTheme(
-      <CharacterAssignmentGrid
-        speakers={baseSpeakers}
-        characters={[]}
-        onCreateCharacter={handleCreate}
-        onUpdateCharacter={vi.fn()}
-        onDeleteCharacter={vi.fn()}
-        onAssignSpeaker={vi.fn()}
-        onSwapAssignments={vi.fn()}
-      />
-    );
+      renderWithTheme(
+        <CharacterAssignmentGrid
+          speakers={baseSpeakers}
+          characters={[]}
+          onCreateCharacter={handleCreate}
+          onUpdateCharacter={vi.fn()}
+          onDeleteCharacter={vi.fn()}
+          onAssignSpeaker={vi.fn()}
+          onSwapAssignments={vi.fn()}
+        />
+      );
 
-    await user.click(screen.getByRole('button', { name: /add character/i }));
+      await user.click(screen.getByRole('button', { name: /add character/i }));
 
-    const nameInput = (await screen.findByLabelText('Character Name', {
-      selector: 'input',
-    })) as HTMLInputElement;
-    const dialogElement = nameInput.closest('[role="dialog"]');
-    expect(dialogElement).toBeTruthy();
-    const dialog = within(dialogElement as HTMLElement);
+      const nameInput = (await screen.findByLabelText('Character Name', {
+        selector: 'input',
+      })) as HTMLInputElement;
+      const dialogElement = nameInput.closest(
+        '[role="dialog"]'
+      ) as HTMLElement | null;
+      expect(dialogElement).toBeTruthy();
+      const dialog = within(dialogElement!);
 
-    await user.type(nameInput, 'Seer of Dawn');
-    await user.type(dialog.getByLabelText('Class'), 'Wizard');
-    await user.type(dialog.getByLabelText('Race'), 'Elf');
-    const levelInput = dialog.getByLabelText('Level');
-    await user.clear(levelInput);
-    await user.type(levelInput, '7');
-    await user.click(dialog.getByRole('button', { name: /^Create$/ }));
+      await user.type(nameInput, 'Seer of Dawn');
+      const classInput = dialog.getByLabelText('Class') as HTMLInputElement;
+      const raceInput = dialog.getByLabelText('Race') as HTMLInputElement;
+      await user.type(classInput, 'Wizard');
+      await user.type(raceInput, 'Elf');
+      const levelInput = dialog.getByLabelText('Level') as HTMLInputElement;
+      await user.click(levelInput);
+      await user.keyboard('{Control>}a{/Control}7');
 
-    await waitFor(() => expect(handleCreate).toHaveBeenCalledTimes(1));
-    expect(handleCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'Seer of Dawn',
-        class: 'Wizard',
-        race: 'Elf',
-        level: 7,
-      })
-    );
+      expect(nameInput).toHaveValue('Seer of Dawn');
+      expect(classInput).toHaveValue('Wizard');
+      expect(raceInput).toHaveValue('Elf');
+      expect(levelInput).toHaveValue(7);
+
+      await user.click(dialog.getByRole('button', { name: /^Create$/ }));
+      await waitForElementToBeRemoved(dialogElement!);
+
+      await waitFor(() => expect(handleCreate).toHaveBeenCalledTimes(1));
+      expect(handleCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Seer of Dawn',
+          class: 'Wizard',
+          race: 'Elf',
+          level: 7,
+        })
+      );
+    } finally {
+      vi.useFakeTimers();
+    }
   });
 
   it('edits an existing character profile', async () => {
-    const user = userEvent.setup();
-    const handleUpdate = vi.fn();
+    vi.useRealTimers();
+    try {
+      const user = userEvent.setup();
+      const handleUpdate = vi.fn();
 
-    renderWithTheme(
-      <CharacterAssignmentGrid
-        speakers={baseSpeakers}
-        characters={baseCharacters}
-        onCreateCharacter={vi.fn()}
-        onUpdateCharacter={handleUpdate}
-        onDeleteCharacter={vi.fn()}
-        onAssignSpeaker={vi.fn()}
-        onSwapAssignments={vi.fn()}
-      />
-    );
+      renderWithTheme(
+        <CharacterAssignmentGrid
+          speakers={baseSpeakers}
+          characters={baseCharacters}
+          onCreateCharacter={vi.fn()}
+          onUpdateCharacter={handleUpdate}
+          onDeleteCharacter={vi.fn()}
+          onAssignSpeaker={vi.fn()}
+          onSwapAssignments={vi.fn()}
+        />
+      );
 
-    await user.click(screen.getByRole('button', { name: /edit character/i }));
+      await user.click(screen.getByRole('button', { name: /edit character/i }));
 
-    const editNameInput = (await screen.findByLabelText('Character Name', {
-      selector: 'input',
-    })) as HTMLInputElement;
-    const editDialogElement = editNameInput.closest('[role="dialog"]');
-    expect(editDialogElement).toBeTruthy();
-    const editDialog = within(editDialogElement as HTMLElement);
+      const editNameInput = (await screen.findByLabelText('Character Name', {
+        selector: 'input',
+      })) as HTMLInputElement;
+      const editDialogElement = editNameInput.closest(
+        '[role="dialog"]'
+      ) as HTMLElement | null;
+      expect(editDialogElement).toBeTruthy();
+      const editDialog = within(editDialogElement!);
 
-    await user.clear(editNameInput);
-    await user.type(editNameInput, 'Knight Errant Prime');
-    await user.click(editDialog.getByRole('button', { name: /^Update$/ }));
+      await user.clear(editNameInput);
+      await user.type(editNameInput, 'Knight Errant Prime');
 
-    await waitFor(() => expect(handleUpdate).toHaveBeenCalledTimes(1));
-    expect(handleUpdate).toHaveBeenCalledWith(
-      'char-1',
-      expect.objectContaining({ name: 'Knight Errant Prime' })
-    );
+      expect(editNameInput).toHaveValue('Knight Errant Prime');
+
+      await user.click(editDialog.getByRole('button', { name: /^Update$/ }));
+      await waitForElementToBeRemoved(editDialogElement!);
+
+      await waitFor(() => expect(handleUpdate).toHaveBeenCalledTimes(1));
+      expect(handleUpdate).toHaveBeenCalledWith(
+        'char-1',
+        expect.objectContaining({ name: 'Knight Errant Prime' })
+      );
+    } finally {
+      vi.useFakeTimers();
+    }
   });
 });

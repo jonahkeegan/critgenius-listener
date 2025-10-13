@@ -148,10 +148,15 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
     ...sx,
   };
 
+  // Sanitize spread props to ensure legacy maxWidth values cannot override the resolved setting
+  const { maxWidth: _legacyMaxWidth, ...containerProps } =
+    props as ContainerProps & { maxWidth?: ContainerProps['maxWidth'] };
+  void _legacyMaxWidth;
+
   // Render helper for custom maxWidth handling (e.g., 'xxl' or raw pixel values)
   const renderCustomMaxWidthContainer = () => (
     <Container
-      {...props}
+      {...containerProps}
       maxWidth={false}
       sx={{
         px: getContainerPadding() as string | number,
@@ -179,7 +184,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
         px: getContainerPadding() as string | number,
         ...containerSx,
       }}
-      {...props}
+      {...containerProps}
     >
       {children}
     </Container>

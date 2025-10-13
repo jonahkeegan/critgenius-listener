@@ -67,9 +67,13 @@ describe('SpeakerTranscriptLine', () => {
 
     expect(screen.getByText('Eldric the Wise')).toBeInTheDocument();
     expect(screen.getByText('(Lore Keeper)')).toBeInTheDocument();
-    expect(
-      screen.getByText(/The relic is hidden beneath the old oak tree/)
-    ).toBeInTheDocument();
+    const transcriptTextNodes = screen.getAllByText(
+      (_, element) =>
+        element?.textContent?.includes(
+          'The relic is hidden beneath the old oak tree'
+        ) ?? false
+    );
+    expect(transcriptTextNodes.length).toBeGreaterThan(0);
     expect(screen.getByText('1:35')).toBeInTheDocument();
     expect(screen.getByText('(processing...)')).toBeInTheDocument();
     expect(
