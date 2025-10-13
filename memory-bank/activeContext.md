@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-13 **Version:** 2.35.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-13 **Version:** 2.36.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -29,7 +29,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 1. **Project Identity:** ✅ Fully Defined - Revolutionary D&D audio tool
 2. **Product Context:** ✅ Comprehensive - Market analysis, user segments, use cases complete
-3. **System Patterns:** ✅ Segmented - Monolith decomposed into 3 thematic files (`systemPatterns-001/002/003.md`) + index
+3. **System Patterns:** ✅ Segmented - Monolith decomposed into 5 thematic files (`systemPatterns-001/002/003/004/005.md`) + index
 4. **Technical Context:** ✅ Complete - Context7-validated technology stack with implementation
    details
 5. **Progress Tracking:** ✅ Active and current
@@ -86,6 +86,14 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-13 – Testing Infrastructure Segmentation)
+
+- SYSTEM PATTERNS TESTING SEGMENTATION (Task 3.2.1 Documentation Alignment)
+  - Established new `systemPatterns-005.md` to house all testing infrastructure, coverage metadata, documentation validation, and integration harness patterns, reducing Segment 003 scope to runtime and operational guidance.
+  - Updated `systemPatterns-index.md` (version 1.18.0) to register Segment 005, reassign topic mappings (Vitest configuration, workspace, shared test utilities, coverage module, documentation validation, performance harness), and document the refactor in the change log.
+  - Revised Segment 003 metadata (version 1.16.0) to reflect runtime focus post-extraction and trimmed redundant testing entries.
+  - Validation: `pnpm vitest run tests/infrastructure/version-validation.test.ts` confirms documentation metadata remains aligned post-segmentation.
 
 ### Latest Updates (2025-10-13 – Centralized Coverage Configuration)
 

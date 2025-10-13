@@ -543,15 +543,34 @@ export function resolveTsconfigAliases(
   }
 
   const testUtilsAlias = aliases['@critgenius/test-utils'];
-  if (testUtilsAlias && !aliases['@critgenius/test-utils/performance']) {
+  if (testUtilsAlias) {
     const normalizedBase = testUtilsAlias.endsWith('.ts')
       ? dirname(testUtilsAlias)
       : testUtilsAlias;
-    aliases['@critgenius/test-utils/performance'] = resolve(
-      normalizedBase,
-      'performance',
-      'index.ts'
-    );
+
+    const derivedAliases: Record<string, string> = {
+      '@critgenius/test-utils/performance': resolve(
+        normalizedBase,
+        'performance',
+        'index.ts'
+      ),
+      '@critgenius/test-utils/runtime': resolve(
+        normalizedBase,
+        'runtime',
+        'index.ts'
+      ),
+      '@critgenius/test-utils/matchers': resolve(
+        normalizedBase,
+        'matchers',
+        'index.ts'
+      ),
+    };
+
+    for (const [aliasKey, aliasPath] of Object.entries(derivedAliases)) {
+      if (!aliases[aliasKey]) {
+        aliases[aliasKey] = aliasPath;
+      }
+    }
   }
 
   return aliases;

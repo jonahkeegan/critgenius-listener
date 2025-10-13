@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-13 | Index Version: 1.17.0 | Status: Active
+Last Updated: 2025-10-13 | Index Version: 1.18.0 | Status: Active
 
 ## Segment Registry
 
@@ -8,10 +8,11 @@ Last Updated: 2025-10-13 | Index Version: 1.17.0 | Status: Active
 | --------------------- | ------- | ------ | ------------------ | -------------------------------------------------------------- |
 | systemPatterns-001.md | 001     | Active | <200               | Architectural foundations & ADR-001→007                        |
 | systemPatterns-002.md | 002     | Active | <250               | Development & infrastructure (ADR-008→014, env, orchestration) |
-| systemPatterns-003.md | 003     | Active | <180               | Runtime & operational (design, performance, resilience)        |
+| systemPatterns-003.md | 003     | Active | <120               | Runtime & operational (design, performance, resilience)        |
 | systemPatterns-004.md | 004     | Active | <120               | Quality gates, coverage orchestration, and lint resilience     |
+| systemPatterns-005.md | 005     | Active | <250               | Testing infrastructure, coverage metadata, and QA automation   |
 
-Row counts maintained under 300-line cap policy. Future Segment 004 to be created only if a new
+Row counts maintained under 300-line cap policy. Future Segment 006 to be created only if a new
 thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scopes.
 
 ## Topic Mapping (Selected)
@@ -34,19 +35,19 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | HTTPS Dev Protocol Alignment & Drift Guard                 | 003     |
 | Audio Capture Configuration (Feature Flags + Retry)        | 003     |
 | Structured Audio Diagnostics & Error Codes                 | 003     |
-| Vitest Configuration Standardization                       | 003     |
-| Vitest Workspace Hardening & CI Readiness                  | 003     |
-| Shared Test Utilities Library                              | 003     |
+| Vitest Configuration Standardization                       | 005     |
+| Vitest Workspace Hardening & CI Readiness                  | 005     |
+| Shared Test Utilities Library                              | 005     |
 | Scalability & Deployment                                   | 003     |
 | HTTPS Socket.IO TLS Resilience                             | 003     |
 | HTTPS Documentation & Troubleshooting Playbook             | 003     |
-| Performance Regression Harness (Latency Benchmarking)      | 003     |
-| Path Diagnostics & Normalization Guardrails                | 003     |
+| Performance Regression Harness (Latency Benchmarking)      | 005     |
+| Path Diagnostics & Normalization Guardrails                | 005     |
 | Socket.IO Integration Timeout Stabilization                | 003     |
-| Integration Testing Harness & Cross-Package Workflows      | 003     |
-| Documentation Validation Harness (Comprehensive Guide)     | 003     |
+| Integration Testing Harness & Cross-Package Workflows      | 005     |
+| Documentation Validation Harness (Comprehensive Guide)     | 005     |
 | Tiered Coverage Enforcement & Thematic Reporting           | 004     |
-| Centralized Coverage Configuration Module                  | 003     |
+| Centralized Coverage Configuration Module                  | 005     |
 | ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
 | Vitest Timeout Governance & Dialog Resilience              | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
@@ -66,6 +67,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-13: Extracted testing infrastructure and QA patterns into new segment 005; updated segment
+  003 scope
 - 2025-10-13: Added centralized coverage configuration pattern (Task 3.2.1.1) to segment 003
 - 2025-10-12: Added tiered coverage enforcement, thematic reporting, and lint stabilization patterns
   (Task 3.2.1) to segment 004

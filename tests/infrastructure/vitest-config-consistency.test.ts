@@ -296,6 +296,9 @@ describe('vitest config consistency', () => {
       );
 
       expect(actualAlias).toMatchObject(expectedAlias);
+      expect(Object.keys(actualAlias).sort()).toEqual(
+        Object.keys(expectedAlias).sort()
+      );
     }
   });
 });

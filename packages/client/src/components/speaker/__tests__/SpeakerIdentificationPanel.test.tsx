@@ -1,5 +1,10 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
@@ -36,7 +41,6 @@ beforeAll(() => {
   (
     globalThis as unknown as { MutationObserver: typeof MutationObserverMock }
   ).MutationObserver = MutationObserverMock;
-  console.log('mock observers set');
 });
 
 import SpeakerIdentificationPanel, {
@@ -88,93 +92,89 @@ describe('SpeakerIdentificationPanel', () => {
   });
 
   it('renders speaker list and triggers actions', async () => {
-    const user = userEvent.setup();
-    const handleCreate = vi.fn();
-    const handleUpdate = vi.fn();
-    const handleDelete = vi.fn();
-    const handleRecord = vi.fn();
-    const handlePlay = vi.fn();
+    vi.useRealTimers();
+    try {
+      const user = userEvent.setup();
+      const handleCreate = vi.fn();
+      const handleUpdate = vi.fn();
+      const handleDelete = vi.fn();
+      const handleRecord = vi.fn();
+      const handlePlay = vi.fn();
 
-    renderWithTheme(
-      <SpeakerIdentificationPanel
-        speakers={speakerList}
-        onCreateSpeaker={handleCreate}
-        onUpdateSpeaker={handleUpdate}
-        onDeleteSpeaker={handleDelete}
-        onRecordSample={handleRecord}
-        onPlaySample={handlePlay}
-        isRecording={false}
-      />
-    );
+      renderWithTheme(
+        <SpeakerIdentificationPanel
+          speakers={speakerList}
+          onCreateSpeaker={handleCreate}
+          onUpdateSpeaker={handleUpdate}
+          onDeleteSpeaker={handleDelete}
+          onRecordSample={handleRecord}
+          onPlaySample={handlePlay}
+          isRecording={false}
+        />
+      );
 
-    const addSpeakerButton = screen.getByRole('button', {
-      name: /add speaker/i,
-    });
+      const addSpeakerButton = screen.getByRole('button', {
+        name: /add speaker/i,
+      });
 
-    console.log('click add speaker');
-    await user.click(addSpeakerButton);
-    console.log('after add speaker click');
+      await user.click(addSpeakerButton);
 
-    const createDialog = await screen.findByRole('dialog', {
-      name: /create new speaker profile/i,
-      hidden: true,
-    });
-    const create = within(createDialog);
+      const createDialog = await screen.findByRole('dialog', {
+        name: /create new speaker profile/i,
+        hidden: true,
+      });
+      const create = within(createDialog);
 
-    await user.type(create.getByLabelText('Speaker Name'), 'New Voice');
-    await user.click(create.getByRole('button', { name: 'Create' }));
-    console.log('speaker create click');
+      await user.type(create.getByLabelText('Speaker Name'), 'New Voice');
+      expect(create.getByLabelText('Speaker Name')).toHaveValue('New Voice');
+      await user.click(create.getByRole('button', { name: 'Create' }));
+      await waitForElementToBeRemoved(createDialog);
 
-    expect(handleCreate).toHaveBeenCalledTimes(1);
-    expect(handleCreate).toHaveBeenCalledWith('New Voice');
+      expect(handleCreate).toHaveBeenCalledTimes(1);
+      expect(handleCreate).toHaveBeenCalledWith('New Voice');
 
-    expect(screen.getByText('Speaker Profiles')).toBeInTheDocument();
-    expect(screen.getByText('Aveline')).toBeInTheDocument();
-    expect(screen.getByText('Voice Samples: 2')).toBeInTheDocument();
+      expect(screen.getByText('Speaker Profiles')).toBeInTheDocument();
+      expect(screen.getByText('Aveline')).toBeInTheDocument();
+      expect(screen.getByText('Voice Samples: 2')).toBeInTheDocument();
 
-    const recordButtons = screen.getAllByRole('button', {
-      name: /record voice sample/i,
-    });
-    console.log('click record');
-    await user.click(recordButtons[0]!);
-    console.log('after record');
-    expect(handleRecord).toHaveBeenCalledWith('sp-1');
+      const recordButtons = screen.getAllByRole('button', {
+        name: /record voice sample/i,
+      });
+      await user.click(recordButtons[0]!);
+      expect(handleRecord).toHaveBeenCalledWith('sp-1');
 
-    console.log('click play');
-    await user.click(screen.getByRole('button', { name: /play sample/i }));
-    console.log('after play');
-    expect(handlePlay).toHaveBeenCalledWith('sp-1');
+      await user.click(screen.getByRole('button', { name: /play sample/i }));
+      expect(handlePlay).toHaveBeenCalledWith('sp-1');
 
-    const deleteButtons = screen.getAllByRole('button', {
-      name: /delete profile/i,
-    });
-    console.log('click delete');
-    await user.click(deleteButtons[0]!);
-    console.log('after delete');
-    expect(handleDelete).toHaveBeenCalledWith('sp-1');
+      const deleteButtons = screen.getAllByRole('button', {
+        name: /delete profile/i,
+      });
+      await user.click(deleteButtons[0]!);
+      expect(handleDelete).toHaveBeenCalledWith('sp-1');
 
-    const editButtons = screen.getAllByRole('button', {
-      name: /edit profile/i,
-    });
-    console.log('click edit speaker');
-    await user.click(editButtons[0]!);
-    console.log('after edit speaker');
+      const editButtons = screen.getAllByRole('button', {
+        name: /edit profile/i,
+      });
+      await user.click(editButtons[0]!);
 
-    const editDialog = await screen.findByRole('dialog', {
-      name: /edit speaker profile/i,
-      hidden: true,
-    });
-    const edit = within(editDialog);
+      const editDialog = await screen.findByRole('dialog', {
+        name: /edit speaker profile/i,
+        hidden: true,
+      });
+      const edit = within(editDialog);
 
-    await user.clear(edit.getByLabelText('Speaker Name'));
-    await user.type(edit.getByLabelText('Speaker Name'), 'Aveline Stormborn');
-    await user.click(edit.getByRole('button', { name: 'Update' }));
-    console.log('speaker update click');
+      await user.clear(edit.getByLabelText('Speaker Name'));
+      await user.type(edit.getByLabelText('Speaker Name'), 'Aveline Stormborn');
+      await user.click(edit.getByRole('button', { name: 'Update' }));
+      await waitForElementToBeRemoved(editDialog);
 
-    expect(handleUpdate).toHaveBeenCalledTimes(1);
-    expect(handleUpdate).toHaveBeenCalledWith(
-      'sp-1',
-      expect.objectContaining({ name: 'Aveline Stormborn' })
-    );
+      expect(handleUpdate).toHaveBeenCalledTimes(1);
+      expect(handleUpdate).toHaveBeenCalledWith(
+        'sp-1',
+        expect.objectContaining({ name: 'Aveline Stormborn' })
+      );
+    } finally {
+      vi.useFakeTimers();
+    }
   });
 });

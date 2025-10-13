@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import { webcrypto } from 'node:crypto';
 import {
   TextDecoder as NodeTextDecoder,
@@ -8,13 +9,54 @@ type GlobalWithPolyfills = typeof globalThis & {
   TextEncoder?: typeof TextEncoder;
   TextDecoder?: typeof TextDecoder;
   crypto?: Crypto;
+  MutationObserver?: typeof MutationObserver;
   window?: typeof globalThis & {
     TextEncoder?: typeof TextEncoder;
     TextDecoder?: typeof TextDecoder;
+    MutationObserver?: typeof MutationObserver;
   };
 };
 
 const globalRef = globalThis as GlobalWithPolyfills;
+const require = createRequire(import.meta.url);
+let mutationObserverModule:
+  | {
+      default?: typeof MutationObserver;
+      MutationObserver?: typeof MutationObserver;
+    }
+  | (typeof MutationObserver | undefined);
+
+const loadMutationObserverPolyfill = ():
+  | typeof MutationObserver
+  | undefined => {
+  if (mutationObserverModule) {
+    if (typeof mutationObserverModule === 'function') {
+      return mutationObserverModule;
+    }
+    return (
+      mutationObserverModule.MutationObserver ?? mutationObserverModule.default
+    );
+  }
+
+  if (typeof window === 'undefined') {
+    return undefined;
+  }
+
+  mutationObserverModule = require('mutationobserver-shim') as
+    | typeof MutationObserver
+    | {
+        default?: typeof MutationObserver;
+        MutationObserver?: typeof MutationObserver;
+      };
+
+  if (typeof mutationObserverModule === 'function') {
+    return mutationObserverModule;
+  }
+
+  return (
+    mutationObserverModule.MutationObserver ?? mutationObserverModule.default
+  );
+};
 
 const normalizeEncoder = (ctor: typeof TextEncoder): typeof TextEncoder => {
   const Base = ctor as unknown as typeof TextEncoder;
@@ -93,4 +135,39 @@ if (
   typeof globalRef.crypto.getRandomValues !== 'function'
 ) {
   globalRef.crypto = webcrypto as unknown as Crypto;
+}
+
+// jsdom environments may omit MutationObserver; install the shim so waitFor/findByRole can react
+// to DOM mutations emitted by Material UI portals.
+if (!globalRef.MutationObserver) {
+  class ReactiveMutationObserver implements MutationObserver {
+    private readonly callback: MutationCallback;
+
+    constructor(callback: MutationCallback) {
+      this.callback = callback;
+    }
+
+    observe(): void {
+      queueMicrotask(() => this.callback([], this));
+    }
+
+    disconnect(): void {
+      // no-op stub
+    }
+
+    takeRecords(): MutationRecord[] {
+      return [];
+    }
+  }
+
+  const polyfillExport = loadMutationObserverPolyfill();
+  const polyfillCtor =
+    (typeof polyfillExport === 'function' ? polyfillExport : undefined) ??
+    globalRef.window?.MutationObserver ??
+    (ReactiveMutationObserver as unknown as typeof MutationObserver);
+
+  globalRef.MutationObserver = polyfillCtor as typeof MutationObserver;
+  if (globalRef.window) {
+    globalRef.window.MutationObserver = polyfillCtor as typeof MutationObserver;
+  }
 }

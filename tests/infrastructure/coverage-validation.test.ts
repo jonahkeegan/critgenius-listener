@@ -21,6 +21,19 @@ type CoverageTarget = {
   coverage?: Record<string, unknown> | false;
 };
 
+type CoverageConfigShape = {
+  reporter?: string | string[];
+  thresholds?: Record<string, number>;
+  exclude?: string[];
+  provider?: string;
+  reportsDirectory?: string;
+  [key: string]: unknown;
+};
+
+function isCoverageConfig(value: unknown): value is CoverageConfigShape {
+  return typeof value === 'object' && value !== null;
+}
+
 function detectWorkspaceRoot(): string {
   try {
     const candidate = new URL('../..', import.meta.url);
@@ -195,7 +208,13 @@ describe('coverage configuration', () => {
       expect(target.coverage).toBeDefined();
       expect(target.coverage).not.toBe(false);
 
-      const coverageConfig = target.coverage as Record<string, any>;
+      if (!isCoverageConfig(target.coverage)) {
+        throw new TypeError(
+          `${target.identifier} coverage configuration must be an object`
+        );
+      }
+
+      const coverageConfig = target.coverage;
 
       const reporters = Array.isArray(coverageConfig.reporter)
         ? coverageConfig.reporter
@@ -217,10 +236,7 @@ describe('coverage configuration', () => {
 
       expect(expectedThresholds).toBeDefined();
 
-      const thresholds = (coverageConfig.thresholds ?? {}) as Record<
-        string,
-        number
-      >;
+      const thresholds = coverageConfig.thresholds ?? {};
 
       for (const metric of [
         'statements',

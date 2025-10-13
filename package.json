@@ -149,20 +149,21 @@
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "eslint": "^9.33.0",
-    "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-formatter-junit": "^8.40.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-formatter-junit": "^8.40.0",
     "husky": "^9.1.7",
+    "js-yaml": "^4.1.0",
     "jsdom": "^26.1.0",
     "lint-staged": "^16.1.5",
+    "mutationobserver-shim": "^0.3.7",
     "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
     "supertest": "^7.1.4",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.0.0",
-    "vitest": "^3.2.4",
-    "js-yaml": "^4.1.0"
+    "vitest": "^3.2.4"
   }
 }

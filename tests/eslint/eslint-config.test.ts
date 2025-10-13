@@ -10,7 +10,9 @@ const isSlowRunner =
   process.env.VITEST_SLOW_RUNNER === 'true';
 
 const ACCESSIBILITY_TIMEOUT_MS = isSlowRunner ? 60000 : 20000;
-const ESLINT_WARMUP_TARGET = 'tests/eslint/__fixtures__/a11y-valid.tsx';
+const resolveFixture = (fileName: string) =>
+  path.join(root, 'tests', 'eslint', '__fixtures__', fileName);
+const ESLINT_WARMUP_TARGET = resolveFixture('a11y-valid.tsx');
 
 async function runLint(file: string) {
   const eslint = new ESLint({ cwd: root });
@@ -28,9 +30,7 @@ describe('ESLint accessibility rule regression', () => {
   it(
     'flags intentional accessibility violations',
     async () => {
-      const resultInvalid = await runLint(
-        'tests/eslint/__fixtures__/a11y-invalid.tsx'
-      );
+      const resultInvalid = await runLint(resolveFixture('a11y-invalid.tsx'));
       const ruleIds = (resultInvalid!.messages as Linter.LintMessage[])
         .map(m => m.ruleId)
         .filter((r): r is string => Boolean(r));
@@ -52,9 +52,7 @@ describe('ESLint accessibility rule regression', () => {
   it(
     'does not flag valid accessibility patterns',
     async () => {
-      const resultValid = await runLint(
-        'tests/eslint/__fixtures__/a11y-valid.tsx'
-      );
+      const resultValid = await runLint(resolveFixture('a11y-valid.tsx'));
       const errorRuleIds = (resultValid!.messages as Linter.LintMessage[])
         .map(m => m.ruleId)
         .filter((r): r is string => Boolean(r));
