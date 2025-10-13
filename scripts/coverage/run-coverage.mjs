@@ -7,6 +7,10 @@ import {
   formatThematicSummary,
   generateThematicSummary,
 } from './thematic-summary.mjs';
+import {
+  getCoverageExecutionOrder,
+  getCoverageTargets,
+} from '../../config/coverage.config.mjs';
 
 const MODULE_DIR = fileURLToPath(new URL('.', import.meta.url));
 const WORKSPACE_ROOT = dirname(dirname(MODULE_DIR));
@@ -14,52 +18,10 @@ const WORKSPACE_ROOT = dirname(dirname(MODULE_DIR));
 const IS_WINDOWS = process.platform === 'win32';
 const PNPM_EXECUTABLE = IS_WINDOWS ? 'pnpm.cmd' : 'pnpm';
 
-const COVERAGE_TARGETS = {
-  workspace: {
-    description: 'Workspace aggregate coverage',
-    command: ['vitest', 'run', '--coverage'],
-  },
-  client: {
-    description: '@critgenius/client coverage',
-    command: [
-      'vitest',
-      'run',
-      '--config',
-      'packages/client/vitest.config.ts',
-      '--coverage',
-    ],
-  },
-  server: {
-    description: '@critgenius/server coverage',
-    command: [
-      'vitest',
-      'run',
-      '--config',
-      'packages/server/vitest.config.ts',
-      '--coverage',
-    ],
-  },
-  shared: {
-    description: '@critgenius/shared coverage',
-    command: [
-      'vitest',
-      'run',
-      '--config',
-      'packages/shared/vitest.config.ts',
-      '--coverage',
-    ],
-  },
-  'test-utils': {
-    description: '@critgenius/test-utils coverage',
-    command: [
-      'vitest',
-      'run',
-      '--config',
-      'packages/test-utils/vitest.config.ts',
-      '--coverage',
-    ],
-  },
-};
+const COVERAGE_TARGETS = getCoverageTargets();
+const THEMATIC_ORDER = getCoverageExecutionOrder().filter(
+  key => key in COVERAGE_TARGETS
+);
 
 function runCoverageCommand(targetKey) {
   const target = COVERAGE_TARGETS[targetKey];
@@ -100,7 +62,12 @@ function runTargetsSequentially(targets) {
   const results = [];
 
   for (const target of targets) {
-    console.log(`\n[coverage] Running ${COVERAGE_TARGETS[target].description}...`);
+    const targetConfig = COVERAGE_TARGETS[target];
+    if (!targetConfig) {
+      throw new Error(`Unsupported coverage target: ${target}`);
+    }
+
+    console.log(`\n[coverage] Running ${targetConfig.description}...`);
     results.push(runCoverageCommand(target));
   }
 
@@ -118,12 +85,10 @@ function main() {
   const [, , rawTarget] = process.argv;
   const target = rawTarget ?? 'workspace';
 
-  const thematicOrder = ['workspace', 'client', 'server', 'shared', 'test-utils'];
-
   let results = [];
 
   if (target === 'thematic') {
-    results = runTargetsSequentially(thematicOrder);
+    results = runTargetsSequentially(THEMATIC_ORDER);
     updateSummary();
   } else {
     results = runTargetsSequentially([target]);

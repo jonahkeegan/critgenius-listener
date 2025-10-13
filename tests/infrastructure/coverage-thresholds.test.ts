@@ -2,47 +2,16 @@ import { existsSync } from 'node:fs';
 import { dirname, join, parse } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 
-const EXPECTED_THEME_THRESHOLDS: Record<string, Record<string, number>> = {
-  workspace: {
-    statements: 30,
-    branches: 30,
-    functions: 30,
-    lines: 30,
-  },
-  client: {
-    statements: 50,
-    branches: 50,
-    functions: 50,
-    lines: 50,
-  },
-  server: {
-    statements: 50,
-    branches: 50,
-    functions: 50,
-    lines: 50,
-  },
-  shared: {
-    statements: 75,
-    branches: 75,
-    functions: 75,
-    lines: 75,
-  },
-  'test-utils': {
-    statements: 30,
-    branches: 30,
-    functions: 30,
-    lines: 30,
-  },
-};
+import type {
+  CoverageConfigModule,
+  CoverageTheme,
+  CoverageThresholds,
+} from '../../config/coverage.config.types';
 
-const EXPECTED_PACKAGE_THRESHOLDS: Record<string, Record<string, number>> = {
-  client: EXPECTED_THEME_THRESHOLDS.client!,
-  server: EXPECTED_THEME_THRESHOLDS.server!,
-  shared: EXPECTED_THEME_THRESHOLDS.shared!,
-  'test-utils': EXPECTED_THEME_THRESHOLDS['test-utils']!,
-};
+let coverageThemes: ReadonlyArray<CoverageTheme>;
+let configuredThemeThresholds: Record<string, CoverageThresholds>;
 
 function detectWorkspaceRoot(): string {
   let current = process.cwd();
@@ -65,6 +34,18 @@ function detectWorkspaceRoot(): string {
 
 const WORKSPACE_ROOT = detectWorkspaceRoot();
 
+const coverageConfigPromise = import(
+  pathToFileURL(join(WORKSPACE_ROOT, 'config', 'coverage.config.mjs')).href
+) as Promise<CoverageConfigModule>;
+
+beforeAll(async () => {
+  const coverageConfig = await coverageConfigPromise;
+  coverageThemes = coverageConfig.coverageThemes;
+  configuredThemeThresholds = coverageConfig.getThemeThresholdMap({
+    resolved: false,
+  });
+});
+
 async function loadUserConfig(
   configPath: string
 ): Promise<Record<string, unknown>> {
@@ -81,13 +62,20 @@ async function loadUserConfig(
 
 describe('tiered coverage thresholds', () => {
   it('defines explicit thresholds for each package configuration', async () => {
-    for (const [packageName, expectedThresholds] of Object.entries(
-      EXPECTED_PACKAGE_THRESHOLDS
-    )) {
+    for (const theme of coverageThemes) {
+      if (!theme.packageDir) {
+        continue;
+      }
+
+      const expectedThresholds = configuredThemeThresholds[theme.key];
+      expect(expectedThresholds).toBeDefined();
+      if (!expectedThresholds) {
+        throw new Error(`Missing thresholds for theme: ${theme.key}`);
+      }
       const configPath = join(
         WORKSPACE_ROOT,
         'packages',
-        packageName,
+        theme.packageDir,
         'vitest.config.ts'
       );
 
@@ -112,7 +100,13 @@ describe('tiered coverage thresholds', () => {
     expect(coverage).toBeDefined();
 
     const thresholds = (coverage?.thresholds ?? {}) as Record<string, number>;
-    expect(thresholds).toEqual(EXPECTED_THEME_THRESHOLDS.workspace);
+    const workspaceThresholds = configuredThemeThresholds.workspace;
+    expect(workspaceThresholds).toBeDefined();
+    if (!workspaceThresholds) {
+      throw new Error('Missing workspace thresholds');
+    }
+
+    expect(thresholds).toEqual(workspaceThresholds);
   });
 
   it('keeps thematic summary thresholds in sync with package tiers', async () => {
@@ -122,15 +116,15 @@ describe('tiered coverage thresholds', () => {
       ).href
     );
 
-    const themeThresholds = thematicModule.THEME_THRESHOLDS as
+    const exportedThresholds = thematicModule.THEME_THRESHOLDS as
       | Record<string, Record<string, number>>
       | undefined;
 
-    expect(themeThresholds).toBeDefined();
-    if (!themeThresholds) {
+    expect(exportedThresholds).toBeDefined();
+    if (!exportedThresholds) {
       throw new Error('theme thresholds export missing');
     }
 
-    expect(themeThresholds).toEqual(EXPECTED_THEME_THRESHOLDS);
+    expect(exportedThresholds).toEqual(configuredThemeThresholds);
   });
 });

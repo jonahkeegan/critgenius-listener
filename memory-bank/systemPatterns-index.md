@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-12 | Index Version: 1.16.0 | Status: Active
+Last Updated: 2025-10-13 | Index Version: 1.17.0 | Status: Active
 
 ## Segment Registry
 
@@ -46,6 +46,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Integration Testing Harness & Cross-Package Workflows      | 003     |
 | Documentation Validation Harness (Comprehensive Guide)     | 003     |
 | Tiered Coverage Enforcement & Thematic Reporting           | 004     |
+| Centralized Coverage Configuration Module                  | 003     |
 | ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
 | Vitest Timeout Governance & Dialog Resilience              | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
@@ -65,6 +66,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-13: Added centralized coverage configuration pattern (Task 3.2.1.1) to segment 003
 - 2025-10-12: Added tiered coverage enforcement, thematic reporting, and lint stabilization patterns
   (Task 3.2.1) to segment 004
 - 2025-10-11: Added documentation validation harness pattern (Task 3.1.5) to segment 003

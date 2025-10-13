@@ -4,6 +4,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
+import type {
+  CoverageConfigModule,
+  CoverageThresholds,
+} from '../../config/coverage.config.types';
+
 import {
   defaultVitestCoverageExcludePatterns,
   sharedVitestConfigMarkerKey,
@@ -50,32 +55,29 @@ const WORKSPACE_MANIFEST = join(WORKSPACE_ROOT, 'pnpm-workspace.yaml');
 
 const REQUIRED_REPORTERS = ['text', 'json-summary', 'html'] as const;
 
-let cachedThemeThresholds: Record<string, Record<string, number>> | null = null;
+const coverageConfigPromise = import(
+  pathToFileURL(join(WORKSPACE_ROOT, 'config', 'coverage.config.mjs')).href
+) as Promise<CoverageConfigModule>;
+
+let cachedCoverageConfig: CoverageConfigModule | null = null;
+let cachedThemeThresholds: Record<string, CoverageThresholds> | null = null;
+
+async function loadCoverageConfig(): Promise<CoverageConfigModule> {
+  if (!cachedCoverageConfig) {
+    cachedCoverageConfig = await coverageConfigPromise;
+  }
+  return cachedCoverageConfig;
+}
 
 async function loadThemeThresholds(): Promise<
-  Record<string, Record<string, number>>
+  Record<string, CoverageThresholds>
 > {
   if (cachedThemeThresholds) {
     return cachedThemeThresholds;
   }
 
-  const thematicModule = await import(
-    pathToFileURL(
-      join(WORKSPACE_ROOT, 'scripts', 'coverage', 'thematic-summary.mjs')
-    ).href
-  );
-
-  const exported = thematicModule?.THEME_THRESHOLDS as
-    | Record<string, Record<string, number>>
-    | undefined;
-
-  if (!exported) {
-    throw new Error(
-      'Failed to load theme thresholds from thematic summary module'
-    );
-  }
-
-  cachedThemeThresholds = exported;
+  const config = await loadCoverageConfig();
+  cachedThemeThresholds = config.getThemeThresholdMap({ resolved: false });
   return cachedThemeThresholds;
 }
 

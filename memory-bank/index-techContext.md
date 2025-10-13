@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-12 | Version: 1.23.0 | System Status: Active
+Last Updated: 2025-10-13 | Version: 1.24.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -54,6 +54,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Comprehensive Testing Guide & Validation Suite | 002 |
 | Tiered Coverage Enforcement & Thematic Reporting | 003 |
 | ESLint Warm-up & Vitest Timeout Governance | 003 |
+| Centralized Coverage Configuration Module | 003 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -66,6 +67,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-10-13: Added centralized coverage configuration module topic (Task 3.2.1.1) to segment 003
 - 2025-10-12: Added tiered coverage enforcement, thematic coverage orchestration, and lint/timeout governance topics (Task 3.2.1) to segment 003
 - 2025-10-11: Added comprehensive testing guide & validation suite summary (Task 3.1.5) to segment 002
 - 2025-10-10: Added integration testing harness & cross-package workflow topic (Task 3.1.4) to segment 003

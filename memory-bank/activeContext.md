@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-12 **Version:** 2.34.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-13 **Version:** 2.35.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -67,6 +67,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Audio capture controller refactored with configuration-driven dependency injection, feature flags, and retry semantics for deterministic testing
   - ✅ Audio diagnostics pipeline emits schema-validated events with structured error codes decoupled from UI messaging (Task 2.10.4.2)
   - ✅ Comprehensive testing guide (`docs/comprehensive-testing-guide.md`) stays self-validating via 92-test infrastructure suite guarding structure, diagrams, code examples, troubleshooting, and cross-references (Task 3.1.5)
+  - ✅ Centralized coverage module (`config/coverage.config.mjs` + typed companions) supplies thresholds, report directories, and execution order metadata to scripts, configs, and infrastructure suites (Task 3.2.1.1)
 
 ### Ready for Technical Planning & Remaining Infra
 
@@ -85,6 +86,14 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-13 – Centralized Coverage Configuration)
+
+- COVERAGE ORCHESTRATION SINGLE SOURCE (Task 3.2.1.1)
+  - Introduced `config/coverage.config.mjs` with typed exports (`coverage.config.types.ts`, `.d.ts`) as the authoritative home for thresholds, target metadata, report directories, and helper utilities consumed by coverage scripts, Vitest configs, and tests.
+  - Refactored `scripts/coverage/run-coverage.mjs`, `scripts/coverage/thematic-summary.mjs`, root/package `vitest.config.ts`, and infrastructure suites to import the shared module via `pathToFileURL`, eliminating duplicate literals and resolving the earlier `ERR_UNSUPPORTED_ESM_URL_SCHEME` regression.
+  - Hardened infrastructure drift detection by asserting coverage expectations directly against the shared module (`coverage-thresholds`, `coverage-validation`), and documented the watchexec-based watch loop (`~/.cargo/bin/watchexec.exe … -- pnpm vitest run …`) for fast verification from the repo root.
+  - Validation: `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts tests/infrastructure/coverage-validation.test.ts`.
 
 ### Latest Updates (2025-10-12 – Tiered Coverage Enforcement & ESLint Stability)
 

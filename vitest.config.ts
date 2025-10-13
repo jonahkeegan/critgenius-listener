@@ -1,7 +1,9 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath, URL as NodeURL } from 'node:url';
+import { fileURLToPath, pathToFileURL, URL as NodeURL } from 'node:url';
 import type { UserConfig } from 'vitest/config';
+
+import type { CoverageConfigModule } from './config/coverage.config.types';
 
 import {
   assertUsesSharedConfig,
@@ -16,7 +18,18 @@ type PackageManifest = {
 
 const workspaceRoot = dirname(fileURLToPath(import.meta.url));
 const packagesRoot = join(workspaceRoot, 'packages');
-const workspaceCoverageDirectory = join(workspaceRoot, 'coverage', 'workspace');
+
+const coverageConfigModule = (await import(
+  pathToFileURL(join(workspaceRoot, 'config', 'coverage.config.mjs')).href
+)) as CoverageConfigModule;
+const workspaceTheme = coverageConfigModule.getCoverageTheme('workspace');
+
+if (!workspaceTheme) {
+  throw new Error('Missing workspace coverage configuration');
+}
+
+const workspaceCoverageDirectory = workspaceTheme.reportsDirectory;
+const workspaceCoverageThresholds = { ...workspaceTheme.thresholds };
 
 const rootTestIncludePatterns = defaultVitestIncludePatterns.filter(pattern =>
   pattern.startsWith('tests/')
@@ -106,12 +119,7 @@ const baseConfigExport = assertUsesSharedConfig(
     },
     coverageOverrides: {
       reportsDirectory: workspaceCoverageDirectory,
-      thresholds: {
-        statements: 30,
-        branches: 30,
-        functions: 30,
-        lines: 30,
-      },
+      thresholds: workspaceCoverageThresholds,
     },
   })
 );

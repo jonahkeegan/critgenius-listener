@@ -2,82 +2,39 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  coverageThemes,
+  defaultCoverageThresholds,
+  getThemeThresholdMap,
+} from '../../config/coverage.config.mjs';
+
 const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE_ROOT = dirname(dirname(MODULE_DIR));
 const COVERAGE_ROOT = join(WORKSPACE_ROOT, 'coverage');
 
-const DEFAULT_THRESHOLDS = {
-  statements: 90,
-  branches: 90,
-  functions: 90,
-  lines: 90,
-};
+const DEFAULT_THRESHOLDS = Object.freeze({
+  statements: defaultCoverageThresholds.statements,
+  branches: defaultCoverageThresholds.branches,
+  functions: defaultCoverageThresholds.functions,
+  lines: defaultCoverageThresholds.lines,
+});
 
-export const THEME_THRESHOLDS = {
-  workspace: {
-    statements: 30,
-    branches: 30,
-    functions: 30,
-    lines: 30,
-  },
-  client: {
-    statements: 50,
-    branches: 50,
-    functions: 50,
-    lines: 50,
-  },
-  server: {
-    statements: 50,
-    branches: 50,
-    functions: 50,
-    lines: 50,
-  },
-  shared: {
-    statements: 75,
-    branches: 75,
-    functions: 75,
-    lines: 75,
-  },
-  'test-utils': {
-    statements: 30,
-    branches: 30,
-    functions: 30,
-    lines: 30,
-  },
-};
+const THEME_THRESHOLD_OVERRIDES = Object.freeze(
+  getThemeThresholdMap({ resolved: false })
+);
 
-const THEMES = [
-  {
-    key: 'workspace',
-    label: 'Workspace Aggregate',
-    summaryFile: join(COVERAGE_ROOT, 'workspace', 'coverage-summary.json'),
-    reportsDirectory: join(COVERAGE_ROOT, 'workspace'),
-  },
-  {
-    key: 'client',
-    label: 'Client (Frontend)',
-    summaryFile: join(COVERAGE_ROOT, 'client', 'coverage-summary.json'),
-    reportsDirectory: join(COVERAGE_ROOT, 'client'),
-  },
-  {
-    key: 'server',
-    label: 'Server (Backend)',
-    summaryFile: join(COVERAGE_ROOT, 'server', 'coverage-summary.json'),
-    reportsDirectory: join(COVERAGE_ROOT, 'server'),
-  },
-  {
-    key: 'shared',
-    label: 'Shared (Core Logic)',
-    summaryFile: join(COVERAGE_ROOT, 'shared', 'coverage-summary.json'),
-    reportsDirectory: join(COVERAGE_ROOT, 'shared'),
-  },
-  {
-    key: 'test-utils',
-    label: 'Test Utilities',
-    summaryFile: join(COVERAGE_ROOT, 'test-utils', 'coverage-summary.json'),
-    reportsDirectory: join(COVERAGE_ROOT, 'test-utils'),
-  },
-];
+const RESOLVED_THEME_THRESHOLDS = Object.freeze(
+  getThemeThresholdMap({ resolved: true })
+);
+
+const THEMES = coverageThemes.map(theme => ({
+  key: theme.key,
+  label: theme.label,
+  summaryFile: theme.summaryFile,
+  reportsDirectory: theme.reportsDirectory,
+}));
+
+export const THEME_THRESHOLDS = THEME_THRESHOLD_OVERRIDES;
 
 function ensureCoverageRoot() {
   if (!existsSync(COVERAGE_ROOT)) {
@@ -138,9 +95,8 @@ function evaluateTheme(theme, summaryData) {
     lines: extractMetric(summaryData, 'lines'),
   };
 
-  const resolvedThresholds = {
+  const resolvedThresholds = RESOLVED_THEME_THRESHOLDS[theme.key] ?? {
     ...DEFAULT_THRESHOLDS,
-    ...(THEME_THRESHOLDS[theme.key] ?? {}),
   };
 
   const meetsThresholds = Object.entries(coverage).every(([metric, data]) => {
@@ -186,7 +142,10 @@ export function generateThematicSummary(options = {}) {
     thresholds: {
       default: { ...DEFAULT_THRESHOLDS },
       themes: Object.fromEntries(
-        Object.entries(THEME_THRESHOLDS).map(([key, value]) => [key, { ...value }])
+        Object.entries(THEME_THRESHOLD_OVERRIDES).map(([key, value]) => [
+          key,
+          { ...value },
+        ])
       ),
     },
     themes,

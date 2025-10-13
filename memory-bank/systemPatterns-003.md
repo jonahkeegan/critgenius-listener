@@ -1,6 +1,6 @@
 # System Patterns – Runtime & Operational (Segment 003)
 
-Last Updated: 2025-10-11 | Segment Version: 1.14.0
+Last Updated: 2025-10-13 | Segment Version: 1.15.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -104,6 +104,24 @@ Parent Index: `systemPatterns-index.md`
   flake by coordinating fake timer advancement.
 - Validation: `pnpm --filter @critgenius/test-utils test` exercises package suites (24 tests) and
   `pnpm --filter @critgenius/test-utils build` verifies TypeScript emission.
+
+### Coverage Configuration Single Source Pattern (Task 3.2.1.1)
+
+- Pattern: Centralized coverage metadata module that supplies thresholds, thematic definitions,
+  report directories, and execution order helpers to every consumer, preventing drift across
+  scripts, configs, and infrastructure tests.
+- Implementation: `config/coverage.config.mjs` exports typed objects via `.types.ts`/`.d.ts`
+  companions; `scripts/coverage/run-coverage.mjs`, `scripts/coverage/thematic-summary.mjs`, root and
+  package `vitest.config.ts`, plus infrastructure suites import the module through
+  `pathToFileURL`-safe dynamic imports so both Node and jsdom contexts avoid
+  `ERR_UNSUPPORTED_ESM_URL_SCHEME` regressions.
+- Benefits: Removes duplicated literals, turns validation suites into true drift detectors, and
+  enables deterministic automation—developers can run the documented watchexec loop
+  (`~/.cargo/bin/watchexec.exe -c -w config/coverage.config.mjs -w tests/infrastructure/coverage-thresholds.test.ts -- pnpm vitest run …`)
+  to receive immediate feedback while CI reads the same metadata for gating.
+- Validation:
+  `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts tests/infrastructure/coverage-validation.test.ts`
+  confirms all packages honor the shared configuration surface.
 
 ### Performance Regression Harness Pattern (Task 3.1.3)
 
@@ -343,6 +361,7 @@ Future Extensions: pluggable probes, parallel execution, restart analytics, thre
 
 ## Change Log
 
+- 2025-10-13: Added centralized coverage configuration pattern (Task 3.2.1.1); version bump 1.15.0
 - 2025-10-11: Documented documentation validation harness pattern (Task 3.1.5); version bump 1.14.0
 - 2025-10-11: Added performance testing architecture decision pattern (Task 3.1.4.5); version bump
   1.13.0

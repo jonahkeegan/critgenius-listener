@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 import {
@@ -8,7 +8,22 @@ import {
   createVitestConfig,
 } from '../../vitest.shared.config';
 
+import type { CoverageConfigModule } from '../../config/coverage.config.types';
+
 const packageRoot = dirname(fileURLToPath(import.meta.url));
+
+const coverageConfigModule = (await import(
+  pathToFileURL(join(packageRoot, '..', '..', 'config', 'coverage.config.mjs'))
+    .href
+)) as CoverageConfigModule;
+const sharedTheme = coverageConfigModule.getCoverageTheme('shared');
+
+if (!sharedTheme) {
+  throw new Error('Missing shared coverage configuration');
+}
+
+const sharedCoverageDirectory = sharedTheme.reportsDirectory;
+const sharedCoverageThresholds = { ...sharedTheme.thresholds };
 
 export default defineConfig(
   assertUsesSharedConfig(
@@ -22,19 +37,8 @@ export default defineConfig(
       tsconfigPath: `${packageRoot}/tsconfig.json`,
       coverageOverrides: {
         exclude: ['scripts/**'],
-        reportsDirectory: resolve(
-          packageRoot,
-          '..',
-          '..',
-          'coverage',
-          'shared'
-        ),
-        thresholds: {
-          statements: 75,
-          branches: 75,
-          functions: 75,
-          lines: 75,
-        },
+        reportsDirectory: sharedCoverageDirectory,
+        thresholds: sharedCoverageThresholds,
       },
     })
   )
