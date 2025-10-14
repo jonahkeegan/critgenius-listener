@@ -41,7 +41,8 @@ function detectWorkspaceRoot(): string {
       return fileURLToPath(candidate);
     }
   } catch {
-    // fall through to filesystem search
+    // Expected: URL parsing errors (e.g., when import.meta.url is not a file URL).
+    // Fall through to filesystem search.
   }
 
   let current = process.cwd();

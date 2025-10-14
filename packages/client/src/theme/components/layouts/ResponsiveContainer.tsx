@@ -151,6 +151,7 @@ export const ResponsiveContainer: React.FC<ResponsiveContainerProps> = ({
   // Sanitize spread props to ensure legacy maxWidth values cannot override the resolved setting
   const { maxWidth: _legacyMaxWidth, ...containerProps } =
     props as ContainerProps & { maxWidth?: ContainerProps['maxWidth'] };
+  // Touch the extracted value so noUnusedLocals stays satisfied while we intentionally drop it.
   void _legacyMaxWidth;
 
   // Render helper for custom maxWidth handling (e.g., 'xxl' or raw pixel values)
