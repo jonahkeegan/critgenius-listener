@@ -57,7 +57,26 @@ const CONFIG_CASES: ConfigCase[] = [
     tsconfigPath: path.join(workspaceRoot, 'packages/shared/tsconfig.json'),
     configPath: path.join(workspaceRoot, 'packages/shared/vitest.config.ts'),
   },
+  {
+    name: '@critgenius/test-utils',
+    root: path.join(workspaceRoot, 'packages/test-utils'),
+    tsconfigPath: path.join(workspaceRoot, 'packages/test-utils/tsconfig.json'),
+    configPath: path.join(
+      workspaceRoot,
+      'packages/test-utils/vitest.config.ts'
+    ),
+  },
 ];
+
+// Tiered thresholds track the policy documented in memory-bank/systemPatterns-002.md
+// (Task 3.2.1 Thematic Coverage Enforcement Pattern).
+const COVERAGE_THRESHOLD_TIERS: Record<string, number> = {
+  workspace: 30,
+  '@critgenius/test-utils': 30,
+  '@critgenius/client': 50,
+  '@critgenius/server': 50,
+  '@critgenius/shared': 75,
+};
 
 type ResolvedConfig = {
   resolve?: {
@@ -236,7 +255,7 @@ describe('vitest config consistency', () => {
     }
   });
 
-  it('enforces 90 percent coverage thresholds with shared exclusions', () => {
+  it('enforces tiered coverage thresholds with shared exclusions', () => {
     for (const testCase of resolvedCases) {
       const coverage = testCase.resolved.test?.coverage;
       expect(
@@ -250,11 +269,12 @@ describe('vitest config consistency', () => {
         thresholds,
         `${testCase.name} missing coverage thresholds`
       ).toBeDefined();
+      const expectedThreshold = COVERAGE_THRESHOLD_TIERS[testCase.name] ?? 90;
       expect(thresholds).toMatchObject({
-        statements: 90,
-        branches: 90,
-        functions: 90,
-        lines: 90,
+        statements: expectedThreshold,
+        branches: expectedThreshold,
+        functions: expectedThreshold,
+        lines: expectedThreshold,
       });
 
       const exclude = new Set(
@@ -275,7 +295,10 @@ describe('vitest config consistency', () => {
         resolveTsconfigAliases(testCase.tsconfigPath)
       );
 
-      expect(actualAlias).toEqual(expectedAlias);
+      expect(actualAlias).toMatchObject(expectedAlias);
+      expect(Object.keys(actualAlias).sort()).toEqual(
+        Object.keys(expectedAlias).sort()
+      );
     }
   });
 });

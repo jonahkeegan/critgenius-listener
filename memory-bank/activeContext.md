@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-11 **Version:** 2.33.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-13 **Version:** 2.36.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -29,7 +29,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 1. **Project Identity:** ✅ Fully Defined - Revolutionary D&D audio tool
 2. **Product Context:** ✅ Comprehensive - Market analysis, user segments, use cases complete
-3. **System Patterns:** ✅ Segmented - Monolith decomposed into 3 thematic files (`systemPatterns-001/002/003.md`) + index
+3. **System Patterns:** ✅ Segmented - Monolith decomposed into 5 thematic files (`systemPatterns-001/002/003/004/005.md`) + index
 4. **Technical Context:** ✅ Complete - Context7-validated technology stack with implementation
    details
 5. **Progress Tracking:** ✅ Active and current
@@ -51,6 +51,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Success metrics and validation criteria established
 - ✅ Technology stack direction identified
 - ✅ Risk assessment framework in place
+- ✅ Tiered coverage policy enforced with automation and CI gating (Task 3.2.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - ✅ Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - ✅ Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -66,6 +67,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - ✅ Audio capture controller refactored with configuration-driven dependency injection, feature flags, and retry semantics for deterministic testing
   - ✅ Audio diagnostics pipeline emits schema-validated events with structured error codes decoupled from UI messaging (Task 2.10.4.2)
   - ✅ Comprehensive testing guide (`docs/comprehensive-testing-guide.md`) stays self-validating via 92-test infrastructure suite guarding structure, diagrams, code examples, troubleshooting, and cross-references (Task 3.1.5)
+  - ✅ Centralized coverage module (`config/coverage.config.mjs` + typed companions) supplies thresholds, report directories, and execution order metadata to scripts, configs, and infrastructure suites (Task 3.2.1.1)
 
 ### Ready for Technical Planning & Remaining Infra
 
@@ -84,6 +86,31 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-13 – Testing Infrastructure Segmentation)
+
+- SYSTEM PATTERNS TESTING SEGMENTATION (Task 3.2.1 Documentation Alignment)
+  - Established new `systemPatterns-005.md` to house all testing infrastructure, coverage metadata, documentation validation, and integration harness patterns, reducing Segment 003 scope to runtime and operational guidance.
+  - Updated `systemPatterns-index.md` (version 1.18.0) to register Segment 005, reassign topic mappings (Vitest configuration, workspace, shared test utilities, coverage module, documentation validation, performance harness), and document the refactor in the change log.
+  - Revised Segment 003 metadata (version 1.16.0) to reflect runtime focus post-extraction and trimmed redundant testing entries.
+  - Validation: `pnpm vitest run tests/infrastructure/version-validation.test.ts` confirms documentation metadata remains aligned post-segmentation.
+
+### Latest Updates (2025-10-13 – Centralized Coverage Configuration)
+
+- COVERAGE ORCHESTRATION SINGLE SOURCE (Task 3.2.1.1)
+  - Introduced `config/coverage.config.mjs` with typed exports (`coverage.config.types.ts`, `.d.ts`) as the authoritative home for thresholds, target metadata, report directories, and helper utilities consumed by coverage scripts, Vitest configs, and tests.
+  - Refactored `scripts/coverage/run-coverage.mjs`, `scripts/coverage/thematic-summary.mjs`, root/package `vitest.config.ts`, and infrastructure suites to import the shared module via `pathToFileURL`, eliminating duplicate literals and resolving the earlier `ERR_UNSUPPORTED_ESM_URL_SCHEME` regression.
+  - Hardened infrastructure drift detection by asserting coverage expectations directly against the shared module (`coverage-thresholds`, `coverage-validation`), and documented the watchexec-based watch loop (`~/.cargo/bin/watchexec.exe … -- pnpm vitest run …`) for fast verification from the repo root.
+  - Validation: `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts tests/infrastructure/coverage-validation.test.ts`.
+
+### Latest Updates (2025-10-12 – Tiered Coverage Enforcement & ESLint Stability)
+
+- COVERAGE GOVERNANCE & QUALITY GATES (Task 3.2.1 Tiered Coverage Enforcement)
+  - Embedded the tiered coverage policy (Shared ≥75 %, Client/Server ≥50 %, Workspace & Test-Utils ≥30 %) inside every `vitest.config.ts`, guarded by updated infrastructure suites (`coverage-validation`, new `coverage-thresholds`, and refreshed config consistency checks) plus `scripts/coverage/run-coverage.mjs` orchestration that now emits per-theme HTML and `coverage/thematic-summary.json` for CI dashboards.
+  - Reaffirmed the CI-only enforcement decision so pre-commit hooks stay fast; coverage status now surfaces through required CI checks that read the thematic summary to flag gaps while developers rely on fast lint/format hooks locally.
+  - Reduced global Vitest timeouts to 10 s/15 s/10 s, rebuilt dialog/layout suites with typed observer mocks, and elevated client coverage to 55.49 % statements (≥50 % gate) while keeping responsive/layout tests resilient under the tighter limits.
+  - Stabilized the ESLint regression harness by priming caches via warm-up run and expanding the slow-runner timeout to 60 s, resolving Windows flake without concealing genuine lint failures.
+  - Validation: `pnpm vitest run tests/infrastructure/coverage-validation.test.ts`, `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts`, `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts tests/eslint/eslint-config.test.ts`, `pnpm --filter @critgenius/client test -- --coverage`, `pnpm test:coverage:summary`, `pnpm -w test`.
 
 ### Latest Updates (2025-10-11 – Comprehensive Testing Guide Validation Refresh)
 

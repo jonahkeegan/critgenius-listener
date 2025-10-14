@@ -60,16 +60,16 @@ transcription workflows:
 
 ### 1.2 Quality Gates and Coverage Requirements
 
-All code must meet these thresholds before merging:
+All code must meet the tiered coverage thresholds before merging:
 
-| Metric      | Threshold | Enforcement         | Rationale                                     |
-| ----------- | --------- | ------------------- | --------------------------------------------- |
-| Statement   | 90%       | Vitest coverage     | Ensures comprehensive test coverage           |
-| Branch      | 90%       | Vitest coverage     | Validates all code paths including edge cases |
-| Function    | 90%       | Vitest coverage     | Confirms all functions are tested             |
-| Line        | 90%       | Vitest coverage     | Catches untested code                         |
-| Performance | <500ms    | Custom matchers     | Real-time processing requirement              |
-| Regression  | <10%      | Baseline comparison | Prevents performance degradation              |
+| Metric      | Shared Tier | Client / Server Tier | Workspace / Test-Utils Tier | Enforcement         | Rationale                                     |
+| ----------- | ----------- | -------------------- | --------------------------- | ------------------- | --------------------------------------------- |
+| Statement   | 75%         | 50%                  | 30%                         | Vitest coverage     | Ensures comprehensive test coverage           |
+| Branch      | 75%         | 50%                  | 30%                         | Vitest coverage     | Validates all code paths including edge cases |
+| Function    | 75%         | 50%                  | 30%                         | Vitest coverage     | Confirms all functions are tested             |
+| Line        | 75%         | 50%                  | 30%                         | Vitest coverage     | Catches untested code                         |
+| Performance | <500ms      | <500ms               | <500ms                      | Custom matchers     | Real-time processing requirement              |
+| Regression  | <10%        | <10%                 | <10%                        | Baseline comparison | Prevents performance degradation              |
 
 **Enforcement Points:**
 

@@ -259,6 +259,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                     <Tooltip title='Record Voice Sample'>
                       <IconButton
                         size='small'
+                        aria-label='Record Voice Sample'
                         onClick={() => onRecordSample(speaker.id)}
                         disabled={isRecording}
                         color={
@@ -278,6 +279,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                       <Tooltip title='Play Sample'>
                         <IconButton
                           size='small'
+                          aria-label='Play Sample'
                           onClick={() => onPlaySample(speaker.id)}
                           disabled={isRecording}
                         >
@@ -288,6 +290,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                     <Tooltip title='Edit Profile'>
                       <IconButton
                         size='small'
+                        aria-label='Edit Profile'
                         onClick={() => handleEditSpeaker(speaker)}
                       >
                         <Edit />
@@ -296,6 +299,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                     <Tooltip title='Delete Profile'>
                       <IconButton
                         size='small'
+                        aria-label='Delete Profile'
                         onClick={() => onDeleteSpeaker(speaker.id)}
                         color='error'
                       >

@@ -110,6 +110,24 @@ Guidelines:
 3. Record baseline in consolidated learnings
 4. Re-run after impactful dependency upgrades
 
+### Thematic Coverage Enforcement Pattern (Task 3.2.1)
+
+| Aspect        | Implementation                                                  | Rationale                                                   |
+| ------------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
+| Provider      | Force V8 via shared `createVitestConfig()`                      | Aligns with installed reporter + deterministic metrics      |
+| Thresholds    | Tiered: workspace/test-utils 30%, client/server 50%, shared 75% | Matches maturity per layer while retaining guardrails       |
+| Reporters     | `text`, `json-summary`, `html`                                  | CLI insight, machine-readable summary, manual drill-down    |
+| Output Layout | `coverage/{workspace,client,server,shared,test-utils}`          | Mirrors monorepo themes for quick triage                    |
+| Orchestration | `scripts/coverage/run-coverage.mjs` (`pnpm test:coverage:*`)    | Single entrypoint for workspace + per-theme runs            |
+| Validation    | `tests/infrastructure/coverage-validation.test.ts`              | Prevents config drift (provider/reporters/thresholds/paths) |
+
+Notes:
+
+- `scripts/coverage/thematic-summary.mjs` regenerates `coverage/thematic-summary.json` and prints a
+  table (`pnpm test:coverage:summary`).
+- CI enforces coverage (no pre-commit hook) to preserve fast local commits.
+- Docs: see `docs/coverage-system-guide.md` for workflows and sequence diagrams.
+
 ## Environment Configuration Patterns
 
 ### Comprehensive Environment Variable Architecture

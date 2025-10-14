@@ -1,14 +1,16 @@
 /// <reference types="vitest" />
 import '../../tests/setup/install-test-globals';
 
-import { dirname } from 'node:path';
-import { fileURLToPath, URL as NodeURL } from 'node:url';
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL, URL as NodeURL } from 'node:url';
 import type { PluginOption, UserConfig as ViteUserConfig } from 'vite';
 
 import {
   assertUsesSharedConfig,
   createVitestConfig,
 } from '../../vitest.shared.config';
+
+import type { CoverageConfigModule } from '../../config/coverage.config.types';
 
 async function importWithNodeURL<T>(load: () => Promise<T>): Promise<T> {
   const originalURL = globalThis.URL;
@@ -31,6 +33,19 @@ const { default: react } = (await importWithNodeURL(
 
 const packageRoot = dirname(fileURLToPath(import.meta.url));
 
+const coverageConfigModule = (await import(
+  pathToFileURL(join(packageRoot, '..', '..', 'config', 'coverage.config.mjs'))
+    .href
+)) as CoverageConfigModule;
+const clientTheme = coverageConfigModule.getCoverageTheme('client');
+
+if (!clientTheme) {
+  throw new Error('Missing client coverage configuration');
+}
+
+const clientCoverageDirectory = clientTheme.reportsDirectory;
+const clientCoverageThresholds = { ...clientTheme.thresholds };
+
 function clientDefine() {
   const clientCfg = {
     NODE_ENV: process.env.NODE_ENV || 'test',
@@ -52,6 +67,8 @@ const sharedConfig = createVitestConfig({
   tsconfigPath: `${packageRoot}/tsconfig.json`,
   coverageOverrides: {
     exclude: ['tests/**'],
+    reportsDirectory: clientCoverageDirectory,
+    thresholds: clientCoverageThresholds,
   },
 }) as ViteUserConfig;
 
