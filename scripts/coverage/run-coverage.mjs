@@ -12,7 +12,11 @@ import {
   getCoverageTargets,
 } from '../../config/coverage.config.mjs';
 
-const MODULE_DIR = fileURLToPath(new URL('.', import.meta.url));
+const moduleUrl = new URL(import.meta.url);
+moduleUrl.search = '';
+moduleUrl.hash = '';
+const MODULE_FILE_PATH = fileURLToPath(moduleUrl.href);
+const MODULE_DIR = dirname(MODULE_FILE_PATH);
 const WORKSPACE_ROOT = dirname(dirname(MODULE_DIR));
 
 const IS_WINDOWS = process.platform === 'win32';
@@ -97,6 +101,22 @@ function main() {
 
   const failures = results.filter(result => !result.success);
   if (failures.length > 0) {
+    if (process.env.VITEST) {
+      const failureMessages = [];
+      for (const failure of failures) {
+        if ('reason' in failure && failure.reason) {
+          failureMessages.push(
+            `[coverage] ${failure.target} failed: ${failure.reason}`
+          );
+        } else {
+          failureMessages.push(
+            `[coverage] ${failure.target} failed with exit code ${failure.exitCode}`
+          );
+        }
+      }
+      globalThis.__coverageOrchestratorFailures = failureMessages;
+    }
+
     for (const failure of failures) {
       if ('reason' in failure && failure.reason) {
         console.error(
@@ -116,6 +136,13 @@ function main() {
 try {
   main();
 } catch (error) {
-  console.error('\n[coverage] Execution failed:', error instanceof Error ? error.message : error);
+  const message =
+    error instanceof Error ? error.message : String(error);
+  if (process.env.VITEST) {
+    globalThis.__coverageOrchestratorFailures = [
+      `Execution failed: ${message}`,
+    ];
+  }
+  console.error('\n[coverage] Execution failed:', message);
   process.exitCode = 1;
 }

@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-13 **Version:** 2.36.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-14 **Version:** 2.37.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -86,6 +86,26 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-13 – Coverage Orchestration Validation)
+
+- COVERAGE ORCHESTRATION VALIDATION LAYER (Task 3.2.2)
+  - Authored `tests/infrastructure/coverage-orchestration.test.ts` to assert sequential execution,
+    spawn error resilience, non-zero exit propagation, failure aggregation capture, workspace-only
+    execution semantics, and thematic summary refresh behaviour using mocked `spawnSync` calls.
+  - Published `scripts/validate-coverage-orchestration.mjs` so contributors can confirm coverage
+    scripts, documentation diagrams, coverage config targets, and thematic summary generation stay
+    aligned (supports `--skip-tests` for fast drift checks).
+  - Hardened `scripts/coverage/run-coverage.mjs` to normalize module URLs for jsdom-driven loaders
+    and capture orchestrator failure messages in-memory so Vitest assertions remain deterministic
+    while preserving human-facing console logs.
+  - Expanded `docs/coverage-system-guide.md` with four new sequence diagrams that map orchestration
+    workflow, thematic execution order, failure handling, and aggregate report generation alongside
+    a validation toolkit section.
+  - Memory Bank Segment 005 promoted to version 1.2.0 capturing the enriched pattern; consolidated
+    learnings file updated with a coverage orchestration guard entry and follow-up roadmap.
+  - Follow-Ups: Extend the validator to diff coverage configuration entries against manifests, add
+    CI enforcement, and explore structured JSON diagnostics for downstream analysis.
 
 ### Latest Updates (2025-10-13 – Testing Infrastructure Segmentation)
 
