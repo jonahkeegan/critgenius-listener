@@ -1203,6 +1203,12 @@ DEBUG_VITEST_PATH_STACKS=true \
 pnpm test
 ```
 
+> ⚠️ On Windows, never point `DEBUG_VITEST_PATH_OUTPUT` at reserved device names such as `NUL`,
+> `CON`, `PRN`, `AUX`, or any `COM1`–`COM9` / `LPT1`–`LPT9` variant. The shared Vitest configuration
+> now detects these values, logs a warning, and disables diagnostic file output to prevent
+> filesystem errors. Prefer explicit filenames like `diagnostic-output.log` or consult
+> `docs/filename-compatibility-troubleshooting.md` for safe alternatives.
+
 ---
 
 ## 4. Test Utilities Library

@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-14 | Segment Version: 1.2.0
+Last Updated: 2025-10-15 | Segment Version: 1.3.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -106,6 +106,20 @@ Parent Index: `systemPatterns-index.md`
 - Follow-Ups: Extend the validator to diff `config/coverage.config.mjs` against package manifests,
   wire the validator into CI for automated enforcement, and explore structured JSON diagnostics for
   downstream coverage failure analysis.
+
+### Coverage Threshold Recalibration Pattern (Task 3.2.2.1)
+
+- Pattern: Keep coverage configuration tests aligned with authoritative thresholds whenever the
+  workspace aggregate gate moves, preventing parallel sweeps from failing due to outdated literals.
+- Implementation: Updated `tests/infrastructure/vitest-config-consistency.test.ts` to assert the 9 %
+  workspace floor defined in `config/coverage.config.mjs`, ensuring the consistency harness mirrors
+  the shared configuration module; re-ran the thematic sweep to validate the relaxed gate alongside
+  existing tiered package expectations.
+- Benefits: Eliminates brittle hard-coded thresholds inside infrastructure suites, keeps
+  parallelized coverage execution green, and reinforces the single-source-of-truth model introduced
+  with the coverage configuration module.
+- Validation: `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts`,
+  `pnpm test:coverage:thematic`.
 
 ### Performance Regression Harness Pattern (Task 3.1.3)
 

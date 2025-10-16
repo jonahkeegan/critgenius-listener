@@ -27,6 +27,21 @@ Manual ad-hoc rebases risk:
   `--allow-kb` is provided.
 - Safe exit if nothing staged after filtering.
 
+### Reserved Filename Guardrails
+
+- The CI pipeline now runs `pnpm run validate:filenames` on every push and pull request to ensure
+  Windows-reserved device names (e.g., `NUL`, `CON`, `PRN`, `COM1`) never slip into the repo.
+- Run the same command locally before invoking the safe sync script if you touched scripts, build
+  artifacts, or diagnostic logging options:
+
+  ```bash
+  pnpm run validate:filenames
+  ```
+
+- If the validator flags an issue, rename the file or update the offending configuration (for
+  example, change `DEBUG_VITEST_PATH_OUTPUT` to a safe filename like `diagnostic-output.log`) before
+  committing. This keeps local workflows aligned with CI enforcement.
+
 ## Usage Overview (Dry-Run Default)
 
 ```

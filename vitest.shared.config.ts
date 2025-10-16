@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
-import { dirname, isAbsolute, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, URL as NodeURL } from 'node:url';
 import type { UserConfig, UserConfigExport } from 'vitest/config';
@@ -11,6 +11,10 @@ import {
   type LogLevel as PathLogLevel,
   type PathNormalizationContext,
 } from '@critgenius/test-utils/diagnostics';
+import {
+  isWindowsReservedName,
+  getReservedNameError,
+} from './scripts/utils/windows-reserved-names.js';
 
 const require = createRequire(fileURLToPath(import.meta.url));
 
@@ -246,7 +250,22 @@ function sanitizeOutputFile(value: string | undefined): string | undefined {
     return undefined;
   }
 
-  return isAbsolute(trimmed) ? trimmed : resolve(process.cwd(), trimmed);
+  const resolvedPath = isAbsolute(trimmed)
+    ? trimmed
+    : resolve(process.cwd(), trimmed);
+
+  // Check if the resolved path uses a Windows reserved device name
+  if (isWindowsReservedName(resolvedPath)) {
+    const error = getReservedNameError(resolvedPath);
+    console.warn(
+      `[vitest config] WARNING: Diagnostic output file path "${basename(resolvedPath)}" uses a Windows reserved device name. ` +
+        `${error} ` +
+        `File output will be disabled. Please use a different filename (e.g., "diagnostic-output.txt").`
+    );
+    return undefined;
+  }
+
+  return resolvedPath;
 }
 
 function sanitizePathForLogging(path: string): string {
@@ -579,6 +598,7 @@ export function resolveTsconfigAliases(
 export const __pathDiagnostics = {
   ensurePathString,
   normalizePathInput,
+  sanitizeOutputFile,
 };
 
 function applyCoverageDefaults(

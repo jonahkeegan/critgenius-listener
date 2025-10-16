@@ -7,13 +7,7 @@
 
 import { readdir, stat } from 'fs/promises';
 import { join, basename, extname } from 'path';
-
-// Windows reserved device names (case-insensitive)
-const WINDOWS_RESERVED_NAMES = new Set([
-  'CON', 'PRN', 'AUX', 'NUL',
-  'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9',
-  'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'
-]);
+import { WINDOWS_RESERVED_NAMES } from './utils/windows-reserved-names.mjs';
 
 // Characters that are problematic in filenames
 const PROBLEMATIC_CHARS = /[<>:"|?*\x00-\x1f]/;

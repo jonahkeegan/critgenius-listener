@@ -1,14 +1,19 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-10-11 09:35 PST **Version:** 1.8.0 **System Status:** Active
+**Last Updated:** 2025-10-15 20:30 PST **Version:** 1.10.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 172
-**Last Updated:** 2025-10-11 09:35 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 210
+**Last Updated:** 2025-10-15 20:30 PST
 
 **Update Log:**
 
+- 2025-10-15 20:30 PST — Logged parallel coverage gate calibration pattern in
+  `consolidated-learnings-007.md`; row count now 210.
+- 2025-10-15 19:45 PST — Captured tiered coverage enforcement, centralized configuration authority,
+  coverage threshold drift prevention, and Vitest timeout calibration into
+  `consolidated-learnings-007.md`; row count now 203.
 - 2025-10-11 09:35 PST — Consolidated integration harness evolution, realtime stability hardening,
   and documentation validation learnings into `consolidated-learnings-007.md`; row count now 172.
 - 2025-10-05 12:45 PST — Consolidated Vitest workspace hardening, shared test utilities rollout, and
@@ -115,13 +120,16 @@
 
 ### consolidated-learnings-007.md
 
-- **Status:** Active - Ready for New Consolidations
-- **Row Count:** 52
+- **Status:** Active - Coverage & Testing Evolution
+- **Row Count:** 203
 - **Created:** 2025-09-30 21:43 PST
-- **Last Updated:** 2025-09-30 21:43 PST
-- **Primary Topics:** Awaiting first consolidation entries
-- **Description:** New consolidated learnings file ready to receive patterns and insights from raw
-  reflection log consolidation following established Memory Bank protocols
+- **Last Updated:** 2025-10-15 19:45 PST
+- **Primary Topics:** Test Runtime Isolation, Workspace Standardization, Performance Benchmarking,
+  Coverage Orchestration, Tiered Coverage Gates, Centralized Configuration, Threshold Drift
+  Prevention
+- **Description:** Aggregates deterministic test runtime patterns, workspace standardization,
+  performance harness hardening, coverage orchestration guardrails, tiered coverage enforcement, and
+  coverage configuration governance for the Listener monorepo.
 
 ## Topic Index
 
@@ -136,6 +144,7 @@
 
 - **Comprehensive Startup Validation with Zod** (consolidated-learnings-005.md)
 - **Environment-Specific Configuration Templates** (consolidated-learnings-005.md)
+- **Centralized Coverage Configuration Authority** (consolidated-learnings-007.md)
 
 ### Technical Implementation
 
@@ -163,6 +172,7 @@
 
 - **Context7 MCP Integration** (consolidated-learnings-001.md)
 - **Dependency Verification Workflow** (consolidated-learnings-001.md)
+- **Hardened Performance Benchmarks Under Real Timers** (consolidated-learnings-007.md)
 
 ### Security & Best Practices
 
@@ -178,11 +188,22 @@
 - **Audio Interface Design Patterns** (consolidated-learnings-001.md)
 - **Audio Interface Component Development** (consolidated-learnings-001.md)
 
+### Development Workflow & Tooling
+
+- **Vitest Workspace Normalization** (consolidated-learnings-007.md)
+- **Shared Test Utilities Distribution** (consolidated-learnings-007.md)
+- **Performance Runner Exit Propagation** (consolidated-learnings-007.md)
+- **Coverage Orchestration Infrastructure Guard** (consolidated-learnings-007.md)
+- **Documentation Validation Harness for Testing Guides** (consolidated-learnings-007.md)
+- **Coverage Threshold Drift Prevention** (consolidated-learnings-007.md)
+
 ### Testing Strategies
 
 - **Mock-Based External Service Validation** (consolidated-learnings-005.md)
 - **Focused Unit Testing for External Connectors** (consolidated-learnings-005.md)
 - **Deterministic Test Runtime Validation Suite** (consolidated-learnings-007.md)
+- **Tiered Coverage Gates with CI Enforcement** (consolidated-learnings-007.md)
+- **Calibrated Vitest Global Timeouts** (consolidated-learnings-007.md)
 
 ### External Service Integration
 
@@ -204,7 +225,7 @@
 ## Pagination Status
 
 - **Total Files:** 7 (1 active, 6 archived)
-- **Active File Capacity:** 248 remaining rows (300 max)
+- **Active File Capacity:** 97 remaining rows (300 max)
 - **Next File Number:** 008
 
 ## System Notes

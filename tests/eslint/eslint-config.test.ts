@@ -15,16 +15,24 @@ const resolveFixture = (fileName: string) =>
 const ESLINT_WARMUP_TARGET = resolveFixture('a11y-valid.tsx');
 
 async function runLint(file: string) {
-  const eslint = new ESLint({ cwd: root });
+  const eslint = await getSharedEslint();
   const results = await eslint.lintFiles([file]);
   if (!results.length) throw new Error('No lint result for ' + file);
   return results[0];
 }
 
+let sharedEslint: ESLint | null = null;
+async function getSharedEslint() {
+  if (!sharedEslint) {
+    sharedEslint = new ESLint({ cwd: root });
+  }
+  return sharedEslint;
+}
+
 describe('ESLint accessibility rule regression', () => {
   beforeAll(async () => {
     await runLint(ESLINT_WARMUP_TARGET);
-  });
+  }, ACCESSIBILITY_TIMEOUT_MS);
 
   // Increased timeout due to cold ESLint startup cost in CI/Windows environments
   it(

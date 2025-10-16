@@ -1,7 +1,9 @@
+import { EventEmitter } from 'node:events';
 import { readFileSync } from 'node:fs';
-import type { SpawnSyncReturns } from 'node:child_process';
+import type { ChildProcess } from 'node:child_process';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import type { Readable } from 'node:stream';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,10 +12,6 @@ declare global {
 
   var __coverageOrchestratorFailures: string[] | undefined;
 }
-
-const childProcessMock = vi.hoisted(() => ({
-  spawnSync: vi.fn(),
-}));
 
 const summaryMocks = vi.hoisted(() => ({
   generateThematicSummary: vi.fn(),
@@ -28,14 +26,9 @@ const RUN_COVERAGE_MODULE = pathToFileURL(
   join(WORKSPACE_ROOT, 'scripts', 'coverage', 'run-coverage.mjs')
 ).href;
 
-vi.mock('node:child_process', () => ({
-  ...childProcessMock,
-  default: childProcessMock,
-}));
-
 vi.mock('../../scripts/coverage/thematic-summary.mjs', () => summaryMocks);
 
-const spawnSyncMock = vi.mocked(childProcessMock.spawnSync);
+const spawnMock = vi.hoisted(() => vi.fn());
 const generateSummaryMock = vi.mocked(summaryMocks.generateThematicSummary);
 const formatSummaryMock = vi.mocked(summaryMocks.formatThematicSummary);
 
@@ -54,23 +47,46 @@ const {
 const RESOLVED_THRESHOLDS = getThemeThresholdMap({ resolved: true });
 const UNRESOLVED_THRESHOLDS = getThemeThresholdMap({ resolved: false });
 
-type SpawnResultOverrides = {
-  status?: number | null;
+type ChildProcessOverrides = {
+  exitCode?: number | null;
   error?: Error;
+  autoClose?: boolean;
+  closeDelayMs?: number;
+  errorDelayMs?: number;
 };
 
-function createSpawnResult(
-  overrides: SpawnResultOverrides = {}
-): SpawnSyncReturns<Buffer> {
-  return {
-    pid: 0,
-    output: [null, Buffer.alloc(0), Buffer.alloc(0)],
-    stdout: Buffer.alloc(0),
-    stderr: Buffer.alloc(0),
-    status: overrides.status ?? 0,
-    signal: null,
-    error: overrides.error,
-  } satisfies SpawnSyncReturns<Buffer>;
+function scheduleCallback(callback: () => void, delayMs?: number) {
+  if (typeof delayMs === 'number' && delayMs > 0) {
+    setTimeout(callback, delayMs);
+    return;
+  }
+
+  queueMicrotask(callback);
+}
+
+function createChildProcess(
+  overrides: ChildProcessOverrides = {}
+): ChildProcess {
+  const child = new EventEmitter() as ChildProcess;
+  child.stdout = new EventEmitter() as unknown as Readable;
+  child.stderr = new EventEmitter() as unknown as Readable;
+
+  if (overrides.error) {
+    scheduleCallback(
+      () => child.emit('error', overrides.error),
+      overrides.errorDelayMs ?? overrides.closeDelayMs
+    );
+  }
+
+  if (overrides.autoClose !== false) {
+    const exitCode = overrides.exitCode ?? (overrides.error ? 1 : 0);
+    scheduleCallback(
+      () => child.emit('close', exitCode, null),
+      overrides.closeDelayMs
+    );
+  }
+
+  return child;
 }
 
 function applyOverrides(target: Record<string, unknown>, overrides?: unknown) {
@@ -139,7 +155,14 @@ function createSummary(overrides?: Record<string, unknown>) {
   return applyOverrides(summary, overrides);
 }
 
-async function runCoverage(target = 'thematic') {
+type RunCoverageOptions = {
+  spawnImplementation?: typeof spawnMock;
+};
+
+async function runCoverage(
+  target = 'thematic',
+  options: RunCoverageOptions = {}
+) {
   const originalArgv = process.argv;
   const originalExitCode = process.exitCode;
 
@@ -148,7 +171,27 @@ async function runCoverage(target = 'thematic') {
 
   try {
     vi.resetModules();
-    await import(RUN_COVERAGE_MODULE);
+    const coverageModule = await import(RUN_COVERAGE_MODULE);
+    const {
+      main: runCoverageMain,
+      setSpawnImplementationForTests,
+      resetSpawnImplementationForTests,
+    } = coverageModule as {
+      main: () => Promise<void>;
+      setSpawnImplementationForTests: (
+        implementation: typeof spawnMock
+      ) => void;
+      resetSpawnImplementationForTests: () => void;
+    };
+
+    setSpawnImplementationForTests(options.spawnImplementation ?? spawnMock);
+
+    try {
+      await runCoverageMain();
+    } finally {
+      resetSpawnImplementationForTests();
+    }
+
     const exitCode =
       typeof process.exitCode === 'number' ? process.exitCode : 0;
     return exitCode;
@@ -159,11 +202,11 @@ async function runCoverage(target = 'thematic') {
 }
 
 beforeEach(() => {
-  spawnSyncMock.mockReset();
+  spawnMock.mockReset();
   generateSummaryMock.mockReset();
   formatSummaryMock.mockReset();
 
-  spawnSyncMock.mockImplementation(() => createSpawnResult());
+  spawnMock.mockImplementation(() => createChildProcess());
 
   const summary = createSummary();
   generateSummaryMock.mockReturnValue(summary as never);
@@ -222,11 +265,21 @@ describe('coverage orchestration infrastructure', () => {
     }
   });
 
-  it('runs coverage targets sequentially and refreshes the thematic summary', async () => {
-    const calls: Array<{ command: string; args: string[] }> = [];
-    spawnSyncMock.mockImplementation((command, args) => {
-      calls.push({ command, args: [...(args ?? [])] });
-      return createSpawnResult();
+  it('runs coverage targets in parallel and refreshes the thematic summary', async () => {
+    const processes: Array<{
+      command: string;
+      args: string[];
+      child: ChildProcess;
+    }> = [];
+
+    spawnMock.mockImplementation((command, args) => {
+      const child = createChildProcess({ autoClose: false });
+      processes.push({
+        command,
+        args: [...(args ?? [])],
+        child,
+      });
+      return child;
     });
 
     const summary = createSummary();
@@ -234,25 +287,40 @@ describe('coverage orchestration infrastructure', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    const exitCode = await runCoverage('thematic');
-
-    logSpy.mockRestore();
+    const runPromise = runCoverage('thematic', {
+      spawnImplementation: spawnMock,
+    });
 
     const executionOrder = getCoverageExecutionOrder();
     const targets = getCoverageTargets();
 
-    expect(exitCode).toBe(0);
-    expect(calls).toHaveLength(executionOrder.length);
+    await vi.waitFor(() => {
+      expect(spawnMock).toHaveBeenCalledTimes(executionOrder.length);
+      expect(processes).toHaveLength(executionOrder.length);
+    });
+
+    expect(generateSummaryMock).not.toHaveBeenCalled();
 
     for (const [index, key] of executionOrder.entries()) {
       const target = targets[key];
-      const call = calls[index];
-      expect(call).toBeDefined();
-      if (!call) continue;
-      expect(call.command.toLowerCase()).toContain('pnpm');
-      expect(call.args).toEqual(target.command);
+      const processCall = processes[index];
+      expect(processCall).toBeDefined();
+      if (!processCall) {
+        continue;
+      }
+      expect(processCall.command.toLowerCase()).toContain('pnpm');
+      expect(processCall.args).toEqual(target.command);
     }
 
+    for (const { child } of processes) {
+      child.emit('close', 0, null);
+    }
+
+    const exitCode = await runPromise;
+
+    logSpy.mockRestore();
+
+    expect(exitCode).toBe(0);
     expect(generateSummaryMock).toHaveBeenCalledTimes(1);
     expect(formatSummaryMock).toHaveBeenCalledTimes(1);
     expect(formatSummaryMock).toHaveBeenCalledWith(summary);
@@ -261,26 +329,37 @@ describe('coverage orchestration infrastructure', () => {
   it('continues executing remaining targets when a theme fails and reports the failure', async () => {
     const executionOrder = getCoverageExecutionOrder();
 
-    let callIndex = 0;
-    spawnSyncMock.mockImplementation(() => {
-      const result =
-        callIndex === 2
-          ? createSpawnResult({ status: 1 })
-          : createSpawnResult();
-      callIndex += 1;
-      return result;
+    const processes: ChildProcess[] = [];
+    spawnMock.mockImplementation(() => {
+      const child = createChildProcess({ autoClose: false });
+      processes.push(child);
+      return child;
     });
 
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const exitCode = await runCoverage('thematic');
+    const runPromise = runCoverage('thematic', {
+      spawnImplementation: spawnMock,
+    });
+
+    await vi.waitFor(() => {
+      expect(spawnMock).toHaveBeenCalledTimes(executionOrder.length);
+      expect(processes).toHaveLength(executionOrder.length);
+    });
+
+    processes.forEach((child, index) => {
+      const code = index === 2 ? 1 : 0;
+      child.emit('close', code, null);
+    });
+
+    const exitCode = await runPromise;
 
     errorSpy.mockRestore();
 
     const failureMessages = globalThis.__coverageOrchestratorFailures ?? [];
 
     expect(exitCode).toBe(1);
-    expect(spawnSyncMock).toHaveBeenCalledTimes(executionOrder.length);
+    expect(spawnMock).toHaveBeenCalledTimes(executionOrder.length);
 
     if (errorSpy.mock.calls.length > 0) {
       expect(errorSpy).toHaveBeenCalledWith(
@@ -294,13 +373,19 @@ describe('coverage orchestration infrastructure', () => {
   });
 
   it('surfaces spawn errors with descriptive diagnostics', async () => {
-    spawnSyncMock.mockImplementation(() =>
-      createSpawnResult({ status: null, error: new Error('command not found') })
-    );
+    spawnMock.mockImplementation(() => {
+      const child = createChildProcess({ autoClose: false });
+      queueMicrotask(() => {
+        child.emit('error', new Error('command not found'));
+      });
+      return child;
+    });
 
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const exitCode = await runCoverage('workspace');
+    const exitCode = await runCoverage('workspace', {
+      spawnImplementation: spawnMock,
+    });
 
     errorSpy.mockRestore();
 
@@ -340,7 +425,9 @@ describe('coverage orchestration infrastructure', () => {
 
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    const exitCode = await runCoverage('thematic');
+    const exitCode = await runCoverage('thematic', {
+      spawnImplementation: spawnMock,
+    });
 
     logSpy.mockRestore();
 
@@ -349,13 +436,13 @@ describe('coverage orchestration infrastructure', () => {
   });
 
   it('supports direct workspace execution without triggering all themes', async () => {
-    spawnSyncMock.mockImplementation(() => createSpawnResult());
+    await runCoverage('workspace', {
+      spawnImplementation: spawnMock,
+    });
 
-    await runCoverage('workspace');
+    expect(spawnMock).toHaveBeenCalledTimes(1);
 
-    expect(spawnSyncMock).toHaveBeenCalledTimes(1);
-
-    const firstCall = spawnSyncMock.mock.calls[0];
+    const firstCall = spawnMock.mock.calls[0];
     expect(firstCall).toBeDefined();
     if (firstCall) {
       const [command, args] = firstCall as [string, string[]];

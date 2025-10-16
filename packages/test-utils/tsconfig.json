@@ -23,9 +23,10 @@
       "@test-utils/fixtures": ["./src/fixtures/index.ts"],
       "@test-utils/patterns": ["./src/patterns/index.ts"],
       "@test-utils/matchers": ["./src/matchers/index.ts"],
-      "@test-utils/runtime": ["./src/runtime/index.ts"]
+      "@test-utils/runtime": ["./src/runtime/index.ts"],
+      "@scripts/windows-reserved-names": ["../../scripts/utils/windows-reserved-names.mjs"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../scripts/utils/*.d.ts", "../../types/**/*.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

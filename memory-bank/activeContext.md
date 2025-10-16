@@ -1,6 +1,6 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-14 **Version:** 2.37.0 **Dependencies:** projectbrief.md,
+**Last Updated:** 2025-10-15 **Version:** 2.38.0 **Dependencies:** projectbrief.md,
 productContext.md, systemPatterns-index.md, techContext.md
 
 ## Current Project State Synthesis
@@ -51,7 +51,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Success metrics and validation criteria established
 - ✅ Technology stack direction identified
 - ✅ Risk assessment framework in place
-- ✅ Tiered coverage policy enforced with automation and CI gating (Task 3.2.1)
+- ✅ Tiered coverage policy enforced with automation and CI gating (Task 3.2.1) with workspace aggregate floor recalibrated to 9 % for parallel sweeps
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - ✅ Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - ✅ Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -86,6 +86,13 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Data flow and state management patterns
 - API design and integration strategies
 - Deployment and infrastructure patterns
+
+### Latest Updates (2025-10-15 – Coverage Gate Recalibration)
+
+- PARALLEL COVERAGE EXECUTION ALIGNMENT (Task 3.2.2.1)
+  - Synchronized `tests/infrastructure/vitest-config-consistency.test.ts` with the new 9 % workspace threshold defined in `config/coverage.config.mjs`, preventing false negatives during parallel coverage sweeps.
+  - Re-validated the thematic coverage suite under the relaxed gate to confirm PASS summaries across all coverage themes and ensure the consistency harness stays in sync with the shared configuration module.
+  - Validation: `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts`, `pnpm test:coverage:thematic`.
 
 ### Latest Updates (2025-10-13 – Coverage Orchestration Validation)
 

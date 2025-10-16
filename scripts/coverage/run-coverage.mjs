@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   formatThematicSummary,
@@ -15,7 +15,8 @@ import {
 const moduleUrl = new URL(import.meta.url);
 moduleUrl.search = '';
 moduleUrl.hash = '';
-const MODULE_FILE_PATH = fileURLToPath(moduleUrl.href);
+const MODULE_FILE_URL = moduleUrl.href;
+const MODULE_FILE_PATH = fileURLToPath(MODULE_FILE_URL);
 const MODULE_DIR = dirname(MODULE_FILE_PATH);
 const WORKSPACE_ROOT = dirname(dirname(MODULE_DIR));
 
@@ -27,55 +28,123 @@ const THEMATIC_ORDER = getCoverageExecutionOrder().filter(
   key => key in COVERAGE_TARGETS
 );
 
-function runCoverageCommand(targetKey) {
+let spawnImplementationRef = spawn;
+
+export function setSpawnImplementationForTests(implementation) {
+  spawnImplementationRef =
+    typeof implementation === 'function' ? implementation : spawn;
+}
+
+export function resetSpawnImplementationForTests() {
+  spawnImplementationRef = spawn;
+}
+
+function resolveSpawnImplementation() {
+  return spawnImplementationRef;
+}
+
+function runCoverageCommandAsync(targetKey) {
   const target = COVERAGE_TARGETS[targetKey];
 
   if (!target) {
     throw new Error(`Unsupported coverage target: ${targetKey}`);
   }
 
-  const spawnResult = spawnSync(PNPM_EXECUTABLE, target.command, {
-    cwd: WORKSPACE_ROOT,
-    stdio: 'inherit',
-    shell: IS_WINDOWS,
-  });
+  return new Promise(resolve => {
+    let child;
+    const spawnImplementation = resolveSpawnImplementation();
 
-  if (spawnResult.error) {
-    return {
-      target: targetKey,
-      success: false,
-      reason: spawnResult.error.message ?? String(spawnResult.error),
-    };
-  }
-
-  if (typeof spawnResult.status === 'number' && spawnResult.status !== 0) {
-    return {
-      target: targetKey,
-      success: false,
-      exitCode: spawnResult.status,
-    };
-  }
-
-  return {
-    target: targetKey,
-    success: true,
-  };
-}
-
-function runTargetsSequentially(targets) {
-  const results = [];
-
-  for (const target of targets) {
-    const targetConfig = COVERAGE_TARGETS[target];
-    if (!targetConfig) {
-      throw new Error(`Unsupported coverage target: ${target}`);
+    try {
+      child = spawnImplementation(PNPM_EXECUTABLE, target.command, {
+        cwd: WORKSPACE_ROOT,
+        shell: IS_WINDOWS,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : String(error);
+      resolve({
+        target: targetKey,
+        success: false,
+        reason: message,
+      });
+      return;
     }
 
-    console.log(`\n[coverage] Running ${targetConfig.description}...`);
-    results.push(runCoverageCommand(target));
+    const streamForwarder = chunk => {
+      if (typeof chunk === 'string' || chunk instanceof Buffer) {
+        return chunk;
+      }
+      return Buffer.from(String(chunk));
+    };
+
+    child.stdout?.on('data', chunk => {
+      process.stdout.write(streamForwarder(chunk));
+    });
+
+    child.stderr?.on('data', chunk => {
+      process.stderr.write(streamForwarder(chunk));
+    });
+
+    let resolved = false;
+    const resolveOnce = result => {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+      resolve(result);
+    };
+
+    child.on('error', error => {
+      const message =
+        error instanceof Error ? error.message : String(error);
+      resolveOnce({
+        target: targetKey,
+        success: false,
+        reason: message,
+      });
+    });
+
+    child.on('close', (code, signal) => {
+      if (typeof code === 'number' && code !== 0) {
+        resolveOnce({
+          target: targetKey,
+          success: false,
+          exitCode: code,
+        });
+        return;
+      }
+
+      if (signal) {
+        resolveOnce({
+          target: targetKey,
+          success: false,
+          reason: `terminated by signal ${signal}`,
+        });
+        return;
+      }
+
+      resolveOnce({
+        target: targetKey,
+        success: true,
+      });
+    });
+  });
+}
+
+function runTargetsInParallel(targets) {
+  const invalidTarget = targets.find(target => !COVERAGE_TARGETS[target]);
+  if (invalidTarget) {
+    throw new Error(`Unsupported coverage target: ${invalidTarget}`);
   }
 
-  return results;
+  const executions = targets.map(target => {
+    const targetConfig = COVERAGE_TARGETS[target];
+    console.log(`\n[coverage] Running ${targetConfig.description}...`);
+    return runCoverageCommandAsync(target);
+  });
+
+  return Promise.all(executions);
 }
 
 function updateSummary() {
@@ -85,17 +154,17 @@ function updateSummary() {
   console.log(table);
 }
 
-function main() {
+async function main() {
   const [, , rawTarget] = process.argv;
   const target = rawTarget ?? 'workspace';
 
   let results = [];
 
   if (target === 'thematic') {
-    results = runTargetsSequentially(THEMATIC_ORDER);
+    results = await runTargetsInParallel(THEMATIC_ORDER);
     updateSummary();
   } else {
-    results = runTargetsSequentially([target]);
+    results = await runTargetsInParallel([target]);
     updateSummary();
   }
 
@@ -133,16 +202,37 @@ function main() {
   }
 }
 
-try {
-  main();
-} catch (error) {
-  const message =
-    error instanceof Error ? error.message : String(error);
-  if (process.env.VITEST) {
-    globalThis.__coverageOrchestratorFailures = [
-      `Execution failed: ${message}`,
-    ];
+const isDirectExecution = (() => {
+  try {
+    const invokedPath = process.argv?.[1];
+    if (!invokedPath) {
+      return false;
+    }
+    return pathToFileURL(invokedPath).href === MODULE_FILE_URL;
+  } catch {
+    return false;
   }
-  console.error('\n[coverage] Execution failed:', message);
-  process.exitCode = 1;
+})();
+
+if (isDirectExecution) {
+  try {
+    await main();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : String(error);
+    if (process.env.VITEST) {
+      globalThis.__coverageOrchestratorFailures = [
+        `Execution failed: ${message}`,
+      ];
+    }
+    console.error('\n[coverage] Execution failed:', message);
+    process.exitCode = 1;
+  }
 }
+
+export {
+  runCoverageCommandAsync,
+  runTargetsInParallel,
+  updateSummary,
+  main,
+};
