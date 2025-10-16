@@ -17,5 +17,3 @@ Implementation Excellence:
 
 Improvements_Identified_For_Consolidation:
 ```
-
-````
