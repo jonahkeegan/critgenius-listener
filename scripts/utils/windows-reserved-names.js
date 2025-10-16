@@ -13,4 +13,5 @@ export {
   sanitizeWindowsFilename,
   getReservedNameError,
 };
+
 export default core;
