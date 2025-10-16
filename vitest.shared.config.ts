@@ -613,7 +613,7 @@ function applyCoverageDefaults(
   };
 
   const coverage: CoverageSettings = {
-    reporter: overrides?.reporter ?? ['text', 'json-summary', 'html'],
+    reporter: overrides?.reporter ?? ['text', 'json', 'json-summary', 'html'],
     reportsDirectory:
       overrides?.reportsDirectory ?? resolve(packageRoot, 'coverage'),
     exclude: Array.from(
