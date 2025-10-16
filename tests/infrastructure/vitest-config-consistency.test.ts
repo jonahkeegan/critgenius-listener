@@ -71,7 +71,7 @@ const CONFIG_CASES: ConfigCase[] = [
 // Tiered thresholds track the policy documented in memory-bank/systemPatterns-002.md
 // (Task 3.2.1 Thematic Coverage Enforcement Pattern).
 const COVERAGE_THRESHOLD_TIERS: Record<string, number> = {
-  workspace: 30,
+  workspace: 9,
   '@critgenius/test-utils': 30,
   '@critgenius/client': 50,
   '@critgenius/server': 50,

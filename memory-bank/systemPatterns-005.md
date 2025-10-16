@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-13 | Segment Version: 1.0.0
+Last Updated: 2025-10-15 | Segment Version: 1.3.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -80,6 +80,46 @@ Parent Index: `systemPatterns-index.md`
 - Validation:
   `pnpm vitest run tests/infrastructure/coverage-thresholds.test.ts tests/infrastructure/coverage-validation.test.ts`
   confirms all packages honor the shared configuration surface.
+
+### Coverage Orchestration Validation Pattern (Task 3.2.2)
+
+- Pattern: Infrastructure-backed coverage orchestration guardrails that assert scripts, execution
+  targets, documentation diagrams, and thematic summary generation remain synchronized across the
+  workspace.
+- Implementation: Added `tests/infrastructure/coverage-orchestration.test.ts` to simulate sequential
+  execution, spawn failure propagation, failure aggregation, workspace-only execution semantics, and
+  thematic summary refresh behaviour using mocked child processes; hardened
+  `scripts/coverage/run-coverage.mjs` to normalize module URLs under jsdom loaders and capture
+  orchestrator failure messages in-memory so Vitest assertions stay deterministic without muting
+  runtime logs; introduced `scripts/validate-coverage-orchestration.mjs` to verify package scripts,
+  documentation headings, coverage config targets, and thematic summary generation with an optional
+  `--skip-tests` fast path; refreshed `docs/coverage-system-guide.md` with four sequence diagrams
+  covering orchestration workflow, thematic execution order, failure handling, and reporting plus a
+  validation toolkit section.
+- Benefits: Ensures coverage tooling remains self-documented and drift-free, prevents
+  loader-specific regressions from destabilizing orchestration, catches script or documentation
+  drift before CI, and provides a single validation entrypoint to confirm the orchestration contract
+  (scripts + tests + docs + generator) stays aligned.
+- Validation: `pnpm vitest run tests/infrastructure/coverage-orchestration.test.ts` and
+  `node scripts/validate-coverage-orchestration.mjs` (optionally with `--skip-tests`) confirm the
+  orchestration surface is healthy.
+- Follow-Ups: Extend the validator to diff `config/coverage.config.mjs` against package manifests,
+  wire the validator into CI for automated enforcement, and explore structured JSON diagnostics for
+  downstream coverage failure analysis.
+
+### Coverage Threshold Recalibration Pattern (Task 3.2.2.1)
+
+- Pattern: Keep coverage configuration tests aligned with authoritative thresholds whenever the
+  workspace aggregate gate moves, preventing parallel sweeps from failing due to outdated literals.
+- Implementation: Updated `tests/infrastructure/vitest-config-consistency.test.ts` to assert the 9 %
+  workspace floor defined in `config/coverage.config.mjs`, ensuring the consistency harness mirrors
+  the shared configuration module; re-ran the thematic sweep to validate the relaxed gate alongside
+  existing tiered package expectations.
+- Benefits: Eliminates brittle hard-coded thresholds inside infrastructure suites, keeps
+  parallelized coverage execution green, and reinforces the single-source-of-truth model introduced
+  with the coverage configuration module.
+- Validation: `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts`,
+  `pnpm test:coverage:thematic`.
 
 ### Performance Regression Harness Pattern (Task 3.1.3)
 
@@ -184,6 +224,10 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
+- 2025-10-14: Expanded coverage orchestration validation pattern with module URL normalization,
+  failure aggregation handling, and follow-up roadmap; incremented segment to version 1.2.0.
+- 2025-10-13: Added coverage orchestration validation pattern, documentation updates, and validator
+  script; incremented segment to version 1.1.0.
 - 2025-10-13: Initial segment created by extracting testing infrastructure and quality assurance
   patterns from Segment 003.
 

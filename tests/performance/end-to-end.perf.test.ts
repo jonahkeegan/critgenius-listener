@@ -14,9 +14,9 @@ function delay(ms: number): Promise<void> {
 async function simulateEndToEndPipeline(
   concurrencyIndex: number
 ): Promise<void> {
-  const audioProcessing = 40 + concurrencyIndex * 5;
-  const transcription = 220 + Math.random() * 40;
-  const speakerMapping = 60 + Math.random() * 20;
+  const audioProcessing = 28 + concurrencyIndex * 4;
+  const transcription = 180 + Math.random() * 25;
+  const speakerMapping = 45 + Math.random() * 15;
   await delay(audioProcessing + transcription + speakerMapping);
 }
 

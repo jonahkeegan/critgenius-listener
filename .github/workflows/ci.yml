@@ -55,6 +55,9 @@ jobs:
           path: artifacts/version-validation.json
           if-no-files-found: warn
 
+      - name: Validate filenames
+        run: pnpm run validate:filenames
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 

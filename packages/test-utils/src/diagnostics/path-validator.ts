@@ -1,11 +1,15 @@
 import { appendFileSync, mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
   EnvironmentDetector,
   type ExecutionEnvironment,
 } from './environment-detector.js';
+import {
+  isWindowsReservedName,
+  getReservedNameError,
+} from '../../../../scripts/utils/windows-reserved-names.js';
 
 export type PathInput = string | URL;
 export type ValidatedPathInput = string;
@@ -156,11 +160,37 @@ class DiagnosticLogger {
     }
 
     const filePath = this.config.outputFile;
+    if (!this.isOutputFileValid(filePath)) {
+      this.buffer.length = 0;
+      return;
+    }
+
     mkdirSync(dirname(filePath), { recursive: true });
     appendFileSync(filePath, `${this.buffer.join('\n')}\n`, {
       encoding: 'utf8',
     });
     this.buffer.length = 0;
+  }
+
+  private isOutputFileValid(filePath: string): boolean {
+    if (!filePath) {
+      return false;
+    }
+
+    if (!isWindowsReservedName(filePath)) {
+      return true;
+    }
+
+    const warning =
+      getReservedNameError(filePath) ??
+      `"${basename(filePath)}" cannot be used as a diagnostic output filename on Windows`;
+
+    const consoleWarn = selectConsoleMethod('warn');
+    consoleWarn(
+      `[PathDiagnostics] Skipping diagnostic flush because the configured output file is invalid. ${warning}`
+    );
+
+    return false;
   }
 
   private shouldLog(level: LogLevel): boolean {

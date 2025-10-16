@@ -83,6 +83,161 @@ sequenceDiagram
   Orchestrator-->>Dev: Console table + JSON summary path
 ```
 
+## Coverage Orchestration Workflows
+
+### Coverage Orchestration Workflow
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant CLI
+  participant Runner as run-coverage.mjs
+  participant Config as coverage.config.mjs
+  participant PNPM
+  participant Package
+  participant Summary as thematic-summary.mjs
+  participant FS as FileSystem
+
+  User->>CLI: pnpm test:coverage:thematic
+  CLI->>Runner: Execute target="thematic"
+  Runner->>Config: getCoverageExecutionOrder()
+  Config-->>Runner: ordered themes
+  Runner->>Config: getCoverageTargets()
+  Config-->>Runner: command metadata
+
+  loop For each theme
+    Runner->>Runner: Log start message
+    Runner->>PNPM: spawnSync(command)
+    PNPM->>Package: vitest run --coverage
+    Package->>FS: Write coverage/<theme>/coverage-summary.json
+    PNPM-->>Runner: exit status + error (if any)
+    Runner->>Runner: Append success/failure result
+  end
+
+  Runner->>Summary: generateThematicSummary()
+  Summary->>FS: Read coverage/<theme>/coverage-summary.json
+  Summary-->>Runner: Aggregate metrics + statuses
+  Runner->>Summary: formatThematicSummary()
+  Summary-->>Runner: ASCII table
+  Runner->>CLI: Print thematic summary
+
+  alt Any failures recorded
+    Runner->>CLI: Print failure diagnostics
+    Runner->>Runner: process.exitCode = 1
+  else All targets succeeded
+    Runner->>Runner: process.exitCode = 0
+  end
+```
+
+### Thematic Execution Flow
+
+```mermaid
+sequenceDiagram
+  participant Runner as run-coverage.mjs
+  participant Workspace as workspace theme
+  participant Client as client theme
+  participant Server as server theme
+  participant Shared as shared theme
+  participant TestUtils as test-utils theme
+  participant Results as Result Collector
+
+  Runner->>Results: Initialize []
+  Runner->>Workspace: Execute coverage command
+  Workspace-->>Runner: { status: 0 }
+  Runner->>Results: Append success
+
+  Runner->>Client: Execute coverage command
+  Client-->>Runner: { status: 0 }
+  Runner->>Results: Append success
+
+  Runner->>Server: Execute coverage command
+  Server-->>Runner: { status: 1 }
+  Runner->>Results: Append failure (continue)
+
+  Runner->>Shared: Execute coverage command
+  Shared-->>Runner: { status: 0 }
+  Runner->>Results: Append success
+
+  Runner->>TestUtils: Execute coverage command
+  TestUtils-->>Runner: { status: 0 }
+  Runner->>Results: Append success
+
+  Results-->>Runner: Summarised failures
+  Runner->>Runner: process.exitCode = failures ? 1 : 0
+```
+
+### Failure Handling & Recovery
+
+```mermaid
+sequenceDiagram
+  participant Runner as run-coverage.mjs
+  participant PNPM
+  participant Package
+  participant Errors as ErrorReporter
+  participant Logger
+
+  Runner->>PNPM: spawnSync(command)
+  PNPM->>Package: Execute vitest --coverage
+  Package->>Package: Encounter failure
+
+  alt spawn error
+    PNPM-->>Runner: { error }
+    Runner->>Errors: normalize spawn error
+    Errors-->>Runner: { success: false, reason }
+  else non-zero status
+    PNPM-->>Runner: { status: 1 }
+    Runner->>Errors: normalize exit code
+    Errors-->>Runner: { success: false, exitCode: 1 }
+  else success
+    PNPM-->>Runner: { status: 0 }
+    Runner-->>Runner: { success: true }
+  end
+
+  Runner->>Runner: Collect result
+  Runner->>Runner: Continue loop
+
+  alt Failures collected
+    Runner->>Logger: console.error("[coverage] <target> failed ...")
+    Runner->>Runner: process.exitCode = 1
+  else All succeeded
+    Runner->>Runner: process.exitCode = 0
+  end
+```
+
+### Aggregate Report Generation
+
+```mermaid
+sequenceDiagram
+  participant Summary as thematic-summary.mjs
+  participant Config as coverage.config.mjs
+  participant FS as FileSystem
+  participant Evaluator
+  participant Output
+
+  Summary->>Config: coverageThemes[] metadata
+  Config-->>Summary: thresholds + paths
+  Summary->>FS: ensure coverage directory
+
+  loop theme in coverageThemes
+    Summary->>FS: Read coverage-summary.json
+    alt file present
+      FS-->>Summary: JSON payload
+      Summary->>Evaluator: Extract metrics
+      Evaluator-->>Summary: status + coverage object
+    else ENOENT / parse error
+      FS-->>Summary: error
+      Summary->>Evaluator: Handle missing/corrupt file
+      Evaluator-->>Summary: status = missing/error
+    end
+    Summary->>Output: Append theme snapshot
+  end
+
+  Summary->>Output: Assemble payload (thresholds, themes)
+  Output->>FS: Write coverage/thematic-summary.json
+  Summary->>Output: formatThematicSummary(payload)
+  Output-->>Summary: Printable ASCII table
+```
+
 ## Validation Test Assertions
 
 ```mermaid
@@ -98,6 +253,14 @@ sequenceDiagram
   Config-->>Test: reportsDirectory == coverage/<theme>
   Test-->>Test: Fail fast on drift (missing reporter, wrong path, etc.)
 ```
+
+### Validation Toolkit
+
+- `tests/infrastructure/coverage-orchestration.test.ts` simulates sequential execution, spawn
+  failures, and thematic summary regeneration to guarantee orchestrator resilience.
+- `scripts/validate-coverage-orchestration.mjs` performs CLI validation of package.json scripts,
+  documentation diagrams, coverage configuration targets, and (optionally) runs the infrastructure
+  test for end-to-end assurance.
 
 ## CI/CD Enforcement Strategy
 
