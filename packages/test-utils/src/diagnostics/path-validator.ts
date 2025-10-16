@@ -2,19 +2,14 @@ import { appendFileSync, mkdirSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { createRequire } from 'node:module';
-
 import {
   EnvironmentDetector,
   type ExecutionEnvironment,
 } from './environment-detector.js';
-
-const require = createRequire(import.meta.url);
-const { isWindowsReservedName, getReservedNameError } =
-  require('../../../../scripts/utils/windows-reserved-names.cjs') as {
-    isWindowsReservedName: (filename: string) => boolean;
-    getReservedNameError: (filename: string) => string | null;
-  };
+import {
+  isWindowsReservedName,
+  getReservedNameError,
+} from '../../../../scripts/utils/windows-reserved-names.js';
 
 export type PathInput = string | URL;
 export type ValidatedPathInput = string;
