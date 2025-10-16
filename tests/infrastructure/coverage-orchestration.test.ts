@@ -95,6 +95,9 @@ function applyOverrides(target: Record<string, unknown>, overrides?: unknown) {
   }
 
   for (const [key, value] of Object.entries(overrides)) {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      continue;
+    }
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       if (
         typeof target[key] !== 'object' ||
