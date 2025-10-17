@@ -2,6 +2,8 @@
 
 > Real-time audio capture and transcription component for the CritGenius ecosystem
 
+[![Codecov](https://codecov.io/gh/jonahkeegan/critgenius-listener/branch/main/graph/badge.svg)](https://codecov.io/gh/jonahkeegan/critgenius-listener)
+
 ## Overview
 
 CritGenius Listener is a modular monolith application that provides real-time audio capture,
