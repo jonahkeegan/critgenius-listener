@@ -6,11 +6,59 @@
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\App.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\App.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\App" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioCapture.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioCapture.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioCapture.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioMessageMapper.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioMessageMapper.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\audioMessageMapper.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\microphoneAccessGuard.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\microphoneAccessGuard.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\microphoneAccessGuard.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\structuredEvents.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\structuredEvents.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\audio\structuredEvents.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\dev-server\env-reload.plugin.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\dev-server\env-reload.plugin.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\dev-server\env-reload.plugin.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\diagnostics\eventReporter.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\diagnostics\eventReporter.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\diagnostics\eventReporter.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\hmr\refresh-state-retention.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\hmr\refresh-state-retention.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\hmr\refresh-state-retention.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\portDiscovery.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\portDiscovery.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\portDiscovery.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\proxy\proxy-forwarding.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\proxy\proxy-forwarding.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\proxy\proxy-forwarding.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\vite.config.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\vite.config.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\vite.config.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\viteProxy.config.test.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\viteProxy.config.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\__tests__\viteProxy.config.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\ErrorMessageMapper.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\ErrorMessageMapper.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\ErrorMessageMapper" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\LocalizedMessages.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\LocalizedMessages.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\LocalizedMessages" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\audio\index" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\CharacterAssignmentGrid.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\CharacterAssignmentGrid.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\CharacterAssignmentGrid" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\SpeakerIdentificationPanel.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\SpeakerIdentificationPanel.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\SpeakerIdentificationPanel" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\CharacterAssignmentGrid.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\CharacterAssignmentGrid.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\CharacterAssignmentGrid.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\SpeakerIdentificationPanel.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\SpeakerIdentificationPanel.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\__tests__\SpeakerIdentificationPanel.test" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\index.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\speaker\index" />
@@ -21,17 +69,47 @@
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\TranscriptWindow.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\TranscriptWindow.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\TranscriptWindow" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\SpeakerTranscriptLine.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\SpeakerTranscriptLine.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\SpeakerTranscriptLine.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\TranscriptWindow.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\TranscriptWindow.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\components\transcript\__tests__\TranscriptWindow.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\devProxy.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\devProxy.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\devProxy" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment.test.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment.test" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\environment" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\portDiscovery.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\portDiscovery.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\config\portDiscovery" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\dev\envReloadPlugin.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\dev\envReloadPlugin.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\dev\envReloadPlugin" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\hooks\useSocket.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\hooks\useSocket.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\hooks\useSocket" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\main.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\main.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\main" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\audioCapture.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\audioCapture.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\audioCapture" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\AudioEventSchema.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\AudioEventSchema.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\AudioEventSchema" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\StructuredEventReporter.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\StructuredEventReporter.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\StructuredEventReporter" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\diagnostics\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\microphoneAccessGuard.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\microphoneAccessGuard.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\microphoneAccessGuard" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\socketService.test.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\socketService.test.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\services\socketService.test" />
@@ -45,6 +123,9 @@
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\ResponsiveAudioComponents.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\ResponsiveAudioComponents.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\ResponsiveAudioComponents" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\__tests__\ResponsiveContainer.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\__tests__\ResponsiveContainer.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\__tests__\ResponsiveContainer.test" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\AudioCaptureLayout.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\AudioCaptureLayout.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\AudioCaptureLayout" />
 </testsuite>
@@ -57,8 +138,20 @@
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\TwoColumnLayout.tsx">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\TwoColumnLayout.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\TwoColumnLayout" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\AudioCaptureLayout.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\AudioCaptureLayout.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\AudioCaptureLayout.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TranscriptLayout.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TranscriptLayout.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TranscriptLayout.test" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TwoColumnLayout.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TwoColumnLayout.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\components\layouts\__tests__\TwoColumnLayout.test" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\critgeniusTheme.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\critgeniusTheme.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\critgeniusTheme" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\__tests__\responsiveHooks.test.tsx">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\__tests__\responsiveHooks.test.tsx" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\__tests__\responsiveHooks.test" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\useResponsiveLayout.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\useResponsiveLayout.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\client\src\theme\hooks\useResponsiveLayout" />
@@ -105,6 +198,12 @@
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\environmentLoader.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\environmentLoader.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\environmentLoader" />
 </testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\proxyRegistry.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\proxyRegistry.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\proxyRegistry" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\toolingVersionPolicy.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\toolingVersionPolicy.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\config\toolingVersionPolicy" />
+</testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\constants\index.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\constants\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\constants\index" />
 </testsuite>
@@ -113,6 +212,54 @@
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\interfaces\index.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\interfaces\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\interfaces\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\audio-processing.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\audio-processing.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\audio-processing.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\configuration.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\configuration.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\configuration.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\connection-management.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\connection-management.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\connection-management.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\edge-cases.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\edge-cases.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\edge-cases.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-classes.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-classes.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-classes.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-normalization.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-normalization.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\error-normalization.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\event-system.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\event-system.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\event-system.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\factory.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\factory.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\factory.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\initialization.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\initialization.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\initialization.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\fixtures.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\fixtures.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\fixtures" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\helpers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\helpers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\helpers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\mocks.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\mocks.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\mocks" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\setup.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\setup.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\setup" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\types.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\types.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\shared\types" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\statistics.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\statistics.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\statistics.suite" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\validation.suite.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\validation.suite.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\__tests__\assemblyai-client\validation.suite" />
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\assemblyai-client.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\assemblyai-client.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\services\assemblyai-client" />
@@ -131,5 +278,149 @@
 </testsuite>
 <testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\version.ts">
 <testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\version.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\shared\src\version" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\environment-detector.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\environment-detector.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\environment-detector" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\path-validator.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\path-validator.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\diagnostics\path-validator" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\audio-factory.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\audio-factory.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\audio-factory" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\base-factory.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\base-factory.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\base-factory" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\session-factory.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\session-factory.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\session-factory" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\transcript-factory.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\transcript-factory.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\transcript-factory" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\types.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\types.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\types" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\user-factory.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\user-factory.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\factories\user-factory" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\audio-fixtures.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\audio-fixtures.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\audio-fixtures" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\fixture-loader.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\fixture-loader.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\fixture-loader" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\transcript-fixtures.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\transcript-fixtures.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\fixtures\transcript-fixtures" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\assertion-helpers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\assertion-helpers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\assertion-helpers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\async-helpers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\async-helpers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\async-helpers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\mock-helpers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\mock-helpers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\mock-helpers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\websocket-helpers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\websocket-helpers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\helpers\websocket-helpers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\assemblyai\assemblyAITestScenarios.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\assemblyai\assemblyAITestScenarios.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\assemblyai\assemblyAITestScenarios" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\conditionalTestRunner.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\conditionalTestRunner.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\conditionalTestRunner" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentAwareTest.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentAwareTest.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentAwareTest" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentPresets.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentPresets.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\environmentPresets" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\integrationTestHarness.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\integrationTestHarness.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\integrationTestHarness" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\portAllocator.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\portAllocator.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\portAllocator" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\resilience\resilienceScenarioBuilder.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\resilience\resilienceScenarioBuilder.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\resilience\resilienceScenarioBuilder" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\serviceLifecycleManager.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\serviceLifecycleManager.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\serviceLifecycleManager" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketEventHelper.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketEventHelper.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketEventHelper" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketIOIntegrationHelper.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketIOIntegrationHelper.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketIOIntegrationHelper" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketPayloadGuards.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketPayloadGuards.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\socket\socketPayloadGuards" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\timeoutPromise.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\timeoutPromise.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\integration\timeoutPromise" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\custom-matchers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\custom-matchers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\custom-matchers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\matchers\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\circuit-breaker.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\circuit-breaker.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\circuit-breaker" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\error-scenarios.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\error-scenarios.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\error-scenarios" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\retry-patterns.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\retry-patterns.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\patterns\retry-patterns" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\baseline-manager.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\baseline-manager.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\baseline-manager" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\latency-benchmark.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\latency-benchmark.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\latency-benchmark" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\performance-matchers.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\performance-matchers.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\performance-matchers" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\regression-detector.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\regression-detector.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\regression-detector" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\workload-scenarios.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\workload-scenarios.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\performance\workload-scenarios" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\index.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\index.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\index" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\testRuntime.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\testRuntime.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\runtime\testRuntime" />
+</testsuite>
+<testsuite package="org.eslint" time="0" tests="1" errors="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\test-setup.ts">
+<testcase time="0" name="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\test-setup.ts" classname="C:\Users\jonah\Documents\Cline\crit-genius\listener\packages\test-utils\src\test-setup" />
 </testsuite>
 </testsuites>
