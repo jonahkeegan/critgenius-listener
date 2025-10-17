@@ -37,6 +37,9 @@ const REQUIRED_DOCS = [
   'docs/comprehensive-testing-guide.md',
 ];
 
+const MIN_WORKFLOW_SEQUENCE_DIAGRAMS = 6;
+const MIN_TROUBLESHOOTING_SEQUENCE_DIAGRAMS = 4;
+
 function extractCodeBlocks(content: string, language: string): string[] {
   const regex = new RegExp('```' + language + '\\r?\\n([\\s\\S]*?)```', 'g');
   const snippets: string[] = [];
@@ -119,13 +122,15 @@ describe('coverage documentation validation', () => {
     }
 
     it('workflow guide provides at least six sequence diagrams', () => {
-      expect(countSequenceDiagrams(workflowGuide)).toBeGreaterThanOrEqual(6);
+      expect(countSequenceDiagrams(workflowGuide)).toBeGreaterThanOrEqual(
+        MIN_WORKFLOW_SEQUENCE_DIAGRAMS
+      );
     });
 
     it('troubleshooting guide provides at least four sequence diagrams', () => {
       expect(
         countSequenceDiagrams(troubleshootingGuide)
-      ).toBeGreaterThanOrEqual(4);
+      ).toBeGreaterThanOrEqual(MIN_TROUBLESHOOTING_SEQUENCE_DIAGRAMS);
     });
   });
 

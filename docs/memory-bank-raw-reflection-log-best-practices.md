@@ -6,6 +6,9 @@
 This guide distills the expectations from the Continuous Improvement Protocol and the broader Memory
 Bank Update Guide into a concise checklist specific to `raw_reflection_log.md`.
 
+> **Prohibition:** Copilot uses AI. Check for mistakes and manually verify every reflection update
+> before committing.
+
 ---
 
 ## Why This Matters

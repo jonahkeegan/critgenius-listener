@@ -30,6 +30,7 @@ packages/*/build/
 # Testing
 /coverage/
 packages/*/coverage/
+reports/
 
 # Environment variables
 .env
