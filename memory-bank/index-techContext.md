@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-14 | Version: 1.25.0 | System Status: Active
+Last Updated: 2025-10-16 | Version: 1.26.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -56,6 +56,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | ESLint Warm-up & Vitest Timeout Governance | 003 |
 | Centralized Coverage Configuration Module | 003 |
 | Coverage Orchestration Validation Workflow | 003 |
+| CI Coverage Integration & Codecov Reporting | 002 |
 
 ## Maintenance Protocol
 - Update this index upon any segment modification (row counts, new topics, status changes)
@@ -64,10 +65,12 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - Add change log entries inside each segment under its Change Log section
 
 ## Cross-File Dependencies
-- `activeContext.md` must reference this index + segments, not legacy monolith filename
-- `projectbrief.md`, `productContext.md`, and `systemPatterns.md` remain upstream context for all segments
+- `activeContext-current.md` (or `index-activeContext.md`) must reference this index + segments
+- `projectbrief.md`, `productContext.md`, and `systemPatterns-index.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-10-16: Updated cross-file dependencies to reference activeContext-current.md following hybrid segmentation refactoring
+- 2025-10-16: Added CI coverage integration & Codecov reporting topic (Task 3.2.3) to segment 002
 - 2025-10-14: Added coverage orchestration validation workflow topic (Task 3.2.2) to segment 003
 - 2025-10-13: Added centralized coverage configuration module topic (Task 3.2.1.1) to segment 003
 - 2025-10-12: Added tiered coverage enforcement, thematic coverage orchestration, and lint/timeout governance topics (Task 3.2.1) to segment 003

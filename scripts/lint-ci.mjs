@@ -3,6 +3,7 @@
 // Avoids CommonJS require.resolve; uses dynamic import with graceful fallback to keep optional dep truly optional.
 import { ESLint } from 'eslint';
 import fs from 'node:fs';
+import path from 'node:path';
 
 async function run() {
   const eslint = new ESLint({});
@@ -22,7 +23,15 @@ async function run() {
 
   if (junitFormatterFn) {
     fs.mkdirSync('reports', { recursive: true });
-    const junitOutput = junitFormatterFn(results);
+    const sanitizedResults = results.map(result => ({
+      ...result,
+      // Keep CI artifacts free of developer-specific absolute paths.
+      filePath: path
+        .relative(process.cwd(), result.filePath)
+        .split(path.sep)
+        .join('/'),
+    }));
+    const junitOutput = junitFormatterFn(sanitizedResults);
     fs.writeFileSync('reports/eslint-junit.xml', junitOutput, 'utf8');
   }
 

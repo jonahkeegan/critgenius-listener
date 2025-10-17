@@ -27,16 +27,27 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
 
 ## 3. Common Commands
 
-| Objective                  | Command                    |
-| -------------------------- | -------------------------- |
-| Dev all packages           | `pnpm dev`                 |
-| Lint (all)                 | `pnpm -w lint`             |
-| Type-check                 | `pnpm -w type-check`       |
-| Tests (all)                | `pnpm -w test`             |
-| Format write               | `pnpm -w format`           |
-| Pre-commit validate (full) | `pnpm precommit:validate`  |
-| Pre-commit scenario suite  | `pnpm precommit:simulate`  |
-| Benchmark pre-commit perf  | `pnpm precommit:benchmark` |
+| Objective                  | Command                        |
+| -------------------------- | ------------------------------ |
+| Dev all packages           | `pnpm dev`                     |
+| Lint (all)                 | `pnpm -w lint`                 |
+| Type-check                 | `pnpm -w type-check`           |
+| Tests (all)                | `pnpm -w test`                 |
+| Format write               | `pnpm -w format`               |
+| Pre-commit validate (full) | `pnpm precommit:validate`      |
+| Pre-commit scenario suite  | `pnpm precommit:simulate`      |
+| Benchmark pre-commit perf  | `pnpm precommit:benchmark`     |
+| Coverage (workspace)       | `pnpm test:coverage:workspace` |
+| Coverage (theme-only)      | `pnpm test:coverage:<theme>`   |
+
+### Coverage Workflow Integration
+
+- Meet tiered thresholds enforced by `config/coverage.config.mjs` (shared ≥75%, client/server ≥50%,
+  workspace/test-utils ≥30%).
+- Prefer `pnpm test:coverage:<theme>` during iteration; regenerate the summary with
+  `pnpm test:coverage:summary` before opening a PR.
+- See `docs/coverage-workflow-guide.md` for the five-minute walkthrough and
+  `docs/coverage-troubleshooting.md` when coverage fails locally or in CI.
 
 ## 4. Branching & Commits
 
@@ -69,13 +80,14 @@ Fast path for non-TS commits.
 
 ## 8. Troubleshooting Quick Table
 
-| Issue                 | Action                                               |
-| --------------------- | ---------------------------------------------------- |
-| Hook skipped          | Ensure `.husky/` exists; re-run `pnpm install`       |
-| ESLint failure        | `pnpm -w lint:fix` then restage                      |
-| Type errors           | Open first error; fix root cause (often shared type) |
-| Format drift persists | Confirm pattern in `package.json` lint-staged block  |
-| Benchmark regression  | Capture numbers; open infra ticket                   |
+| Issue                 | Action                                                                           |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Hook skipped          | Ensure `.husky/` exists; re-run `pnpm install`                                   |
+| ESLint failure        | `pnpm -w lint:fix` then restage                                                  |
+| Type errors           | Open first error; fix root cause (often shared type)                             |
+| Format drift persists | Confirm pattern in `package.json` lint-staged block                              |
+| Benchmark regression  | Capture numbers; open infra ticket                                               |
+| Coverage failure      | Run `pnpm test:coverage:<theme>` then consult `docs/coverage-troubleshooting.md` |
 
 ## 9. Adding Dependencies
 
@@ -91,6 +103,7 @@ logs.
 
 - [ ] Installed dependencies
 - [ ] Ran lint/type-check/tests successfully
+- [ ] Ran coverage for relevant theme/workspace and reviewed summary
 - [ ] Understood commit gating
 - [ ] Verified you can run simulation script
 - [ ] Benchmarked (optional) baseline

@@ -77,6 +77,9 @@ All code must meet the tiered coverage thresholds before merging:
 2. **CI Pipeline**: Full test suite including integration and performance tests
 3. **PR Review**: Manual review of test quality and coverage reports
 
+**Recommended Reading:** Pair this guide with `docs/coverage-workflow-guide.md` for daily coverage
+routines and `docs/coverage-troubleshooting.md` when coverage thresholds regress.
+
 ### 1.3 Test Architecture Diagram
 
 ```

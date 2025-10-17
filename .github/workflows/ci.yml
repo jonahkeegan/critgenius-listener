@@ -68,6 +68,7 @@ jobs:
         run: pnpm run test
 
       - name: Coverage (thematic suite)
+        if: ${{ always() }}
         run: pnpm run test:coverage:thematic
 
       - name: Upload path diagnostics
@@ -102,6 +103,12 @@ jobs:
             coverage/**/coverage-final.json
           flags: listener
           fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Validate service manifest

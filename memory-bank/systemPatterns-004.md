@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-12 | Segment Version: 1.0.0
+Last Updated: 2025-10-16 | Segment Version: 1.1.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -34,6 +34,25 @@ Parent Index: `systemPatterns-index.md`
   improves discoverability of package-specific gaps for remediation planning.
 - **Validation:** `pnpm test:coverage:summary`, `pnpm test:coverage:workspace`, and the
   infrastructure tests above exercising summary alignment.
+
+### CI Coverage Reporting & Codecov Integration Pattern (Task 3.2.3)
+
+- **Pattern:** Embed the thematic coverage sweep directly into GitHub Actions while publishing
+  artifacts and Codecov metrics guarded by infrastructure tests.
+- **Implementation:** `.github/workflows/ci.yml` now runs `pnpm test:coverage:thematic` within the
+  `build-and-validate` job after lint/type-check/test, uploads HTML and JSON coverage artifacts, and
+  executes `codecov/codecov-action@v5` with a repository token sourced from encrypted secrets.
+  Workflow configuration ensures coverage reporting occurs on every branch while keeping failure
+  propagation intact.
+- **Safeguards:** `tests/infrastructure/ci-coverage-integration.test.ts` enforces workflow step
+  ordering, artifact retention settings, Codecov action version, and token wiring, and
+  `tests/infrastructure/windows-reserved-names.test.ts` blocks prototype pollution when composing
+  reserved filename sets for artifact helpers.
+- **Benefits:** Guarantees CI emits complete coverage telemetry, streamlines artifact retrieval for
+  contributors, and provides automated protection against misconfigured Codecov integration.
+- **Validation:** `pnpm vitest run tests/infrastructure/ci-coverage-integration.test.ts`,
+  `pnpm vitest run tests/infrastructure/windows-reserved-names.test.ts`, manual workflow inspection
+  for Codecov flag alignment.
 
 ### CI-Only Coverage Enforcement Strategy
 
@@ -77,5 +96,6 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-16: Added CI coverage reporting & Codecov integration pattern; version bump to 1.1.0.
 - 2025-10-12: Segment created with tiered coverage enforcement, coverage orchestration, ESLint
   warm-up, and Vitest timeout governance patterns.

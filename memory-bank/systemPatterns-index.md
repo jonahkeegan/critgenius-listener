@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-15 | Index Version: 1.20.0 | Status: Active
+Last Updated: 2025-10-16 | Index Version: 1.21.0 | Status: Active
 
 ## Segment Registry
 
@@ -53,6 +53,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | CI-Only Coverage Enforcement Strategy                      | 004     |
 | Coverage Orchestration Validation Guard                    | 005     |
 | Coverage Gate Recalibration for Parallel Execution         | 005     |
+| CI Coverage Reporting & Codecov Integration                | 004     |
 
 ## Maintenance Protocol
 
@@ -63,12 +64,17 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Cross-File Dependencies
 
-- `activeContext.md` must reference this index (not legacy monolith)
+- `activeContext-current.md` (or `index-activeContext.md` for history) must reference this index
+  (not legacy monolith)
 - `projectbrief.md`, `productContext.md` remain upstream strategic context
 - Technical implementation specifics also cross-reference `index-techContext.md`
 
 ## Recent Changes
 
+- 2025-10-16: Updated cross-file dependencies to reference activeContext-current.md following hybrid
+  segmentation refactoring
+- 2025-10-16: Registered CI coverage reporting & Codecov integration pattern (Task 3.2.3) in segment
+  004
 - 2025-10-15: Added coverage gate recalibration pattern (Task 3.2.2.1) to segment 005
 - 2025-10-14: Added coverage orchestration validation guard pattern (Task 3.2.2) to segment 005
 - 2025-10-13: Extracted testing infrastructure and QA patterns into new segment 005; updated segment
