@@ -294,3 +294,9 @@ sequenceDiagram
 - Validation test: `tests/infrastructure/coverage-validation.test.ts`
 - Threshold tiers: `tests/infrastructure/coverage-thresholds.test.ts`
 - CI integration: add coverage job referencing `pnpm test:coverage:thematic`
+
+## See Also
+
+- `docs/coverage-workflow-guide.md` for day-to-day commands and practitioner workflows
+- `docs/coverage-troubleshooting.md` for scenario-based diagnostics
+- `docs/developer-onboarding.md` for onboarding checklist updates that cover coverage gates
