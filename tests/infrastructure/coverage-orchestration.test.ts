@@ -89,24 +89,43 @@ function createChildProcess(
   return child;
 }
 
+function isUnsafeOverrideKey(key: string): boolean {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
 function applyOverrides(target: Record<string, unknown>, overrides?: unknown) {
   if (!overrides || typeof overrides !== 'object') {
     return target;
   }
 
   for (const [key, value] of Object.entries(overrides)) {
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+    if (isUnsafeOverrideKey(key)) {
       continue;
     }
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      if (
-        typeof target[key] !== 'object' ||
-        target[key] === null ||
-        Array.isArray(target[key])
-      ) {
-        target[key] = {};
-      }
-      applyOverrides(target[key] as Record<string, unknown>, value);
+
+    if (Array.isArray(value)) {
+      target[key] = [...value];
+      continue;
+    }
+
+    if (isPlainObject(value)) {
+      const existing =
+        typeof target[key] === 'object' &&
+        target[key] !== null &&
+        !Array.isArray(target[key])
+          ? (target[key] as Record<string, unknown>)
+          : Object.create(null);
+
+      target[key] = applyOverrides(existing, value);
       continue;
     }
 

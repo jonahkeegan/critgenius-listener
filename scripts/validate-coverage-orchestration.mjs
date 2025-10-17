@@ -301,8 +301,20 @@ async function validate({ skipTests, enforceSummaryChecks }) {
   const issues = [];
 
   const manifestPath = join(WORKSPACE_ROOT, 'package.json');
-  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  issues.push(...collectScriptIssues(manifest));
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  } catch (error) {
+    issues.push(
+      `Failed to parse package.json: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+
+  if (manifest) {
+    issues.push(...collectScriptIssues(manifest));
+  }
 
   if (!existsSync(TEST_FILE_PATH)) {
     issues.push('tests/infrastructure/coverage-orchestration.test.ts is missing.');

@@ -122,7 +122,7 @@ describe('ci workflow coverage integration', () => {
 
     expect(codecovStep).toBeDefined();
     expect(codecovStep?.if).toBe('${{ success() }}');
-    expect(codecovStep?.uses).toBe('codecov/codecov-action@v4');
+    expect(codecovStep?.uses).toBe('codecov/codecov-action@v5');
 
     const filesSetting = codecovStep?.with?.files;
     expect(typeof filesSetting).toBe('string');
@@ -134,5 +134,6 @@ describe('ci workflow coverage integration', () => {
 
     expect(codecovStep?.with?.flags).toBe('listener');
     expect(codecovStep?.with?.fail_ci_if_error).toBe(true);
+    expect(codecovStep?.with?.token).toBe('${{ secrets.CODECOV_TOKEN }}');
   });
 });

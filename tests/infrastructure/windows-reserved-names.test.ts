@@ -27,10 +27,21 @@ describe('Windows Reserved Names Validation', () => {
       }
     });
 
-    it('should be immutable (ReadonlySet)', () => {
-      // TypeScript enforces ReadonlySet, but verify it's a Set
+    it('should be immutable (ReadonlySet) and contain exactly the expected names', () => {
+      // TypeScript enforces ReadonlySet, but verify it's a Set with precise membership
       expect(WINDOWS_RESERVED_NAMES).toBeInstanceOf(Set);
-      expect(WINDOWS_RESERVED_NAMES.size).toBe(22);
+
+      const expectedNames = [
+        'CON',
+        'PRN',
+        'AUX',
+        'NUL',
+        ...Array.from({ length: 9 }, (_, index) => `COM${index + 1}`),
+        ...Array.from({ length: 9 }, (_, index) => `LPT${index + 1}`),
+      ];
+
+      const actualNames = Array.from(WINDOWS_RESERVED_NAMES);
+      expect(actualNames.sort()).toEqual(expectedNames.sort());
     });
   });
 

@@ -258,9 +258,7 @@ function sanitizeOutputFile(value: string | undefined): string | undefined {
   if (isWindowsReservedName(resolvedPath)) {
     const error = getReservedNameError(resolvedPath);
     console.warn(
-      `[vitest config] WARNING: Diagnostic output file path "${basename(resolvedPath)}" uses a Windows reserved device name. ` +
-        `${error} ` +
-        `File output will be disabled. Please use a different filename (e.g., "diagnostic-output.txt").`
+      `[vitest config] WARNING: Diagnostic output file path "${basename(resolvedPath)}" uses a Windows reserved device name. ${error} File output will be disabled. Please use a different filename (e.g., "diagnostic-output.txt").`
     );
     return undefined;
   }
