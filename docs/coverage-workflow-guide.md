@@ -291,16 +291,17 @@ pnpm exec vitest run packages/shared/src/transcript/normalizer.test.ts --runInBa
 
 ## 11. Quick Reference
 
-| Purpose                      | Command                         |
-| ---------------------------- | ------------------------------- |
-| Workspace coverage           | `pnpm test:coverage:workspace`  |
-| Sequential thematic coverage | `pnpm test:coverage:thematic`   |
-| Client coverage              | `pnpm test:coverage:client`     |
-| Server coverage              | `pnpm test:coverage:server`     |
-| Shared coverage              | `pnpm test:coverage:shared`     |
-| Test-utils coverage          | `pnpm test:coverage:test-utils` |
-| Summary table                | `pnpm test:coverage:summary`    |
-| Clean coverage artefacts     | `pnpm run clean`                |
+<!-- prettier-ignore -->
+| Purpose | Command |
+| --- | --- |
+| Workspace coverage | `pnpm test:coverage:workspace` |
+| Sequential thematic coverage | `pnpm test:coverage:thematic` |
+| Client coverage | `pnpm test:coverage:client` |
+| Server coverage | `pnpm test:coverage:server` |
+| Shared coverage | `pnpm test:coverage:shared` |
+| Test-utils coverage | `pnpm test:coverage:test-utils` |
+| Summary table | `pnpm test:coverage:summary` |
+| Clean coverage artefacts | `pnpm run clean` |
 
 ## 12. Related Documentation
 

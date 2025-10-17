@@ -68,6 +68,7 @@ jobs:
         run: pnpm run test
 
       - name: Coverage (thematic suite)
+        if: ${{ always() }}
         run: pnpm run test:coverage:thematic
 
       - name: Upload path diagnostics
