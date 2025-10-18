@@ -158,8 +158,12 @@ In these cases, we will enable the rule and ensure appropriate caption tracks.
 
 For accessibility questions or to report barriers:
 
-- Open an issue: [GitHub Issues](https://github.com/jonahkeegan/critgenius-listener/issues)
+- Open an issue: [GitHub Issues][repo-issues]
 - Label with: `accessibility`, `a11y`
+
+<!-- Internal link reference to keep repo URL centralized -->
+
+[repo-issues]: https://github.com/jonahkeegan/critgenius-listener/issues
 
 ---
 

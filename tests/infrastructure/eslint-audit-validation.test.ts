@@ -99,6 +99,7 @@ describe('ESLint audit validation', () => {
           console.log('ok');
         }
 
+        // Discard the promise intentionally; lint focus remains on the no-await-in-loop warning above.
         void run([1, 2, 3]);
       `;
       const serverFilePath = path.join(
