@@ -1,3 +1,11 @@
+/**
+ * ESLint Flat Config (ESLint v9+)
+ *
+ * This is the authoritative ESLint configuration for the CritGenius Listener monorepo.
+ * Uses modern flat config format with typescript-eslint v8.
+ *
+ * For details on flat config: https://eslint.org/docs/latest/use/configure/configuration-files
+ */
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
@@ -21,6 +29,12 @@ export default tseslint.config(
         module: 'readonly',
         require: 'readonly',
         exports: 'readonly',
+        process: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        console: 'readonly',
       },
     },
     settings: { react: { version: 'detect' } },
@@ -121,14 +135,16 @@ export default tseslint.config(
       'build/**',
       'coverage/**',
       '**/*.d.ts',
-      '**/*.js',
-      '**/vitest.config.ts',
-      // Exclude shared tests from typed linting due to tsconfig excludes
-      'packages/shared/src/**/*.test.ts',
-      '*.config.js',
-      '*.config.mjs',
+      // Ignore compiled/generated JS but allow linting of ESM scripts
+      '**/*.config.js',
+      '**/*.config.mjs',
+      'packages/**/dist/**/*.js',
+      'packages/**/build/**/*.js',
       '.husky/**',
       'pnpm-lock.yaml',
+      // Exclude shared tests from typed linting due to tsconfig excludes
+      'packages/shared/src/**/*.test.ts',
+      '**/vitest.config.ts',
     ],
   }
 );

@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-16  
-**Version:** 2.40.0  
+**Last Updated:** 2025-10-18  
+**Version:** 2.41.1  
 **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md, index-techContext.md
 
 ## Current Project State Synthesis
@@ -57,6 +57,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Risk assessment framework in place
 - ✅ Tiered coverage policy enforced with automation and CI gating (Task 3.2.1)
 - ✅ CI coverage pipeline integrated into GitHub Actions with Codecov v5 reporting (Task 3.2.3)
+- ✅ ESLint flat config centralized with validation harness and zero-warning CI gate (Task 3.3.1)
+- ✅ Audio UI accessibility policy published to document media caption stance (Task 3.3.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -88,6 +90,17 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-17 – ESLint Configuration Audit & Accessibility Policy (Task 3.3.1)
+
+- Consolidated the ESLint flat config as the single source of truth by deleting `eslint.config.cjs`,
+  tightening ignores to generated output, and adding Node globals so scripts lint cleanly.
+- Authored `tests/infrastructure/eslint-audit-validation.test.ts` covering plugin coverage,
+  per-package lint scripts, JSX a11y posture, and lint CI enforcement, then reran `pnpm run lint:ci`
+  plus workspace type checks to confirm zero warnings.
+- Published `docs/audio-ui-accessibility-policy.md` to document the audio-first WCAG 2.1 AA stance,
+  keyboard requirements, and rationale for keeping `jsx-a11y/media-has-caption` disabled until video
+  capture ships.
 
 ### 2025-10-16 – Memory Bank Refactoring
 
@@ -135,14 +148,10 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Refactored coverage scripts and Vitest configs to import shared module
 - Hardened infrastructure drift detection via shared module assertions
 
-### 2025-10-12 – Tiered Coverage Enforcement & ESLint Stability (Task 3.2.1)
-
-- Embedded tiered coverage policy (Shared ≥75%, Client/Server ≥50%, Workspace & Test-Utils ≥30%)
-- Reaffirmed CI-only enforcement decision for fast pre-commit hooks
-- Stabilized ESLint regression harness with cache priming and expanded timeout
-
 ## Decision Log
 
+- **2025-10-17:** Ratified flat ESLint config as single authoritative source and adopted the audio
+  UI accessibility policy to document `media-has-caption` stance until video support ships.
 - **2025-10-16:** Adopted hybrid segmentation for activeContext.md (current + history archive)
 - **2025-08-25:** ADR-006 accepted (Lightweight pre-commit automation strategy)
 - **2025-08-24:** ADR-005 accepted (Client-safe environment projection)

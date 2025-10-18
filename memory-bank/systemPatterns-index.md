@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-16 | Index Version: 1.21.0 | Status: Active
+Last Updated: 2025-10-17 | Index Version: 1.22.0 | Status: Active
 
 ## Segment Registry
 
@@ -49,6 +49,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Tiered Coverage Enforcement & Thematic Reporting           | 004     |
 | Centralized Coverage Configuration Module                  | 005     |
 | ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
+| ESLint Flat Config Single-Source Enforcement               | 004     |
 | Vitest Timeout Governance & Dialog Resilience              | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
 | Coverage Orchestration Validation Guard                    | 005     |
@@ -71,6 +72,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-17: Added ESLint flat config single-source pattern (Task 3.3.1) to segment 004 and bumped
+  index version to 1.22.0.
 - 2025-10-16: Updated cross-file dependencies to reference activeContext-current.md following hybrid
   segmentation refactoring
 - 2025-10-16: Registered CI coverage reporting & Codecov integration pattern (Task 3.2.3) in segment

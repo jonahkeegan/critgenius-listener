@@ -1,7 +1,7 @@
 # Active Context Index
 
-**Last Updated:** 2025-10-16  
-**Version:** 1.0.0  
+**Last Updated:** 2025-10-18  
+**Version:** 1.1.1  
 **System Status:** Active
 
 ## Overview
@@ -14,14 +14,14 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~150 (target) **Last Updated:** 2025-10-16
+**Current Row Count:** ~190 (target 150) **Last Updated:** 2025-10-18
 
 ## File Registry
 
 ### activeContext-current.md
 
 - **Status:** Active
-- **Row Count:** ~150 (approx)
+- **Row Count:** ~190 (approx)
 - **Scope:** Current state synthesis, immediate context, recent capabilities, next steps
 - **Update Frequency:** With each major milestone
 - **Description:** Maintains only essential current project state; archives to history when Latest
@@ -30,8 +30,8 @@ The Active Context system maintains current project state through a hybrid struc
 ### activeContext-history-001.md
 
 - **Status:** Active
-- **Row Count:** ~330 (approx)
-- **Date Range:** 2025-01-08 to 2025-10-16
+- **Row Count:** ~490 (approx)
+- **Date Range:** 2025-01-08 to 2025-10-12
 - **Primary Topics:** Infrastructure setup progression, Material-UI integration, environment
   management, testing infrastructure, coverage orchestration
 - **Description:** Historical archive of Latest Updates entries and Decision Log from original
@@ -114,6 +114,10 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-10-18: Archived the 2025-10-12 coverage enforcement update to history, refreshed row counts,
+  and bumped metadata for both current and history segments.
+- 2025-10-17: Recorded ESLint configuration audit and accessibility policy update; refreshed row
+  counts after adding the latest milestone to `activeContext-current.md`.
 - 2025-10-16: Initialized index system; refactored monolithic activeContext.md (483 rows) into
   hybrid structure (current + history-001); archived original as legacy file
 

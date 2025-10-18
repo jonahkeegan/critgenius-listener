@@ -13,7 +13,7 @@ This monolithic file (previously 483 rows, version 2.39.0) has been split follow
 - Recent updates (latest 7)
 - Active issues
 - Next steps
-- **Row count:** 164 rows
+- **Row count:** ~192 rows
 
 ### Historical Archive  
 📍 **See:** `index-activeContext.md` for complete registry
@@ -33,7 +33,7 @@ This monolithic file (previously 483 rows, version 2.39.0) has been split follow
 **Solution**: Hybrid structure separating hot current state from cold historical archive
 
 **Benefits**: 
-- Faster loading for current state queries (164 vs 483 rows)
+- Faster loading for current state queries (~192 vs 483 rows)
 - Preserved complete historical context
 - Follows established pattern from systemPatterns, techContext, progress refactorings
 - Maintains <300 row limit per segment for AI context window compatibility

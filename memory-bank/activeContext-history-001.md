@@ -1,9 +1,9 @@
 # Active Context History - Segment 001
 
-**Date Range:** 2025-01-08 to 2025-10-16  
+**Date Range:** 2025-01-08 to 2025-10-12  
 **Status:** Active  
-**Version:** 1.0.0  
-**Last Updated:** 2025-10-16
+**Version:** 1.0.1  
+**Last Updated:** 2025-10-18
 
 ## Overview
 
@@ -439,6 +439,13 @@ first).
 - Completed integration test patterns & cross-package workflows: shipped integration
   harness/presets, resilience tooling, canonical Socket.IO & AssemblyAI suites, documentation +
   meta-test guardrails
+
+### 2025-10-12 – Tiered Coverage Enforcement & ESLint Stability (Task 3.2.1)
+
+- Embedded tiered coverage policy (Shared ≥75 %, Client/Server ≥50 %, Workspace & Test-Utils ≥30 %)
+- Reaffirmed CI-only enforcement decision for fast pre-commit hooks
+- Stabilized the ESLint regression harness with cache priming and expanded timeout to handle slow
+  runners without losing guardrails
 
 ### 2025-10-11 – Comprehensive Testing Guide Validation Refresh (Task 3.1.5)
 
