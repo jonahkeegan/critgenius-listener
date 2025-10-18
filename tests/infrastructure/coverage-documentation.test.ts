@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 
 import tsModule from 'typescript';
 
+// Handle TypeScript's dual ESM/CommonJS export shapes so this test stays runtime-agnostic.
+
 const ts =
   (tsModule as unknown as { default?: typeof tsModule }).default ?? tsModule;
 

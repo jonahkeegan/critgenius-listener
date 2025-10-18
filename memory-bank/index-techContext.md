@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-16 | Version: 1.26.0 | System Status: Active
+Last Updated: 2025-10-17 | Version: 1.27.0 | System Status: Active
 
 ## Active Segments
 - Current Active Editing Target: techContext-003.md (initial extraction complete; all segments stable)
@@ -54,6 +54,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 | Comprehensive Testing Guide & Validation Suite | 002 |
 | Tiered Coverage Enforcement & Thematic Reporting | 003 |
 | ESLint Warm-up & Vitest Timeout Governance | 003 |
+| ESLint Configuration Audit & Accessibility Policy | 002 |
 | Centralized Coverage Configuration Module | 003 |
 | Coverage Orchestration Validation Workflow | 003 |
 | CI Coverage Integration & Codecov Reporting | 002 |
@@ -69,6 +70,7 @@ Row counts maintained under 300-line cap policy. Future segments (004+) to be cr
 - `projectbrief.md`, `productContext.md`, and `systemPatterns-index.md` remain upstream context for all segments
 
 ## Recent Changes
+- 2025-10-17: Added ESLint configuration audit & accessibility policy topic (Task 3.3.1) to segment 002; version bumped to 1.27.0.
 - 2025-10-16: Updated cross-file dependencies to reference activeContext-current.md following hybrid segmentation refactoring
 - 2025-10-16: Added CI coverage integration & Codecov reporting topic (Task 3.2.3) to segment 002
 - 2025-10-14: Added coverage orchestration validation workflow topic (Task 3.2.2) to segment 003

@@ -1,14 +1,17 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-10-15 20:30 PST **Version:** 1.10.0 **System Status:** Active
+**Last Updated:** 2025-10-17 14:05 PST **Version:** 1.11.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 210
-**Last Updated:** 2025-10-15 20:30 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 237
+**Last Updated:** 2025-10-17 14:05 PST
 
 **Update Log:**
 
+- 2025-10-17 14:05 PST — Captured CI coverage failsafes, hybrid memory bank segmentation, coverage
+  documentation guardrails, and lint hygiene audit in `consolidated-learnings-007.md`; row count
+  now 237.
 - 2025-10-15 20:30 PST — Logged parallel coverage gate calibration pattern in
   `consolidated-learnings-007.md`; row count now 210.
 - 2025-10-15 19:45 PST — Captured tiered coverage enforcement, centralized configuration authority,

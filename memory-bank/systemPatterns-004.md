@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-16 | Segment Version: 1.1.0
+Last Updated: 2025-10-17 | Segment Version: 1.2.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -82,6 +82,22 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** `pnpm vitest run tests/eslint/eslint-config.test.ts` (via bundled command
   `pnpm vitest run tests/infrastructure/vitest-config-consistency.test.ts tests/eslint/eslint-config.test.ts`).
 
+### ESLint Flat Config Single-Source Pattern
+
+- **Pattern:** Maintain a single authoritative ESLint flat config with automated validation so
+  linting rules, plugin coverage, and CI gating stay aligned across the monorepo.
+- **Implementation:** Removed the legacy `eslint.config.cjs`, added an ownership banner to
+  `eslint.config.js`, narrowed ignore patterns to generated output folders (`dist/`, `build/`), and
+  registered Node.js globals (`process`, `setTimeout`, `console`, etc.) to prevent false positives
+  when linting workspace scripts. Introduced `tests/infrastructure/eslint-audit-validation.test.ts`
+  to assert plugin presence, package lint scripts, JSX a11y rule posture, server overrides, and
+  `lint-ci.mjs` zero-warning enforcement.
+- **Benefits:** Eliminates config drift, keeps automation scripts and ESM utilities under lint
+  coverage, and documents accessibility rule decisions (e.g., `jsx-a11y/media-has-caption` disabled
+  for audio-first UI) backed by the new `docs/audio-ui-accessibility-policy.md`.
+- **Validation:** `pnpm vitest run tests/infrastructure/eslint-audit-validation.test.ts`,
+  `pnpm run lint:ci`.
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -96,6 +112,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-17: Added ESLint flat config single-source pattern; version bump to 1.2.0.
 - 2025-10-16: Added CI coverage reporting & Codecov integration pattern; version bump to 1.1.0.
 - 2025-10-12: Segment created with tiered coverage enforcement, coverage orchestration, ESLint
   warm-up, and Vitest timeout governance patterns.

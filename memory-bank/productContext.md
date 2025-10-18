@@ -1,6 +1,6 @@
 # Product Context - CritGenius: Listener
 
-**Last Updated:** 2025-01-08 20:08 PST **Version:** 2.0.0 **Dependencies:** projectbrief.md
+**Last Updated:** 2025-10-17 14:20 PST **Version:** 2.1.0 **Dependencies:** projectbrief.md
 
 ## Product Purpose
 
@@ -194,3 +194,11 @@ Progressive infrastructure capabilities underpinning product feasibility:
 These enablers reduce operational friction and derisk future feature delivery (audio pipeline, AI
 integrations, session analytics) by standardizing config, reliability, and local developer
 ergonomics.
+
+## Accessibility Commitments (2025-10-17 Update)
+
+- Published `docs/audio-ui-accessibility-policy.md` formalizing the audio-first accessibility
+  stance, WCAG 2.1 AA compliance goals, keyboard navigation requirements, and the trigger for
+  re-evaluating media caption policies when video capture is introduced.
+- ESLint governance enforces the documented policy by validating JSX a11y rule posture (e.g.,
+  `jsx-a11y/media-has-caption` disabled only while live transcript serves as the text alternative).
