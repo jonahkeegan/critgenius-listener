@@ -42,7 +42,8 @@ const lintFixture = async (
   const targetDirName = path.dirname(relativeTarget);
   const fileName = path.basename(relativeTarget);
 
-  const isTempFixtureDir = path.basename(targetDirName) === TEMP_FIXTURE_FOLDER;
+  const targetIsInTempFixtureFolder =
+    path.basename(targetDirName) === TEMP_FIXTURE_FOLDER;
 
   // Create a unique temp folder for each lint invocation so concurrent Vitest
   // projects do not race while writing disposable ESLint fixtures.
@@ -50,11 +51,13 @@ const lintFixture = async (
     .toString(36)
     .slice(2, 10)}`;
 
-  const uniqueRelativeDir = isTempFixtureDir
+  const uniqueRelativeDir = targetIsInTempFixtureFolder
     ? path.join(targetDirName, uniqueSegment)
     : targetDirName;
 
-  const baseTempDir = isTempFixtureDir ? path.join(root, targetDirName) : null;
+  const baseTempDir = targetIsInTempFixtureFolder
+    ? path.join(root, targetDirName)
+    : null;
 
   const uniqueTargetRelativePath = path.join(uniqueRelativeDir, fileName);
 
@@ -75,7 +78,7 @@ const lintFixture = async (
   } finally {
     fs.rmSync(absoluteTarget, { force: true });
 
-    if (isTempFixtureDir) {
+    if (targetIsInTempFixtureFolder) {
       const uniqueDir = path.dirname(absoluteTarget);
       if (fs.existsSync(uniqueDir)) {
         fs.rmSync(uniqueDir, { recursive: true, force: true });
