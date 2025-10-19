@@ -28,6 +28,7 @@
     "test:coverage:test-utils": "node scripts/coverage/run-coverage.mjs test-utils",
     "test:coverage:summary": "node scripts/coverage/print-summary.mjs",
     "test:integration": "pnpm --recursive run test:integration",
+    "test:infrastructure": "vitest run --config vitest.infrastructure.config.ts",
     "test:eslint-config": "vitest run tests/eslint/eslint-config.test.ts",
     "test:performance": "node scripts/performance/run-tests.mjs",
     "test:performance:watch": "node scripts/performance/run-tests.mjs --watch",
@@ -127,10 +128,7 @@
   },
   "homepage": "https://github.com/jonahkeegan/critgenius-listener#readme",
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix --ignore-pattern tests/eslint/__fixtures__/a11y-invalid.tsx",
-      "prettier --write"
-    ],
+    "*.{ts,tsx,js,jsx}": ["eslint --fix --ignore-pattern tests/eslint/__fixtures__/**/*", "prettier --write"],
     "*.{json,md,yml,yaml}": ["prettier --write"],
     "*.{css,scss}": ["prettier --write"]
   },

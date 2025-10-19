@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-17 | Index Version: 1.22.0 | Status: Active
+Last Updated: 2025-10-19 | Index Version: 1.23.0 | Status: Active
 
 ## Segment Registry
 
@@ -55,6 +55,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Coverage Orchestration Validation Guard                    | 005     |
 | Coverage Gate Recalibration for Parallel Execution         | 005     |
 | CI Coverage Reporting & Codecov Integration                | 004     |
+| Disposable ESLint Fixture Harness                          | 004     |
 
 ## Maintenance Protocol
 
@@ -72,6 +73,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-19: Added disposable ESLint fixture harness pattern (Task 3.3.2) to segment 004 and bumped
+  index version to 1.23.0.
 - 2025-10-17: Added ESLint flat config single-source pattern (Task 3.3.1) to segment 004 and bumped
   index version to 1.22.0.
 - 2025-10-16: Updated cross-file dependencies to reference activeContext-current.md following hybrid

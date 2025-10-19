@@ -67,6 +67,9 @@ jobs:
       - name: Unit tests
         run: pnpm run test
 
+      - name: Infrastructure tests
+        run: pnpm run test:infrastructure
+
       - name: Coverage (thematic suite)
         if: ${{ success() || failure() }}
         run: pnpm run test:coverage:thematic
