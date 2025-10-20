@@ -37,9 +37,10 @@ A unified script layer now supports:
 
 Enabled via `eslint-plugin-jsx-a11y` recommended config plus tightened rules:
 
-- Enforced: `alt-text`, `anchor-is-valid`, `media-has-caption`.
-- Soft guidance (warn): `no-autofocus`, `no-redundant-roles`. Adjust severity in `eslint.config.js`
-  if UI audit maturity increases.
+- Enforced: `alt-text`, `no-autofocus`, and component-level `interactive-supports-focus` plus
+  `click-events-have-key-events`.
+- Disabled intentionally: `anchor-is-valid`, `media-has-caption`, `no-redundant-roles` (documented
+  in `docs/audio-ui-accessibility-policy.md`).
 
 ## Performance-Oriented Linting
 
@@ -76,6 +77,16 @@ pipeline to continue but still collect the artifact.
 | UI accessibility sweep | `pnpm lint:accessibility` then fix flagged issues            |
 | Pre-push full gate     | `pnpm type-check:lint && pnpm test`                          |
 | Focus on shared types  | `pnpm lint:shared && pnpm --filter @critgenius/shared test`  |
+
+## Infrastructure Validation
+
+- `tests/infrastructure/eslint-audit-validation.test.ts` programmatically lints curated fixtures to
+  confirm rule coverage, override behavior, and severity gates.
+- Fixtures live in `tests/eslint/__fixtures__/` and cover TypeScript safety, React/hooks
+  regressions, accessibility strictness, server-specific overrides, relaxed test files, and a
+  passing baseline.
+- Run `pnpm --filter @critgenius/listener test tests/infrastructure/eslint-audit-validation.test.ts`
+  for a focused drift check; CI executes the same suite via `pnpm run test:infrastructure`.
 
 ## Troubleshooting
 

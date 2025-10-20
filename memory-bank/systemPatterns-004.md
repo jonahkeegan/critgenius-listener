@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-17 | Segment Version: 1.2.0
+Last Updated: 2025-10-19 | Segment Version: 1.3.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -98,6 +98,23 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** `pnpm vitest run tests/infrastructure/eslint-audit-validation.test.ts`,
   `pnpm run lint:ci`.
 
+### Disposable ESLint Fixture Harness Pattern (Task 3.3.2)
+
+- **Pattern:** Stage curated lint fixtures into disposable directories during infrastructure tests
+  so severity and override coverage expands without polluting the repository.
+- **Implementation:** Fixture sources (`typescript-invalid.ts`, `react-invalid.tsx`,
+  `server-patterns.ts`, `test-relaxations.test.ts`, `valid-examples.tsx`) live under
+  `tests/eslint/__fixtures__` and are copied into deterministic `__eslint-fixtures__` folders per
+  package when `tests/infrastructure/eslint-audit-validation.test.ts` runs. The suite inventories
+  fixture slugs, asserts severity matrices for TypeScript, React, server, and test globs, verifies
+  relaxed rules stay disabled, and ensures the `valid-examples.tsx` baseline returns zero warnings
+  before teardown removes staged directories.
+- **Benefits:** Guarantees lint guardrails exercise real file paths and override combinations,
+  extends regression coverage to React hooks and server overrides, and keeps `git status` clean even
+  when tests fail mid-run.
+- **Validation:** `pnpm test tests/infrastructure/eslint-audit-validation.test.ts` (40 assertions
+  spanning fixture inventory, severity checks, override enforcement, and clean baseline validation).
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -112,6 +129,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-19: Added disposable ESLint fixture harness pattern; version bump to 1.3.0.
 - 2025-10-17: Added ESLint flat config single-source pattern; version bump to 1.2.0.
 - 2025-10-16: Added CI coverage reporting & Codecov integration pattern; version bump to 1.1.0.
 - 2025-10-12: Segment created with tiered coverage enforcement, coverage orchestration, ESLint

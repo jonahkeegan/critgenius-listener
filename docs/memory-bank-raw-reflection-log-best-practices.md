@@ -125,7 +125,13 @@ end
 
 ## Required Entry Structure
 
-Every entry follows the canonical template and lives **inside** the enclosing code fence:
+> **CRITICAL: NO MARKDOWN CODE FENCE WRAPPING**
+>
+> Entries must NEVER be wrapped in
+> ````markdown or any other code fences. Only the entry template shown below (for demonstration purposes) uses a code fence. Actual entries in the file are raw markdown text separated by `---`
+> dividers.
+
+Every entry follows the canonical template:
 
 ```markdown
 Date: YYYY-MM-DD TaskRef: "<Task ID / Descriptive Title>"
@@ -217,6 +223,65 @@ end
 - Wrap `TaskRef` in straight quotes; include the task number or a descriptive slug.
 - Bullet lists should be short, actionable, and reference file paths or commands as needed.
 - When copying commands, prefer inline code (`` `command` ``) or fenced code blocks if multi-line.
+
+---
+
+## MANDATORY: Native File-Writing Method Only
+
+> **CRITICAL REQUIREMENT**
+>
+> AI coding assistants **MUST** use their native file-writing tools (`write_to_file` or
+> `replace_in_file`) to update `raw_reflection_log.md`. All other methods are **STRICTLY
+> FORBIDDEN**.
+
+### Allowed Update Method
+
+**The ONLY allowed operation** is a **non-destructive entry append to the END of the file** using:
+
+- `write_to_file` tool with complete file content (preserving all existing entries)
+- `replace_in_file` tool to append after the last entry
+
+### Forbidden Methods
+
+The following methods are **STRICTLY FORBIDDEN**:
+
+- ❌ Python scripts to append entries
+- ❌ CLI tools (e.g., `echo`, `cat`, shell redirection)
+- ❌ External automation scripts
+- ❌ Any method other than the native file-writing tools
+
+### Failure Handling Protocol
+
+If the native file-writing method fails:
+
+1. **STOP immediately** - Do not attempt workarounds
+2. **Explain the specific failure reason** to the user in detail
+3. **Request user input** on next steps
+4. **Wait for user direction** before proceeding
+
+**Example failure response:**
+
+```
+I attempted to update raw_reflection_log.md using the write_to_file tool, but encountered
+the following error:
+
+[Specific error details]
+
+This prevents me from safely appending the reflection entry. I need your input on how to proceed:
+- Should I try again?
+- Is there a file permission issue?
+- Would you like to review the entry content before I retry?
+```
+
+### Non-Destructive Append Pattern
+
+When appending entries:
+
+1. **Read the entire file** using `read_file`
+2. **Preserve all existing content** exactly as-is
+3. **Append the new entry** at the end before any closing markers
+4. **Write the complete file** back with all content intact
+5. **Verify no content was lost** by checking the result
 
 ---
 
@@ -422,11 +487,14 @@ end
 ### Checklist Items
 
 - [ ] Entry appended before the final ` ```` ` fence
+- [ ] **No markdown code fences wrapping entries** (````markdown forbidden)
+- [ ] **File updated using native write_to_file/replace_in_file tool only**
 - [ ] Date + TaskRef present and correct
 - [ ] Each section contains at least one bullet
 - [ ] Commands / scripts confirmed against terminal history
 - [ ] Spelling & casing match actual files (`packages/server/...`, etc.)
 - [ ] No Markdown syntax errors (balanced backticks, lists)
+- [ ] All existing entries preserved (non-destructive append)
 
 ---
 
@@ -527,11 +595,18 @@ end
 
 ### Common Anti-Patterns
 
+- ❌ **Wrapping entries or entire file in ````markdown code fences** - This corrupts the file
+  structure and makes entries unparseable. Only the entry template (for demonstration) should use
+  code fences.
+- ❌ **Using Python scripts or CLI tools to append entries** - Only native file-writing tools
+  (`write_to_file` or `replace_in_file`) are permitted.
 - ❌ **Overwriting the template header** or deleting previous reflections.
 - ❌ **Adding reflections outside the code fence** (breaks downstream parsers).
 - ❌ **Leaving sections blank** or stuffing future action items into "Learnings."
 - ❌ **Using vague phrases** (e.g., "Fixed stuff"); be explicit and reference artifacts.
 - ❌ **Relying on scripts that bypass formatting checks**—manually review the final markdown.
+- ❌ **Attempting workarounds when native file-writing fails** - Stop immediately and request user
+  input instead.
 
 ---
 
