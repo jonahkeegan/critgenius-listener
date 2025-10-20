@@ -115,9 +115,6 @@ export class BaselineManager {
     scenario: string,
     summary: LatencySummary
   ): Promise<BaselineFile> {
-    assertSafeObjectKey(category, 'baseline category');
-    assertSafeObjectKey(scenario, 'baseline scenario');
-
     const baseline = await this.safeLoad();
 
     const metrics: BaselineScenarioMetrics = {
@@ -132,12 +129,14 @@ export class BaselineManager {
       unit: 'ms',
     };
 
-    if (!Object.prototype.hasOwnProperty.call(baseline.metrics, category)) {
-      baseline.metrics[category] = createEmptyScenarioMetricsContainer();
-    }
-
-    const categoryMetrics = baseline.metrics[category]!;
-    categoryMetrics[scenario] = metrics;
+    assignScenarioMetrics(
+      baseline.metrics,
+      category,
+      scenario,
+      metrics,
+      'baseline category',
+      'baseline scenario'
+    );
     baseline.timestamp = new Date().toISOString();
 
     await this.save(baseline);
@@ -280,6 +279,37 @@ function mapCategoryMetricsToRecord(
   }
 
   return record;
+}
+
+function assignScenarioMetrics(
+  metricsRecord: BaselineMetrics,
+  category: string,
+  scenario: string,
+  metrics: BaselineScenarioMetrics,
+  categoryContext: string,
+  scenarioContext: string
+): void {
+  assertSafeObjectKey(category, categoryContext);
+  assertSafeObjectKey(scenario, scenarioContext);
+
+  let categoryRecord = metricsRecord[category];
+
+  if (!categoryRecord) {
+    categoryRecord = createEmptyScenarioMetricsContainer();
+    Object.defineProperty(metricsRecord, category, {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: categoryRecord,
+    });
+  }
+
+  Object.defineProperty(categoryRecord, scenario, {
+    configurable: true,
+    enumerable: true,
+    writable: true,
+    value: metrics,
+  });
 }
 
 function cloneMetricsWithValidation(
