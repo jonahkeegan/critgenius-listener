@@ -134,7 +134,9 @@
   },
   "pnpm": {
     "overrides": {
-      "esbuild": "0.25.9"
+      "esbuild": "0.25.9",
+      "react": "18.2.0",
+      "react-dom": "18.2.0"
     }
   },
   "devDependencies": {
@@ -160,6 +162,8 @@
     "lint-staged": "^16.1.5",
     "mutationobserver-shim": "^0.3.7",
     "prettier": "^3.6.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "rimraf": "^5.0.0",
     "supertest": "^7.1.4",
     "typescript": "^5.9.2",

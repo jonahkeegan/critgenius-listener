@@ -212,6 +212,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                       )}
                     </Box>
                   }
+                  primaryTypographyProps={{ component: 'div' }}
                   secondary={
                     <Box sx={{ mt: 1 }}>
                       <Box
@@ -253,6 +254,7 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
                       )}
                     </Box>
                   }
+                  secondaryTypographyProps={{ component: 'div' }}
                 />
                 <ListItemSecondaryAction>
                   <Box display='flex' gap={0.5}>
@@ -316,7 +318,12 @@ const SpeakerIdentificationPanel: React.FC<SpeakerIdentificationPanelProps> = ({
         <Box
           sx={{ mt: 3, pt: 2, borderTop: `1px solid ${theme.palette.divider}` }}
         >
-          <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+          <Typography
+            variant='body2'
+            color='text.secondary'
+            component='div'
+            sx={{ mb: 1 }}
+          >
             Tips for better voice recognition:
           </Typography>
           <Typography variant='caption' color='text.secondary' component='div'>

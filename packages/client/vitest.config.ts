@@ -90,12 +90,6 @@ const mergedConfig: ViteUserConfig = {
   test: {
     ...(sharedConfig.test ?? {}),
     css: true,
-    exclude: [
-      ...new Set([
-        ...((sharedConfig.test?.exclude as string[] | undefined) ?? []),
-        '**/tests/e2e/**',
-      ]),
-    ],
   },
 };
 

@@ -37,6 +37,8 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/build/**',
   '**/coverage/**',
   '**/.tmp/**',
+  '**/tests/e2e/**',
+  '**/tests/**/*.e2e.test.{ts,tsx,js,mjs}',
 ];
 
 const DEFAULT_TEST_TIMEOUT_MS = 10_000;
