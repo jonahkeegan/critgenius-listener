@@ -75,7 +75,7 @@ const lintFixture = async (
 
     return result;
   } finally {
-    fs.rmSync(absoluteTarget, { force: true });
+    fs.rmSync(absoluteTarget, { recursive: true, force: true });
 
     if (targetIsInTempFixtureFolder) {
       const uniqueDir = path.dirname(absoluteTarget);
@@ -86,7 +86,7 @@ const lintFixture = async (
       if (baseTempDir && fs.existsSync(baseTempDir)) {
         const remaining = fs.readdirSync(baseTempDir);
         if (remaining.length === 0) {
-          fs.rmSync(baseTempDir, { recursive: false, force: true });
+          fs.rmSync(baseTempDir, { recursive: true, force: true });
         }
       }
     } else if (
@@ -94,7 +94,7 @@ const lintFixture = async (
       fs.existsSync(targetDir) &&
       fs.readdirSync(targetDir).length === 0
     ) {
-      fs.rmSync(targetDir, { recursive: false, force: true });
+      fs.rmSync(targetDir, { recursive: true, force: true });
     }
   }
 };
