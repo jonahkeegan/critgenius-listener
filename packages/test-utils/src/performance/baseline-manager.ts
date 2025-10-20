@@ -82,7 +82,14 @@ export class BaselineManager {
       throw new Error('Baseline file is missing metrics data.');
     }
 
-    return parsed;
+    return {
+      ...parsed,
+      metrics: cloneMetricsWithValidation(
+        parsed.metrics,
+        'baseline category',
+        'baseline scenario'
+      ),
+    };
   }
 
   async save(baseline: BaselineFile): Promise<void> {
@@ -117,11 +124,12 @@ export class BaselineManager {
       unit: 'ms',
     };
 
-    if (!baseline.metrics[category]) {
-      baseline.metrics[category] = {};
+    if (!Object.prototype.hasOwnProperty.call(baseline.metrics, category)) {
+      baseline.metrics[category] = createEmptyScenarioMetricsContainer();
     }
 
-    baseline.metrics[category]![scenario] = metrics;
+    const categoryMetrics = baseline.metrics[category]!;
+    categoryMetrics[scenario] = metrics;
     baseline.timestamp = new Date().toISOString();
 
     await this.save(baseline);
@@ -135,7 +143,7 @@ export class BaselineManager {
     'constructor',
   ]);
 
-  private static assertSafeObjectKey(value: string, target: string): void {
+  public static assertSafeObjectKey(value: string, target: string): void {
     if (BaselineManager.unsafeKeys.has(value)) {
       throw new Error(`Refusing to use unsafe ${target} name: "${value}"`);
     }
@@ -161,7 +169,7 @@ export class BaselineManager {
         os: process.platform,
         arch: process.arch,
       },
-      metrics: {},
+      metrics: createEmptyMetricsContainer(),
     };
   }
 }
@@ -186,6 +194,48 @@ export function mergeBaselines(
   baseline: BaselineFile,
   overrides: Partial<BaselineFile>
 ): BaselineFile {
+  const sanitizedBaselineMetrics = cloneMetricsWithValidation(
+    baseline.metrics,
+    'baseline category',
+    'baseline scenario'
+  );
+
+  const sanitizedOverrideMetrics = overrides.metrics
+    ? cloneMetricsWithValidation(
+        overrides.metrics,
+        'override category',
+        'override scenario'
+      )
+    : undefined;
+
+  if (sanitizedOverrideMetrics) {
+    for (const category of Object.keys(sanitizedOverrideMetrics)) {
+      const existingCategory = sanitizedBaselineMetrics[category];
+      const targetCategory = existingCategory
+        ? existingCategory
+        : createEmptyScenarioMetricsContainer();
+
+      if (!existingCategory) {
+        Object.defineProperty(sanitizedBaselineMetrics, category, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: targetCategory,
+        });
+      }
+
+      const overrideScenarios = sanitizedOverrideMetrics[category]!;
+      for (const scenario of Object.keys(overrideScenarios)) {
+        Object.defineProperty(targetCategory, scenario, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: overrideScenarios[scenario]!,
+        });
+      }
+    }
+  }
+
   return {
     ...baseline,
     ...overrides,
@@ -193,9 +243,143 @@ export function mergeBaselines(
       ...baseline.environment,
       ...(overrides.environment ?? {}),
     },
-    metrics: {
-      ...baseline.metrics,
-      ...(overrides.metrics ?? {}),
-    },
+    metrics: sanitizedBaselineMetrics,
   };
+}
+
+function createEmptyMetricsContainer(): BaselineMetrics {
+  const container: BaselineMetrics = {};
+  Object.setPrototypeOf(container, null);
+  return container;
+}
+
+function createEmptyScenarioMetricsContainer(): Record<
+  string,
+  BaselineScenarioMetrics
+> {
+  const container: Record<string, BaselineScenarioMetrics> = {};
+  Object.setPrototypeOf(container, null);
+  return container;
+}
+
+function mapScenarioMetricsToRecord(
+  metricsMap: Map<string, BaselineScenarioMetrics>
+): Record<string, BaselineScenarioMetrics> {
+  const record = createEmptyScenarioMetricsContainer();
+
+  for (const [scenario, metrics] of metricsMap.entries()) {
+    record[scenario] = metrics;
+  }
+
+  return record;
+}
+
+function mapCategoryMetricsToRecord(
+  categoryMaps: Map<string, Map<string, BaselineScenarioMetrics>>
+): BaselineMetrics {
+  const record = createEmptyMetricsContainer();
+
+  for (const [category, metricsMap] of categoryMaps.entries()) {
+    record[category] = mapScenarioMetricsToRecord(metricsMap);
+  }
+
+  return record;
+}
+
+function cloneMetricsWithValidation(
+  source: BaselineMetrics | undefined,
+  categoryContext: string,
+  scenarioContext: string
+): BaselineMetrics {
+  const categoryMaps = new Map<string, Map<string, BaselineScenarioMetrics>>();
+
+  if (!source) {
+    return createEmptyMetricsContainer();
+  }
+
+  assertSafePrototypeChain(source, `${categoryContext} container`);
+
+  for (const category of Object.keys(source)) {
+    BaselineManager.assertSafeObjectKey(category, categoryContext);
+    const rawCategoryMetrics = source[category];
+
+    if (
+      rawCategoryMetrics !== undefined &&
+      (typeof rawCategoryMetrics !== 'object' || rawCategoryMetrics === null)
+    ) {
+      throw new Error(
+        `Invalid ${categoryContext} metrics structure for "${category}".`
+      );
+    }
+
+    const safeCategoryMetrics = new Map<string, BaselineScenarioMetrics>();
+
+    if (rawCategoryMetrics) {
+      assertSafePrototypeChain(
+        rawCategoryMetrics,
+        `${scenarioContext} container for ${categoryContext} "${category}"`
+      );
+      for (const scenario of Object.keys(rawCategoryMetrics)) {
+        BaselineManager.assertSafeObjectKey(scenario, scenarioContext);
+        const metricsCandidate = rawCategoryMetrics[scenario];
+
+        if (!isBaselineScenarioMetrics(metricsCandidate)) {
+          throw new Error(
+            `Invalid ${scenarioContext} metrics structure for "${scenario}".`
+          );
+        }
+
+        const sanitizedMetrics: BaselineScenarioMetrics = {
+          mean: metricsCandidate.mean,
+          p50: metricsCandidate.p50,
+          p95: metricsCandidate.p95,
+          p99: metricsCandidate.p99,
+          max: metricsCandidate.max,
+          min: metricsCandidate.min,
+          standardDeviation: metricsCandidate.standardDeviation,
+          sampleCount: metricsCandidate.sampleCount,
+          unit: metricsCandidate.unit,
+        };
+
+        safeCategoryMetrics.set(scenario, sanitizedMetrics);
+      }
+    }
+    categoryMaps.set(category, safeCategoryMetrics);
+  }
+
+  return mapCategoryMetricsToRecord(categoryMaps);
+}
+
+function assertSafePrototypeChain(value: object, context: string): void {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype && prototype !== Object.prototype) {
+    throw new Error(`Unsafe prototype chain detected in ${context}.`);
+  }
+}
+
+function isBaselineScenarioMetrics(
+  value: unknown
+): value is BaselineScenarioMetrics {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    isFiniteNumber(candidate.mean) &&
+    isFiniteNumber(candidate.p50) &&
+    isFiniteNumber(candidate.p95) &&
+    isFiniteNumber(candidate.p99) &&
+    isFiniteNumber(candidate.max) &&
+    isFiniteNumber(candidate.min) &&
+    isFiniteNumber(candidate.standardDeviation) &&
+    isFiniteNumber(candidate.sampleCount) &&
+    candidate.unit === 'ms'
+  );
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
