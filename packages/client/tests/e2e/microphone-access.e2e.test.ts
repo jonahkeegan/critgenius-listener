@@ -1,3 +1,4 @@
+/* c8 ignore file */
 import path from 'node:path';
 import net from 'node:net';
 import fs from 'node:fs';
