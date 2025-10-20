@@ -44,6 +44,14 @@ const DEFAULT_BASELINE_PATH = resolve(
   '.performance-baselines/baseline.json'
 );
 
+const UNSAFE_OBJECT_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
+
+function assertSafeObjectKey(value: string, target: string): void {
+  if (UNSAFE_OBJECT_KEYS.has(value)) {
+    throw new Error(`Refusing to use unsafe ${target} name: "${value}"`);
+  }
+}
+
 export class BaselineMissingError extends Error {
   constructor(baselinePath: string) {
     super(
@@ -107,8 +115,8 @@ export class BaselineManager {
     scenario: string,
     summary: LatencySummary
   ): Promise<BaselineFile> {
-    BaselineManager.assertSafeObjectKey(category, 'baseline category');
-    BaselineManager.assertSafeObjectKey(scenario, 'baseline scenario');
+    assertSafeObjectKey(category, 'baseline category');
+    assertSafeObjectKey(scenario, 'baseline scenario');
 
     const baseline = await this.safeLoad();
 
@@ -135,18 +143,6 @@ export class BaselineManager {
     await this.save(baseline);
 
     return baseline;
-  }
-
-  private static readonly unsafeKeys = new Set([
-    '__proto__',
-    'prototype',
-    'constructor',
-  ]);
-
-  public static assertSafeObjectKey(value: string, target: string): void {
-    if (BaselineManager.unsafeKeys.has(value)) {
-      throw new Error(`Refusing to use unsafe ${target} name: "${value}"`);
-    }
   }
 
   async safeLoad(): Promise<BaselineFile> {
@@ -300,7 +296,7 @@ function cloneMetricsWithValidation(
   assertSafePrototypeChain(source, `${categoryContext} container`);
 
   for (const category of Object.keys(source)) {
-    BaselineManager.assertSafeObjectKey(category, categoryContext);
+    assertSafeObjectKey(category, categoryContext);
     const rawCategoryMetrics = source[category];
 
     if (
@@ -320,7 +316,7 @@ function cloneMetricsWithValidation(
         `${scenarioContext} container for ${categoryContext} "${category}"`
       );
       for (const scenario of Object.keys(rawCategoryMetrics)) {
-        BaselineManager.assertSafeObjectKey(scenario, scenarioContext);
+        assertSafeObjectKey(scenario, scenarioContext);
         const metricsCandidate = rawCategoryMetrics[scenario];
 
         if (!isBaselineScenarioMetrics(metricsCandidate)) {
