@@ -13,6 +13,10 @@ declare global {
   var __coverageOrchestratorFailures: string[] | undefined;
 }
 
+function toPosixPath(path: string): string {
+  return path.replace(/\\/g, '/');
+}
+
 const summaryMocks = vi.hoisted(() => ({
   generateThematicSummary: vi.fn(),
   formatThematicSummary: vi.fn(),
@@ -155,10 +159,17 @@ function createSummary(overrides?: Record<string, unknown>) {
       ...(UNRESOLVED_THRESHOLDS[theme.key] ?? {}),
     } as Record<string, number>;
 
+    const summaryFile = toPosixPath(
+      relative(WORKSPACE_ROOT, theme.summaryFile)
+    );
+    const reportsDirectory = toPosixPath(
+      relative(WORKSPACE_ROOT, theme.reportsDirectory)
+    );
+
     summary.themes[theme.key] = {
       label: theme.label,
-      summaryFile: relative(WORKSPACE_ROOT, theme.summaryFile),
-      reportsDirectory: relative(WORKSPACE_ROOT, theme.reportsDirectory),
+      summaryFile,
+      reportsDirectory,
       status: 'pass',
       meetsThresholds: true,
       details: null,

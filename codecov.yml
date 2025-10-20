@@ -5,6 +5,9 @@ coverage:
   precision: 2
   round: down
   range: 0..100
+  ignore:
+    - "packages/client/tests/e2e/**"
+    - "tests/infrastructure/thematic-summary.paths.test.ts"
   status:
     project:
       default:

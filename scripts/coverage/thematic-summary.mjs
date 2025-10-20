@@ -27,6 +27,14 @@ const RESOLVED_THEME_THRESHOLDS = Object.freeze(
   getThemeThresholdMap({ resolved: true })
 );
 
+function toPosixPath(path) {
+  if (!path) {
+    return path;
+  }
+
+  return path.replace(/\\/g, '/');
+}
+
 const THEMES = coverageThemes.map(theme => ({
   key: theme.key,
   label: theme.label,
@@ -127,8 +135,12 @@ export function generateThematicSummary(options = {}) {
 
     themes[theme.key] = {
       label: theme.label,
-      summaryFile: relative(WORKSPACE_ROOT, theme.summaryFile),
-      reportsDirectory: relative(WORKSPACE_ROOT, theme.reportsDirectory),
+      summaryFile: toPosixPath(
+        relative(WORKSPACE_ROOT, theme.summaryFile)
+      ),
+      reportsDirectory: toPosixPath(
+        relative(WORKSPACE_ROOT, theme.reportsDirectory)
+      ),
       status: evaluation.status,
       meetsThresholds: evaluation.meetsThresholds,
       details: evaluation.details,

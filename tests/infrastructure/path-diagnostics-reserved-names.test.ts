@@ -13,9 +13,15 @@ describe('Path Diagnostics Reserved Name Handling', () => {
   });
 
   it('sanitizes reserved filenames to undefined', () => {
+    const warnSpy = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined);
+
     expect(sanitizeOutputFile('nul')).toBeUndefined();
     expect(sanitizeOutputFile('NUL')).toBeUndefined();
     expect(sanitizeOutputFile('coverage/nul')).toBeUndefined();
+
+    expect(warnSpy).toHaveBeenCalledTimes(3);
   });
 
   it('preserves valid diagnostic output paths', () => {
