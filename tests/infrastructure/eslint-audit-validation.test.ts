@@ -20,6 +20,9 @@ let sharedEslint: ESLint;
 
 const TEMP_FIXTURE_FOLDER = '__eslint-fixtures__';
 
+const isInTempFixtureFolder = (dirPath: string): boolean =>
+  path.basename(dirPath) === TEMP_FIXTURE_FOLDER;
+
 const lintFixture = async (
   fixtureName: string,
   options?: { relativeTarget?: string }
@@ -43,8 +46,7 @@ const lintFixture = async (
   const targetDirName = path.dirname(relativeTarget);
   const fileName = path.basename(relativeTarget);
 
-  const targetIsInTempFixtureFolder =
-    path.basename(targetDirName) === TEMP_FIXTURE_FOLDER;
+  const targetIsInTempFixtureFolder = isInTempFixtureFolder(targetDirName);
 
   // Create a unique temp folder for each lint invocation so concurrent Vitest
   // projects do not race while writing disposable ESLint fixtures.
@@ -90,7 +92,7 @@ const lintFixture = async (
         }
       }
     } else if (
-      path.basename(targetDir) === TEMP_FIXTURE_FOLDER &&
+      isInTempFixtureFolder(targetDir) &&
       fs.existsSync(targetDir) &&
       fs.readdirSync(targetDir).length === 0
     ) {
