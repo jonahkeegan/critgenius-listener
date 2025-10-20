@@ -1,5 +1,4 @@
 /// <reference types="vitest" />
-import '../../tests/setup/install-test-globals';
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL, URL as NodeURL } from 'node:url';
@@ -61,6 +60,7 @@ const sharedConfig = createVitestConfig({
   packageRoot,
   environment: 'jsdom',
   setupFiles: [
+    '../../tests/setup/install-test-globals.ts',
     '../../tests/setup/common-vitest-hooks.ts',
     './src/test-setup.ts',
   ],
@@ -90,6 +90,12 @@ const mergedConfig: ViteUserConfig = {
   test: {
     ...(sharedConfig.test ?? {}),
     css: true,
+    exclude: [
+      ...new Set([
+        ...((sharedConfig.test?.exclude as string[] | undefined) ?? []),
+        '**/tests/e2e/**',
+      ]),
+    ],
   },
 };
 
