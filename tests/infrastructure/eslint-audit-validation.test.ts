@@ -1,5 +1,6 @@
 import { beforeAll, describe, it, expect } from 'vitest';
 import { ESLint } from 'eslint';
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -47,9 +48,7 @@ const lintFixture = async (
 
   // Create a unique temp folder for each lint invocation so concurrent Vitest
   // projects do not race while writing disposable ESLint fixtures.
-  const uniqueSegment = `${TEMP_FIXTURE_FOLDER}-${process.pid}-${Date.now().toString(36)}-${Math.random()
-    .toString(36)
-    .slice(2, 10)}`;
+  const uniqueSegment = `${TEMP_FIXTURE_FOLDER}-${process.pid}-${randomUUID()}`;
 
   const uniqueRelativeDir = targetIsInTempFixtureFolder
     ? path.join(targetDirName, uniqueSegment)
@@ -87,7 +86,7 @@ const lintFixture = async (
       if (baseTempDir && fs.existsSync(baseTempDir)) {
         const remaining = fs.readdirSync(baseTempDir);
         if (remaining.length === 0) {
-          fs.rmdirSync(baseTempDir);
+          fs.rmSync(baseTempDir, { recursive: false, force: true });
         }
       }
     } else if (
@@ -95,7 +94,7 @@ const lintFixture = async (
       fs.existsSync(targetDir) &&
       fs.readdirSync(targetDir).length === 0
     ) {
-      fs.rmdirSync(targetDir);
+      fs.rmSync(targetDir, { recursive: false, force: true });
     }
   }
 };
