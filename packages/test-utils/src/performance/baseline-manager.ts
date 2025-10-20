@@ -347,6 +347,7 @@ function cloneMetricsWithValidation(
 }
 
 function assertSafePrototypeChain(value: object, context: string): void {
+  // Object.getPrototypeOf returns 'any' by design; we validate the result on the next line.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const prototype = Object.getPrototypeOf(value);
   if (prototype && prototype !== Object.prototype) {
