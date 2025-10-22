@@ -2527,7 +2527,65 @@ describe('comprehensive testing guide validation', () => {
 });
 ```
 
-### 9.4 Quality Checklist
+### 9.4 Infrastructure Validation Testing Strategy
+
+When planning infrastructure tasks, use the **Pragmatic Infrastructure Testing Guide** to decide
+whether validation tests are needed:
+
+**Core Principle:** Create validation tests only when there's proven history of configuration drift
+or when detection difficulty justifies the maintenance cost.
+
+**Decision Framework:**
+
+- **Has this config drifted before?** Check git history, bug reports, task completion reports
+- **What's the production impact?** Critical (app won't start) vs Low (documentation)
+- **How difficult is detection?** Hard (multiple files) vs Easy (single file, clear error)
+
+**Validation Strategies:**
+
+- 🟢 **Validation Test** - Proven drift + (Critical/High impact OR Hard detection)
+- 🔵 **Runtime Check** - Critical/High impact + Easy detection + No drift history
+- 🟡 **CI Script** - Medium impact OR Low detection difficulty + Some drift concern
+- 🟣 **Document Only** - No drift history + Low impact + Easy detection
+
+**Quick Reference:** See
+[Pragmatic Infrastructure Testing Guide](./pragmatic-infrastructure-testing-guide.md) for:
+
+- Complete decision framework with flowcharts
+- Real-world examples from CritGenius test suite
+- Alternative validation strategies (runtime checks, CI scripts)
+- Test consolidation patterns to reduce maintenance
+- Migration path for existing tests
+
+**Decision Matrix:** For quick decisions during task planning, use
+[Validation Test Decision Matrix](./validation-test-decision-matrix.md).
+
+**Example Application:**
+
+```markdown
+## Task: Update Build Configuration
+
+### Validation Strategy Decision
+
+**Configuration Changes:** Build output directory, source maps, minification
+
+**Drift History:** None (first time setting up)
+
+**Production Impact:** High (affects all builds)
+
+**Detection Difficulty:** Medium (need to check multiple files)
+
+**Decision:** Runtime Check + Documentation
+
+**Rationale:**
+
+- High production impact suggests runtime validation
+- Medium detection difficulty manageable with runtime check
+- No drift history means full test is premature
+- Will add test if drift occurs in future
+```
+
+### 9.5 Quality Checklist
 
 Before marking testing task complete, verify:
 

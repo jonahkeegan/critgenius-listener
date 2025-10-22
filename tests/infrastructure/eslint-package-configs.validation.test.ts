@@ -24,6 +24,8 @@ const CONFIG_FILENAMES = new Set([
 
 const CONFIG_BASENAME_PREFIXES = ['.eslintrc'];
 
+const LINT_TIMEOUT_MS = 120_000;
+
 let sharedEslint: ESLint;
 
 const findPackageConfigFiles = (startDir: string): string[] => {
@@ -31,10 +33,7 @@ const findPackageConfigFiles = (startDir: string): string[] => {
   const matches: string[] = [];
 
   while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) {
-      break;
-    }
+    const current = queue.shift()!;
 
     const entries = fs.readdirSync(current, { withFileTypes: true });
     for (const entry of entries) {
@@ -84,10 +83,11 @@ const lintPackageSources = async (
 
 const expectPathIgnoredState = async (filePath: string, expected: boolean) => {
   const isIgnored = await sharedEslint.isPathIgnored(filePath);
-  expect(isIgnored).toBe(
-    expected,
-    `Expected ${path.relative(root, filePath)} to be ${expected ? '' : 'not '}ignored`
-  );
+  if (isIgnored !== expected) {
+    throw new Error(
+      `Expected ${path.relative(root, filePath)} to be ${expected ? '' : 'not '}ignored`
+    );
+  }
 };
 
 describe('ESLint package configuration verification', () => {
@@ -106,35 +106,39 @@ describe('ESLint package configuration verification', () => {
     expect(configs).toEqual([]);
   });
 
-  it('successfully lints each package source tree with zero warnings', async () => {
-    const packagesWithCounts: Array<{
-      name: (typeof PACKAGE_NAMES)[number];
-      fileCount: number;
-      errorCount: number;
-      warningCount: number;
-    }> = [];
+  it(
+    'successfully lints each package source tree with zero warnings',
+    async () => {
+      const packagesWithCounts: Array<{
+        name: (typeof PACKAGE_NAMES)[number];
+        fileCount: number;
+        errorCount: number;
+        warningCount: number;
+      }> = [];
 
-    for (const packageName of PACKAGE_NAMES) {
-      const { errorCount, warningCount, fileCount } =
-        await lintPackageSources(packageName);
+      for (const packageName of PACKAGE_NAMES) {
+        const { errorCount, warningCount, fileCount } =
+          await lintPackageSources(packageName);
 
-      expect(fileCount).toBeGreaterThan(0);
-      expect(errorCount).toBe(0);
-      expect(warningCount).toBe(0);
+        expect(fileCount).toBeGreaterThan(0);
+        expect(errorCount).toBe(0);
+        expect(warningCount).toBe(0);
 
-      packagesWithCounts.push({
-        name: packageName,
-        fileCount,
-        errorCount,
-        warningCount,
-      });
-    }
+        packagesWithCounts.push({
+          name: packageName,
+          fileCount,
+          errorCount,
+          warningCount,
+        });
+      }
 
-    // Sanity check to ensure we assessed the expected packages.
-    expect(packagesWithCounts.map(({ name }) => name).sort()).toEqual(
-      [...PACKAGE_NAMES].sort()
-    );
-  }, 120000);
+      // Sanity check to ensure we assessed the expected packages.
+      expect(packagesWithCounts.map(({ name }) => name).sort()).toEqual(
+        [...PACKAGE_NAMES].sort()
+      );
+    },
+    LINT_TIMEOUT_MS
+  );
 
   it('applies ignore patterns without skipping primary source files', async () => {
     await expectPathIgnoredState(
