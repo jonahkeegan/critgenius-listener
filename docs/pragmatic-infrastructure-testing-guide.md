@@ -1221,13 +1221,13 @@ Use this worksheet when planning validation for infrastructure changes:
 ```markdown
 ## Infrastructure Validation Assessment
 
-**Configuration/Feature:** **********\_\_\_**********
+**Configuration/Feature:** ****\*\*****\_\_\_****\*\*****
 
 ### Drift History
 
 - [ ] Has this configuration drifted before?
-- [ ] Evidence: **********\_\_\_**********
-- [ ] Date of last drift: **********\_\_\_**********
+- [ ] Evidence: ****\*\*****\_\_\_****\*\*****
+- [ ] Date of last drift: ****\*\*****\_\_\_****\*\*****
 
 ### Production Impact
 
@@ -1251,7 +1251,7 @@ Based on the framework:
 - [ ] CI Script
 - [ ] Document Only
 
-**Rationale:** **********\_\_\_**********
+**Rationale:** ****\*\*****\_\_\_****\*\*****
 
 ### Implementation Plan
 
@@ -1261,8 +1261,8 @@ Based on the framework:
 
 ### Alternatives Considered
 
-- Alternative 1: **********\_\_\_********** (why not chosen: **\_\_\_**)
-- Alternative 2: **********\_\_\_********** (why not chosen: **\_\_\_**)
+- Alternative 1: ****\*\*****\_\_\_****\*\***** (why not chosen: **\_\_\_**)
+- Alternative 2: ****\*\*****\_\_\_****\*\***** (why not chosen: **\_\_\_**)
 ```
 
 ---
