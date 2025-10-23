@@ -37,7 +37,17 @@ describe('runtime validation helpers', () => {
 
     // Clean up temporary directory
     if (existsSync(tempDir)) {
-      rmSync(tempDir, { recursive: true, force: true });
+      try {
+        rmSync(tempDir, {
+          recursive: true,
+          force: true,
+          maxRetries: 5,
+          retryDelay: 50,
+        });
+      } catch (error) {
+        // Windows occasionally holds on to temp files; swallow cleanup errors to keep tests stable.
+        console.warn('runtime validation cleanup warning:', error);
+      }
     }
   });
 

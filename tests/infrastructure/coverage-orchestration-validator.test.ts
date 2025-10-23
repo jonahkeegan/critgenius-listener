@@ -23,6 +23,11 @@ const BASE_SUMMARY_PATH = join(COVERAGE_DIR, 'thematic-summary.json');
 
 describe('validate-coverage-orchestration.mjs - Basic Validation', () => {
   let fixtureCreated = false;
+  const baseSpawnOptions = {
+    cwd: WORKSPACE_ROOT,
+    encoding: 'utf-8',
+    env: { ...process.env, CI: 'false' },
+  } as const;
 
   beforeAll(() => {
     const existingSummary = existsSync(BASE_SUMMARY_PATH);
@@ -49,10 +54,7 @@ describe('validate-coverage-orchestration.mjs - Basic Validation', () => {
         '--coverage-dir',
         COVERAGE_DIR,
       ],
-      {
-        cwd: WORKSPACE_ROOT,
-        encoding: 'utf-8',
-      }
+      baseSpawnOptions
     );
 
     expect(result.status).toBe(0);
@@ -77,10 +79,7 @@ describe('validate-coverage-orchestration.mjs - Basic Validation', () => {
         '--coverage-dir',
         COVERAGE_DIR,
       ],
-      {
-        cwd: WORKSPACE_ROOT,
-        encoding: 'utf-8',
-      }
+      baseSpawnOptions
     );
 
     rmSync(tempDir, { recursive: true, force: true });
@@ -110,8 +109,8 @@ describe('validate-coverage-orchestration.mjs - Basic Validation', () => {
         '--ci',
       ],
       {
-        cwd: WORKSPACE_ROOT,
-        encoding: 'utf-8',
+        ...baseSpawnOptions,
+        env: { ...baseSpawnOptions.env, CI: 'false' },
       }
     );
 
