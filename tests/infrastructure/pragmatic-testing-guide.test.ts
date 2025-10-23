@@ -90,13 +90,14 @@ describe('pragmatic infrastructure testing guide validation', () => {
     });
 
     it('includes combined assessment matrix', () => {
-      expect(guideContent).toContain(
+      const normalizedGuide = guideContent.replace(/\s+/g, ' ');
+      expect(normalizedGuide).toContain(
         '| Drift History | Production Impact | Detection Difficulty | Recommendation |'
       );
-      expect(guideContent).toContain(
+      expect(normalizedGuide).toContain(
         '| Yes | Critical | Any | **Validation Test** |'
       );
-      expect(guideContent).toContain(
+      expect(normalizedGuide).toContain(
         '| No | Critical | Easy | **Runtime Check** |'
       );
     });
@@ -254,7 +255,8 @@ describe('pragmatic infrastructure testing guide validation', () => {
 
     it('includes quick decision table', () => {
       expect(matrixContent).toContain('## Quick Decision Table');
-      expect(matrixContent).toContain(
+      const normalizedMatrix = matrixContent.replace(/\s+/g, ' ');
+      expect(normalizedMatrix).toContain(
         '| Drift History | Production Impact | Detection Difficulty | Recommendation |'
       );
     });
@@ -362,8 +364,9 @@ describe('pragmatic infrastructure testing guide validation', () => {
   describe('version history', () => {
     it('includes version history section', () => {
       expect(guideContent).toContain('## Version History');
-      expect(guideContent).toContain('| Version | Date | Changes |');
-      expect(guideContent).toContain('| 1.0.0 | 2025-10-21 |');
+      const normalizedGuide = guideContent.replace(/\s+/g, ' ');
+      expect(normalizedGuide).toContain('| Version | Date | Changes |');
+      expect(normalizedGuide).toContain('| 1.0.0 | 2025-10-21 |');
     });
   });
 
