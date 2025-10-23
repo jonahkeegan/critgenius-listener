@@ -87,7 +87,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Validate coverage orchestration (CI)
-        if: ${{ always() && steps.coverage_thematic.outcome != 'cancelled' }}
+        if: ${{ always() }}
         run: pnpm run validate:coverage-orchestration -- --ci
 
       - name: Upload coverage artifacts
