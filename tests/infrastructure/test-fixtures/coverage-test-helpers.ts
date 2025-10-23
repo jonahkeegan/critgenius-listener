@@ -63,13 +63,31 @@ export function createMinimalThematicSummary(outputPath: string): void {
           lines: { pct: 80 },
         },
       },
+      'test-utils': {
+        summaryFile: 'coverage/test-utils/coverage-summary.json',
+        reportsDirectory: 'coverage/test-utils',
+        status: 'pass',
+        meetsThresholds: true,
+        coverage: {
+          statements: { pct: 80 },
+          branches: { pct: 75 },
+          functions: { pct: 80 },
+          lines: { pct: 80 },
+        },
+      },
     },
     thresholds: {
       themes: {
-        workspace: { statements: 80, branches: 75, functions: 80, lines: 80 },
-        client: { statements: 80, branches: 75, functions: 80, lines: 80 },
-        server: { statements: 80, branches: 75, functions: 80, lines: 80 },
-        shared: { statements: 80, branches: 75, functions: 80, lines: 80 },
+        workspace: { statements: 9, branches: 9, functions: 9, lines: 9 },
+        client: { statements: 50, branches: 50, functions: 50, lines: 50 },
+        server: { statements: 50, branches: 50, functions: 50, lines: 50 },
+        shared: { statements: 75, branches: 75, functions: 75, lines: 75 },
+        'test-utils': {
+          statements: 30,
+          branches: 30,
+          functions: 30,
+          lines: 30,
+        },
       },
     },
     metadata: {
