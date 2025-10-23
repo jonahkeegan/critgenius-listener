@@ -58,6 +58,9 @@ jobs:
       - name: Validate filenames
         run: pnpm run validate:filenames
 
+      - name: Validate decision matrix headers
+        run: pnpm run validate:doc-headers
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 
@@ -71,6 +74,7 @@ jobs:
         run: pnpm run test:infrastructure
 
       - name: Coverage (thematic suite)
+        id: coverage_thematic
         if: ${{ success() || failure() }}
         run: pnpm run test:coverage:thematic
 
@@ -83,7 +87,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Validate coverage orchestration (CI)
-        if: ${{ always() }}
+        if: ${{ always() && steps.coverage_thematic.outcome != 'cancelled' }}
         run: pnpm run validate:coverage-orchestration -- --ci
 
       - name: Upload coverage artifacts

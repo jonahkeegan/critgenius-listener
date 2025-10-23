@@ -64,6 +64,7 @@
     "precommit:validate": "node scripts/precommit-validate.mjs",
     "precommit:simulate": "node scripts/precommit-simulate.mjs",
     "precommit:benchmark": "node scripts/precommit-benchmark.mjs",
+    "validate:doc-headers": "node scripts/check-doc-headers.mjs",
     "validate:coverage-orchestration": "node scripts/validate-coverage-orchestration.mjs",
     "validate:filenames": "node scripts/filename-validator.mjs",
     "validate:filenames:fix": "node scripts/filename-validator.mjs --fix",
