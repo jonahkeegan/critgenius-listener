@@ -233,16 +233,19 @@ Use this matrix to make final decisions:
 | Drift History | Production Impact | Detection Difficulty | Recommendation                   |
 | ------------- | ----------------- | -------------------- | -------------------------------- |
 | Yes           | Critical          | Any                  | **Validation Test**              |
-| Yes           | High              | Hard/Medium          | **Validation Test**              |
+| Yes           | High              | Hard                 | **Validation Test**              |
+| Yes           | High              | Medium               | **Validation Test**              |
 | Yes           | High              | Easy                 | **Runtime Check**                |
 | Yes           | Medium            | Hard                 | **Validation Test**              |
-| Yes           | Medium            | Medium/Easy          | **CI Script**                    |
+| Yes           | Medium            | Medium               | **CI Script**                    |
+| Yes           | Medium            | Easy                 | **CI Script**                    |
 | Yes           | Low               | Any                  | **CI Script** or **Document**    |
 | No            | Critical          | Hard                 | **Validation Test** (preventive) |
-| No            | Critical          | Easy                 | **Runtime Check**                |
 | No            | Critical          | Medium               | **Runtime Check**                |
+| No            | Critical          | Easy                 | **Runtime Check**                |
 | No            | High              | Hard                 | **Runtime Check**                |
-| No            | High              | Medium/Easy          | **CI Script**                    |
+| No            | High              | Medium               | **CI Script**                    |
+| No            | High              | Easy                 | **CI Script**                    |
 | No            | Medium/Low        | Any                  | **Document Only**                |
 
 ### Decision Outcomes Explained

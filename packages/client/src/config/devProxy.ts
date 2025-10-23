@@ -193,7 +193,7 @@ export function buildDevProxy(
           }
         : {
             headers: { 'X-Forwarded-Proto': protocol },
-            secure: !httpsEnabled ? undefined : !rejectUnauthorized,
+            secure: httpsEnabled ? !rejectUnauthorized : true,
             agent,
             timeout: proxyTimeout,
           }),
