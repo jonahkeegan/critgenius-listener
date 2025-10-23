@@ -29,6 +29,7 @@
     "test:coverage:summary": "node scripts/coverage/print-summary.mjs",
     "test:integration": "pnpm --recursive run test:integration",
     "test:infrastructure": "vitest run --config vitest.infrastructure.config.ts",
+    "test:infrastructure:integration": "vitest run --config vitest.infrastructure.config.ts tests/infrastructure/coverage-orchestration-integration.test.ts",
     "test:eslint-config": "vitest run tests/eslint/eslint-config.test.ts",
     "test:performance": "node scripts/performance/run-tests.mjs",
     "test:performance:watch": "node scripts/performance/run-tests.mjs --watch",

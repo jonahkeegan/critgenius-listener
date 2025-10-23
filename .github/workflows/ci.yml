@@ -94,6 +94,9 @@ jobs:
       - name: Validate coverage orchestration (CI)
         run: pnpm run validate:coverage-orchestration -- --ci
 
+      - name: Run coverage integration tests
+        run: pnpm run test:infrastructure:integration
+
       - name: Upload coverage artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

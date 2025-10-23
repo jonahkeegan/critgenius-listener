@@ -1,8 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
+import { ensureTestCoverageContext } from './test-fixtures/coverage-test-helpers';
 
 const WORKSPACE_ROOT = process.cwd();
 const SCRIPT_PATH = join(
@@ -13,8 +21,24 @@ const SCRIPT_PATH = join(
 const COVERAGE_DIR = join(WORKSPACE_ROOT, 'coverage');
 const BASE_SUMMARY_PATH = join(COVERAGE_DIR, 'thematic-summary.json');
 
-describe('validate-coverage-orchestration.mjs', () => {
-  it('succeeds with the committed thematic summary', () => {
+describe('validate-coverage-orchestration.mjs - Basic Validation', () => {
+  let fixtureCreated = false;
+
+  beforeAll(() => {
+    const existingSummary = existsSync(BASE_SUMMARY_PATH);
+    ensureTestCoverageContext(WORKSPACE_ROOT);
+    fixtureCreated = !existingSummary;
+  });
+
+  afterAll(() => {
+    if (fixtureCreated) {
+      console.log(
+        'Coverage validation fixture created for tests remains available for future runs.'
+      );
+    }
+  });
+
+  it('succeeds with a valid thematic summary structure', () => {
     const result = spawnSync(
       process.execPath,
       [
