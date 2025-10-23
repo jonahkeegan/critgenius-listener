@@ -14,6 +14,7 @@ type WorkflowStep = {
 
 type WorkflowJob = {
   steps?: WorkflowStep[];
+  needs?: string | string[];
 };
 
 type WorkflowConfig = {
@@ -65,36 +66,78 @@ describe('ci workflow coverage integration', () => {
   const workflowPath = join(workspaceRoot, '.github', 'workflows', 'ci.yml');
   const workflowSource = readFileSync(workflowPath, 'utf8');
   const workflowConfig = load(workflowSource) as WorkflowConfig;
-  const job = workflowConfig.jobs?.['build-and-validate'];
-  const steps = parseWorkflowSteps(job);
 
-  it('runs the thematic coverage suite after unit tests', () => {
-    const unitIndex = steps.findIndex(step => step.name === 'Unit tests');
-    const coverageIndex = steps.findIndex(
-      step => step.name === 'Coverage (thematic suite)'
+  const buildJob = workflowConfig.jobs?.['build-and-validate'];
+  const buildSteps = parseWorkflowSteps(buildJob);
+
+  const coverageJob = workflowConfig.jobs?.['thematic-coverage'];
+  const coverageSteps = parseWorkflowSteps(coverageJob);
+
+  const validationJob = workflowConfig.jobs?.['validate-coverage'];
+  const validationSteps = parseWorkflowSteps(validationJob);
+
+  it('delegates thematic coverage generation to the dedicated job', () => {
+    expect(
+      buildSteps.some(step => step.run === 'pnpm run test:coverage:thematic')
+    ).toBe(false);
+
+    const coverageStep = coverageSteps.find(
+      step => step.name === 'Run thematic coverage'
     );
 
-    expect(unitIndex).toBeGreaterThanOrEqual(0);
-    expect(coverageIndex).toBeGreaterThan(unitIndex);
-
-    const coverageStep = steps[coverageIndex];
+    expect(coverageStep).toBeDefined();
     expect(coverageStep?.run).toBe('pnpm run test:coverage:thematic');
+
+    const buildSharedStep = coverageSteps.find(
+      step => step.name === 'Build shared package'
+    );
+    expect(buildSharedStep?.run).toBe(
+      'pnpm --filter @critgenius/shared run build'
+    );
+
+    const buildTestUtilsStep = coverageSteps.find(
+      step => step.name === 'Build test-utils package'
+    );
+    expect(buildTestUtilsStep?.run).toBe(
+      'pnpm --filter @critgenius/test-utils run build'
+    );
+
+    const verifySummaryStep = coverageSteps.find(
+      step => step.name === 'Verify thematic summary output'
+    );
+    expect(verifySummaryStep?.run).toContain('coverage/thematic-summary.json');
   });
 
-  it('enforces coverage validation even when prior steps fail', () => {
-    const validationStep = steps.find(
+  it('validates coverage after downloading the generated artifact', () => {
+    expect(validationJob).toBeDefined();
+
+    const needs = validationJob?.needs;
+    if (Array.isArray(needs)) {
+      expect(needs).toContain('thematic-coverage');
+    } else {
+      expect(needs).toBe('thematic-coverage');
+    }
+
+    const downloadStep = validationSteps.find(
+      step => step.name === 'Download thematic coverage artifact'
+    );
+    expect(downloadStep?.uses).toBe('actions/download-artifact@v3');
+    expect(downloadStep?.with?.name).toBe('thematic-coverage');
+    expect(downloadStep?.with?.path).toBe('coverage');
+
+    const validationStep = validationSteps.find(
       step => step.name === 'Validate coverage orchestration (CI)'
     );
 
     expect(validationStep).toBeDefined();
-    expect(validationStep?.if).toBe('${{ always() }}');
+    expect(validationStep?.if).toBeUndefined();
     expect(validationStep?.run).toBe(
       'pnpm run validate:coverage-orchestration -- --ci'
     );
   });
 
-  it('uploads coverage artifacts and reports to Codecov', () => {
-    const artifactStep = steps.find(
+  it('uploads coverage artifacts and reports to Codecov from the validation job', () => {
+    const artifactStep = validationSteps.find(
       step => step.name === 'Upload coverage artifacts'
     );
 
@@ -116,7 +159,7 @@ describe('ci workflow coverage integration', () => {
       expect(artifactLines).toContain('coverage/thematic-summary.json');
     }
 
-    const codecovStep = steps.find(
+    const codecovStep = validationSteps.find(
       step => step.name === 'Upload coverage to Codecov'
     );
 
@@ -135,5 +178,12 @@ describe('ci workflow coverage integration', () => {
     expect(codecovStep?.with?.flags).toBe('listener');
     expect(codecovStep?.with?.fail_ci_if_error).toBe(true);
     expect(codecovStep?.with?.token).toBe('${{ secrets.CODECOV_TOKEN }}');
+
+    const testResultsStep = validationSteps.find(
+      step => step.name === 'Upload test results to Codecov'
+    );
+    expect(testResultsStep?.if).toBe('${{ !cancelled() }}');
+    expect(testResultsStep?.uses).toBe('codecov/test-results-action@v1');
+    expect(testResultsStep?.with?.token).toBe('${{ secrets.CODECOV_TOKEN }}');
   });
 });
