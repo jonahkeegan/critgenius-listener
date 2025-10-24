@@ -139,6 +139,20 @@ describe('ci workflow coverage integration', () => {
     expect(downloadStep?.with?.name).toBe('thematic-coverage');
     expect(downloadStep?.with?.path).toBe('coverage');
 
+    const validationBuildSharedStep = validationSteps.find(
+      step => step.name === 'Build shared package'
+    );
+    expect(validationBuildSharedStep?.run).toBe(
+      'pnpm --filter @critgenius/shared run build'
+    );
+
+    const validationBuildTestUtilsStep = validationSteps.find(
+      step => step.name === 'Build test-utils package'
+    );
+    expect(validationBuildTestUtilsStep?.run).toBe(
+      'pnpm --filter @critgenius/test-utils run build'
+    );
+
     const validationStep = validationSteps.find(
       step => step.name === 'Validate coverage orchestration (CI)'
     );

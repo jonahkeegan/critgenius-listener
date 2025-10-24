@@ -91,6 +91,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
+      - name: Build test-utils package
+        run: pnpm --filter @critgenius/test-utils run build
+
       - name: Validate coverage orchestration (CI)
         run: pnpm run validate:coverage-orchestration -- --ci
 
