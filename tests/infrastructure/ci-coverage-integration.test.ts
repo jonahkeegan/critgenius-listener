@@ -121,7 +121,21 @@ describe('ci workflow coverage integration', () => {
     const downloadStep = validationSteps.find(
       step => step.name === 'Download thematic coverage artifact'
     );
-    expect(downloadStep?.uses).toBe('actions/download-artifact@v3');
+    expect(downloadStep).toBeDefined();
+    const downloadUses = downloadStep?.uses;
+    expect(typeof downloadUses).toBe('string');
+
+    if (typeof downloadUses === 'string') {
+      const versionMatch = downloadUses.match(
+        /^actions\/download-artifact@v(?<major>\d+)(?:\b|$)/
+      );
+      expect(versionMatch).not.toBeNull();
+
+      const major = Number(versionMatch?.groups?.major ?? NaN);
+      expect(Number.isNaN(major)).toBe(false);
+      expect(major).toBeGreaterThanOrEqual(4);
+    }
+
     expect(downloadStep?.with?.name).toBe('thematic-coverage');
     expect(downloadStep?.with?.path).toBe('coverage');
 
