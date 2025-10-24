@@ -37,6 +37,25 @@ function createMockServer(): MockServer {
   };
 }
 
+function invokeConfigureServer(
+  plugin: ReturnType<typeof envReloadPlugin>,
+  server: MockServer
+) {
+  const handler =
+    typeof plugin.configureServer === 'function'
+      ? plugin.configureServer
+      : plugin.configureServer &&
+          typeof plugin.configureServer.handler === 'function'
+        ? plugin.configureServer.handler
+        : null;
+
+  if (handler) {
+    const invoke = handler as (this: unknown, srv: unknown) => void;
+    // Vite 7 expects plugin hooks to be bound to a minimal plugin context.
+    invoke.call({} as unknown, server);
+  }
+}
+
 describe('envReloadPlugin', () => {
   let server: ReturnType<typeof createMockServer>;
   beforeEach(() => {
@@ -45,14 +64,7 @@ describe('envReloadPlugin', () => {
 
   it('watches base env files and triggers full reload', () => {
     const plugin = envReloadPlugin();
-    if (typeof plugin.configureServer === 'function') {
-      plugin.configureServer(server as any);
-    } else if (
-      plugin.configureServer &&
-      typeof (plugin.configureServer as any).handler === 'function'
-    ) {
-      (plugin.configureServer as any).handler(server as any);
-    }
+    invokeConfigureServer(plugin, server);
     const envFile = server.added.find(p => p.endsWith(`${path.sep}.env`));
     expect(envFile).toBeTruthy();
     server.emitChange(envFile!);
@@ -62,14 +74,7 @@ describe('envReloadPlugin', () => {
   it('includes extra files via ENV_RELOAD_EXTRA', () => {
     process.env.ENV_RELOAD_EXTRA = 'extra.env';
     const plugin = envReloadPlugin();
-    if (typeof plugin.configureServer === 'function') {
-      plugin.configureServer(server as any);
-    } else if (
-      plugin.configureServer &&
-      typeof (plugin.configureServer as any).handler === 'function'
-    ) {
-      (plugin.configureServer as any).handler(server as any);
-    }
+    invokeConfigureServer(plugin, server);
     expect(server.added.some(p => p.endsWith('extra.env'))).toBe(true);
     delete process.env.ENV_RELOAD_EXTRA;
   });
@@ -78,17 +83,17 @@ describe('envReloadPlugin', () => {
     const abs = path.join(process.cwd(), 'abs.file');
     const plugin = envReloadPlugin({
       rootDir: server.config.root,
-      extraWatchPaths: ['relative.file', abs, '', undefined as unknown as string],
+      extraWatchPaths: [
+        'relative.file',
+        abs,
+        '',
+        undefined as unknown as string,
+      ],
     });
-    if (typeof plugin.configureServer === 'function') {
-      plugin.configureServer(server as any);
-    } else if (
-      plugin.configureServer &&
-      typeof (plugin.configureServer as any).handler === 'function'
-    ) {
-      (plugin.configureServer as any).handler(server as any);
-    }
-    expect(server.added).toContain(path.join(server.config.root, 'relative.file'));
+    invokeConfigureServer(plugin, server);
+    expect(server.added).toContain(
+      path.join(server.config.root, 'relative.file')
+    );
     expect(server.added).toContain(abs);
   });
 
@@ -98,16 +103,13 @@ describe('envReloadPlugin', () => {
       rootDir: server.config.root,
       extraWatchPaths: ['explicit.file'],
     });
-    if (typeof plugin.configureServer === 'function') {
-      plugin.configureServer(server as any);
-    } else if (
-      plugin.configureServer &&
-      typeof (plugin.configureServer as any).handler === 'function'
-    ) {
-      (plugin.configureServer as any).handler(server as any);
-    }
-    expect(server.added).toContain(path.join(server.config.root, 'explicit.file'));
-    expect(server.added).toContain(path.join(server.config.root, 'legacy.file'));
+    invokeConfigureServer(plugin, server);
+    expect(server.added).toContain(
+      path.join(server.config.root, 'explicit.file')
+    );
+    expect(server.added).toContain(
+      path.join(server.config.root, 'legacy.file')
+    );
     delete process.env.ENV_RELOAD_EXTRA;
   });
 });

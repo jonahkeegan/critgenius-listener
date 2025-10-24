@@ -1,13 +1,12 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
-import { join, dirname, relative } from 'node:path';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { join, dirname, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SCRIPT_DIR = fileURLToPath(new URL('.', import.meta.url));
 const WORKSPACE_ROOT = dirname(SCRIPT_DIR);
-const COVERAGE_ROOT = join(WORKSPACE_ROOT, 'coverage');
-const THEMATIC_SUMMARY_PATH = join(COVERAGE_ROOT, 'thematic-summary.json');
+const DEFAULT_COVERAGE_ROOT = join(WORKSPACE_ROOT, 'coverage');
 const PNPM_EXECUTABLE = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 
 const REQUIRED_SCRIPTS = {
@@ -130,54 +129,126 @@ function toPosixPath(value) {
   return value.replace(/\\+/g, '/');
 }
 
-async function validateThematicSummary({ enforce }) {
-  if (!enforce) {
+function findCoverageSummaryFiles(rootDirectory) {
+  if (!rootDirectory || !existsSync(rootDirectory)) {
     return [];
   }
 
-  const issues = [];
-  const relativeSummaryPath = relative(WORKSPACE_ROOT, THEMATIC_SUMMARY_PATH);
+  const stack = [rootDirectory];
+  const results = [];
+  const visited = new Set();
 
-  if (!existsSync(THEMATIC_SUMMARY_PATH)) {
-    issues.push(
-      `${relativeSummaryPath} missing; run "pnpm run test:coverage:thematic" before validation.`
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current || visited.has(current)) {
+      continue;
+    }
+
+    visited.add(current);
+
+    let entries;
+    try {
+      entries = readdirSync(current, { withFileTypes: true });
+    } catch (error) {
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (entry.name === 'node_modules' || entry.name === '.git') {
+        continue;
+      }
+
+      const entryPath = join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(entryPath);
+        continue;
+      }
+
+      if (entry.isFile() && entry.name === 'coverage-summary.json') {
+        results.push(entryPath);
+      }
+    }
+  }
+
+  return results.sort((a, b) => a.localeCompare(b));
+}
+
+async function validateThematicSummary({ summaryPath, coverageRoot, strict }) {
+  const issues = [];
+  const warnings = [];
+
+  const record = (message, { downgradable = false } = {}) => {
+    if (downgradable && !strict) {
+      warnings.push(message);
+      return;
+    }
+    issues.push(message);
+  };
+  const relativeSummaryPath = relative(WORKSPACE_ROOT, summaryPath);
+  const relativeCoverageRoot = relative(WORKSPACE_ROOT, coverageRoot);
+
+  console.log(
+    `[coverage] Checking coverage summary at ${relativeSummaryPath || './'}.`
+  );
+
+  if (!existsSync(summaryPath)) {
+    const candidates = findCoverageSummaryFiles(coverageRoot).map(candidate =>
+      toPosixPath(relative(WORKSPACE_ROOT, candidate))
     );
-    return issues;
+
+    record(
+      `Expected coverage summary at ${relativeSummaryPath} but the file was not found.`
+    );
+
+    if (candidates.length > 0) {
+      record(`Detected coverage-summary.json files: ${candidates.join(', ')}`);
+    } else {
+      record(
+        `No coverage-summary.json files found under ${
+          relativeCoverageRoot || './'
+        }. Ensure the coverage job ran and artifacts were downloaded.`
+      );
+    }
+
+    record(
+      'Tip: run "pnpm run test:coverage:thematic" (or the coverage job in CI) before invoking this validator.'
+    );
+    return { issues, warnings };
   }
 
   let summary;
   try {
-    summary = JSON.parse(readFileSync(THEMATIC_SUMMARY_PATH, 'utf8'));
+    summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
   } catch (error) {
-    issues.push(
+    record(
       `Failed to parse ${relativeSummaryPath}: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
-    return issues;
+    return { issues, warnings };
   }
 
   if (!summary || typeof summary !== 'object') {
-    issues.push(`${relativeSummaryPath} does not contain an object payload.`);
-    return issues;
+    record(`${relativeSummaryPath} does not contain an object payload.`);
+    return { issues, warnings };
   }
 
   const summaryThemes = summary.themes;
   if (!summaryThemes || typeof summaryThemes !== 'object') {
-    issues.push(`${relativeSummaryPath} missing "themes" section.`);
-    return issues;
+    record(`${relativeSummaryPath} missing "themes" section.`);
+    return { issues, warnings };
   }
 
   let coverageConfig;
   try {
     coverageConfig = await loadCoverageConfigModule();
   } catch (error) {
-    issues.push(
+    record(
       `Failed to import coverage config for summary validation: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
-    return issues;
+    return { issues, warnings };
   }
 
   const themeThresholds = coverageConfig.getThemeThresholdMap({
@@ -192,11 +263,18 @@ async function validateThematicSummary({ enforce }) {
       ? summary.thresholds.themes ?? {}
       : {};
 
+  const availableThemeKeys = Object.keys(summaryThemes);
+
   for (const theme of resolvedThemes) {
-    const record = summaryThemes[theme.key];
-    if (!record || typeof record !== 'object') {
-      issues.push(
-        `Summary missing theme entry "${theme.key}" (expected coverage for ${theme.label}).`
+    const themeRecord = summaryThemes[theme.key];
+    if (!themeRecord || typeof themeRecord !== 'object') {
+      record(
+        `Summary missing theme entry "${theme.key}" (available themes: ${
+          availableThemeKeys.length > 0
+            ? availableThemeKeys.join(', ')
+            : 'none'
+        }).`,
+        { downgradable: true }
       );
       continue;
     }
@@ -209,37 +287,44 @@ async function validateThematicSummary({ enforce }) {
     );
 
     const recordedSummaryFile =
-      typeof record.summaryFile === 'string' ? record.summaryFile : '';
+      typeof themeRecord.summaryFile === 'string' ? themeRecord.summaryFile : '';
     if (toPosixPath(recordedSummaryFile) !== expectedSummaryPath) {
-      issues.push(
+      record(
         `Theme "${theme.key}" summary file mismatch (expected ${expectedSummaryPath}).`
       );
     }
 
     const recordedReportsDirectory =
-      typeof record.reportsDirectory === 'string'
-        ? record.reportsDirectory
+      typeof themeRecord.reportsDirectory === 'string'
+        ? themeRecord.reportsDirectory
         : '';
     if (toPosixPath(recordedReportsDirectory) !== expectedReportsDir) {
-      issues.push(
+      record(
         `Theme "${theme.key}" reports directory mismatch (expected ${expectedReportsDir}).`
       );
     }
 
-    if (record.status === 'missing') {
-      issues.push(`Coverage summary indicates missing data for "${theme.key}".`);
-    } else if (record.status === 'error') {
-      issues.push(
-        `Coverage summary reported an error for "${theme.key}": ${record.details ?? 'no details supplied'}`
+    if (themeRecord.status === 'missing') {
+      record(`Coverage summary indicates missing data for "${theme.key}".`, {
+        downgradable: true,
+      });
+    } else if (themeRecord.status === 'error') {
+      record(
+        `Coverage summary reported an error for "${theme.key}": ${
+          themeRecord.details ?? 'no details supplied'
+        }`,
+        { downgradable: true }
       );
-    } else if (record.meetsThresholds === false) {
-      issues.push(
-        `Coverage thresholds not met for "${theme.key}" (status: ${record.status}).`
+    } else if (themeRecord.meetsThresholds === false) {
+      record(
+        `Coverage thresholds not met for "${theme.key}" (status: ${themeRecord.status}).`
       );
     }
 
-    if (!record.coverage || typeof record.coverage !== 'object') {
-      issues.push(`Theme "${theme.key}" coverage metrics missing.`);
+    if (!themeRecord.coverage || typeof themeRecord.coverage !== 'object') {
+      record(`Theme "${theme.key}" coverage metrics missing.`, {
+        downgradable: true,
+      });
     }
 
     const expectedThresholds = themeThresholds[theme.key] ?? {};
@@ -251,14 +336,14 @@ async function validateThematicSummary({ enforce }) {
 
       if (typeof expectedValue === 'number') {
         if (typeof recordedValue !== 'number') {
-          issues.push(
+          record(
             `Threshold entry missing for theme "${theme.key}" metric "${metric}" (expected ${expectedValue}).`
           );
           continue;
         }
 
         if (recordedValue !== expectedValue) {
-          issues.push(
+          record(
             `Threshold drift detected for theme "${theme.key}" metric "${metric}" (expected ${expectedValue}, found ${recordedValue}).`
           );
         }
@@ -266,7 +351,7 @@ async function validateThematicSummary({ enforce }) {
     }
   }
 
-  return issues;
+  return { issues, warnings };
 }
 
 function runInfrastructureTest() {
@@ -297,8 +382,9 @@ function runInfrastructureTest() {
   return [];
 }
 
-async function validate({ skipTests, enforceSummaryChecks }) {
+async function validate({ skipTests, summaryPath, coverageRoot, strict }) {
   const issues = [];
+  const warnings = [];
 
   const manifestPath = join(WORKSPACE_ROOT, 'package.json');
   let manifest;
@@ -323,22 +409,116 @@ async function validate({ skipTests, enforceSummaryChecks }) {
   issues.push(...validateDocumentation());
   issues.push(...(await validateCoverageConfig()));
   issues.push(...(await validateSummaryGeneration()));
-  issues.push(...(await validateThematicSummary({ enforce: enforceSummaryChecks })));
+  const summaryResult = await validateThematicSummary({
+    summaryPath,
+    coverageRoot,
+    strict,
+  });
+
+  issues.push(...summaryResult.issues);
+  warnings.push(...summaryResult.warnings);
 
   if (!skipTests) {
     issues.push(...runInfrastructureTest());
   }
 
-  return { issues };
+  return { issues, warnings };
+}
+
+function parseCliArgs(args) {
+  const options = {
+    ci: false,
+    skipTestsFlag: false,
+    coverageDir: null,
+    summaryFile: null,
+    passthrough: [],
+  };
+
+  const readValue = (arg, index, name) => {
+    const equalsIndex = arg.indexOf('=');
+
+    if (equalsIndex >= 0) {
+      const value = arg.slice(equalsIndex + 1).trim();
+      if (value.length === 0) {
+        throw new Error(`Missing value for ${name}.`);
+      }
+
+      return { value, consumedNext: false };
+    }
+
+    const next = args[index + 1];
+    if (!next || next.startsWith('--')) {
+      throw new Error(`Missing value for ${name}.`);
+    }
+
+    return { value: next, consumedNext: true };
+  };
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+
+    if (arg === '--ci') {
+      options.ci = true;
+      continue;
+    }
+
+    if (arg === '--skip-tests') {
+      options.skipTestsFlag = true;
+      continue;
+    }
+
+    if (arg.startsWith('--coverage-dir')) {
+      const { value, consumedNext } = readValue(arg, i, '--coverage-dir');
+      options.coverageDir = value;
+      if (consumedNext) {
+        i += 1;
+      }
+      continue;
+    }
+
+    if (arg.startsWith('--summary-file')) {
+      const { value, consumedNext } = readValue(arg, i, '--summary-file');
+      options.summaryFile = value;
+      if (consumedNext) {
+        i += 1;
+      }
+      continue;
+    }
+
+    options.passthrough.push(arg);
+  }
+
+  return options;
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const ciMode = args.includes('--ci');
-  const skipTests = ciMode || args.includes('--skip-tests');
-  const { issues } = await validate({
+
+  const parseResult = (() => {
+    try {
+      return parseCliArgs(args);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[coverage] ${message}`);
+      process.exit(1);
+    }
+  })();
+
+  const ciMode = parseResult.ci;
+  const strictMode = ciMode || process.env.CI === 'true';
+  const skipTests = strictMode || parseResult.skipTestsFlag;
+  const coverageRoot = parseResult.coverageDir
+    ? resolve(WORKSPACE_ROOT, parseResult.coverageDir)
+    : DEFAULT_COVERAGE_ROOT;
+  const summaryPath = parseResult.summaryFile
+    ? resolve(WORKSPACE_ROOT, parseResult.summaryFile)
+    : join(coverageRoot, 'thematic-summary.json');
+
+  const { issues, warnings } = await validate({
     skipTests,
-    enforceSummaryChecks: ciMode,
+    summaryPath,
+    coverageRoot,
+    strict: strictMode,
   });
 
   if (issues.length > 0) {
@@ -348,6 +528,13 @@ async function main() {
     }
     process.exitCode = 1;
     return;
+  }
+
+  if (warnings.length > 0) {
+    console.warn('[coverage] Warnings:');
+    for (const warning of warnings) {
+      console.warn(` - ${warning}`);
+    }
   }
 
   console.log('[coverage] Orchestration validation succeeded.');

@@ -9,6 +9,128 @@ permissions:
   contents: read
 
 jobs:
+  thematic-coverage:
+    name: Generate thematic coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
+      - name: Build test-utils package
+        run: pnpm --filter @critgenius/test-utils run build
+
+      - name: Run thematic coverage
+        run: pnpm run test:coverage:thematic
+
+      - name: Verify thematic summary output
+        run: |
+          test -f coverage/thematic-summary.json || (echo "coverage/thematic-summary.json missing" >&2 && exit 1)
+
+      - name: Upload thematic coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: thematic-coverage
+          path: coverage
+          retention-days: 1
+
+  validate-coverage:
+    name: Validate coverage orchestration
+    runs-on: ubuntu-latest
+    needs: thematic-coverage
+    timeout-minutes: 20
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download thematic coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: thematic-coverage
+          path: coverage
+
+      - name: Inspect downloaded summary
+        run: |
+          ls -la coverage
+          cat coverage/thematic-summary.json
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
+      - name: Build test-utils package
+        run: pnpm --filter @critgenius/test-utils run build
+
+      - name: Validate coverage orchestration (CI)
+        run: pnpm run validate:coverage-orchestration -- --ci
+
+      - name: Run coverage integration tests
+        run: pnpm run test:infrastructure:integration
+
+      - name: Upload coverage artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-bundle
+          path: |
+            coverage/**/*.html
+            coverage/**/coverage-summary.json
+            coverage/**/coverage-final.json
+            coverage/thematic-summary.json
+          if-no-files-found: warn
+
+      - name: Upload coverage to Codecov
+        if: ${{ success() }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: |
+            coverage/**/coverage-final.json
+          flags: listener
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   build-and-validate:
     runs-on: ubuntu-latest
     env:
@@ -58,6 +180,9 @@ jobs:
       - name: Validate filenames
         run: pnpm run validate:filenames
 
+      - name: Validate decision matrix headers
+        run: pnpm run validate:doc-headers
+
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
 
@@ -70,10 +195,6 @@ jobs:
       - name: Infrastructure tests
         run: pnpm run test:infrastructure
 
-      - name: Coverage (thematic suite)
-        if: ${{ success() || failure() }}
-        run: pnpm run test:coverage:thematic
-
       - name: Upload path diagnostics
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -81,38 +202,6 @@ jobs:
           name: vitest-path-diagnostics
           path: artifacts/vitest-paths.log
           if-no-files-found: ignore
-
-      - name: Validate coverage orchestration (CI)
-        if: ${{ always() }}
-        run: pnpm run validate:coverage-orchestration -- --ci
-
-      - name: Upload coverage artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-bundle
-          path: |
-            coverage/**/*.html
-            coverage/**/coverage-summary.json
-            coverage/**/coverage-final.json
-            coverage/thematic-summary.json
-          if-no-files-found: warn
-
-      - name: Upload coverage to Codecov
-        if: ${{ success() }}
-        uses: codecov/codecov-action@v5
-        with:
-          files: |
-            coverage/**/coverage-final.json
-          flags: listener
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Validate service manifest
         run: node scripts/service-manifest-loader.mjs --manifest ./services.yaml

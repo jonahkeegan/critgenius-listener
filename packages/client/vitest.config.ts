@@ -2,7 +2,8 @@
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL, URL as NodeURL } from 'node:url';
-import type { PluginOption, UserConfig as ViteUserConfig } from 'vite';
+import type { PluginOption } from 'vite';
+import type { UserConfig } from 'vitest/config';
 
 import {
   assertUsesSharedConfig,
@@ -70,7 +71,7 @@ const sharedConfig = createVitestConfig({
     reportsDirectory: clientCoverageDirectory,
     thresholds: clientCoverageThresholds,
   },
-}) as ViteUserConfig;
+}) as UserConfig;
 
 const basePlugins = Array.isArray(sharedConfig.plugins)
   ? sharedConfig.plugins
@@ -78,9 +79,12 @@ const basePlugins = Array.isArray(sharedConfig.plugins)
     ? [sharedConfig.plugins]
     : [];
 
-const mergedPlugins: PluginOption[] = [...basePlugins, react()];
+const mergedPlugins: PluginOption[] = [
+  ...basePlugins,
+  react() as unknown as PluginOption,
+];
 
-const mergedConfig: ViteUserConfig = {
+const mergedConfig: UserConfig = {
   ...sharedConfig,
   define: {
     ...(sharedConfig.define ?? {}),

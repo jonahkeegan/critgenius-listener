@@ -159,6 +159,19 @@ pnpm format:shared    # Format only shared package
 
 Husky + lint-staged run automatically on commit:
 
+### Coverage Validation
+
+Run the workspace suite and validator before pushing coverage-sensitive changes:
+
+```bash
+pnpm -w run test:coverage:workspace
+node scripts/validate-coverage-orchestration.mjs
+node scripts/validate-coverage-orchestration.mjs --ci
+```
+
+Use `--ci` for strict enforcement; omit it during local investigations to surface warnings without
+failing fast.
+
 ```bash
 # Actions performed:
 # 1. ESLint --fix on staged TS/JS/TSX/JSX

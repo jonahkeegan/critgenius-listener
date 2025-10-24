@@ -42,7 +42,19 @@ function createTempBaselinePath(): {
   const baselinePath = join(directory, 'baseline.json');
   return {
     baselinePath,
-    cleanup: () => rmSync(directory, { recursive: true, force: true }),
+    cleanup: () => {
+      try {
+        rmSync(directory, {
+          recursive: true,
+          force: true,
+          maxRetries: 5,
+          retryDelay: 50,
+        });
+      } catch (error) {
+        // Windows occasionally keeps file handles open; ignore cleanup failures for non-critical temp data.
+        console.warn('baseline manager cleanup warning:', error);
+      }
+    },
   };
 }
 

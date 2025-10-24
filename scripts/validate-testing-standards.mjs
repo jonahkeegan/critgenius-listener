@@ -28,8 +28,20 @@ function pathSegments(value) {
 
 const SKIP_DIRECTORIES = new Set(['node_modules', 'dist', 'build', 'coverage', '.turbo', '.cache']);
 
+function isEnoent(error) {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT');
+}
+
 async function walk(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (isEnoent(error)) {
+      return [];
+    }
+    throw error;
+  }
   const results = [];
 
   for (const entry of entries) {
@@ -37,7 +49,14 @@ async function walk(directory) {
     if (SKIP_DIRECTORIES.has(entry.name)) continue;
     const entryPath = resolve(directory, entry.name);
     if (entry.isDirectory()) {
-      results.push(...(await walk(entryPath)));
+      try {
+        results.push(...(await walk(entryPath)));
+      } catch (error) {
+        if (isEnoent(error)) {
+          continue;
+        }
+        throw error;
+      }
       continue;
     }
     results.push(entryPath);
