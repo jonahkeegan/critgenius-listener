@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-19 10:25 PST  
-**Version:** 2.42.0  
+**Last Updated:** 2025-10-23 12:07 PST  
+**Version:** 2.43.0  
 **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md, index-techContext.md
 
 ## Current Project State Synthesis
@@ -61,6 +61,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Audio UI accessibility policy published to document media caption stance (Task 3.3.1)
 - ✅ ESLint validation infrastructure uses disposable fixture harness with documentation alignment
   (Task 3.3.2)
+- ✅ CI lint workflow guard enforces dependency bootstrap, zero-warning exits, and accessibility
+  coverage via infrastructure tests and docs (Task 3.3.4)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -92,6 +94,17 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-23 – CI ESLint Workflow Guard (Task 3.3.4)
+
+- Authored `tests/infrastructure/ci-eslint-integration.test.ts` to guarantee the CI workflow boots
+  dependencies before lint execution, enforces zero-warning exits, and preserves accessibility rule
+  coverage.
+- Updated `.github/workflows/ci.yml` and `scripts/lint-ci.mjs` to align with those guardrails so
+  lint gating stays post-bootstrap and regressions surface immediately through infrastructure
+  suites.
+- Documented the guard expectations and troubleshooting playbook in `docs/ci-eslint-integration.md`
+  while marking task completion inside `tasks/infrastructure-setup-task-list.md`.
 
 ### 2025-10-19 – ESLint Validation Infrastructure Expansion (Task 3.3.2)
 
@@ -163,6 +176,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-10-23:** Ratified CI lint workflow guard as mandatory (infrastructure test + aligned
+  scripts + contributor documentation) to ensure zero-warning enforcement and accessibility
+  coverage.
 - **2025-10-17:** Ratified flat ESLint config as single authoritative source and adopted the audio
   UI accessibility policy to document `media-has-caption` stance until video support ships.
 - **2025-10-16:** Adopted hybrid segmentation for activeContext.md (current + history archive)

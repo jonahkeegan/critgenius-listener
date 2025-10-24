@@ -1,7 +1,7 @@
 # Active Context Index
 
-**Last Updated:** 2025-10-19  
-**Version:** 1.1.2  
+**Last Updated:** 2025-10-23  
+**Version:** 1.1.3  
 **System Status:** Active
 
 ## Overview
@@ -14,7 +14,7 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~195 (target 150) **Last Updated:** 2025-10-19
+**Current Row Count:** ~202 (target 150) **Last Updated:** 2025-10-23
 
 ## File Registry
 
@@ -114,6 +114,8 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-10-23: Logged CI lint workflow guard (Task 3.3.4), refreshed current segment capabilities,
+  latest updates, and decision log; noted row count increase for pending archival.
 - 2025-10-19: Logged ESLint validation infrastructure expansion (Task 3.3.2) and refreshed current
   segment metadata for fixture harness coverage.
 - 2025-10-18: Archived the 2025-10-12 coverage enforcement update to history, refreshed row counts,

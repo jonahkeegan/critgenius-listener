@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-19 | Segment Version: 1.3.0
+Last Updated: 2025-10-23 | Segment Version: 1.4.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -115,6 +115,18 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** `pnpm test tests/infrastructure/eslint-audit-validation.test.ts` (40 assertions
   spanning fixture inventory, severity checks, override enforcement, and clean baseline validation).
 
+### CI Lint Workflow Guard Pattern (Task 3.3.4)
+
+- **Pattern:** Bind CI lint order and warning enforcement to a dedicated infrastructure test while
+  keeping scripts and documentation synchronized.
+- **Implementation:** `tests/infrastructure/ci-eslint-integration.test.ts` parses
+  `.github/workflows/ci.yml`, confirming dependency bootstrap occurs before lint execution,
+  `scripts/lint-ci.mjs` exits on warnings, and JSX accessibility coverage stays active. Workflow and
+  script updates ensure lint runs after install/build stages and reuse the zero-warning guard.
+- **Benefits:** Prevents silent lint drift, guarantees accessibility rules remain guarded, and
+  surfaces workflow misconfigurations immediately via test failures rather than CI regressions.
+- **Validation:** `pnpm run test:infrastructure`.
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -129,6 +141,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-23: Added CI lint workflow guard pattern; version bump to 1.4.0.
 - 2025-10-19: Added disposable ESLint fixture harness pattern; version bump to 1.3.0.
 - 2025-10-17: Added ESLint flat config single-source pattern; version bump to 1.2.0.
 - 2025-10-16: Added CI coverage reporting & Codecov integration pattern; version bump to 1.1.0.

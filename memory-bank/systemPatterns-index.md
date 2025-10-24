@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-19 | Index Version: 1.23.0 | Status: Active
+Last Updated: 2025-10-23 | Index Version: 1.24.0 | Status: Active
 
 ## Segment Registry
 
@@ -50,6 +50,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Centralized Coverage Configuration Module                  | 005     |
 | ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
 | ESLint Flat Config Single-Source Enforcement               | 004     |
+| CI Lint Workflow Guard                                     | 004     |
 | Vitest Timeout Governance & Dialog Resilience              | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
 | Coverage Orchestration Validation Guard                    | 005     |
@@ -73,6 +74,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-23: Added CI lint workflow guard pattern (Task 3.3.4) to segment 004 and bumped index
+  version to 1.24.0.
 - 2025-10-19: Added disposable ESLint fixture harness pattern (Task 3.3.2) to segment 004 and bumped
   index version to 1.23.0.
 - 2025-10-17: Added ESLint flat config single-source pattern (Task 3.3.1) to segment 004 and bumped
