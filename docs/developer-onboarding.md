@@ -40,6 +40,9 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
 | Coverage (workspace)       | `pnpm test:coverage:workspace` |
 | Coverage (theme-only)      | `pnpm test:coverage:<theme>`   |
 
+Need deeper linting context? Start with `docs/eslint-guide.md` for workflows, rule rationale, and
+troubleshooting.
+
 ### Coverage Workflow Integration
 
 - Meet tiered thresholds enforced by `config/coverage.config.mjs` (shared ≥75%, client/server ≥50%,

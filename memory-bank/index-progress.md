@@ -1,15 +1,15 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-23  
-**Version:** 1.35.0  
+**Last Updated:** 2025-10-25  
+**Version:** 1.36.0  
 **System Status:** Active
 
 ## Active File
 
 **Currently Active:** `progress-004.md`
 **Status:** Active - New Segment  
-**Current Row Count:** ~159  
-**Last Updated:** 2025-10-23
+**Current Row Count:** ~160  
+**Last Updated:** 2025-10-25
 
 ## File Registry
 
@@ -54,6 +54,7 @@
 
 ## Recent Changes
 
+- 2025-10-25: Logged Task 3.3.5 CI ESLint documentation; progress log updated with consolidated lint guide entry, onboarding link, and documentation follow-ups.
 - 2025-10-23: Logged Task 3.3.4 CI lint workflow guard; progress log updated with workflow validation test, lint script alignment, documentation updates, and full infrastructure sweep.
 - 2025-10-19: Logged Task 3.3.2 ESLint validation infrastructure expansion; progress log captures disposable fixture harness, severity regression checks, and documentation alignment.
 - 2025-10-17: Logged Task 3.3.1 ESLint configuration audit & hygiene; progress log captures config cleanup, validation harness, accessibility policy, and zero-warning validation commands.
