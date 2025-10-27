@@ -62,6 +62,8 @@ lerna-debug.log*
 
 # IDE and editor files
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
 *.swp
 *.swo
 *.sublime-workspace
@@ -174,7 +176,7 @@ docker-compose.override.yml
 # Files with trailing dots or spaces (Windows incompatible)
 **/*.
 # Match filenames ending with a space (escape trailing space so git doesn't trim it)
-**/*\ 
+**/*\
 
 # Other
 .nyc_output

@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-23 | Index Version: 1.24.0 | Status: Active
+Last Updated: 2025-10-26 | Index Version: 1.25.0 | Status: Active
 
 ## Segment Registry
 
@@ -57,6 +57,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Coverage Gate Recalibration for Parallel Execution         | 005     |
 | CI Coverage Reporting & Codecov Integration                | 004     |
 | Disposable ESLint Fixture Harness                          | 004     |
+| VS Code Workspace Prettier Enforcement                     | 004     |
 
 ## Maintenance Protocol
 
@@ -74,6 +75,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-26: Registered VS Code workspace Prettier enforcement pattern (Task 3.4.1) in segment 004
+  and bumped index version to 1.25.0.
 - 2025-10-23: Added CI lint workflow guard pattern (Task 3.3.4) to segment 004 and bumped index
   version to 1.24.0.
 - 2025-10-19: Added disposable ESLint fixture harness pattern (Task 3.3.2) to segment 004 and bumped

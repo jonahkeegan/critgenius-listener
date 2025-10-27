@@ -25,6 +25,23 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
 `docs/https-development-setup.md` walkthrough after cloning. Troubleshooting resources live in
 `docs/https-troubleshooting-guide.md`.
 
+### VSCode Setup (Prettier Format-on-Save)
+
+- Install the workspace recommendations when prompted (Prettier, ESLint, TypeScript Nightly).
+- Confirm VSCode picked up `.vscode/settings.json` (Format on Save enabled, Prettier pinned as the
+  default formatter).
+- Quick validation: create a scratch `.ts` file with uneven spacing, save, and verify the file snaps
+  to `prettier.config.js` rules. Run `pnpm format:check` if you want a second opinion.
+- Troubleshooting tips:
+  - Prettier not triggering? Ensure no user-level formatter override is active
+    (`Settings → defaultFormatter`).
+  - ESLint fixes missing? Run `> Toggle Format on Save` once—our workspace keeps ESLint fixes
+    explicit to avoid surprise edits.
+  - Prettier config not detected? Check the output panel for “Prettier” logs; make sure
+    `prettier.requireConfig` stays true in workspace settings.
+- Other editors can still rely on the shared `prettier.config.js`. WebStorm auto-detects it, Sublime
+  Text works via JsPrettier, and Vim/Neovim users can wire it up through ALE or coc-prettier.
+
 ## 3. Common Commands
 
 | Objective                  | Command                        |
@@ -39,6 +56,9 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
 | Benchmark pre-commit perf  | `pnpm precommit:benchmark`     |
 | Coverage (workspace)       | `pnpm test:coverage:workspace` |
 | Coverage (theme-only)      | `pnpm test:coverage:<theme>`   |
+
+Need deeper linting context? Start with `docs/eslint-guide.md` for workflows, rule rationale, and
+troubleshooting.
 
 ### Coverage Workflow Integration
 
