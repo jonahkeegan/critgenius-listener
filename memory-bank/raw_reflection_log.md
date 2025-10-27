@@ -118,6 +118,32 @@ Implementation Excellence:
 
 Improvements_Identified_For_Consolidation:
 
+
+---
+
+Date: 2025-10-25
+TaskRef: "Dev Infra 3.3.5 - CI ESLint Documentation"
+
+Learnings:
+
+- Centralizing lint knowledge in `docs/eslint-guide.md` makes it easier for developers to find workflows, rule rationales, and troubleshooting tips without hopping across multiple docs.
+- Providing a direct onboarding pointer in `docs/developer-onboarding.md` should reduce ramp-up time for new contributors dealing with ESLint requirements.
+- Visualizing lint lifecycles with Mermaid diagrams clarified how local commands, pre-commit hooks, CI runs, and IDE feedback interconnect.
+
+Success Patterns:
+
+- Followed the documentation style established in existing guides (tables, callouts, diagrams) to keep the lint guide consistent with reader expectations.
+- Reinforced discoverability by cross-linking related docs instead of duplicating content, keeping updates scoped to single sources of truth.
+
+Implementation Excellence:
+
+- Structured the new guide around actionable sections (quick start, configuration overview, workflows, troubleshooting) so it aligns with daily developer needs rather than theory.
+- Ensured all six diagrams map directly to the task plan, maintaining a one-to-one relationship between documented workflows and visual references.
+
+Improvements_Identified_For_Consolidation:
+
+- Consider adding a documentation validation or link-check script to keep cross-references (e.g., `docs/eslint-guide.md`) from drifting.
+- Future onboarding updates should summarize when to escalate lint issues to infra, referencing the new guide to maintain shared expectations.
 - Consider adding an automated check to flag when the Prettier extension is missing during
   onboarding dry runs or dev container builds.
 - Future documentation updates could capture non-VS Code editor setups (WebStorm/Vim) in a shared
