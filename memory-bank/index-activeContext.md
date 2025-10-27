@@ -1,6 +1,8 @@
 # Active Context Index
 
-**Last Updated:** 2025-10-26 **Version:** 1.1.5 **System Status:** Active
+- **Last Updated:** 2025-10-26
+- **Version:** 1.1.5
+- **System Status:** Active
 
 ## Overview
 

@@ -1,7 +1,9 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-26 11:50 PST **Version:** 2.45.0 **Dependencies:** projectbrief.md,
-productContext.md, systemPatterns-index.md, index-techContext.md
+- **Last Updated:** 2025-10-26 11:50 PST
+- **Version:** 2.45.0
+- **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
+  index-techContext.md
 
 ## Current Project State Synthesis
 

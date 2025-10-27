@@ -1,7 +1,9 @@
 # Active Context History - Segment 001
 
-**Date Range:** 2025-01-08 to 2025-10-16 **Status:** Active **Version:** 1.1.0 **Last Updated:**
-2025-10-26
+- **Date Range:** 2025-01-08 to 2025-10-16
+- **Status:** Active
+- **Version:** 1.1.0
+- **Last Updated:** 2025-10-26
 
 ## Overview
 

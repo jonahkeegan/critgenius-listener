@@ -4,8 +4,10 @@
 
 ## Active File
 
-**Currently Active:** `progress-004.md` **Status:** Active - New Segment **Current Row Count:** ~164
-**Last Updated:** 2025-10-26
+- **Currently Active:** `progress-004.md`
+- **Status:** Active - New Segment
+- **Current Row Count:** ~164
+- **Last Updated:** 2025-10-26
 
 ## File Registry
 
