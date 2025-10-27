@@ -1,9 +1,9 @@
 # Active Context History - Segment 001
 
-**Date Range:** 2025-01-08 to 2025-10-12  
-**Status:** Active  
-**Version:** 1.0.1  
-**Last Updated:** 2025-10-18
+- **Date Range:** 2025-01-08 to 2025-10-16
+- **Status:** Active
+- **Version:** 1.1.0
+- **Last Updated:** 2025-10-26
 
 ## Overview
 
@@ -460,6 +460,52 @@ first).
     walkthroughs as the test surface grows
   - Verification: All infrastructure tests, test-utils tests, lint, and type-check passing
 
+### 2025-10-13 – Centralized Coverage Configuration (Task 3.2.1.1)
+
+- Introduced `config/coverage.config.mjs` as authoritative source for thresholds
+- Refactored coverage scripts and Vitest configs to import shared module
+- Hardened infrastructure drift detection via shared module assertions
+
+### 2025-10-13 – Testing Infrastructure Segmentation
+
+- Established new `systemPatterns-005.md` for testing infrastructure patterns
+- Updated `systemPatterns-index.md` (version 1.18.0) with new registry
+- Revised Segment 003 metadata (version 1.16.0) for runtime focus
+
+### 2025-10-13 – Coverage Orchestration Validation (Task 3.2.2)
+
+- Authored `tests/infrastructure/coverage-orchestration.test.ts` for sequential execution validation
+- Published `scripts/validate-coverage-orchestration.mjs` for contributor drift checks
+- Expanded `docs/coverage-system-guide.md` with four new sequence diagrams
+- Memory Bank Segment 005 promoted to version 1.2.0
+
+### 2025-10-15 – Coverage Gate Recalibration (Task 3.2.2.1)
+
+- Synchronized infrastructure tests with 9% workspace threshold defined in
+  `config/coverage.config.mjs`
+- Re-validated thematic coverage suite under relaxed gate
+- Confirmed consistency harness stays in sync with shared configuration module
+
+### 2025-10-16 – CI Coverage Integration & Codecov Reporting (Task 3.2.3)
+
+- Extended `.github/workflows/ci.yml` to execute thematic coverage sweep, upload HTML/JSON
+  artifacts, and report to Codecov v5
+- Strengthened infrastructure safeguards with CI coverage integration and Windows reserved names
+  tests
+- Updated contributor documentation with Codecov badge and runbook
+- Published `docs/memory-bank-raw-reflection-log-best-practices.md` to standardize reflection
+  hygiene
+
+### 2025-10-16 – Memory Bank Refactoring
+
+- **ACTIVE CONTEXT SEGMENTATION**: Refactored monolithic activeContext.md (483 rows) into hybrid
+  structure
+  - Created `index-activeContext.md` with registry and maintenance protocol
+  - Extracted current state to `activeContext-current.md` (~150 rows)
+  - Archived historical updates to `activeContext-history-001.md` (~330 rows)
+  - Preserved original as `activeContext-legacy-2025-10-16.md`
+  - Follows established memory bank pattern from systemPatterns, techContext, progress refactorings
+
 ## Historical Decision Log Archive
 
 - **2025-01-08 22:36:** Memory Bank system initialized with complete file structure
@@ -467,6 +513,7 @@ first).
 - **2025-01-08 20:08:** productContext.md updated with comprehensive product strategy
 - **2025-01-08 20:09:** projectbrief.md enhanced with detailed project scope and objectives
 - **2025-01-08 20:10:** Project state advanced to "Strategy Defined Phase"
+- **2025-08-24:** ADR-005 accepted (Client-safe environment projection)
 
 ## Cross-Reference Integrity
 

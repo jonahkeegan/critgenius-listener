@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-23 | Segment Version: 1.4.0
+Last Updated: 2025-10-26 | Segment Version: 1.5.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -127,6 +127,22 @@ Parent Index: `systemPatterns-index.md`
   surfaces workflow misconfigurations immediately via test failures rather than CI regressions.
 - **Validation:** `pnpm run test:infrastructure`.
 
+### VS Code Workspace Prettier Enforcement Pattern (Task 3.4.1)
+
+- **Pattern:** Distribute opinionated VS Code workspace settings so Prettier becomes the uniform
+  format-on-save engine across contributors while retaining explicit ESLint fix-all control.
+- **Implementation:** `.vscode/settings.json` now selects `esbenp.prettier-vscode` as the default
+  formatter for TypeScript, JavaScript, JSON, Markdown, YAML, CSS, and SCSS, enables
+  `editor.formatOnSave`, keeps ESLint code actions on explicit invocation, forces LF newlines plus
+  trailing whitespace trimming, and pins the workspace TypeScript SDK. Companion
+  `.vscode/extensions.json` recommends Prettier, ESLint, and TypeScript Nightly to prompt
+  installation wherever the repo opens. `.gitignore` exposes these configs so they travel with the
+  repo, and `docs/developer-onboarding.md` adds validation and troubleshooting guidance.
+- **Benefits:** Eliminates formatter drift between contributors, aligns save-time behaviour with the
+  committed Prettier config, and gives newcomers a guided checklist for verifying IDE setup.
+- **Validation:** Manual VS Code format-on-save spot check (intentional spacing drift corrected on
+  save using the new workspace defaults).
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -141,6 +157,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-26: Added VS Code workspace Prettier enforcement pattern; version bump to 1.5.0.
 - 2025-10-23: Added CI lint workflow guard pattern; version bump to 1.4.0.
 - 2025-10-19: Added disposable ESLint fixture harness pattern; version bump to 1.3.0.
 - 2025-10-17: Added ESLint flat config single-source pattern; version bump to 1.2.0.
