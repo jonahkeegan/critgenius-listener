@@ -1,8 +1,7 @@
 # Active Context - CritGenius: Listener
 
-**Last Updated:** 2025-10-25 11:35 PST  
-**Version:** 2.44.0  
-**Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md, index-techContext.md
+**Last Updated:** 2025-10-26 11:50 PST **Version:** 2.45.0 **Dependencies:** projectbrief.md,
+productContext.md, systemPatterns-index.md, index-techContext.md
 
 ## Current Project State Synthesis
 
@@ -65,6 +64,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   coverage via infrastructure tests and docs (Task 3.3.4)
 - ✅ ESLint developer guide consolidates workflows, rule rationale, accessibility posture, and
   troubleshooting diagrams for rapid onboarding (Task 3.3.5)
+- ✅ VS Code workspace settings enforce Prettier format-on-save with documented onboarding checks
+  and extension prompts (Task 3.4.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -96,6 +97,17 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-26 – VSCode Prettier Format-on-Save Configuration (Task 3.4.1)
+
+- Created `.vscode/settings.json` to default Prettier across
+  TypeScript/JavaScript/JSON/Markdown/YAML, enable format-on-save, keep ESLint fixes explicit, and
+  standardize LF newlines with trailing whitespace trimming.
+- Added `.vscode/extensions.json` recommending Prettier, ESLint, and TypeScript Nightly extensions
+  so VS Code prompts developers to install required tooling whenever the repo opens.
+- Updated `.gitignore` to track workspace configs and expanded `docs/developer-onboarding.md` with a
+  VS Code setup checklist, manual format-on-save validation steps, troubleshooting, and alternative
+  editor notes.
 
 ### 2025-10-25 – CI ESLint Documentation (Task 3.3.5)
 
@@ -139,54 +151,10 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   keyboard requirements, and rationale for keeping `jsx-a11y/media-has-caption` disabled until video
   capture ships.
 
-### 2025-10-16 – Memory Bank Refactoring
-
-- **ACTIVE CONTEXT SEGMENTATION**: Refactored monolithic activeContext.md (483 rows) into hybrid
-  structure
-  - Created `index-activeContext.md` with registry and maintenance protocol
-  - Extracted current state to `activeContext-current.md` (~150 rows)
-  - Archived historical updates to `activeContext-history-001.md` (~330 rows)
-  - Preserved original as `activeContext-legacy-2025-10-16.md`
-  - Follows established memory bank pattern from systemPatterns, techContext, progress refactorings
-
-### 2025-10-16 – CI Coverage Integration & Codecov Reporting (Task 3.2.3)
-
-- Extended `.github/workflows/ci.yml` to execute thematic coverage sweep, upload HTML/JSON
-  artifacts, and report to Codecov v5
-- Strengthened infrastructure safeguards with CI coverage integration and Windows reserved names
-  tests
-- Updated contributor documentation with Codecov badge and runbook
-- Published `docs/memory-bank-raw-reflection-log-best-practices.md` to standardize reflection
-  hygiene
-
-### 2025-10-15 – Coverage Gate Recalibration (Task 3.2.2.1)
-
-- Synchronized infrastructure tests with 9% workspace threshold defined in
-  `config/coverage.config.mjs`
-- Re-validated thematic coverage suite under relaxed gate
-- Confirmed consistency harness stays in sync with shared configuration module
-
-### 2025-10-13 – Coverage Orchestration Validation (Task 3.2.2)
-
-- Authored `tests/infrastructure/coverage-orchestration.test.ts` for sequential execution validation
-- Published `scripts/validate-coverage-orchestration.mjs` for contributor drift checks
-- Expanded `docs/coverage-system-guide.md` with four new sequence diagrams
-- Memory Bank Segment 005 promoted to version 1.2.0
-
-### 2025-10-13 – Testing Infrastructure Segmentation
-
-- Established new `systemPatterns-005.md` for testing infrastructure patterns
-- Updated `systemPatterns-index.md` (version 1.18.0) with new registry
-- Revised Segment 003 metadata (version 1.16.0) for runtime focus
-
-### 2025-10-13 – Centralized Coverage Configuration (Task 3.2.1.1)
-
-- Introduced `config/coverage.config.mjs` as authoritative source for thresholds
-- Refactored coverage scripts and Vitest configs to import shared module
-- Hardened infrastructure drift detection via shared module assertions
-
 ## Decision Log
 
+- **2025-10-26:** Ratified VS Code workspace Prettier enforcement so save-on-format behaviour stays
+  consistent across contributors and onboarding includes validation guidance.
 - **2025-10-23:** Ratified CI lint workflow guard as mandatory (infrastructure test + aligned
   scripts + contributor documentation) to ensure zero-warning enforcement and accessibility
   coverage.
@@ -194,7 +162,6 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   UI accessibility policy to document `media-has-caption` stance until video support ships.
 - **2025-10-16:** Adopted hybrid segmentation for activeContext.md (current + history archive)
 - **2025-08-25:** ADR-006 accepted (Lightweight pre-commit automation strategy)
-- **2025-08-24:** ADR-005 accepted (Client-safe environment projection)
 
 ## Active Issues
 
@@ -209,6 +176,8 @@ _None - strategic foundation complete, ready for technical planning_
    assumptions
 4. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
    tasks complete)
+5. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
+   during onboarding or dev container startup.
 
 ## Reference Links
 

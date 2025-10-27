@@ -1,8 +1,6 @@
 # Active Context Index
 
-**Last Updated:** 2025-10-25  
-**Version:** 1.1.4  
-**System Status:** Active
+**Last Updated:** 2025-10-26 **Version:** 1.1.5 **System Status:** Active
 
 ## Overview
 
@@ -14,14 +12,13 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~204 (target 150) **Last Updated:** 2025-10-25
+**Current Row Count:** ~175 (target 150) **Last Updated:** 2025-10-26
 
 ## File Registry
 
 ### activeContext-current.md
 
 - **Status:** Active
-- **Row Count:** ~195 (approx)
 - **Scope:** Current state synthesis, immediate context, recent capabilities, next steps
 - **Update Frequency:** With each major milestone
 - **Description:** Maintains only essential current project state; archives to history when Latest
@@ -30,8 +27,8 @@ The Active Context system maintains current project state through a hybrid struc
 ### activeContext-history-001.md
 
 - **Status:** Active
-- **Row Count:** ~490 (approx)
-- **Date Range:** 2025-01-08 to 2025-10-12
+- **Row Count:** ~520 (approx)
+- **Date Range:** 2025-01-08 to 2025-10-16
 - **Primary Topics:** Infrastructure setup progression, Material-UI integration, environment
   management, testing infrastructure, coverage orchestration
 - **Description:** Historical archive of Latest Updates entries and Decision Log from original
@@ -114,6 +111,9 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-10-26: Archived Latest Updates (2025-10-13–2025-10-16) to history, trimmed the decision log
+  to five entries, refreshed row counts, and documented the VS Code Prettier format-on-save
+  configuration (Task 3.4.1) in the current segment.
 - 2025-10-25: Logged CI ESLint documentation update (Task 3.3.5); refreshed current segment
   capabilities and latest updates to surface the new developer guide.
 - 2025-10-23: Logged CI lint workflow guard (Task 3.3.4), refreshed current segment capabilities,
