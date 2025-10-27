@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-26 | Version: 1.30.0 | System Status: Active
+Last Updated: 2025-10-27 | Version: 1.31.0 | System Status: Active
 
 ## Active Segments
 
@@ -66,6 +66,7 @@ domain emerges that doesn't fit existing thematic separation.
 | ESLint Validation Infrastructure Expansion                       | 002     |
 | CI Lint Workflow Guard                                           | 002     |
 | VS Code Workspace Prettier Format-on-Save                        | 002     |
+| EditorConfig ↔ Prettier Alignment                               | 002     |
 
 ## Maintenance Protocol
 
@@ -82,6 +83,8 @@ domain emerges that doesn't fit existing thematic separation.
 
 ## Recent Changes
 
+- 2025-10-27: Added EditorConfig ↔ Prettier alignment topic (Task 3.4.2) to segment 002; version
+  bumped to 1.31.0.
 - 2025-10-26: Added VS Code workspace Prettier format-on-save topic (Task 3.4.1) to segment 002;
   version bumped to 1.30.0.
 - 2025-10-23: Added CI lint workflow guard topic (Task 3.3.4) to segment 002; version bumped to

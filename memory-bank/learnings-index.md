@@ -1,14 +1,16 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-10-19 10:10 PST **Version:** 1.12.0 **System Status:** Active
+**Last Updated:** 2025-10-27 09:30 PST **Version:** 1.13.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 244
-**Last Updated:** 2025-10-19 10:10 PST
+**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 271
+**Last Updated:** 2025-10-27 09:30 PST
 
 **Update Log:**
 
+- 2025-10-27 09:30 PST — Captured lint workflow guardrails, consolidated ESLint onboarding docs, and
+  editor formatting baselines in `consolidated-learnings-007.md`; row count now 271.
 - 2025-10-19 10:10 PST — Logged disposable ESLint fixture harness validation and linked lint
   onboarding docs in `consolidated-learnings-007.md`; row count now 244.
 - 2025-10-17 14:05 PST — Captured CI coverage failsafes, hybrid memory bank segmentation, coverage
@@ -126,15 +128,16 @@
 ### consolidated-learnings-007.md
 
 - **Status:** Active - Coverage & Testing Evolution
-- **Row Count:** 244
+- **Row Count:** 271
 - **Created:** 2025-09-30 21:43 PST
-- **Last Updated:** 2025-10-19 10:10 PST
+- **Last Updated:** 2025-10-27 09:30 PST
 - **Primary Topics:** Test Runtime Isolation, Workspace Standardization, Performance Benchmarking,
   Coverage Orchestration, Tiered Coverage Gates, Centralized Configuration, Threshold Drift
-  Prevention, Lint Fixture Harnessing
+  Prevention, Lint Fixture Harnessing, Editor Tooling Baselines
 - **Description:** Aggregates deterministic test runtime patterns, workspace standardization,
   performance harness hardening, coverage orchestration guardrails, tiered coverage enforcement,
-  coverage configuration governance, and lint validation harnesses for the Listener monorepo.
+  coverage configuration governance, lint validation harnesses, and cross-editor formatting
+  baselines for the Listener monorepo.
 
 ## Topic Index
 
@@ -202,6 +205,10 @@
 - **Documentation Validation Harness for Testing Guides** (consolidated-learnings-007.md)
 - **Disposable ESLint Fixture Harness** (consolidated-learnings-007.md)
 - **Coverage Threshold Drift Prevention** (consolidated-learnings-007.md)
+- **CI Lint Workflow Guard** (consolidated-learnings-007.md)
+- **VS Code Prettier Workspace Baseline** (consolidated-learnings-007.md)
+- **EditorConfig Cross-Editor Alignment** (consolidated-learnings-007.md)
+- **ESLint Onboarding Documentation Hub** (consolidated-learnings-007.md)
 
 ### Testing Strategies
 

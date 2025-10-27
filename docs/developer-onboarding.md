@@ -39,8 +39,61 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
     explicit to avoid surprise edits.
   - Prettier config not detected? Check the output panel for “Prettier” logs; make sure
     `prettier.requireConfig` stays true in workspace settings.
-- Other editors can still rely on the shared `prettier.config.js`. WebStorm auto-detects it, Sublime
-  Text works via JsPrettier, and Vim/Neovim users can wire it up through ALE or coc-prettier.
+- Other editors pick up the shared `.editorconfig` baseline. Layer Prettier on top (WebStorm auto
+  detects it, Sublime Text works via JsPrettier, and Vim/Neovim users can wire it up through ALE or
+  coc-prettier).
+
+### EditorConfig Support (All Editors)
+
+The repository ships a root-level `.editorconfig` to keep fundamental whitespace rules aligned
+across editors.
+
+#### Editor Plugin Requirements
+
+| Editor            | EditorConfig Support | Installation                               |
+| ----------------- | -------------------- | ------------------------------------------ |
+| VSCode (1.44+)    | ✅ Built-in          | None                                       |
+| WebStorm/IntelliJ | ✅ Built-in          | None                                       |
+| Sublime Text (4+) | ❌ Requires plugin   | Install `EditorConfig` via Package Control |
+| Vim/Neovim        | ❌ Requires plugin   | Install `editorconfig/editorconfig-vim`    |
+| Emacs             | ❌ Requires plugin   | Install `editorconfig-emacs`               |
+| Atom              | ❌ Requires plugin   | Install `editorconfig` package             |
+
+#### Quick Validation
+
+1. Open any `.ts` or `.tsx` file.
+2. Insert a tab at the start of a new line → expect two spaces.
+3. Save the file → verify Git shows LF-only line endings (check with `git diff --stat`).
+4. Undo or discard the scratch edits.
+
+#### EditorConfig vs Prettier
+
+- `EditorConfig` enforces baseline whitespace (indent style, size, line endings, trailing spaces).
+- `prettier.config.js` governs full formatting (line length, quotes, wrapping, etc.).
+- Let EditorConfig run inside the editor; Prettier still handles `pnpm format:*` commands and
+  format-on-save.
+
+#### Troubleshooting
+
+| Symptom                              | Fix                                                                  |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| Tab inserts four spaces              | Check for user-level overrides; ensure the EditorConfig plugin loads |
+| Files save with CRLF                 | Run `git config core.autocrlf` → prefer `input` or `false`           |
+| Editor ignores `.editorconfig` rules | Restart after installing the plugin; confirm project root is opened  |
+
+#### Review Checklist (EditorConfig ↔ Prettier)
+
+| Setting             | `.editorconfig` value                          | `prettier.config.js` source   | Status |
+| ------------------- | ---------------------------------------------- | ----------------------------- | ------ |
+| Indentation size    | `indent_size = 2`                              | `tabWidth: 2`                 | ✅     |
+| Indentation style   | `indent_style = space`                         | `useTabs: false`              | ✅     |
+| Line endings        | `end_of_line = lf`                             | `endOfLine: 'lf'`             | ✅     |
+| Trailing whitespace | `trim_trailing_whitespace = true`              | Prettier trims on save        | ✅     |
+| Final newline       | `insert_final_newline = true`                  | Prettier appends              | ✅     |
+| Markdown nuance     | `trim_trailing_whitespace = false` in `[*.md]` | Preserves double-space breaks | ✅     |
+
+Revisit this checklist during infra changes that touch either Prettier or EditorConfig so the two
+configurations stay in sync.
 
 ## 3. Common Commands
 

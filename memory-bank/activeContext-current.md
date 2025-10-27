@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-10-26 11:50 PST
-- **Version:** 2.45.0
+- **Last Updated:** 2025-10-27 09:30 PST
+- **Version:** 2.46.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -68,6 +68,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   troubleshooting diagrams for rapid onboarding (Task 3.3.5)
 - ✅ VS Code workspace settings enforce Prettier format-on-save with documented onboarding checks
   and extension prompts (Task 3.4.1)
+- ✅ EditorConfig baseline mirrors Prettier defaults so non-VS Code editors share indentation,
+  newline, and trailing whitespace rules with documented validation checklist (Task 3.4.2)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -99,6 +101,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-27 – EditorConfig Alignment with Prettier (Task 3.4.2)
+
+- Added a root-level `.editorconfig` matching `prettier.config.js` defaults for indentation, line
+  endings, trailing whitespace trimming, Markdown double-space preservation, and lockfile newline
+  handling so contributors using WebStorm, Sublime, Vim, or other editors stay aligned with repo
+  formatting.
+- Expanded `docs/developer-onboarding.md` with EditorConfig plugin requirements, quick validation
+  steps, alignment checklist, and troubleshooting tips to reduce onboarding friction for non-VS-Code
+  users.
+- Documented reviewer guidance to rerun the alignment checklist whenever Prettier defaults change,
+  keeping EditorConfig and Prettier synchronized over time.
 
 ### 2025-10-26 – VSCode Prettier Format-on-Save Configuration (Task 3.4.1)
 
@@ -155,6 +169,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-10-27:** Ratified EditorConfig ↔ Prettier alignment as a mandatory cross-editor baseline
+  with documented reviewer checklist to maintain parity as formatting defaults evolve.
 - **2025-10-26:** Ratified VS Code workspace Prettier enforcement so save-on-format behaviour stays
   consistent across contributors and onboarding includes validation guidance.
 - **2025-10-23:** Ratified CI lint workflow guard as mandatory (infrastructure test + aligned
