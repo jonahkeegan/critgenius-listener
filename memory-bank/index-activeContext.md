@@ -1,7 +1,7 @@
 # Active Context Index
 
-- **Last Updated:** 2025-10-26
-- **Version:** 1.1.5
+- **Last Updated:** 2025-10-27
+- **Version:** 1.1.6
 - **System Status:** Active
 
 ## Overview
@@ -14,7 +14,7 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~175 (target 150) **Last Updated:** 2025-10-26
+**Current Row Count:** ~178 (target 150) **Last Updated:** 2025-10-27
 
 ## File Registry
 
@@ -113,6 +113,8 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-10-27: Logged EditorConfig ↔ Prettier alignment milestone, updated current capabilities,
+  latest updates, and decision log with cross-editor baseline guidance.
 - 2025-10-26: Archived Latest Updates (2025-10-13–2025-10-16) to history, trimmed the decision log
   to five entries, refreshed row counts, and documented the VS Code Prettier format-on-save
   configuration (Task 3.4.1) in the current segment.

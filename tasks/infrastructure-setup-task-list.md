@@ -178,10 +178,10 @@
     - [x] 2.6.10 Validate integration with existing AssemblyAI real-time transcription
   - [x] 2.7 Set up environment variable management with validation and development/production
         configurations
-    - [x] 2.7.1 Create environment variable schema and template system - Design comprehensive
-          .env structure with .env.example templates, define variable categories (API keys,
-          database, feature flags), and establish naming conventions for development, staging,
-          and production environments
+    - [x] 2.7.1 Create environment variable schema and template system - Design comprehensive .env
+          structure with .env.example templates, define variable categories (API keys, database,
+          feature flags), and establish naming conventions for development, staging, and production
+          environments
     - [x] 2.7.2 Implement environment variable validation and runtime management - Build
           TypeScript-based validation system with joi or zod, create environment loading utilities
           with error handling, and implement startup validation checks with descriptive error
@@ -191,69 +191,199 @@
           management for AssemblyAI integration, and configure database connection variables with
           fallback defaults
     - [x] 2.7.4 Integrate environment management with project architecture - Update existing
-          packages (client/server/shared) to use centralized environment management, configure
-          build processes to handle environment-specific builds, and ensure compatibility with
-          existing TypeScript and testing infrastructure
+          packages (client/server/shared) to use centralized environment management, configure build
+          processes to handle environment-specific builds, and ensure compatibility with existing
+          TypeScript and testing infrastructure
   - [x] 2.8 Create development scripts for linting, formatting, and pre-commit hooks using Husky
-      - [x] 2.8.1 Install Husky and lint-staged for pre-commit automation - Husky & lint-staged integrated at root with pre-commit (ESLint + Prettier) and commit-msg (Conventional Commits) hooks, documentation added (`docs/pre-commit-workflow.md`), and completion report created.
-    - [x] 2.8.2 Configure ESLint scripts for code quality enforcement - Set up comprehensive ESLint scripts in package.json for all packages, configure ESLint rules for TypeScript, React, and accessibility compliance, and create workspace-level linting scripts that work across client/server/shared packages
-      - [x] 2.8.3 Configure Prettier scripts for code formatting consistency - Added root scripts (format, format:write, format:check, format:packages, format:client/server/shared, format:staged, format:ci) plus package-level format & format:check in client/server/shared; performed initial repo normalization; removed deprecated option from Prettier config.
-    - [x] 2.8.4 Integrate pre-commit hooks with comprehensive quality checks - Configure Husky pre-commit hooks to run ESLint, Prettier, and TypeScript compilation, set up lint-staged configuration to run appropriate tools on staged files, and integrate with existing TypeScript configuration for compilation checks
-      - [x] 2.8.5 Validate development workflow and create documentation - Implemented simulation + validation + benchmarking scripts (`precommit:simulate`, `precommit:validate`, `precommit:benchmark`), added infrastructure test (`tests/infrastructure/precommit-workflow.test.ts`), authored comprehensive docs (`docs/development-workflow.md`, `docs/developer-onboarding.md` with sequence + flow diagrams, troubleshooting matrix, validation checklist). All quality gates (lint, type-check, tests) passing.
+    - [x] 2.8.1 Install Husky and lint-staged for pre-commit automation - Husky & lint-staged
+          integrated at root with pre-commit (ESLint + Prettier) and commit-msg (Conventional
+          Commits) hooks, documentation added (`docs/pre-commit-workflow.md`), and completion report
+          created.
+    - [x] 2.8.2 Configure ESLint scripts for code quality enforcement - Set up comprehensive ESLint
+          scripts in package.json for all packages, configure ESLint rules for TypeScript, React,
+          and accessibility compliance, and create workspace-level linting scripts that work across
+          client/server/shared packages
+      - [x] 2.8.3 Configure Prettier scripts for code formatting consistency - Added root scripts
+            (format, format:write, format:check, format:packages, format:client/server/shared,
+            format:staged, format:ci) plus package-level format & format:check in
+            client/server/shared; performed initial repo normalization; removed deprecated option
+            from Prettier config.
+    - [x] 2.8.4 Integrate pre-commit hooks with comprehensive quality checks - Configure Husky
+          pre-commit hooks to run ESLint, Prettier, and TypeScript compilation, set up lint-staged
+          configuration to run appropriate tools on staged files, and integrate with existing
+          TypeScript configuration for compilation checks
+      - [x] 2.8.5 Validate development workflow and create documentation - Implemented simulation +
+            validation + benchmarking scripts (`precommit:simulate`, `precommit:validate`,
+            `precommit:benchmark`), added infrastructure test
+            (`tests/infrastructure/precommit-workflow.test.ts`), authored comprehensive docs
+            (`docs/development-workflow.md`, `docs/developer-onboarding.md` with sequence + flow
+            diagrams, troubleshooting matrix, validation checklist). All quality gates (lint,
+            type-check, tests) passing.
   - [x] 2.9 Configure hot-reload development server with proxy settings for API integration
-      - [x] 2.9.1 Configure Vite development server with hot-reload and build optimization - Set up Vite dev server configuration with hot module replacement (HMR), configure build optimizations and source map generation for debugging, integrate with existing TypeScript and React setup from monorepo structure
-    - [x] 2.9.2 Implement comprehensive API proxy configuration for development integration - Configure proxy settings for AssemblyAI API endpoints to handle CORS and development authentication, set up proxy routing for internal server API endpoints (Socket.IO, transcription services), implement environment-based proxy configuration using existing environment management system
-      - [x] 2.9.3 Set up concurrent development orchestration for client-server coordination - Added `scripts/dev-orchestration.mjs` with sequenced server→client startup, health polling, optional monitoring & auto-restart, new scripts (`dev:coordinated`, `dev:coordinated:watch`), documentation section, guarded smoke test.
-    - [x] 2.9.4 Validate development server configuration and create usage documentation - Test hot-reload functionality with React components and TypeScript compilation, verify API proxy settings with actual AssemblyAI integration and internal endpoints, document development server setup, usage patterns, and troubleshooting procedures
+    - [x] 2.9.1 Configure Vite development server with hot-reload and build optimization - Set up
+          Vite dev server configuration with hot module replacement (HMR), configure build
+          optimizations and source map generation for debugging, integrate with existing TypeScript
+          and React setup from monorepo structure
+    - [x] 2.9.2 Implement comprehensive API proxy configuration for development integration -
+          Configure proxy settings for AssemblyAI API endpoints to handle CORS and development
+          authentication, set up proxy routing for internal server API endpoints (Socket.IO,
+          transcription services), implement environment-based proxy configuration using existing
+          environment management system
+      - [x] 2.9.3 Set up concurrent development orchestration for client-server coordination - Added
+            `scripts/dev-orchestration.mjs` with sequenced server→client startup, health polling,
+            optional monitoring & auto-restart, new scripts (`dev:coordinated`,
+            `dev:coordinated:watch`), documentation section, guarded smoke test.
+    - [x] 2.9.4 Validate development server configuration and create usage documentation - Test
+          hot-reload functionality with React components and TypeScript compilation, verify API
+          proxy settings with actual AssemblyAI integration and internal endpoints, document
+          development server setup, usage patterns, and troubleshooting procedures
   - [ ] 2.10 Set up local HTTPS development server for Web Audio API testing requirements
-    - [x] 2.10.1 Generate local SSL certificates and configure certificate management for development HTTPS server - Create self-signed certificates or use mkcert for trusted local certificates, configure certificate storage and management in development environment, set up certificate paths and permissions for secure development workflow
-    - [x] 2.10.2 Configure Vite development server with HTTPS support and update proxy settings for secure API integration - Update Vite configuration to enable HTTPS with generated certificates, modify existing proxy settings to work with HTTPS endpoints, configure secure WebSocket connections for Socket.IO integration
-      - [x] 2.10.3 Update HTTPS dev config to use centralized proxy registry
-            - Align with centralized proxy registry as source of truth: import from `@critgenius/shared/config/proxyRegistry` (see `getProxyRegistry`, `PROXY_ENV_KEYS`, `resolveTargetFromEnv`) instead of ad-hoc env reads
-            - Ensure .env templates contain the registry-defined DEV_PROXY_* keys (no duplication elsewhere):
-                  - DEV_PROXY_ENABLED, DEV_PROXY_HTTPS_ENABLED, DEV_PROXY_TARGET_PORT, DEV_PROXY_TARGET_HTTPS_PORT
-                  - DEV_PROXY_ALLOWED_HOSTS, DEV_PROXY_REJECT_UNAUTHORIZED, DEV_PROXY_TIMEOUT_MS
-                  - DEV_PROXY_AUTO_DISCOVER, DEV_PROXY_DISCOVERY_PORTS, DEV_PROXY_DISCOVERY_TIMEOUT_MS, DEV_PROXY_PROBE_TIMEOUT_MS
-                  - DEV_PROXY_ASSEMBLYAI_ENABLED, DEV_PROXY_ASSEMBLYAI_PATH
-            - Update development scripts to respect HTTPS toggle and ports via registry helpers (e.g., `resolveTargetFromEnv`) rather than hard-coded URLs
-            - Modify client/server config to build proxy maps from `getProxyRegistry()`; preserve dynamic port discovery and HTTPS hardening behavior
-            - Add generators to keep docs and env templates in sync with the registry:
-                  - scripts/generate-proxy-docs.mjs → outputs `docs/development-proxy.routes.md`
-                  - scripts/generate-proxy-env-example.mjs → updates `.env.example`
-            - Reference: `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md` for background and usage notes
-    - [x] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS development environment - Verify microphone permissions work correctly in HTTPS context, test audio capture functionality across different browsers, validate Web Audio API features required for D&D session recording
-    - [x] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio processing pipeline functions in secure context
-    - [x] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for common issues - Create setup documentation for new developers joining the project, document common certificate and HTTPS-related development issues, add troubleshooting steps for browser security warnings and connection problems
+    - [x] 2.10.1 Generate local SSL certificates and configure certificate management for
+          development HTTPS server - Create self-signed certificates or use mkcert for trusted local
+          certificates, configure certificate storage and management in development environment, set
+          up certificate paths and permissions for secure development workflow
+    - [x] 2.10.2 Configure Vite development server with HTTPS support and update proxy settings for
+          secure API integration - Update Vite configuration to enable HTTPS with generated
+          certificates, modify existing proxy settings to work with HTTPS endpoints, configure
+          secure WebSocket connections for Socket.IO integration
+      - [x] 2.10.3 Update HTTPS dev config to use centralized proxy registry - Align with
+            centralized proxy registry as source of truth: import from
+            `@critgenius/shared/config/proxyRegistry` (see `getProxyRegistry`, `PROXY_ENV_KEYS`,
+            `resolveTargetFromEnv`) instead of ad-hoc env reads - Ensure .env templates contain the
+            registry-defined DEV*PROXY*\* keys (no duplication elsewhere): - DEV_PROXY_ENABLED,
+            DEV_PROXY_HTTPS_ENABLED, DEV_PROXY_TARGET_PORT, DEV_PROXY_TARGET_HTTPS_PORT -
+            DEV_PROXY_ALLOWED_HOSTS, DEV_PROXY_REJECT_UNAUTHORIZED, DEV_PROXY_TIMEOUT_MS -
+            DEV_PROXY_AUTO_DISCOVER, DEV_PROXY_DISCOVERY_PORTS, DEV_PROXY_DISCOVERY_TIMEOUT_MS,
+            DEV_PROXY_PROBE_TIMEOUT_MS - DEV_PROXY_ASSEMBLYAI_ENABLED, DEV_PROXY_ASSEMBLYAI_PATH -
+            Update development scripts to respect HTTPS toggle and ports via registry helpers (e.g.,
+            `resolveTargetFromEnv`) rather than hard-coded URLs - Modify client/server config to
+            build proxy maps from `getProxyRegistry()`; preserve dynamic port discovery and HTTPS
+            hardening behavior - Add generators to keep docs and env templates in sync with the
+            registry: - scripts/generate-proxy-docs.mjs → outputs
+            `docs/development-proxy.routes.md` - scripts/generate-proxy-env-example.mjs → updates
+            `.env.example` - Reference:
+            `task-completion-reports/2025-09-20-dev-infra-2-10-2-2-centralized-proxy-registry.md`
+            for background and usage notes
+    - [x] 2.10.4 Test and validate Web Audio API microphone access functionality in HTTPS
+          development environment - Verify microphone permissions work correctly in HTTPS context,
+          test audio capture functionality across different browsers, validate Web Audio API
+          features required for D&D session recording
+    - [x] 2.10.5 Verify integration between HTTPS server and existing Socket.IO/AssemblyAI real-time
+          connections - Test secure WebSocket connections with Socket.IO over HTTPS, validate
+          AssemblyAI real-time transcription works with HTTPS endpoints, ensure existing audio
+          processing pipeline functions in secure context
+    - [x] 2.10.6 Document HTTPS development setup process and create troubleshooting guide for
+          common issues - Create setup documentation for new developers joining the project,
+          document common certificate and HTTPS-related development issues, add troubleshooting
+          steps for browser security warnings and connection problems
 
 - [ ] 3.0 Testing Infrastructure and Quality Assurance Framework
   - [x] 3.1 Enhanced Testing Infrastructure Foundation (Vitest/React Testing Library/TypeScript)
-    - [x] 3.1.1 Standardize Vitest Configurations and Test Organization Patterns Across Client/Server/Shared Packages - Establish consistent Vitest configurations, test file naming conventions, directory structures, and environment setup/teardown patterns to ensure uniform testing practices across the monorepo
-    - [x] 3.1.2 Create Shared Test Utilities Library with Helpers, Factories, Fixtures, and Async/Error Testing Patterns - Build a comprehensive @critgenius/test-utils package containing reusable test helpers, data factories, fixture management, WebSocket/async operation utilities, and circuit breaker/error scenario testing patterns
-    - [x] 3.1.3 Implement Performance Testing Infrastructure with Latency Benchmarking and Regression Detection - Establish performance testing framework with sub-500ms latency assertions, baseline benchmarking, regression detection mechanisms, and integration with the engineering guide's real-time processing requirements C:\Users\jonah\Documents\Cline\crit-genius\listener\docs\critgenius-listener-technical-architecture-enhanced.md
-    - [x] 3.1.4 Establish Integration Test Patterns for Cross-Package Workflows and Real-Time Communication - Define standards for testing workflows that span multiple packages (client ↔ server ↔ shared), including Socket.IO interactions, AssemblyAI integration flows, and environment-aware test execution
-            - [x] 3.1.4.5 Evaluate Performance Testing Architecture Decoupling Enhancement - Re-assess performance testing infrastructure after integration tests to determine whether the proposed decoupled architecture delivers meaningful value before investing in refactoring
-                  - [x] 3.1.4.5.1 Analyze Performance Testing Patterns - Review insights from 3.1.3 unit benchmarks and 3.1.4 integration runs, identify coupling friction, and document observed pain points
-                  - [x] 3.1.4.5.2 Evaluate Cost vs. Benefit - Determine if decoupling addresses the documented issues, weigh refactoring cost against benefits, and confirm whether current scripts remain adequate
-                  - [x] 3.1.4.5.3 Make Architecture Decision - Either draft a detailed refactoring plan (with architecture diagrams), document rationale to defer, or scope incremental improvements with re-evaluation triggers
-    - [x] 3.1.5 Document Comprehensive Testing Standards, Patterns, and Best Practices Guide - Create thorough documentation capturing all testing patterns, utility usage examples, performance benchmarking procedures, and integration testing standards for current and future developers
+    - [x] 3.1.1 Standardize Vitest Configurations and Test Organization Patterns Across
+          Client/Server/Shared Packages - Establish consistent Vitest configurations, test file
+          naming conventions, directory structures, and environment setup/teardown patterns to
+          ensure uniform testing practices across the monorepo
+    - [x] 3.1.2 Create Shared Test Utilities Library with Helpers, Factories, Fixtures, and
+          Async/Error Testing Patterns - Build a comprehensive @critgenius/test-utils package
+          containing reusable test helpers, data factories, fixture management, WebSocket/async
+          operation utilities, and circuit breaker/error scenario testing patterns
+    - [x] 3.1.3 Implement Performance Testing Infrastructure with Latency Benchmarking and
+          Regression Detection - Establish performance testing framework with sub-500ms latency
+          assertions, baseline benchmarking, regression detection mechanisms, and integration with
+          the engineering guide's real-time processing requirements
+          C:\Users\jonah\Documents\Cline\crit-genius\listener\docs\critgenius-listener-technical-architecture-enhanced.md
+    - [x] 3.1.4 Establish Integration Test Patterns for Cross-Package Workflows and Real-Time
+          Communication - Define standards for testing workflows that span multiple packages (client
+          ↔ server ↔ shared), including Socket.IO interactions, AssemblyAI integration flows, and
+          environment-aware test execution - [x] 3.1.4.5 Evaluate Performance Testing Architecture
+          Decoupling Enhancement - Re-assess performance testing infrastructure after integration
+          tests to determine whether the proposed decoupled architecture delivers meaningful value
+          before investing in refactoring - [x] 3.1.4.5.1 Analyze Performance Testing Patterns -
+          Review insights from 3.1.3 unit benchmarks and 3.1.4 integration runs, identify coupling
+          friction, and document observed pain points - [x] 3.1.4.5.2 Evaluate Cost vs. Benefit -
+          Determine if decoupling addresses the documented issues, weigh refactoring cost against
+          benefits, and confirm whether current scripts remain adequate - [x] 3.1.4.5.3 Make
+          Architecture Decision - Either draft a detailed refactoring plan (with architecture
+          diagrams), document rationale to defer, or scope incremental improvements with
+          re-evaluation triggers
+    - [x] 3.1.5 Document Comprehensive Testing Standards, Patterns, and Best Practices Guide -
+          Create thorough documentation capturing all testing patterns, utility usage examples,
+          performance benchmarking procedures, and integration testing standards for current and
+          future developers
   - [x] 3.2 Set up test coverage reporting with minimum 90% coverage requirements and HTML reports
-    - [x] 3.2.1 Configure comprehensive Vitest coverage system with 90% thresholds, HTML reports, and Istanbul/c8 integration across all packages - Install and configure coverage dependencies (@vitest/coverage-v8 or @vitest/coverage-istanbul), set up Vitest coverage configuration in each package (client, server, shared, test-utils), configure 90% minimum coverage thresholds (statements, branches, functions, lines), enable HTML report generation with detailed file-level coverage visualization, configure coverage directory structure and .gitignore patterns
-    - [x] 3.2.2 Implement workspace-level coverage orchestration with aggregate reporting and multi-package coverage scripts - Create root-level package.json scripts for running coverage across all packages, implement aggregate coverage reporting to combine results from multiple packages, set up coverage script variants (per-package, full workspace, watch mode), configure coverage merging for accurate workspace-wide metrics, ensure coverage scripts work with existing monorepo structure
-    - [x] 3.2.3 Integrate coverage reporting into CI/CD pipeline with automated checks, failure gates, and badge generation - Add coverage checks to GitHub Actions CI workflow, configure automated coverage failure gates based on 90% thresholds, set up coverage report uploads to CI artifacts, implement coverage badge generation (using Codecov, Coveralls, or similar), configure coverage comparison and regression detection for pull requests
-    - [x] 3.2.4 Document coverage requirements, usage workflows, and troubleshooting procedures for development team - Create comprehensive coverage documentation in docs/testing-standards.md or similar, document usage of coverage scripts for local development and CI, provide examples of running coverage for specific packages or test files, document troubleshooting common coverage issues (missing files, incorrect thresholds), update developer onboarding guide with coverage requirements and workflows
+    - [x] 3.2.1 Configure comprehensive Vitest coverage system with 90% thresholds, HTML reports,
+          and Istanbul/c8 integration across all packages - Install and configure coverage
+          dependencies (@vitest/coverage-v8 or @vitest/coverage-istanbul), set up Vitest coverage
+          configuration in each package (client, server, shared, test-utils), configure 90% minimum
+          coverage thresholds (statements, branches, functions, lines), enable HTML report
+          generation with detailed file-level coverage visualization, configure coverage directory
+          structure and .gitignore patterns
+    - [x] 3.2.2 Implement workspace-level coverage orchestration with aggregate reporting and
+          multi-package coverage scripts - Create root-level package.json scripts for running
+          coverage across all packages, implement aggregate coverage reporting to combine results
+          from multiple packages, set up coverage script variants (per-package, full workspace,
+          watch mode), configure coverage merging for accurate workspace-wide metrics, ensure
+          coverage scripts work with existing monorepo structure
+    - [x] 3.2.3 Integrate coverage reporting into CI/CD pipeline with automated checks, failure
+          gates, and badge generation - Add coverage checks to GitHub Actions CI workflow, configure
+          automated coverage failure gates based on 90% thresholds, set up coverage report uploads
+          to CI artifacts, implement coverage badge generation (using Codecov, Coveralls, or
+          similar), configure coverage comparison and regression detection for pull requests
+    - [x] 3.2.4 Document coverage requirements, usage workflows, and troubleshooting procedures for
+          development team - Create comprehensive coverage documentation in
+          docs/testing-standards.md or similar, document usage of coverage scripts for local
+          development and CI, provide examples of running coverage for specific packages or test
+          files, document troubleshooting common coverage issues (missing files, incorrect
+          thresholds), update developer onboarding guide with coverage requirements and workflows
   - [x] 3.3 Configure ESLint with TypeScript, React, and accessibility rules
         (eslint-plugin-jsx-a11y)
-    - [x] 3.3.1 Audit existing ESLint configuration against project requirements - Review current root-level eslint.config.js for completeness, verify all required plugins are properly configured (TypeScript, React, React Hooks, jsx-a11y), identify any gaps in rules coverage specific to D&D audio processing requirements, and assess alignment with testing infrastructure
-    - [x] 3.3.2 Create comprehensive ESLint validation and testing infrastructure - Develop test suite to validate ESLint rules work correctly across TypeScript/React/accessibility scenarios, create fixture files with intentional violations to verify rule enforcement, implement automated tests that run ESLint programmatically and verify expected outcomes, and integrate with existing infrastructure testing framework
-    - [x] 3.3.3 Verify and enhance package-level ESLint configurations - Check if client/server/shared/test-utils packages need individual ESLint configurations, ensure consistent rule application across monorepo packages, validate that package-specific lint scripts work correctly, and verify ignore patterns are appropriate for each package
-    - [x] 3.3.4 Validate CI/CD pipeline ESLint integration and failure gates - Confirm ESLint checks run properly in GitHub Actions CI workflow, verify that ESLint failures correctly block builds with appropriate exit codes, test lint:ci script behavior and reporting, and ensure accessibility-specific linting is properly gated in CI
-    - [x] 3.3.5 Create succinct, need-to-know documentation for the ESLint system used in this project. Focus on clearly explaining only what developers must understand to work effectively, not background theory. The documentation should be concise, logically organized, and easily skimmable by developers.Include: Overview of ESLint configuration and rule structure (only relevant sections); Key rule rationales directly tied to project coding standards; Developer usage guide: running lints, fixing violations, and using IDE integration; Troubleshooting guide for frequent ESLint issues in a monorepo setup; Accessibility rule requirements specific to D&D audio interface components
+    - [x] 3.3.1 Audit existing ESLint configuration against project requirements - Review current
+          root-level eslint.config.js for completeness, verify all required plugins are properly
+          configured (TypeScript, React, React Hooks, jsx-a11y), identify any gaps in rules coverage
+          specific to D&D audio processing requirements, and assess alignment with testing
+          infrastructure
+    - [x] 3.3.2 Create comprehensive ESLint validation and testing infrastructure - Develop test
+          suite to validate ESLint rules work correctly across TypeScript/React/accessibility
+          scenarios, create fixture files with intentional violations to verify rule enforcement,
+          implement automated tests that run ESLint programmatically and verify expected outcomes,
+          and integrate with existing infrastructure testing framework
+    - [x] 3.3.3 Verify and enhance package-level ESLint configurations - Check if
+          client/server/shared/test-utils packages need individual ESLint configurations, ensure
+          consistent rule application across monorepo packages, validate that package-specific lint
+          scripts work correctly, and verify ignore patterns are appropriate for each package
+    - [x] 3.3.4 Validate CI/CD pipeline ESLint integration and failure gates - Confirm ESLint checks
+          run properly in GitHub Actions CI workflow, verify that ESLint failures correctly block
+          builds with appropriate exit codes, test lint:ci script behavior and reporting, and ensure
+          accessibility-specific linting is properly gated in CI
+    - [x] 3.3.5 Create succinct, need-to-know documentation for the ESLint system used in this
+          project. Focus on clearly explaining only what developers must understand to work
+          effectively, not background theory. The documentation should be concise, logically
+          organized, and easily skimmable by developers. Include: Overview of ESLint configuration
+          and rule structure (only relevant sections); Key rule rationales directly tied to project
+          coding standards; Developer usage guide: running lints, fixing violations, and using IDE
+          integration; Troubleshooting guide for frequent ESLint issues in a monorepo setup;
+          Accessibility rule requirements specific to D&D audio interface components
 
   - [ ] 3.4 Set up Prettier code formatting with automatic formatting on save and pre-commit hooks
-    - [ ] 3.4.1 Configure VSCode workspace settings for Prettier format-on-save with editor integration - Create/update `.vscode/settings.json` with format-on-save enabled, Prettier as default formatter, and file type associations; add `.vscode/extensions.json` to recommend Prettier extension to team members; configure workspace-level Prettier settings that override user preferences for consistency
-    - [ ] 3.4.2 Establish multi-editor configuration via EditorConfig for cross-platform format consistency - Create `.editorconfig` file with indentation, line endings, charset, and trailing whitespace rules; ensure EditorConfig settings align with existing `prettier.config.js` configuration; document EditorConfig plugin requirements for non-VSCode editors (WebStorm, Sublime, etc.)
-    - [ ] 3.4.3 Validate format-on-save behavior across monorepo packages and file types - Test automatic formatting triggers in client/server/shared/test-utils packages; verify format-on-save works correctly for TypeScript, TSX, JavaScript, JSON, and Markdown files; confirm no conflicts between Prettier, ESLint auto-fix, and pre-commit hooks
-    - [ ] 3.4.4 Document IDE setup procedures with troubleshooting guide for common formatting issues - Update `docs/developer-onboarding.md` with step-by-step IDE setup instructions; create troubleshooting section covering format-on-save not working, editor conflicts, and pre-commit hook failures; add quick reference for manual formatting commands and verification steps
+    - [x] 3.4.1 Configure VSCode workspace settings for Prettier format-on-save with editor
+          integration - Create/update `.vscode/settings.json` with format-on-save enabled, Prettier
+          as default formatter, and file type associations; add `.vscode/extensions.json` to
+          recommend Prettier extension to team members; configure workspace-level Prettier settings
+          that override user preferences for consistency
+    - [x] 3.4.2 Establish multi-editor configuration via EditorConfig for cross-platform format
+          consistency - Create `.editorconfig` file with indentation, line endings, charset, and
+          trailing whitespace rules; ensure EditorConfig settings align with existing
+          `prettier.config.js` configuration; document EditorConfig plugin requirements for
+          non-VSCode editors (WebStorm, Sublime, etc.)
+    - [ ] 3.4.3 Validate format-on-save behavior across monorepo packages and file types - Test
+          automatic formatting triggers in client/server/shared/test-utils packages; verify
+          format-on-save works correctly for TypeScript, TSX, JavaScript, JSON, and Markdown files;
+          confirm no conflicts between Prettier, ESLint auto-fix, and pre-commit hooks
+    - [ ] 3.4.4 Document IDE setup procedures with troubleshooting guide for common formatting
+          issues - Update `docs/developer-onboarding.md` with step-by-step IDE setup instructions;
+          create troubleshooting section covering format-on-save not working, editor conflicts, and
+          pre-commit hook failures; add quick reference for manual formatting commands and
+          verification steps
   - [ ] 3.5 Install and configure cross-browser testing using Playwright for Chrome, Firefox, Edge,
         Safari
   - [ ] 3.6 Set up visual regression testing for UI components using Percy or Chromatic

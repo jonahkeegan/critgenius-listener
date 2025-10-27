@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-26 | Segment Version: 1.5.0
+Last Updated: 2025-10-27 | Segment Version: 1.6.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -143,6 +143,23 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** Manual VS Code format-on-save spot check (intentional spacing drift corrected on
   save using the new workspace defaults).
 
+### EditorConfig Cross-Editor Alignment Pattern (Task 3.4.2)
+
+- **Pattern:** Maintain a repository-level `.editorconfig` that mirrors Prettier defaults so
+  indentation, newline style, trailing whitespace rules, and Markdown/lockfile edge cases remain
+  consistent across WebStorm, Sublime, Vim, and other editors.
+- **Implementation:** Introduced `.editorconfig` with UTF-8 charset, LF newlines, final newline
+  enforcement, two-space indentation, Markdown trailing-space preservation, lockfile newline
+  exemptions, and a Makefile tab exception. Updated `docs/developer-onboarding.md` with plugin
+  requirements, validation checklist, troubleshooting matrix, and a Prettier alignment review table
+  for future configuration changes.
+- **Benefits:** Prevents formatting churn when contributors use non-VS Code editors, keeps save-time
+  behaviour aligned with Prettier expectations, and documents reviewer steps to maintain parity
+  whenever formatting defaults evolve.
+- **Validation:** Manual parity comparison between `.editorconfig` and `prettier.config.js`
+  including Markdown trailing spaces and lockfile newline handling; no automated tests required for
+  configuration-only change.
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -157,6 +174,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-10-27: Added EditorConfig cross-editor alignment pattern; version bump to 1.6.0.
 - 2025-10-26: Added VS Code workspace Prettier enforcement pattern; version bump to 1.5.0.
 - 2025-10-23: Added CI lint workflow guard pattern; version bump to 1.4.0.
 - 2025-10-19: Added disposable ESLint fixture harness pattern; version bump to 1.3.0.
