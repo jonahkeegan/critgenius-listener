@@ -364,7 +364,7 @@
           integration; Troubleshooting guide for frequent ESLint issues in a monorepo setup;
           Accessibility rule requirements specific to D&D audio interface components
 
-  - [ ] 3.4 Set up Prettier code formatting with automatic formatting on save and pre-commit hooks
+  - [x] 3.4 Set up Prettier code formatting with automatic formatting on save and pre-commit hooks
     - [x] 3.4.1 Configure VSCode workspace settings for Prettier format-on-save with editor
           integration - Create/update `.vscode/settings.json` with format-on-save enabled, Prettier
           as default formatter, and file type associations; add `.vscode/extensions.json` to
@@ -375,17 +375,37 @@
           trailing whitespace rules; ensure EditorConfig settings align with existing
           `prettier.config.js` configuration; document EditorConfig plugin requirements for
           non-VSCode editors (WebStorm, Sublime, etc.)
-    - [ ] 3.4.3 Validate format-on-save behavior across monorepo packages and file types - Test
+    - [x] 3.4.3 Validate format-on-save behavior across monorepo packages and file types - Test
           automatic formatting triggers in client/server/shared/test-utils packages; verify
           format-on-save works correctly for TypeScript, TSX, JavaScript, JSON, and Markdown files;
           confirm no conflicts between Prettier, ESLint auto-fix, and pre-commit hooks
-    - [ ] 3.4.4 Document IDE setup procedures with troubleshooting guide for common formatting
+    - [x] 3.4.4 Document IDE setup procedures with troubleshooting guide for common formatting
           issues - Update `docs/developer-onboarding.md` with step-by-step IDE setup instructions;
           create troubleshooting section covering format-on-save not working, editor conflicts, and
           pre-commit hook failures; add quick reference for manual formatting commands and
           verification steps
   - [ ] 3.5 Install and configure cross-browser testing using Playwright for Chrome, Firefox, Edge,
         Safari
+    - [ ] 3.5.1 Install Playwright dependencies and configure package.json scripts for cross-browser
+          testing - Add Playwright packages to workspace root, configure test scripts, and ensure
+          compatibility with existing monorepo structure
+    - [ ] 3.5.2 Configure Playwright with browser targets (Chrome, Firefox, Edge, Safari), viewport
+          settings, and HTML/JSON reporters - Create playwright.config.ts with browser projects,
+          responsive viewport configurations, test output directories, and reporting formats
+    - [ ] 3.5.3 Create test file structure and foundational cross-browser smoke tests validating
+          core functionality - Establish tests/e2e directory structure, implement smoke tests for
+          critical user journeys (audio capture, transcription display), and ensure tests run across
+          all target browsers
+    - [ ] 3.5.4 Integrate Playwright into GitHub Actions CI with browser matrix and artifact
+          storage - Add Playwright job to CI workflow, configure browser matrix execution, set up
+          test artifact uploads for screenshots/videos, and establish failure gates
+    - [ ] 3.5.5 Configure test parallelization with worker optimization and browser-specific
+          sharding strategies - Set up parallel test execution, optimize worker count for CI/local
+          environments, configure browser-specific test sharding for performance
+    - [ ] 3.5.6 Document Playwright testing patterns, browser compatibility requirements, and
+          troubleshooting procedures - Create comprehensive documentation covering test authoring
+          patterns, cross-browser compatibility guidelines, debugging workflows, and common issue
+          resolution
   - [ ] 3.6 Set up visual regression testing for UI components using Percy or Chromatic
   - [ ] 3.7 Configure accessibility testing with jest-axe and automated WCAG compliance checking
   - [ ] 3.8 Set up performance testing with Lighthouse CI for Core Web Vitals monitoring

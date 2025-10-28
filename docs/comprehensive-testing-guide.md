@@ -1,10 +1,7 @@
 # Comprehensive Testing Guide
 
-**Version:** 1.0.0  
-**Last Updated:** 2025-01-11  
-**Target Audience:** Expert developers familiar with testing concepts but new to CritGenius
-Listener's testing patterns  
-**Status:** Complete
+**Version:** 1.0.0 **Last Updated:** 2025-10-27 **Target Audience:** Expert developers familiar with
+testing concepts but new to CritGenius Listener's testing patterns **Status:** Complete
 
 ---
 
@@ -951,17 +948,35 @@ Uncovered files:
 
 ### 2.4 Common Commands Reference
 
-| Command                   | Purpose                        | When to Use                  |
-| ------------------------- | ------------------------------ | ---------------------------- |
-| `pnpm test`               | Run all tests                  | Pre-commit, CI pipeline      |
-| `pnpm test --coverage`    | Run tests with coverage        | Before creating PR           |
-| `pnpm test --watch`       | Watch mode for TDD             | Active development           |
-| `pnpm test:integration`   | Integration tests only         | After server changes         |
-| `pnpm test:performance`   | Performance benchmarks         | Performance-critical changes |
-| `pnpm perf:baseline`      | Establish performance baseline | After optimization work      |
-| `pnpm perf:compare`       | Compare against baseline       | Before merging perf changes  |
-| `pnpm validate:testing`   | Validate test structure        | After refactoring tests      |
-| `pnpm precommit:validate` | Pre-commit checks              | Before committing            |
+| Command                     | Purpose                        | When to Use                  |
+| --------------------------- | ------------------------------ | ---------------------------- |
+| `pnpm test`                 | Run all tests                  | Pre-commit, CI pipeline      |
+| `pnpm test --coverage`      | Run tests with coverage        | Before creating PR           |
+| `pnpm test --watch`         | Watch mode for TDD             | Active development           |
+| `pnpm test:integration`     | Integration tests only         | After server changes         |
+| `pnpm test:performance`     | Performance benchmarks         | Performance-critical changes |
+| `pnpm run test:e2e`         | Browser E2E suite (headless)   | End-to-end regression pass   |
+| `pnpm run test:e2e:headed`  | Browser E2E suite (headed)     | Debugging interactive flows  |
+| `pnpm run test:e2e:install` | Install Playwright browsers    | First run or version update  |
+| `pnpm run test:e2e:report`  | Open last Playwright report    | Inspecting failures          |
+| `pnpm perf:baseline`        | Establish performance baseline | After optimization work      |
+| `pnpm perf:compare`         | Compare against baseline       | Before merging perf changes  |
+| `pnpm validate:testing`     | Validate test structure        | After refactoring tests      |
+| `pnpm precommit:validate`   | Pre-commit checks              | Before committing            |
+
+### 2.5 Browser E2E Workflow
+
+- **Install browsers**: `pnpm run test:e2e:install` downloads the Chromium/Firefox/WebKit builds
+  that `packages/client/playwright.config.ts` targets. Re-run after upgrading Playwright.
+- **Headless regression**: `pnpm run test:e2e` fans into
+  `pnpm --filter @critgenius/client test:browser` so the root orchestrates the client Playwright
+  suite without extra setup.
+- **Debug modes**: `pnpm run test:e2e:headed` launches visible browsers, while
+  `pnpm run test:e2e:ui` opens the Playwright UI runner for selective replays.
+- **Report review**: `pnpm run test:e2e:report` serves the latest HTML report, keeping failed trace
+  attachments accessible long after the run exits.
+- **CI alignment**: The commands are workspace-aware, so CI can invoke them from the repo root with
+  consistent tooling versions and without leaking package-specific scripts.
 
 ---
 

@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-10-27 09:30 PST
-- **Version:** 2.46.0
+- **Last Updated:** 2025-10-27 14:35 PST
+- **Version:** 2.47.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -70,6 +70,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   and extension prompts (Task 3.4.1)
 - ✅ EditorConfig baseline mirrors Prettier defaults so non-VS Code editors share indentation,
   newline, and trailing whitespace rules with documented validation checklist (Task 3.4.2)
+- ✅ Root-level Playwright orchestration commands provide unified headless/headed/UI E2E execution
+  with documentation alignment (Task 3.5.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -101,6 +103,18 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-27 – Playwright Workspace Orchestration (Task 3.5.1)
+
+- Centralized Playwright dependencies in the root workspace and added `test:e2e`, `test:e2e:headed`,
+  `test:e2e:install`, and `test:e2e:report` scripts, delegating `test:e2e:ui` to the client’s new
+  `test:browser:ui` command to keep interactive runs in the correct package context.
+- Updated `docs/developer-onboarding.md` and `docs/comprehensive-testing-guide.md` with install,
+  headless/headed execution, UI runner usage, and report review instructions so contributors can
+  rely on root scripts without rediscovering workflow details.
+- Validation coverage confirmed via `pnpm run test:e2e:install`, `pnpm run test:e2e`,
+  `pnpm run test:e2e:headed`, `pnpm --filter @critgenius/client exec -- playwright test --list`, and
+  `pnpm run test:e2e:ui` (manual exit after verifying suite visibility).
 
 ### 2025-10-27 – EditorConfig Alignment with Prettier (Task 3.4.2)
 
@@ -169,6 +183,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-10-27:** Adopted root-level Playwright orchestration pattern with delegated UI runner to
+  the client package to keep workspace scripts consistent while preserving package-scoped
+  configuration.
 - **2025-10-27:** Ratified EditorConfig ↔ Prettier alignment as a mandatory cross-editor baseline
   with documented reviewer checklist to maintain parity as formatting defaults evolve.
 - **2025-10-26:** Ratified VS Code workspace Prettier enforcement so save-on-format behaviour stays

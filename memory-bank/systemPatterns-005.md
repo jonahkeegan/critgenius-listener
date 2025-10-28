@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-15 | Segment Version: 1.3.0
+Last Updated: 2025-10-27 | Segment Version: 1.4.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -62,6 +62,27 @@ Parent Index: `systemPatterns-index.md`
   flake by coordinating fake timer advancement.
 - Validation: `pnpm --filter @critgenius/test-utils test` exercises package suites (24 tests) and
   `pnpm --filter @critgenius/test-utils build` verifies TypeScript emission.
+
+### Testing Infrastructure Pattern: Workspace Playwright Orchestration (Task 3.5.1)
+
+- Pattern: Centralize Playwright dependencies and orchestration scripts at the workspace root while
+  delegating UI runs to the client package so headless, headed, and interactive E2E flows stay in
+  sync with package-local configuration.
+- Implementation: Root `package.json` now declares `@playwright/test` and `playwright` so
+  `pnpm install` manages browser binaries once for the monorepo; new scripts (`test:e2e`,
+  `test:e2e:headed`, `test:e2e:install`, `test:e2e:report`) fan into the client package via pnpm
+  filters, and `test:e2e:ui` delegates to the client's new `test:browser:ui` script to keep the
+  interactive runner anchored to `packages/client/playwright.config.ts`. Documentation updates in
+  `docs/developer-onboarding.md` and `docs/comprehensive-testing-guide.md` capture install,
+  headless/headed execution, UI debugging, and report review workflows so contributors rely on a
+  single command surface.
+- Benefits: Eliminates duplicate Playwright tooling across packages, ensures the UI runner locates
+  tests without manual directory changes, and provides a documented workflow for installing
+  browsers, running headless/headed suites, launching the UI, and opening reports directly from the
+  repo root.
+- Validation: `pnpm run test:e2e:install`, `pnpm run test:e2e`, `pnpm run test:e2e:headed`,
+  `pnpm --filter @critgenius/client exec -- playwright test --list`, and `pnpm run test:e2e:ui`
+  (manual exit after confirming suite visibility).
 
 ### Coverage Configuration Single Source Pattern (Task 3.2.1.1)
 
@@ -224,6 +245,8 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
+- 2025-10-27: Added workspace Playwright orchestration pattern; incremented segment to version
+  1.4.0.
 - 2025-10-14: Expanded coverage orchestration validation pattern with module URL normalization,
   failure aggregation handling, and follow-up roadmap; incremented segment to version 1.2.0.
 - 2025-10-13: Added coverage orchestration validation pattern, documentation updates, and validator

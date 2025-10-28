@@ -15,6 +15,7 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:browser": "playwright test",
     "test:browser:headed": "playwright test --headed",
+    "test:browser:ui": "playwright test --ui",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "lint:a11y": "eslint src --ext .tsx --rule 'jsx-a11y/*:error'",
