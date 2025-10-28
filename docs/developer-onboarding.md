@@ -43,6 +43,15 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
   detects it, Sublime Text works via JsPrettier, and Vim/Neovim users can wire it up through ALE or
   coc-prettier).
 
+### Format-on-Save Validation Procedure
+
+- Follow `docs/format-on-save-validation.md` whenever you tweak Prettier, EditorConfig, or lint
+  automation. The guide walks through package × file-type coverage, ESLint auto-fix checks, and
+  pre-commit alignment.
+- Keep scratch files ephemeral—delete them once each matrix cell is validated to avoid noisy diffs.
+- Capture outcomes in the validation matrix and drop a short note in `task-completion-reports/` if
+  you run the audit as part of an infrastructure task.
+
 ### EditorConfig Support (All Editors)
 
 The repository ships a root-level `.editorconfig` to keep fundamental whitespace rules aligned
@@ -103,6 +112,7 @@ configurations stay in sync.
 | Lint (all)                 | `pnpm -w lint`                 |
 | Type-check                 | `pnpm -w type-check`           |
 | Tests (all)                | `pnpm -w test`                 |
+| Browser E2E (headless)     | `pnpm run test:e2e`            |
 | Format write               | `pnpm -w format`               |
 | Pre-commit validate (full) | `pnpm precommit:validate`      |
 | Pre-commit scenario suite  | `pnpm precommit:simulate`      |
@@ -112,6 +122,18 @@ configurations stay in sync.
 
 Need deeper linting context? Start with `docs/eslint-guide.md` for workflows, rule rationale, and
 troubleshooting.
+
+### Browser E2E Workflow
+
+- Run `pnpm run test:e2e:install` once per machine (or after Playwright updates) to download browser
+  binaries with OS dependencies.
+- Execute `pnpm run test:e2e` from the repo root to launch the client Playwright suite in headless
+  mode via the workspace filter.
+- Use `pnpm run test:e2e:headed` while debugging UI flows locally, or `pnpm run test:e2e:ui` for the
+  interactive Playwright test runner.
+- After a run, inspect results with `pnpm run test:e2e:report`; it opens the last Playwright HTML
+  report without re-running tests.
+- All commands respect pnpm workspaces, so you can trigger them from any directory inside the repo.
 
 ### Coverage Workflow Integration
 

@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-27 | Index Version: 1.26.0 | Status: Active
+Last Updated: 2025-10-27 | Index Version: 1.27.0 | Status: Active
 
 ## Segment Registry
 
@@ -58,6 +58,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | CI Coverage Reporting & Codecov Integration                | 004     |
 | Disposable ESLint Fixture Harness                          | 004     |
 | VS Code Workspace Prettier Enforcement                     | 004     |
+| Workspace Playwright E2E Orchestration                     | 005     |
 
 ## Maintenance Protocol
 
@@ -75,6 +76,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-27: Added workspace Playwright orchestration pattern (Task 3.5.1) to segment 005 and
+  bumped index version to 1.27.0.
 - 2025-10-27: Registered EditorConfig cross-editor alignment pattern (Task 3.4.2) in segment 004 and
   bumped index version to 1.26.0.
 - 2025-10-26: Registered VS Code workspace Prettier enforcement pattern (Task 3.4.1) in segment 004
