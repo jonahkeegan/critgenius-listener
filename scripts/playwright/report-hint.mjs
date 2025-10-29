@@ -27,7 +27,7 @@ try {
   lines.push('Open it with:');
   lines.push('  pnpm run test:e2e:report');
 } catch (error) {
-  if (error && typeof error === 'object' && 'code' in error) {
+  if (error && typeof error === 'object' && error && error.code === 'ENOENT') {
     lines.push('No Playwright report found. Generate one by running:');
     lines.push(
       '  pnpm --filter @critgenius/client exec -- playwright test --project=chromium-desktop'
