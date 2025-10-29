@@ -103,6 +103,12 @@ jobs:
       - name: Run coverage integration tests
         run: pnpm run test:infrastructure:integration
 
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -123,12 +129,6 @@ jobs:
             coverage/**/coverage-final.json
           flags: listener
           fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build-and-validate:
@@ -194,6 +194,12 @@ jobs:
 
       - name: Infrastructure tests
         run: pnpm run test:infrastructure
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload path diagnostics
         if: ${{ always() }}

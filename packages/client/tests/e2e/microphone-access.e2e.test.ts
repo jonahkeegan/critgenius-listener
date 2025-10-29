@@ -6,6 +6,8 @@ import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 
+import { validatePlaywrightConfig } from './helpers/config-validator';
+
 import { ensureTextEncoding } from '../helpers/text-encoding-polyfill';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
@@ -47,6 +49,11 @@ async function compileGuardBundle(): Promise<string> {
   const source = result.outputFiles[0]?.text ?? '';
   return `${source}\nwindow.__createMicrophoneAccessGuard = MicrophoneAccessGuardModule.createMicrophoneAccessGuard;\nwindow.__MICROPHONE_ACCESS_STATUS = MicrophoneAccessGuardModule.MICROPHONE_ACCESS_STATUS;`;
 }
+
+test.beforeAll(async ({ browser }, workerInfo) => {
+  void browser;
+  validatePlaywrightConfig(workerInfo.config);
+});
 
 test.beforeAll(async () => {
   ensureTextEncoding();
