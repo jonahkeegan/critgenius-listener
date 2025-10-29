@@ -39,7 +39,7 @@ function getReporterEntries(config: NormalizedConfig): ReporterEntry[] {
     return [];
   }
   const entriesArray = Array.isArray(reporterField)
-    ? [...reporterField]
+    ? reporterField
     : [reporterField];
   return entriesArray as ReporterEntry[];
 }
