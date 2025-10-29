@@ -103,6 +103,12 @@ jobs:
       - name: Run coverage integration tests
         run: pnpm run test:infrastructure:integration
 
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Upload coverage artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
