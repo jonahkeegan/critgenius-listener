@@ -125,12 +125,6 @@ jobs:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   build-and-validate:
     runs-on: ubuntu-latest
     env:
@@ -185,6 +179,12 @@ jobs:
 
       - name: Lint (fail on warnings)
         run: pnpm run lint:ci
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Type check
         run: pnpm run type-check
