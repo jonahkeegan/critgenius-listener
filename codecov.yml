@@ -7,6 +7,7 @@ coverage:
   range: 0..100
   ignore:
     - "packages/client/tests/e2e/**"
+    - "packages/client/tests/integration/*.integration.test.ts"
     - "tests/infrastructure/thematic-summary.paths.test.ts"
   status:
     project:
