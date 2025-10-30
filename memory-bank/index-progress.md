@@ -1,13 +1,13 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-27 **Version:** 1.39.0 **System Status:** Active
+**Last Updated:** 2025-10-29 **Version:** 1.41.0 **System Status:** Active
 
 ## Active File
 
-- **Currently Active:** `progress-004.md`
+- **Currently Active:** `progress-005.md`
 - **Status:** Active - New Segment
-- **Current Row Count:** ~176
-- **Last Updated:** 2025-10-27
+- **Current Row Count:** ~82
+- **Last Updated:** 2025-10-29 14:45 PST
 
 ## File Registry
 
@@ -46,9 +46,11 @@
 - **Description:** Segment tracking late-stage infrastructure refinements (reload validation, secure
   context, hardened proxy) while activating audio capture architecture modernization
 
-- **Status:** Active - New Segment
-- **Row Count:** ~176
-- **Date Range:** 2025-09-28 21:01 PST to Present
+### progress-004.md
+
+- **Status:** Archived
+- **Row Count:** 382
+- **Date Range:** 2025-09-28 21:01 PST to 2025-10-29 10:33 PST
 - **Primary Topics:** HTTPS Socket.IO verification, TLS resilience testing, Vitest configuration
   standardization, workspace hardening, AssemblyAI realtime stability coverage, performance latency
   benchmarking & regression detection hardening, Node 18 path diagnostics & normalization
@@ -58,12 +60,22 @@
   execution, ESLint configuration audit & accessibility policy governance, ESLint validation
   infrastructure expansion, CI lint workflow guard enforcement, VS Code Prettier workspace
   automation, EditorConfig ↔ Prettier alignment across editors, workspace Playwright E2E
-  orchestration & documentation alignment
+  orchestration & documentation alignment, Playwright browser matrix & runtime config validation
 - **Description:** New progress segment continuation from progress-003 with carried forward tasks;
   now tracking secure realtime verification milestones, unified workspace execution readiness,
   cross-platform path normalization reliability, deterministic integration timeouts, comprehensive
   testing documentation validation, coverage tooling guardrails, and documented integration test
   patterns
+
+### progress-005.md
+
+- **Status:** Active - New Segment
+- **Row Count:** ~82
+- **Date Range:** 2025-10-29 10:33 PST to Present
+- **Primary Topics:** Cross-browser Playwright smoke stabilization, remaining infrastructure
+  carry-over tasks
+- **Description:** New progress segment continuation from progress-004 with carried forward tasks
+  (Task 1.7, Task 2.1.3) and browser matrix reliability hardening.
 
 ## Maintenance Protocol
 
@@ -71,6 +83,13 @@
 - Update this index (row counts, timestamps) with each segment mutation
 - Archive segment by marking status Archived and freezing its header metadata
 
+- 2025-10-29 14:45 PST: Logged Task 3.5.3 cross-browser E2E smoke tests; Firefox stability restored
+  and full matrix validated in progress-005.
+- 2025-10-29 10:33 PST: Incremented from progress-004 to progress-005; archived previous segment at
+  382 lines
+- 2025-10-28: Logged Task 3.5.2 Playwright browser matrix & config validation; progress segment
+  updated with six-project coverage, runtime validator guard, documentation/report command
+  alignment, and validation trail.
 - 2025-10-27: Logged Task 3.5.1 Playwright dependencies & scripts configuration; progress segment
   updated with root-level Playwright tooling, delegated UI runner, documentation refresh, and
   validation trail.

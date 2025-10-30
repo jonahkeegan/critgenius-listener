@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-27 | Version: 1.33.0 | System Status: Active
+Last Updated: 2025-10-29 | Version: 1.35.0 | System Status: Active
 
 ## Active Segments
 
@@ -68,6 +68,8 @@ domain emerges that doesn't fit existing thematic separation.
 | VS Code Workspace Prettier Format-on-Save                        | 002     |
 | EditorConfig ↔ Prettier Alignment                               | 002     |
 | Workspace Playwright E2E Orchestration                           | 002     |
+| Playwright Browser Matrix & Runtime Config Guard                 | 002     |
+| Playwright Socket Event Buffer Instrumentation                   | 002     |
 
 ## Maintenance Protocol
 
@@ -84,6 +86,10 @@ domain emerges that doesn't fit existing thematic separation.
 
 ## Recent Changes
 
+- 2025-10-29: Logged Playwright socket event buffer instrumentation topic (Task 3.5.3) in segment
+  002; version bumped to 1.35.0.
+- 2025-10-28: Logged Playwright browser matrix & runtime config guard topic (Tasks 3.5.1–3.5.2) in
+  segment 002; version bumped to 1.34.0.
 - 2025-10-27: Logged Workspace Playwright E2E orchestration topic (Task 3.5.1) in segment 002;
   version bumped to 1.33.0.
 - 2025-10-27: Added EditorConfig ↔ Prettier alignment topic (Task 3.4.2) to segment 002; version
