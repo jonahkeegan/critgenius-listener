@@ -1,7 +1,7 @@
 # Active Context Index
 
-- **Last Updated:** 2025-10-27
-- **Version:** 1.1.7
+- **Last Updated:** 2025-10-29
+- **Version:** 1.1.9
 - **System Status:** Active
 
 ## Overview
@@ -14,7 +14,7 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~186 (target 150) **Last Updated:** 2025-10-27
+**Current Row Count:** ~265 (target 150) **Last Updated:** 2025-10-29
 
 ## File Registry
 
@@ -113,6 +113,11 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-10-29: Logged Playwright socket event buffer instrumentation (Task 3.5.3), refreshing current
+  capabilities, latest updates, and decision log.
+- 2025-10-28: Recorded Playwright browser matrix & runtime config guard (Task 3.5.2), updating
+  current capabilities, latest updates, and decision log with responsive coverage, artifact
+  retention, and validator safeguards.
 - 2025-10-27: Recorded Playwright workspace orchestration (Task 3.5.1), expanding current
   capabilities, latest updates, and decision log to reflect centralized E2E commands and
   documentation alignment.

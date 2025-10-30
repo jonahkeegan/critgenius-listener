@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-27 | Index Version: 1.27.0 | Status: Active
+Last Updated: 2025-10-29 | Index Version: 1.29.0 | Status: Active
 
 ## Segment Registry
 
@@ -52,6 +52,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | ESLint Flat Config Single-Source Enforcement               | 004     |
 | CI Lint Workflow Guard                                     | 004     |
 | Vitest Timeout Governance & Dialog Resilience              | 004     |
+| Playwright Runtime Config Validation                       | 004     |
+| Playwright Socket Event Buffer Observability               | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
 | Coverage Orchestration Validation Guard                    | 005     |
 | Coverage Gate Recalibration for Parallel Execution         | 005     |
@@ -59,6 +61,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Disposable ESLint Fixture Harness                          | 004     |
 | VS Code Workspace Prettier Enforcement                     | 004     |
 | Workspace Playwright E2E Orchestration                     | 005     |
+| Playwright Responsive Browser Matrix & Artifact Retention  | 005     |
 
 ## Maintenance Protocol
 
@@ -76,6 +79,11 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-10-29: Added Playwright socket event buffer observability pattern (Task 3.5.3) to segment
+  004; bumped index version to 1.29.0.
+- 2025-10-28: Added Playwright runtime config validation pattern (Task 3.5.2) to segment 004 and
+  Playwright responsive browser matrix pattern (Task 3.5.2) to segment 005; bumped index version to
+  1.28.0.
 - 2025-10-27: Added workspace Playwright orchestration pattern (Task 3.5.1) to segment 005 and
   bumped index version to 1.27.0.
 - 2025-10-27: Registered EditorConfig cross-editor alignment pattern (Task 3.4.2) in segment 004 and

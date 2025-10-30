@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-10-27 14:35 PST
-- **Version:** 2.47.0
+- **Last Updated:** 2025-10-29 14:50 PST
+- **Version:** 2.49.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -72,6 +72,11 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   newline, and trailing whitespace rules with documented validation checklist (Task 3.4.2)
 - ✅ Root-level Playwright orchestration commands provide unified headless/headed/UI E2E execution
   with documentation alignment (Task 3.5.1)
+- ✅ Playwright responsive browser matrix plus runtime config validator delivers six-project
+  coverage with retained artifacts and fast-fail safeguards ahead of HTTPS harness startup (Task
+  3.5.2)
+- ✅ Playwright socket event buffer instrumentation captures deterministic transcript payloads for
+  cross-browser E2E validation while keeping production runtime untouched (Task 3.5.3)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -103,6 +108,29 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-29 – Cross-Browser E2E Smoke Tests (Task 3.5.3)
+
+- Hardened the transcription smoke test by shifting from console parsing to a structured
+  `window.__critgeniusSocketEvents` buffer populated in `SocketService.emitTestEvent`, keeping the
+  instrumentation behind `VITE_E2E` so production behaviour remains unchanged while Playwright gets
+  deterministic payload access.
+- Cleared the event queue before each emission, reused listener readiness checks to avoid timing
+  races, and reran the full six-project matrix to confirm Firefox now passes with Chromium, Edge,
+  and WebKit.
+
+### 2025-10-28 – Playwright Browser Matrix & Runtime Config Guard (Task 3.5.2)
+
+- Expanded `packages/client/playwright.config.ts` to cover six browser/viewport combinations with
+  deterministic `test-results`/`playwright-report` directories, shared fake media flags, and
+  retained screenshots/videos/traces on failure, ensuring responsive coverage remains reproducible.
+- Introduced `packages/client/tests/e2e/helpers/config-validator.ts` and wired it through the
+  microphone access smoke test via Playwright worker fixtures so `workerInfo.config` reporters,
+  directories, and project metadata are validated before the HTTPS harness boots, resolving the
+  earlier TypeScript config import failure.
+- Updated the root `test:e2e:report` script to delegate `playwright show-report` from the client
+  package and refreshed `docs/developer-onboarding.md` plus `docs/comprehensive-testing-guide.md`
+  with viewport matrix tables, watchexec loops, and report inspection guidance.
 
 ### 2025-10-27 – Playwright Workspace Orchestration (Task 3.5.1)
 
@@ -183,6 +211,12 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-10-29:** Ratified Playwright socket event buffer instrumentation as the standard for
+  transcript assertions, eliminating cross-browser console parsing and ensuring deterministic data
+  capture behind the `VITE_E2E` gate.
+- **2025-10-28:** Ratified Playwright responsive browser matrix and runtime config validator as the
+  baseline for E2E coverage, ensuring six-project regression coverage with deterministic artifacts
+  and fast-fail safeguards ahead of harness initialization.
 - **2025-10-27:** Adopted root-level Playwright orchestration pattern with delegated UI runner to
   the client package to keep workspace scripts consistent while preserving package-scoped
   configuration.

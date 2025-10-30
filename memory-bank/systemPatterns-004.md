@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-27 | Segment Version: 1.6.0
+Last Updated: 2025-10-29 | Segment Version: 1.8.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -160,6 +160,24 @@ Parent Index: `systemPatterns-index.md`
   including Markdown trailing spaces and lockfile newline handling; no automated tests required for
   configuration-only change.
 
+### Playwright Runtime Config Validation Pattern (Task 3.5.2)
+
+- **Pattern:** Gate Playwright E2E runs behind a runtime validator that inspects `workerInfo.config`
+  so reporters, output directories, and project definitions stay aligned with the authoritative
+  configuration regardless of code refactors.
+- **Implementation:** Authored `packages/client/tests/e2e/helpers/config-validator.ts` to assert the
+  presence of HTML/JSON/list reporters, deterministic `test-results` and `playwright-report`
+  directories, and the six defined browser projects. The validator is invoked from
+  `packages/client/tests/e2e/microphone-access.e2e.test.ts` via Playwright worker fixtures before
+  the HTTPS harness initializes, replacing the brittle `require('../../playwright.config')` guard
+  that previously failed under TypeScript resolution.
+- **Benefits:** Fails fast with actionable messaging when reporters or directories drift, prevents
+  silent Playwright exits during CI, and keeps high-latency harness setup from running with missing
+  configuration. The guard also documents expected project metadata for future contributors.
+- **Validation:**
+  `pnpm --filter @critgenius/client exec -- playwright test --project=chromium-desktop`,
+  `pnpm run test:e2e` (six projects), `pnpm -w lint`.
+
 ### Vitest Timeout Governance & Dialog Resilience Pattern
 
 - **Pattern:** Set conservative global timeouts and rebuild UI tests to ensure predictable
@@ -172,8 +190,26 @@ Parent Index: `systemPatterns-index.md`
   client coverage without sacrificing stability.
 - **Validation:** `pnpm --filter @critgenius/client test -- --coverage`, `pnpm -w test`.
 
+### Playwright Socket Event Buffer Observability Pattern (Task 3.5.3)
+
+- **Pattern:** Replace console-parsed assertions with a structured socket event buffer exposed via
+  `window.__critgeniusSocketEvents`, enabling deterministic transcript verification across all
+  Playwright browsers while keeping instrumentation gated behind `VITE_E2E`.
+- **Implementation:** `SocketService.emitTestEvent` now appends emitted payloads to a global queue
+  during E2E runs and clears it per emission. The transcription smoke test awaits listener
+  registration, resets the shared queue, triggers the mock socket event, and polls the recorded
+  payload instead of scraping Firefox’s console handle output.
+- **Benefits:** Eliminates cross-browser flakiness caused by driver-specific console serialization,
+  accelerates failure diagnostics with exact payload capture, and keeps production runtime unchanged
+  because the buffer only activates when `VITE_E2E === 'true'`.
+- **Validation:**
+  `pnpm --filter @critgenius/client exec -- playwright test tests/e2e/transcription-display.e2e.test.ts --project=firefox-desktop`,
+  `pnpm --filter @critgenius/client exec -- playwright test`.
+
 ## Change Log (Segment 004)
 
+- 2025-10-29: Added Playwright socket event buffer observability pattern; version bump to 1.8.0.
+- 2025-10-28: Added Playwright runtime config validation pattern; version bump to 1.7.0.
 - 2025-10-27: Added EditorConfig cross-editor alignment pattern; version bump to 1.6.0.
 - 2025-10-26: Added VS Code workspace Prettier enforcement pattern; version bump to 1.5.0.
 - 2025-10-23: Added CI lint workflow guard pattern; version bump to 1.4.0.

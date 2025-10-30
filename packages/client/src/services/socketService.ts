@@ -22,6 +22,20 @@ const nodeHttpsModulePromise: Promise<NodeHttpsModule> | null =
     : null;
 // This eager promise avoids repeated dynamic imports when the service reconnects in Node.
 
+type ImportMetaWithEnv = ImportMeta & {
+  env?: Record<string, unknown>;
+};
+
+const importMetaEnv =
+  typeof import.meta !== 'undefined' &&
+  typeof (import.meta as ImportMetaWithEnv).env === 'object'
+    ? ((import.meta as ImportMetaWithEnv).env as Record<string, unknown>)
+    : undefined;
+
+const isE2ETestContext =
+  typeof importMetaEnv?.VITE_E2E === 'string' &&
+  importMetaEnv.VITE_E2E === 'true';
+
 type QueueItem<
   K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
 > = {
@@ -282,6 +296,30 @@ class SocketService {
     }
   }
 
+  public emitTestEvent<K extends keyof ServerToClientEvents>(
+    event: K,
+    ...args: ServerToClientEvents[K] extends (...a: infer P) => unknown
+      ? P
+      : never
+  ): void {
+    if (!isE2ETestContext) {
+      return;
+    }
+
+    this.emitToInternalListeners(event, ...(args as never));
+
+    const testGlobal = globalThis as CritgeniusTestGlobal;
+    if (!Array.isArray(testGlobal.__critgeniusSocketEvents)) {
+      testGlobal.__critgeniusSocketEvents = [];
+    }
+
+    testGlobal.__critgeniusSocketEvents.push({
+      event,
+      payload: args,
+      timestamp: Date.now(),
+    });
+  }
+
   public getConnectionState(): SocketConnectionState {
     return {
       ...this.connectionState,
@@ -445,4 +483,23 @@ class SocketService {
   }
 }
 
-export default SocketService.getInstance();
+const socketServiceInstance = SocketService.getInstance();
+
+type CritgeniusTestGlobal = typeof globalThis & {
+  __critgeniusSocketService?: SocketService;
+  __critgeniusSocketEvents?: Array<{
+    event: keyof ServerToClientEvents;
+    payload: ReadonlyArray<unknown>;
+    timestamp: number;
+  }>;
+};
+
+if (isE2ETestContext) {
+  const testGlobal = globalThis as CritgeniusTestGlobal;
+  testGlobal.__critgeniusSocketService = socketServiceInstance;
+  if (!Array.isArray(testGlobal.__critgeniusSocketEvents)) {
+    testGlobal.__critgeniusSocketEvents = [];
+  }
+}
+
+export default socketServiceInstance;
