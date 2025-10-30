@@ -212,6 +212,7 @@ describe('ci workflow coverage integration', () => {
     );
     expect(testResultsStep?.if).toBe('${{ !cancelled() }}');
     expect(testResultsStep?.uses).toBe('codecov/test-results-action@v1');
+    expect(testResultsStep?.with?.files).toBe('reports/**/*.xml');
     expect(testResultsStep?.with?.token).toBe('${{ secrets.CODECOV_TOKEN }}');
   });
 });
