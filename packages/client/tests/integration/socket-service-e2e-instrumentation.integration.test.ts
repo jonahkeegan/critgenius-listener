@@ -1,3 +1,5 @@
+/* c8 ignore file */
+
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ServerToClientEvents } from '../../src/types/socket';
