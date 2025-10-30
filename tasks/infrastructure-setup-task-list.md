@@ -386,17 +386,17 @@
           verification steps
   - [ ] 3.5 Install and configure cross-browser testing using Playwright for Chrome, Firefox, Edge,
         Safari
-    - [ ] 3.5.1 Install Playwright dependencies and configure package.json scripts for cross-browser
+    - [x] 3.5.1 Install Playwright dependencies and configure package.json scripts for cross-browser
           testing - Add Playwright packages to workspace root, configure test scripts, and ensure
           compatibility with existing monorepo structure
-    - [ ] 3.5.2 Configure Playwright with browser targets (Chrome, Firefox, Edge, Safari), viewport
+    - [x] 3.5.2 Configure Playwright with browser targets (Chrome, Firefox, Edge, Safari), viewport
           settings, and HTML/JSON reporters - Create playwright.config.ts with browser projects,
           responsive viewport configurations, test output directories, and reporting formats
-    - [ ] 3.5.3 Create test file structure and foundational cross-browser smoke tests validating
+    - [x] 3.5.3 Create test file structure and foundational cross-browser smoke tests validating
           core functionality - Establish tests/e2e directory structure, implement smoke tests for
           critical user journeys (audio capture, transcription display), and ensure tests run across
           all target browsers
-    - [ ] 3.5.4 Integrate Playwright into GitHub Actions CI with browser matrix and artifact
+    - [x] 3.5.4 Integrate Playwright into GitHub Actions CI with browser matrix and artifact
           storage - Add Playwright job to CI workflow, configure browser matrix execution, set up
           test artifact uploads for screenshots/videos, and establish failure gates
     - [ ] 3.5.5 Configure test parallelization with worker optimization and browser-specific
