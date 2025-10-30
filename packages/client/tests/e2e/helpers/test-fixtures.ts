@@ -66,8 +66,7 @@ export async function startClientAppServer(): Promise<string> {
 
   const port = await allocatePort();
   server = await createViteServer(port);
-  const resolvedPort = port;
-  baseUrl = `http://127.0.0.1:${resolvedPort}`;
+  baseUrl = `http://127.0.0.1:${port}`;
   referenceCount = 1;
 
   return baseUrl;

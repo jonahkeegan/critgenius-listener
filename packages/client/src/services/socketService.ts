@@ -32,9 +32,17 @@ const importMetaEnv =
     ? ((import.meta as ImportMetaWithEnv).env as Record<string, unknown>)
     : undefined;
 
+const processEnvViteE2E =
+  typeof process !== 'undefined' &&
+  typeof process.env === 'object' &&
+  typeof process.env.VITE_E2E === 'string'
+    ? process.env.VITE_E2E
+    : undefined;
+
 const isE2ETestContext =
-  typeof importMetaEnv?.VITE_E2E === 'string' &&
-  importMetaEnv.VITE_E2E === 'true';
+  (typeof importMetaEnv?.VITE_E2E === 'string' &&
+    importMetaEnv.VITE_E2E === 'true') ||
+  processEnvViteE2E === 'true';
 
 type QueueItem<
   K extends keyof ClientToServerEvents = keyof ClientToServerEvents,
@@ -485,6 +493,12 @@ class SocketService {
 
 const socketServiceInstance = SocketService.getInstance();
 
+/**
+ * Extends the runtime global scope with E2E-only hooks that expose the socket
+ * service and captured events. These properties are hydrated when
+ * `VITE_E2E === 'true'` so Playwright tests can inspect and trigger socket
+ * behaviour without affecting production builds.
+ */
 type CritgeniusTestGlobal = typeof globalThis & {
   __critgeniusSocketService?: SocketService;
   __critgeniusSocketEvents?: Array<{
