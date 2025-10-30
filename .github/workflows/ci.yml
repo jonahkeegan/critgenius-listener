@@ -220,3 +220,111 @@ jobs:
 
       - name: Env drift check (proxy registry & templates)
         run: pnpm run validate:proxy
+
+  e2e-tests:
+    name: E2E Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    needs: build-and-validate
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser:
+          - chromium-desktop
+          - chromium-tablet
+          - chromium-mobile
+          - firefox-desktop
+          - edge-desktop
+          - webkit-desktop
+    env:
+      CI: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: |
+          pnpm --filter @critgenius/shared run build
+          pnpm --filter @critgenius/test-utils run build
+          pnpm --filter @critgenius/client run build
+
+      - name: Install Playwright browsers
+        run: |
+          pnpm --filter @critgenius/client exec -- playwright install --with-deps chromium firefox webkit
+
+      - name: Install Microsoft Edge browser
+        if: matrix.browser == 'edge-desktop'
+        run: pnpm --filter @critgenius/client exec -- playwright install --with-deps msedge
+
+      - name: Start dev server
+        env:
+          VITE_E2E: "true"
+        run: |
+          pnpm --filter @critgenius/client run dev &
+          sleep 10
+          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:5173
+
+      - name: Run Playwright tests
+        env:
+          VITE_E2E: "true"
+        run: pnpm --filter @critgenius/client exec -- playwright test --project=${{ matrix.browser }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.browser }}
+          path: packages/client/test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: packages/client/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos-${{ matrix.browser }}
+          path: packages/client/test-results/**/*.webm
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-screenshots-${{ matrix.browser }}
+          path: packages/client/test-results/**/*.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces-${{ matrix.browser }}
+          path: packages/client/test-results/**/*.zip
+          retention-days: 7
+          if-no-files-found: ignore

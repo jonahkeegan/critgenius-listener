@@ -55,3 +55,37 @@ Improvements_Identified_For_Consolidation:
   upcoming E2E specs.
 
 ---
+
+Date: 2025-10-30 TaskRef: "Task 3.5.4 Playwright CI Integration"
+
+Learnings:
+
+- Introducing an `e2e-tests` matrix job in `.github/workflows/ci.yml` keeps cross-browser coverage
+  automated by reusing the build-and-validate outputs, launching a health-checked dev server, and
+  retaining per-browser artifacts for debugging.
+- Aligning local scripts (`package.json`, `packages/client/package.json`) with CI commands ensures
+  developers can mirror the pipeline by running browser-targeted Playwright tests and installing the
+  full browser set, including Edge.
+
+Success Patterns:
+
+- Split browser installation so Chromium/Firefox/WebKit install for every matrix entry while
+  `msedge` installs only when the Edge project runs, trimming redundant setup time.
+- Captured reports, results, screenshots, videos, and traces via `actions/upload-artifact@v4` using
+  browser-specific names, making failures fast to triage directly from workflow runs.
+
+Implementation Excellence:
+
+- Added `VITE_E2E` to the workflow environment and dev-server start so Playwright instrumentation
+  toggles on consistently in CI without manual env management.
+- Authored `tests/infrastructure/playwright-ci-integration.test.ts` to scan the workflow and
+  Playwright config, protecting the matrix wiring and artifact expectations from accidental drift.
+
+Improvements_Identified_For_Consolidation:
+
+- Capture CI runtime metrics after a few runs to inform Task 3.5.5 parallelization decisions and
+  document recommended worker settings once stabilized.
+- Extend contributor docs with a quick-reference table mapping matrix browsers to their viewport
+  specs for faster test planning.
+
+---
