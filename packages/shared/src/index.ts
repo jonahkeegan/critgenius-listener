@@ -5,25 +5,25 @@
  */
 
 // Export all types
-export * from './types/index';
+export * from './types/index.js';
 
 // Export all utilities
-export * from './utils/index';
+export * from './utils/index.js';
 
 // Export all constants
-export * from './constants/index';
+export * from './constants/index.js';
 
 // Export all interfaces
-export * from './interfaces/index';
+export * from './interfaces/index.js';
 
 // Export version information
-export { version, getVersionInfo } from './version';
+export { version, getVersionInfo } from './version.js';
 
 // Export environment configuration and validation
-export * from './config/environment';
-export * from './config/environmentLoader';
-export * from './config/proxyRegistry';
-export * from './config/toolingVersionPolicy';
+export * from './config/environment.js';
+export * from './config/environmentLoader.js';
+export * from './config/proxyRegistry.js';
+export * from './config/toolingVersionPolicy.js';
 
 // Export AssemblyAI configuration (explicit import to avoid naming conflicts)
 export {
