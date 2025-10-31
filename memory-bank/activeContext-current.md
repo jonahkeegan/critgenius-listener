@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-10-29 14:50 PST
-- **Version:** 2.49.0
+- **Last Updated:** 2025-10-30 11:05 PST
+- **Version:** 2.50.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -77,6 +77,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   3.5.2)
 - ✅ Playwright socket event buffer instrumentation captures deterministic transcript payloads for
   cross-browser E2E validation while keeping production runtime untouched (Task 3.5.3)
+- ✅ Playwright CI browser matrix job with browser-scoped artifacts, aligned scripts, infrastructure
+  guard, and contributor guide keeps cross-browser E2E automation reliable (Task 3.5.4)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -108,6 +110,21 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-10-30 – Playwright CI Browser Matrix Integration (Task 3.5.4)
+
+- Added an `e2e-tests` job to `.github/workflows/ci.yml` downstream of `build-and-validate`,
+  installing Chromium/Firefox/WebKit with conditional Edge support, exporting `VITE_E2E`, health
+  checking the dev server, and running each Playwright project in a matrix while uploading
+  browser-scoped artifacts (results, reports, traces, videos, screenshots) for post-failure
+  analysis.
+- Aligned local tooling by expanding the root `test:e2e:install` command to install all browsers and
+  adding per-browser scripts in `packages/client/package.json` so developers can mirror CI’s matrix
+  targeting without reconstructing commands.
+- Authored `docs/playwright-ci-integration.md` to document workflow flow, artifact retrieval, and
+  troubleshooting; created `tests/infrastructure/playwright-ci-integration.test.ts` to assert job
+  presence, matrix coverage, artifact uploads, and environment wiring. Validation run:
+  `pnpm run test:infrastructure -- tests/infrastructure/playwright-ci-integration.test.ts`.
 
 ### 2025-10-29 – Cross-Browser E2E Smoke Tests (Task 3.5.3)
 
@@ -211,6 +228,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-10-30:** Ratified Playwright CI browser matrix guard as the baseline for E2E automation,
+  requiring the GitHub Actions job, aligned scripts, documentation, and infrastructure test to stay
+  in sync for cross-browser coverage.
 - **2025-10-29:** Ratified Playwright socket event buffer instrumentation as the standard for
   transcript assertions, eliminating cross-browser console parsing and ensuring deterministic data
   capture behind the `VITE_E2E` gate.

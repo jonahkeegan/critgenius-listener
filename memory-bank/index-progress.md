@@ -1,13 +1,13 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-29 **Version:** 1.41.0 **System Status:** Active
+**Last Updated:** 2025-10-30 **Version:** 1.42.0 **System Status:** Active
 
 ## Active File
 
 - **Currently Active:** `progress-005.md`
 - **Status:** Active - New Segment
-- **Current Row Count:** ~82
-- **Last Updated:** 2025-10-29 14:45 PST
+- **Current Row Count:** ~95
+- **Last Updated:** 2025-10-30 11:05 PST
 
 ## File Registry
 
@@ -70,12 +70,13 @@
 ### progress-005.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~82
+- **Row Count:** ~95
 - **Date Range:** 2025-10-29 10:33 PST to Present
-- **Primary Topics:** Cross-browser Playwright smoke stabilization, remaining infrastructure
-  carry-over tasks
+- **Primary Topics:** Cross-browser Playwright smoke stabilization, CI browser matrix integration,
+  remaining infrastructure carry-over tasks
 - **Description:** New progress segment continuation from progress-004 with carried forward tasks
-  (Task 1.7, Task 2.1.3) and browser matrix reliability hardening.
+  (Task 1.7, Task 2.1.3), browser matrix reliability hardening, and GitHub Actions Playwright CI
+  automation.
 
 ## Maintenance Protocol
 
@@ -83,6 +84,8 @@
 - Update this index (row counts, timestamps) with each segment mutation
 - Archive segment by marking status Archived and freezing its header metadata
 
+- 2025-10-30 11:05 PST: Logged Task 3.5.4 Playwright CI integration; CI matrix job, local scripts,
+  documentation, and guard recorded in progress-005.
 - 2025-10-29 14:45 PST: Logged Task 3.5.3 cross-browser E2E smoke tests; Firefox stability restored
   and full matrix validated in progress-005.
 - 2025-10-29 10:33 PST: Incremented from progress-004 to progress-005; archived previous segment at
