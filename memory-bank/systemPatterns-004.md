@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-30 | Segment Version: 1.9.0
+Last Updated: 2025-10-29 | Segment Version: 1.8.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -53,26 +53,6 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** `pnpm vitest run tests/infrastructure/ci-coverage-integration.test.ts`,
   `pnpm vitest run tests/infrastructure/windows-reserved-names.test.ts`, manual workflow inspection
   for Codecov flag alignment.
-
-### Playwright CI Browser Matrix Guard Pattern (Task 3.5.4)
-
-- **Pattern:** Enforce cross-browser Playwright coverage in CI through a dedicated `e2e-tests`
-  matrix job that mirrors local tooling, captures deterministic artifacts, and remains guarded by
-  infrastructure tests and contributor documentation.
-- **Implementation:** `.github/workflows/ci.yml` adds the `e2e-tests` job downstream of
-  `build-and-validate`, reuses the built workspace, installs Chromium/Firefox/WebKit for every
-  matrix entry with conditional Edge installation, exports `VITE_E2E` before launching the client
-  dev server with a health check, runs each Playwright project, and uploads browser-scoped artifacts
-  (results, reports, traces, videos, screenshots) for rapid debugging. Root scripts now expose
-  `test:e2e:install` plus browser-specific commands inside `packages/client` so developers can
-  replicate the matrix locally.
-- **Benefits:** Guarantees CI exercises the entire browser matrix, retains actionable artifacts per
-  browser, keeps local workflows aligned with automation, and codifies the process in
-  `docs/playwright-ci-integration.md` for onboarding.
-- **Validation:** `tests/infrastructure/playwright-ci-integration.test.ts` verifies job presence,
-  matrix browser list, artifact uploads, and environment wiring; documentation provides a manual
-  troubleshooting path;
-  `pnpm run test:infrastructure -- tests/infrastructure/playwright-ci-integration.test.ts`.
 
 ### CI-Only Coverage Enforcement Strategy
 
@@ -228,7 +208,6 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
-- 2025-10-30: Added Playwright CI browser matrix guard pattern; version bump to 1.9.0.
 - 2025-10-29: Added Playwright socket event buffer observability pattern; version bump to 1.8.0.
 - 2025-10-28: Added Playwright runtime config validation pattern; version bump to 1.7.0.
 - 2025-10-27: Added EditorConfig cross-editor alignment pattern; version bump to 1.6.0.

@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-30 | Version: 1.36.0 | System Status: Active
+Last Updated: 2025-10-29 | Version: 1.35.0 | System Status: Active
 
 ## Active Segments
 
@@ -70,7 +70,6 @@ domain emerges that doesn't fit existing thematic separation.
 | Workspace Playwright E2E Orchestration                           | 002     |
 | Playwright Browser Matrix & Runtime Config Guard                 | 002     |
 | Playwright Socket Event Buffer Instrumentation                   | 002     |
-| Playwright CI Browser Matrix Automation                          | 002     |
 
 ## Maintenance Protocol
 
@@ -87,8 +86,6 @@ domain emerges that doesn't fit existing thematic separation.
 
 ## Recent Changes
 
-- 2025-10-30: Logged Playwright CI browser matrix automation topic (Task 3.5.4) in segment 002;
-  version bumped to 1.36.0.
 - 2025-10-29: Logged Playwright socket event buffer instrumentation topic (Task 3.5.3) in segment
   002; version bumped to 1.35.0.
 - 2025-10-28: Logged Playwright browser matrix & runtime config guard topic (Tasks 3.5.1–3.5.2) in

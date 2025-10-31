@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-30 | Index Version: 1.30.0 | Status: Active
+Last Updated: 2025-10-29 | Index Version: 1.29.0 | Status: Active
 
 ## Segment Registry
 
@@ -55,7 +55,6 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Playwright Runtime Config Validation                       | 004     |
 | Playwright Socket Event Buffer Observability               | 004     |
 | CI-Only Coverage Enforcement Strategy                      | 004     |
-| Playwright CI Browser Matrix Guard                         | 004     |
 | Coverage Orchestration Validation Guard                    | 005     |
 | Coverage Gate Recalibration for Parallel Execution         | 005     |
 | CI Coverage Reporting & Codecov Integration                | 004     |
@@ -63,7 +62,6 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | VS Code Workspace Prettier Enforcement                     | 004     |
 | Workspace Playwright E2E Orchestration                     | 005     |
 | Playwright Responsive Browser Matrix & Artifact Retention  | 005     |
-| Playwright CI Integration Guard                            | 005     |
 
 ## Maintenance Protocol
 
@@ -81,9 +79,6 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
-- 2025-10-30: Added Playwright CI browser matrix guard pattern (Task 3.5.4) to segment 004 and
-  Playwright CI integration guard pattern (Task 3.5.4) to segment 005; bumped index version to
-  1.30.0.
 - 2025-10-29: Added Playwright socket event buffer observability pattern (Task 3.5.3) to segment
   004; bumped index version to 1.29.0.
 - 2025-10-28: Added Playwright runtime config validation pattern (Task 3.5.2) to segment 004 and
