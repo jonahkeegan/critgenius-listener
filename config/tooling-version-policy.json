@@ -6,8 +6,8 @@
       "displayName": "Node.js",
       "category": "runtime",
       "expected": {
-        "version": "18.20.4",
-        "minimum": "18.0.0"
+        "version": "20.19.5",
+        "minimum": "20.0.0"
       },
       "detection": {
         "fileGlobs": [
@@ -29,7 +29,7 @@
         {
           "type": "text-includes",
           "file": ".github/workflows/ci.yml",
-          "snippet": "node-version: 18",
+          "snippet": "node-version: 20",
           "required": true
         }
       ],
@@ -42,17 +42,17 @@
       "remediation": [
         {
           "label": "Using nvm",
-          "command": "nvm install 18.20.4 && nvm use 18.20.4",
+          "command": "nvm install 20.19.5 && nvm use 20.19.5",
           "platforms": ["macos", "linux"]
         },
         {
           "label": "Using Volta",
-          "command": "volta install node@18.20.4",
+          "command": "volta install node@20.19.5",
           "platforms": ["macos", "linux", "windows"]
         },
         {
           "label": "Direct download",
-          "command": "https://nodejs.org/dist/v18.20.4/",
+          "command": "https://nodejs.org/dist/v20.19.5/",
           "platforms": ["macos", "linux", "windows"]
         }
       ]

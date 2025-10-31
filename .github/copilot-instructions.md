@@ -30,8 +30,8 @@ normalized transcript events, environment validation, and extensible configurati
 - Testing: Vitest (unit + integration). Avoid external network calls in tests—use mocks.
 - Lint: ESLint zero warnings gate; Prettier formatting. Husky commit-msg enforces Conventional
   Commits.
-- Node version: 18+ (align with engines if present).
-- Target runtime: Modern browsers (client), Node 18 LTS (server). Web Audio API progressive
+- Node version: 20+ (align with engines if present).
+- Target runtime: Modern browsers (client), Node 20 LTS (server). Web Audio API progressive
   enhancement.
 
 ## 4. Core Commands (Always Run From Repo Root Unless Noted)
