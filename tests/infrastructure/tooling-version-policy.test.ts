@@ -25,7 +25,7 @@ describe('tooling version policy manifest', () => {
   it('enforces Node.js minimum version', () => {
     const nodePolicy = getToolPolicyById('node');
     expect(nodePolicy).toBeDefined();
-    expect(nodePolicy?.expected.minimum).toBe('18.0.0');
+    expect(nodePolicy?.expected.minimum).toBe('20.0.0');
     expect(
       nodePolicy?.versionSources.some(source => source.file === 'package.json')
     ).toBe(true);
