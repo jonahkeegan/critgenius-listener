@@ -8,9 +8,7 @@ export class AppPage {
   }
 
   async waitForReady(): Promise<void> {
-    await this.page
-      .getByRole('heading', { name: 'CritGenius Listener' })
-      .waitFor();
+    await this.page.getByTestId('layout-root').waitFor({ state: 'visible' });
   }
 
   startRecordingButton(): Locator {

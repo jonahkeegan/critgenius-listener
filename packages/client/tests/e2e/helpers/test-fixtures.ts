@@ -7,10 +7,13 @@ import type { InlineConfig, PreviewServer } from 'vite';
 let server: PreviewServer | null = null;
 let baseUrl: string | null = null;
 let referenceCount = 0;
+let activeBuildOutputDir: string | null = null;
+
+const PREVIEW_READY_TIMEOUT_MS = 30000;
+const PREVIEW_READY_POLL_INTERVAL_MS = 250;
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const clientRoot = path.resolve(currentDir, '../../..');
-const buildOutputDir = path.resolve(clientRoot, 'dist-e2e');
 
 async function allocatePort(): Promise<number> {
   return await new Promise<number>(resolve => {
@@ -23,7 +26,15 @@ async function allocatePort(): Promise<number> {
   });
 }
 
-async function createViteServer(port: number): Promise<PreviewServer> {
+function resolveBuildOutputDir(port: number): string {
+  const outDirRoot = path.resolve(clientRoot, 'dist-e2e');
+  return path.resolve(outDirRoot, `preview-${port}`);
+}
+
+async function createViteServer(
+  port: number,
+  outDir: string
+): Promise<PreviewServer> {
   const { build, preview } = await import('vite');
   const inlineConfig: InlineConfig = {
     root: clientRoot,
@@ -31,7 +42,7 @@ async function createViteServer(port: number): Promise<PreviewServer> {
     mode: 'production',
     logLevel: 'error',
     build: {
-      outDir: buildOutputDir,
+      outDir,
       emptyOutDir: true,
       sourcemap: false,
       minify: false,
@@ -53,9 +64,41 @@ async function createViteServer(port: number): Promise<PreviewServer> {
     process.env.VITE_E2E = 'true';
   }
 
-  await fs.rm(buildOutputDir, { recursive: true, force: true });
+  await fs.rm(outDir, { recursive: true, force: true });
   await build(inlineConfig);
   return await preview(inlineConfig);
+}
+
+async function delay(ms: number): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitForPreviewReady(url: string): Promise<void> {
+  const deadline = Date.now() + PREVIEW_READY_TIMEOUT_MS;
+  let lastError: unknown;
+
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch(url, { method: 'GET' });
+      if (response.ok) {
+        return;
+      }
+      lastError = new Error(`Preview responded with status ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    await delay(PREVIEW_READY_POLL_INTERVAL_MS);
+  }
+
+  const reason =
+    lastError instanceof Error
+      ? lastError.message
+      : typeof lastError === 'string'
+        ? lastError
+        : 'unknown error';
+
+  throw new Error(`Timed out waiting for preview server at ${url}: ${reason}`);
 }
 
 export async function startClientAppServer(): Promise<string> {
@@ -65,8 +108,11 @@ export async function startClientAppServer(): Promise<string> {
   }
 
   const port = await allocatePort();
-  server = await createViteServer(port);
+  const outDir = resolveBuildOutputDir(port);
+  server = await createViteServer(port, outDir);
   baseUrl = `http://127.0.0.1:${port}`;
+  activeBuildOutputDir = outDir;
+  await waitForPreviewReady(baseUrl);
   referenceCount = 1;
 
   return baseUrl;
@@ -87,6 +133,10 @@ export async function stopClientAppServer(): Promise<void> {
   await server.close();
   server = null;
   baseUrl = null;
+  if (activeBuildOutputDir) {
+    await fs.rm(activeBuildOutputDir, { recursive: true, force: true });
+    activeBuildOutputDir = null;
+  }
 }
 
 export function getClientRoot(): string {
