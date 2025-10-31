@@ -35,7 +35,7 @@ export async function runAction(action, payload = {}) {
         'tooling-version-policy.json'
       );
       const policyJson = await readFile(policyPath, 'utf8');
-  const baseCiYaml = `name: CI\njobs:\n  build:\n    steps:\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 18\n      - uses: pnpm/action-setup@v4\n`;
+      const baseCiYaml = `name: CI\njobs:\n  build:\n    steps:\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - uses: pnpm/action-setup@v4\n`;
 
       const io = {
         async readFile(path, encoding = 'utf8') {
@@ -49,7 +49,7 @@ export async function runAction(action, payload = {}) {
               payload.scenario === 'downgraded' ? 'pnpm@8.14.0' : 'pnpm@8.15.8';
             return JSON.stringify({
               name: 'stub',
-              engines: { node: '>=18.0.0' },
+              engines: { node: '>=20.0.0' },
               packageManager,
             });
           }
@@ -65,7 +65,7 @@ export async function runAction(action, payload = {}) {
             return { stdout: '', stderr: '' };
           }
           if (cmd === 'node') {
-            return { stdout: 'v18.20.4\n', stderr: '' };
+            return { stdout: 'v20.19.5\n', stderr: '' };
           }
           if (cmd === 'pnpm') {
             const version =
