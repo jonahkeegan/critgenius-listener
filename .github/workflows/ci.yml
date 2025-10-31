@@ -266,11 +266,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages
-        run: |
-          pnpm --filter @critgenius/shared run build
-          pnpm --filter @critgenius/test-utils run build
-          pnpm --filter @critgenius/client run build
+      - name: Build shared package
+        run: pnpm --filter @critgenius/shared run build
+
+      - name: Build test-utils package
+        run: pnpm --filter @critgenius/test-utils run build
+
+      - name: Build client package
+        run: pnpm --filter @critgenius/client run build
 
       - name: Install Playwright browsers
         shell: bash
