@@ -1,35 +1,41 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { execFile } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
 const testDir = dirname(fileURLToPath(import.meta.url));
 const helperPath = join(testDir, 'helpers', 'validate-versions-runner.mjs');
+const helperCorePath = join(
+  testDir,
+  'helpers',
+  'validate-versions-runner-core.mjs'
+);
+
+type RunAction = <T = unknown>(
+  action: string,
+  payload?: Record<string, unknown>
+) => Promise<T> | T;
+
+let runActionFn: RunAction | undefined;
+
+beforeAll(async () => {
+  const module = (await import(pathToFileURL(helperCorePath).href)) as {
+    runAction: RunAction;
+  };
+  runActionFn = module.runAction;
+});
 
 async function runHelper<T = unknown>(
   action: string,
   payload: Record<string, unknown> = {}
 ): Promise<T> {
-  const { stdout, stderr } = await execFileAsync(
-    'node',
-    [helperPath, action, JSON.stringify(payload)],
-    {
-      cwd: join(testDir, '..', '..'),
-    }
-  );
-
-  if (stderr && stderr.trim().length > 0) {
-    throw new Error(`helper emitted stderr: ${stderr}`);
+  if (!runActionFn) {
+    throw new Error('helper module failed to load');
   }
-
-  const trimmed = stdout.trim();
-  if (!trimmed) {
-    throw new Error('helper returned empty stdout');
-  }
-
-  return JSON.parse(trimmed) as T;
+  const result = await runActionFn(action, payload);
+  return result as T;
 }
 
 describe('version comparison helpers', () => {
@@ -126,5 +132,24 @@ describe('runValidation with stubbed IO', () => {
     expect(
       result.issues.some((issue: { tool: string }) => issue.tool === 'pnpm')
     ).toBe(true);
+  });
+});
+
+describe('validate-versions runner CLI', () => {
+  it('emits JSON output for parseVersion action', async () => {
+    const { stdout, stderr } = await execFileAsync(
+      'node',
+      [helperPath, 'parseVersion', JSON.stringify({ value: '18.2' })],
+      {
+        cwd: join(testDir, '..', '..'),
+      }
+    );
+
+    expect(stderr.trim()).toBe('');
+    expect(JSON.parse(stdout.trim())).toMatchObject({
+      major: 18,
+      minor: 2,
+      patch: 0,
+    });
   });
 });
