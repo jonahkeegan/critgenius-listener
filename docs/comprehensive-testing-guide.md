@@ -1,6 +1,6 @@
 # Comprehensive Testing Guide
 
-**Version:** 1.0.0 **Last Updated:** 2025-10-27 **Target Audience:** Expert developers familiar with
+**Version:** 1.1.0 **Last Updated:** 2025-10-31 **Target Audience:** Expert developers familiar with
 testing concepts but new to CritGenius Listener's testing patterns **Status:** Complete
 
 ---
@@ -971,6 +971,11 @@ Uncovered files:
 - **Headless regression**: `pnpm run test:e2e` fans into
   `pnpm --filter @critgenius/client test:browser` so the root orchestrates the client Playwright
   suite without extra setup.
+- **Parallelization defaults**: Playwright scales workers automatically (local = half cores, CI =
+  2). See `docs/playwright-parallelization-guide.md` for tuning guidance and verification checks.
+- **Sharding (optional)**: Export `SHARD=1/2` (or similar) then run
+  `pnpm --filter @critgenius/client test:browser:shard` to split large suites while preserving
+  deterministic failure reproduction.
 - **Debug modes**: `pnpm run test:e2e:headed` launches visible browsers, while
   `pnpm run test:e2e:ui` opens the Playwright UI runner for selective replays.
 - **Report review**: `pnpm run test:e2e:report` serves the latest HTML report, keeping failed trace
@@ -2622,15 +2627,18 @@ Before marking testing task complete, verify:
   requirements
 - [Integration Test Patterns](./integration-test-patterns.md) - Pattern catalog
 - [Performance Testing Guide](./performance-testing-guide.md) - Performance testing procedures
+- [Playwright Parallelization Guide](./playwright-parallelization-guide.md) - Worker allocation and
+  sharding procedures
 - [Test Utils README](../packages/test-utils/README.md) - Test utilities overview
 
 ---
 
 ## Version History
 
-| Version | Date       | Changes                             |
-| ------- | ---------- | ----------------------------------- |
-| 1.0.0   | 2025-01-11 | Initial comprehensive testing guide |
+| Version | Date       | Changes                                            |
+| ------- | ---------- | -------------------------------------------------- |
+| 1.1.0   | 2025-10-31 | Added Playwright parallelization workflow guidance |
+| 1.0.0   | 2025-01-11 | Initial comprehensive testing guide                |
 
 ---
 

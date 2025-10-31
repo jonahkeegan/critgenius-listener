@@ -220,3 +220,127 @@ jobs:
 
       - name: Env drift check (proxy registry & templates)
         run: pnpm run validate:proxy
+
+  e2e-tests:
+    name: E2E Tests - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    needs: build-and-validate
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chromium-desktop
+            shard: ""
+          - browser: chromium-tablet
+            shard: ""
+          - browser: chromium-mobile
+            shard: ""
+          - browser: firefox-desktop
+            shard: ""
+          - browser: edge-desktop
+            shard: ""
+          - browser: webkit-desktop
+            shard: ""
+        # When the suite grows beyond ~20 tests, duplicate entries with shard values (e.g., '1-2')
+        # per browser to split the workload without impacting unrelated projects.
+    env:
+      CI: true
+      VITE_E2E: "true"
+      SHARD: "${{ matrix.shard }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: |
+          pnpm --filter @critgenius/shared run build
+          pnpm --filter @critgenius/test-utils run build
+          pnpm --filter @critgenius/client run build
+
+      - name: Install Playwright browsers
+        shell: bash
+        run: |
+          if [[ "${{ matrix.browser }}" == "edge-desktop" ]]; then
+            pnpm --filter @critgenius/client exec -- playwright install --with-deps chromium firefox webkit msedge
+          else
+            pnpm --filter @critgenius/client exec -- playwright install --with-deps chromium firefox webkit
+          fi
+
+      - name: Start dev server
+        shell: bash
+        run: |
+          pnpm --filter @critgenius/client run dev -- --host 127.0.0.1 --port 5173 &
+          DEV_SERVER_PID=$!
+          echo "DEV_SERVER_PID=$DEV_SERVER_PID" >> "$GITHUB_ENV"
+          timeout 60 bash -c 'until curl -sf http://127.0.0.1:5173/; do sleep 1; done'
+
+      - name: Run Playwright tests
+        shell: bash
+        run: |
+          if [[ -n "${SHARD}" ]]; then
+            pnpm --filter @critgenius/client exec -- playwright test --project="${{ matrix.browser }}" --shard="${SHARD}"
+          else
+            pnpm --filter @critgenius/client exec -- playwright test --project="${{ matrix.browser }}"
+          fi
+
+      - name: Stop dev server
+        if: always()
+        shell: bash
+        run: |
+          if [[ -n "${DEV_SERVER_PID}" ]]; then
+            kill "${DEV_SERVER_PID}" || true
+          fi
+
+      - name: Prepare artifact suffix
+        if: always()
+        id: artifact-meta
+        shell: bash
+        run: |
+          if [[ -n "${SHARD}" ]]; then
+            SAFE_SHARD=${SHARD//\//-}
+            echo "suffix=-shard-${SAFE_SHARD}" >> "$GITHUB_OUTPUT"
+          else
+            echo "suffix=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
+          path: packages/client/test-results/
+          retention-days: 7
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
+          path: packages/client/playwright-report/
+          retention-days: 7
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
+          path: |
+            packages/client/test-results/**/*.png
+            packages/client/test-results/**/*.webm
+            packages/client/test-results/**/trace.zip
+          retention-days: 7

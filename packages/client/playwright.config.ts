@@ -1,11 +1,54 @@
 import { defineConfig, devices } from '@playwright/test';
+import { cpus } from 'node:os';
+
+const getWorkerCount = (): number => {
+  if (process.env.CI) {
+    return 2;
+  }
+
+  const cpuCount = cpus().length;
+  const computed = Math.floor(cpuCount / 2);
+
+  if (!Number.isFinite(computed) || computed <= 0) {
+    return 1;
+  }
+
+  return Math.min(computed, 4);
+};
+
+const getShardConfig = (): { current: number; total: number } | null => {
+  const shardValue = process.env.SHARD;
+  if (!shardValue) {
+    return null;
+  }
+
+  const [currentStr, totalStr] = shardValue.split('/');
+  const current = Number(currentStr);
+  const total = Number(totalStr);
+
+  if (!Number.isInteger(current) || !Number.isInteger(total)) {
+    throw new Error(
+      `Invalid SHARD value "${shardValue}". Expected format "current/total".`
+    );
+  }
+
+  if (total < 1 || current < 1 || current > total) {
+    throw new Error(
+      `Invalid SHARD value "${shardValue}". Ensure 1 <= current <= total and total >= 1.`
+    );
+  }
+
+  return { current, total };
+};
 
 export default defineConfig({
   testDir: './tests/e2e',
   testMatch: ['**/*.e2e.test.ts'],
   outputDir: './test-results',
-  fullyParallel: false,
-  workers: 1,
+  fullyParallel: true,
+  workers: getWorkerCount(),
+  retries: process.env.CI ? 2 : 0,
+  shard: getShardConfig(),
   timeout: 60000,
   expect: {
     timeout: 5000,
@@ -34,6 +77,16 @@ export default defineConfig({
       },
     ],
     ['list'],
+    ...(process.env.CI
+      ? ([
+          [
+            'junit',
+            {
+              outputFile: 'test-results/junit.xml',
+            },
+          ],
+        ] as const)
+      : []),
   ],
   projects: [
     {
