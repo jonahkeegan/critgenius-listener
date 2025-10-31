@@ -95,8 +95,8 @@ async function importVitestConfigModule() {
   const originalURL = globalThis.URL;
 
   try {
-    // Node 18 lacks the WHATWG URL implementation Vitest expects, so temporarily
-    // swap in the Node.js URL polyfill before importing its config helpers.
+    // Ensure Vitest loads with the Node.js WHATWG URL polyfill before importing
+    // its config helpers so the runtime matches our test expectations.
     (globalThis as typeof globalThis & { URL: typeof URL }).URL =
       NodeURL as unknown as typeof URL;
     return await import('vitest/config');

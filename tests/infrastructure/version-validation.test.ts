@@ -45,41 +45,41 @@ describe('version comparison helpers', () => {
       minor: number;
       patch: number;
     }>('parseVersion', {
-      value: '18',
+      value: '20',
     });
-    expect(result).toMatchObject({ major: 18, minor: 0, patch: 0 });
+    expect(result).toMatchObject({ major: 20, minor: 0, patch: 0 });
 
     const minorOnly = await runHelper<{
       major: number;
       minor: number;
       patch: number;
     }>('parseVersion', {
-      value: '18.2',
+      value: '20.1',
     });
-    expect(minorOnly).toMatchObject({ major: 18, minor: 2, patch: 0 });
+    expect(minorOnly).toMatchObject({ major: 20, minor: 1, patch: 0 });
 
     const full = await runHelper<{
       major: number;
       minor: number;
       patch: number;
     }>('parseVersion', {
-      value: '18.20.4',
+      value: '20.19.5',
     });
-    expect(full).toMatchObject({ major: 18, minor: 20, patch: 4 });
+    expect(full).toMatchObject({ major: 20, minor: 19, patch: 5 });
   });
 
   it('evaluates minimum version comparisons', async () => {
     const success = await runHelper<{ ok: boolean }>('evaluateComparison', {
       comparison: 'minimum',
-      expected: '18.0.0',
-      actualValue: '>=18.0.0',
+      expected: '20.0.0',
+      actualValue: '>=20.0.0',
     });
     expect(success.ok).toBe(true);
 
     const failure = await runHelper<{ ok: boolean }>('evaluateComparison', {
       comparison: 'minimum',
-      expected: '18.0.0',
-      actualValue: '16.0.0',
+      expected: '20.0.0',
+      actualValue: '18.0.0',
     });
     expect(failure.ok).toBe(false);
   });
@@ -102,14 +102,14 @@ describe('version comparison helpers', () => {
 
   it('compares versions lexicographically', async () => {
     const diffOne = await runHelper<number>('compareVersions', {
-      a: { major: 18, minor: 20, patch: 4 },
-      b: { major: 18, minor: 0, patch: 0 },
+      a: { major: 20, minor: 19, patch: 5 },
+      b: { major: 20, minor: 0, patch: 0 },
     });
     expect(diffOne).toBeGreaterThan(0);
 
     const diffTwo = await runHelper<number>('compareVersions', {
-      a: { major: 18, minor: 0, patch: 0 },
-      b: { major: 17, minor: 9, patch: 0 },
+      a: { major: 20, minor: 0, patch: 0 },
+      b: { major: 19, minor: 9, patch: 0 },
     });
     expect(diffTwo).toBeGreaterThan(0);
   });
@@ -139,7 +139,7 @@ describe('validate-versions runner CLI', () => {
   it('emits JSON output for parseVersion action', async () => {
     const { stdout, stderr } = await execFileAsync(
       'node',
-      [helperPath, 'parseVersion', JSON.stringify({ value: '18.2' })],
+      [helperPath, 'parseVersion', JSON.stringify({ value: '20.1' })],
       {
         cwd: join(testDir, '..', '..'),
       }
@@ -147,8 +147,8 @@ describe('validate-versions runner CLI', () => {
 
     expect(stderr.trim()).toBe('');
     expect(JSON.parse(stdout.trim())).toMatchObject({
-      major: 18,
-      minor: 2,
+      major: 20,
+      minor: 1,
       patch: 0,
     });
   });
