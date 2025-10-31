@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-30 | Segment Version: 1.5.0
+Last Updated: 2025-10-27 | Segment Version: 1.4.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -83,23 +83,6 @@ Parent Index: `systemPatterns-index.md`
 - Validation: `pnpm run test:e2e:install`, `pnpm run test:e2e`, `pnpm run test:e2e:headed`,
   `pnpm --filter @critgenius/client exec -- playwright test --list`, and `pnpm run test:e2e:ui`
   (manual exit after confirming suite visibility).
-
-### Testing Infrastructure Pattern: Playwright CI Integration Guard (Task 3.5.4)
-
-- Pattern: Infrastructure suite ensures the GitHub Actions `e2e-tests` job remains wired to the
-  Playwright browser matrix, artifact uploads, and environment toggles, preventing silent drift in
-  CI automation.
-- Implementation: `tests/infrastructure/playwright-ci-integration.test.ts` parses
-  `.github/workflows/ci.yml`, asserting the presence of the `e2e-tests` job, dependency on
-  `build-and-validate`, the six browser projects (Chromium desktop/tablet/mobile, Firefox desktop,
-  Edge desktop, WebKit desktop), conditional Edge installation, `VITE_E2E` environment export,
-  dev-server health check, and artifact uploads for results, reports, traces, videos, and
-  screenshots. The suite also checks root/package scripts so local commands stay aligned with CI.
-- Benefits: Fails fast when workflow steps drift, keeps developers informed via
-  `docs/playwright-ci-integration.md`, and preserves deterministic artifact retention required for
-  debugging across browsers.
-- Validation:
-  `pnpm run test:infrastructure -- tests/infrastructure/playwright-ci-integration.test.ts`.
 
 ### Coverage Configuration Single Source Pattern (Task 3.2.1.1)
 
@@ -262,7 +245,6 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
-- 2025-10-30: Added Playwright CI integration guard pattern; incremented segment to version 1.5.0.
 - 2025-10-27: Added workspace Playwright orchestration pattern; incremented segment to version
   1.4.0.
 - 2025-10-14: Expanded coverage orchestration validation pattern with module URL normalization,
