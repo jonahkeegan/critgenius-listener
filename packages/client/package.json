@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "prebuild": "pnpm --filter @critgenius/shared run build && pnpm --filter @critgenius/test-utils run build",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
