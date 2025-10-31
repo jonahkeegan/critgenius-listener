@@ -186,7 +186,12 @@ function App() {
 
       {/* Main Content */}
       <Container maxWidth='lg' sx={{ py: 4 }}>
-        <Box display='flex' flexDirection={{ xs: 'column', md: 'row' }} gap={4}>
+        <Box
+          data-testid='layout-root'
+          display='flex'
+          flexDirection={{ xs: 'column', md: 'row' }}
+          gap={4}
+        >
           {/* Audio Capture Section */}
           <Box flex={1} sx={{ minWidth: 0 }}>
             <Card elevation={3}>
@@ -208,6 +213,9 @@ function App() {
                         startIcon={<Mic />}
                         onClick={handleStartRecording}
                         sx={{
+                          minHeight: 56,
+                          minWidth: 120,
+                          px: 3,
                           bgcolor: theme.palette.success.main,
                           '&:hover': { bgcolor: theme.palette.success.dark },
                         }}
@@ -221,6 +229,9 @@ function App() {
                         startIcon={<Stop />}
                         onClick={handleStopRecording}
                         sx={{
+                          minHeight: 56,
+                          minWidth: 120,
+                          px: 3,
                           bgcolor: theme.palette.error.main,
                           '&:hover': { bgcolor: theme.palette.error.dark },
                         }}
@@ -230,10 +241,18 @@ function App() {
                     )}
                     {isRecording && (
                       <Box display='flex' alignItems='center' gap={1}>
-                        <Typography variant='body2' color='error'>
+                        <Typography
+                          data-testid='recording-indicator'
+                          variant='body2'
+                          color='error'
+                        >
                           Recording in progress...
                         </Typography>
-                        <LinearProgress sx={{ width: 100 }} color='error' />
+                        <LinearProgress
+                          data-testid='recording-meter'
+                          sx={{ width: 120 }}
+                          color='error'
+                        />
                       </Box>
                     )}
                   </Box>
@@ -307,7 +326,7 @@ function App() {
                   Processing Status
                 </Typography>
 
-                <Box sx={{ mb: 3 }}>
+                <Box data-testid='connection-status-section' sx={{ mb: 3 }}>
                   <Typography
                     variant='body2'
                     color='text.secondary'
@@ -341,6 +360,7 @@ function App() {
                   )}
                   {error && (
                     <Typography
+                      data-testid='connection-error-message'
                       variant='caption'
                       color='error'
                       display='block'

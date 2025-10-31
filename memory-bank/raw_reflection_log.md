@@ -55,3 +55,43 @@ Improvements_Identified_For_Consolidation:
   upcoming E2E specs.
 
 ---
+
+Date: 2025-10-31 TaskRef: "Dev Infra 3.5.5 Playwright Test Parallelization"
+
+Learnings:
+
+- Parallelized the Playwright suite by enabling `fullyParallel`, dynamic `getWorkerCount`, and
+  shard-aware retries in `packages/client/playwright.config.ts`.
+- Added the `e2e-tests` GitHub Actions matrix in `.github/workflows/ci.yml` so each browser project
+  runs concurrently and publishes scoped artifacts.
+- Captured the operating model in `docs/playwright-parallelization-guide.md` and surfaced the
+  guidance through updates to `docs/comprehensive-testing-guide.md`.
+
+Success Patterns:
+
+- Reused shared/test-utils/client build steps ahead of the matrix job, keeping browser executions
+  fast while avoiding redundant compilation.
+- Normalized artifact naming via the suffix preparation step to prevent collisions when sharding is
+  enabled.
+- Locked the configuration in place with `tests/infrastructure/playwright-parallelization.test.ts`
+  to detect future drift across config, CI, and docs.
+
+Implementation Excellence:
+
+- Hardened shard parsing so malformed `SHARD` values fail immediately rather than skipping subsets
+  of the suite.
+- Extended `packages/client/package.json` with browser-specific and shard-aware scripts, making
+  targeted or distributed runs a single command.
+- Verified the behaviour with
+  `pnpm exec vitest run --config vitest.infrastructure.config.ts tests/infrastructure/playwright-parallelization.test.ts`
+  before publishing the report.
+
+Improvements_Identified_For_Consolidation:
+
+- Monitor the new `e2e-tests` workflow runtime and adjust shard settings as the Playwright suite
+  grows.
+- Resolve the pre-existing syntax regression in
+  `tests/infrastructure/helpers/validate-versions-runner-core.mjs` prior to the next full
+  infrastructure sweep.
+
+---

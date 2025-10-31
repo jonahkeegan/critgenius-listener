@@ -230,7 +230,22 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   - Verification: `pnpm --filter @critgenius/server test`,
     `pnpm --filter @critgenius/test-utils test`, `pnpm -w lint`, `pnpm -w type-check`.
 
-### Latest Updates (2025-10-08 – Node 18 Path TypeError Diagnostics & Guardrails)
+### Latest Updates (2025-10-30 – Node 20 Runtime Standardization)
+
+- NODE 20 BASELINE CONFIRMED (Task 3.5.4 Runtime Alignment)
+  - Elevated Node.js runtime expectations to 20.19.5 target (20.0.0 minimum) across CI workflows,
+    tooling policy, infrastructure tests, and documentation; removed lingering Node 18 fixtures so
+    version validation helpers and CLI stubs mirror the new baseline.
+  - Refreshed repository instructions, maintenance workflows, and Playwright task plans so
+    contributors default to Node 20 locally while retaining footnotes for historical Node 18
+    investigations.
+  - Re-ran infrastructure validation suites
+    (`pnpm test:infrastructure -- tests/infrastructure/version-validation.test.ts`) to confirm the
+    updated fixtures keep the staged validation harness green.
+  - Follow-Ups: Monitor for downstream package `engines` drift, file fresh docs for any remaining
+    Node 18 references, and coordinate with Prompter/LLM components on runtime upgrades.
+
+### Previous Updates (2025-10-08 – Node 18 Path TypeError Diagnostics & Guardrails)
 
 - PATH NORMALIZATION HARDENING (Task 3.1.3 Path TypeError Investigation Enhancement)
   - Reproduced the GitHub Actions URL-based `TypeError` locally by matching Node v18.20.4,

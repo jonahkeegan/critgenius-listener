@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-27 | Segment Version: 1.4.0
+Last Updated: 2025-10-27 | Segment Version: 1.5.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -128,6 +128,24 @@ Parent Index: `systemPatterns-index.md`
   wire the validator into CI for automated enforcement, and explore structured JSON diagnostics for
   downstream coverage failure analysis.
 
+### Playwright Parallelization & CI Matrix Pattern (Task 3.5.5)
+
+- Pattern: Deterministic end-to-end validation pipeline pairing adaptive Playwright worker/shard
+  allocation with GitHub Actions matrix orchestration to minimize runtime without sacrificing
+  debuggability.
+- Implementation: `packages/client/playwright.config.ts` exposes `getWorkerCount` and
+  `getShardConfig` helpers, shard-aware JUnit reporter wiring, and CI-only retries; CI workflow
+  `.github/workflows/ci.yml` adds an `e2e-tests` matrix passing shard inputs, managing dev-server
+  lifecycle, and suffixing artifacts; `packages/client/package.json` scripts and documentation in
+  `docs/playwright-parallelization-guide.md` plus `docs/comprehensive-testing-guide.md` provide
+  human-operable entry points.
+- Benefits: Keeps PR feedback under 10 minutes, isolates shard artifacts for triage, preserves
+  parity with `PLAYWRIGHT_NUM_SHARDS` / `PLAYWRIGHT_SHARD_INDEX` environment overrides, and avoids
+  flaky reruns by constraining retries to CI.
+- Validation:
+  `pnpm exec vitest run --config vitest.infrastructure.config.ts tests/infrastructure/playwright-parallelization.test.ts`
+  guarantees helper logic, workflow matrices, scripts, and documentation stay aligned.
+
 ### Coverage Threshold Recalibration Pattern (Task 3.2.2.1)
 
 - Pattern: Keep coverage configuration tests aligned with authoritative thresholds whenever the
@@ -165,13 +183,15 @@ Parent Index: `systemPatterns-index.md`
 ### Path Diagnostics & Normalization Guardrail Pattern (Task 3.1.3 Path TypeError Investigation)
 
 - Pattern: Cross-workspace path validation and diagnostics layer that enforces string-only inputs,
-  captures environment-aware telemetry, and neutralizes URL-derived Vitest config regressions on
-  Node 18.
+  captures environment-aware telemetry, and neutralizes URL-derived Vitest config regressions.
+  Originally built to tame Node 18 instability, it now anchors the repository-wide Node 20 standard
+  (20.19.5 target, 20.0.0 minimum) while retaining backward compatibility guardrails.
 - Implementation: `EnvironmentDetector` and `PathValidator` in `@critgenius/test-utils` sanitize
   diagnostics, record stack traces when URL inputs appear, and convert URL/`file://` values via
   `fileURLToPath`; `vitest.shared.config.ts` and `packages/client/vitest.config.ts` now route all
   path inputs through the validator while temporarily swapping `globalThis.URL` during dynamic
-  imports to guarantee Node 18 semantics.
+  imports to guarantee consistent semantics across the Node 20 baseline and any fallback Node 18
+  investigations.
 - Benefits: Eliminates CI-only `TypeError` failures, preserves privacy by masking environment
   context, produces actionable DEBUG artifacts, and keeps alias resolution consistent across
   packages and operating systems.
@@ -245,6 +265,8 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
+- 2025-10-27: Documented Playwright parallelization & CI matrix enforcement pattern; incremented
+  segment to version 1.5.0.
 - 2025-10-27: Added workspace Playwright orchestration pattern; incremented segment to version
   1.4.0.
 - 2025-10-14: Expanded coverage orchestration validation pattern with module URL normalization,

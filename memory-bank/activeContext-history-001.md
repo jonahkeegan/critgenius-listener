@@ -403,6 +403,19 @@ first).
     JSON regression summaries for dashboards, and build a watch-mode smoke harness atop the hardened
     runner
 
+### 2025-10-30 – Node 20 Runtime Standardization (Task 3.5.4 Alignment)
+
+- **RUNTIME UPGRADE EXECUTED:** Node.js 20 Baseline
+  - Updated CI workflows, tooling version policy, version validation fixtures, and repository
+    instructions to require Node.js 20 (20.19.5 target / 20.0.0 minimum), replacing all lingering
+    Node 18 scaffolding while preserving historical diagnostics context.
+  - Regenerated infrastructure test expectations (`tests/infrastructure/version-validation.test.ts`)
+    so the mocked policy, CLI outputs, and semantic version utilities align with the new minimum.
+  - Documented the migration across planning docs and memory bank segments to keep future runtime
+    investigations grounded on Node 20 assumptions.
+  - Follow-Ups: Audit downstream CritGenius components for runtime parity and ensure developer
+    onboarding scripts surface the updated requirement.
+
 ### 2025-10-08 – Node 18 Path TypeError Diagnostics & Guardrails (Task 3.1.3 Enhancement)
 
 - **PATH NORMALIZATION HARDENING:** Path TypeError Investigation Enhancement
