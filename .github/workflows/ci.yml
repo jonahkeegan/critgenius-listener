@@ -278,11 +278,17 @@ jobs:
       - name: Install Playwright browsers
         shell: bash
         run: |
-          if [[ "${{ matrix.browser }}" == "edge-desktop" ]]; then
-            pnpm --filter @critgenius/client exec -- playwright install --with-deps chromium firefox webkit msedge
-          else
-            pnpm --filter @critgenius/client exec -- playwright install --with-deps chromium firefox webkit
-          fi
+          case "${{ matrix.browser }}" in
+            chromium*) BROWSER="chromium" ;;
+            firefox*) BROWSER="firefox" ;;
+            webkit*) BROWSER="webkit" ;;
+            edge-desktop) BROWSER="msedge" ;;
+            *)
+              echo "Unknown browser: ${{ matrix.browser }}"
+              exit 1
+              ;;
+          esac
+          pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
 
       - name: Start dev server
         shell: bash

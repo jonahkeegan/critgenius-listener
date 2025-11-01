@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-10-29 | Index Version: 1.29.0 | Status: Active
+Last Updated: 2025-11-01 | Index Version: 1.30.0 | Status: Active
 
 ## Segment Registry
 
@@ -17,51 +17,56 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Topic Mapping (Selected)
 
-| Topic                                                      | Segment |
-| ---------------------------------------------------------- | ------- |
-| Core Architectural Principles                              | 001     |
-| Environment Validation Architecture                        | 002     |
-| Pre-Commit & Benchmarking                                  | 002     |
-| Dev Server Optimization & Reload                           | 002     |
-| Declarative Service Manifest                               | 002     |
-| Health Scoring & Backoff Resilience                        | 003     |
-| Real-Time Streaming & Mapping                              | 003     |
-| Security & Performance Patterns                            | 003     |
-| Local Dev Secure HTTPS Context                             | 003     |
-| Dev HTTPS Proxy Hardening & Diagnostics                    | 003     |
-| Dev Proxy Dynamic Port Discovery                           | 002     |
-| Centralized Proxy Registry                                 | 002     |
-| Env Template Drift Guard & Deterministic Loader Precedence | 002     |
-| HTTPS Dev Protocol Alignment & Drift Guard                 | 003     |
-| Audio Capture Configuration (Feature Flags + Retry)        | 003     |
-| Structured Audio Diagnostics & Error Codes                 | 003     |
-| Vitest Configuration Standardization                       | 005     |
-| Vitest Workspace Hardening & CI Readiness                  | 005     |
-| Shared Test Utilities Library                              | 005     |
-| Scalability & Deployment                                   | 003     |
-| HTTPS Socket.IO TLS Resilience                             | 003     |
-| HTTPS Documentation & Troubleshooting Playbook             | 003     |
-| Performance Regression Harness (Latency Benchmarking)      | 005     |
-| Path Diagnostics & Normalization Guardrails                | 005     |
-| Socket.IO Integration Timeout Stabilization                | 003     |
-| Integration Testing Harness & Cross-Package Workflows      | 005     |
-| Documentation Validation Harness (Comprehensive Guide)     | 005     |
-| Tiered Coverage Enforcement & Thematic Reporting           | 004     |
-| Centralized Coverage Configuration Module                  | 005     |
-| ESLint Warm-up & Slow-Runner Stabilization                 | 004     |
-| ESLint Flat Config Single-Source Enforcement               | 004     |
-| CI Lint Workflow Guard                                     | 004     |
-| Vitest Timeout Governance & Dialog Resilience              | 004     |
-| Playwright Runtime Config Validation                       | 004     |
-| Playwright Socket Event Buffer Observability               | 004     |
-| CI-Only Coverage Enforcement Strategy                      | 004     |
-| Coverage Orchestration Validation Guard                    | 005     |
-| Coverage Gate Recalibration for Parallel Execution         | 005     |
-| CI Coverage Reporting & Codecov Integration                | 004     |
-| Disposable ESLint Fixture Harness                          | 004     |
-| VS Code Workspace Prettier Enforcement                     | 004     |
-| Workspace Playwright E2E Orchestration                     | 005     |
-| Playwright Responsive Browser Matrix & Artifact Retention  | 005     |
+| Topic                                                       | Segment |
+| ----------------------------------------------------------- | ------- |
+| Core Architectural Principles                               | 001     |
+| Environment Validation Architecture                         | 002     |
+| Pre-Commit & Benchmarking                                   | 002     |
+| Dev Server Optimization & Reload                            | 002     |
+| Declarative Service Manifest                                | 002     |
+| Health Scoring & Backoff Resilience                         | 003     |
+| Real-Time Streaming & Mapping                               | 003     |
+| Security & Performance Patterns                             | 003     |
+| Local Dev Secure HTTPS Context                              | 003     |
+| Dev HTTPS Proxy Hardening & Diagnostics                     | 003     |
+| Dev Proxy Dynamic Port Discovery                            | 002     |
+| Centralized Proxy Registry                                  | 002     |
+| Env Template Drift Guard & Deterministic Loader Precedence  | 002     |
+| HTTPS Dev Protocol Alignment & Drift Guard                  | 003     |
+| Audio Capture Configuration (Feature Flags + Retry)         | 003     |
+| Structured Audio Diagnostics & Error Codes                  | 003     |
+| Vitest Configuration Standardization                        | 005     |
+| Vitest Workspace Hardening & CI Readiness                   | 005     |
+| Shared Test Utilities Library                               | 005     |
+| Scalability & Deployment                                    | 003     |
+| HTTPS Socket.IO TLS Resilience                              | 003     |
+| HTTPS Documentation & Troubleshooting Playbook              | 003     |
+| Performance Regression Harness (Latency Benchmarking)       | 005     |
+| Path Diagnostics & Normalization Guardrails                 | 005     |
+| Socket.IO Integration Timeout Stabilization                 | 003     |
+| Integration Testing Harness & Cross-Package Workflows       | 005     |
+| Documentation Validation Harness (Comprehensive Guide)      | 005     |
+| Tiered Coverage Enforcement & Thematic Reporting            | 004     |
+| Centralized Coverage Configuration Module                   | 005     |
+| ESLint Warm-up & Slow-Runner Stabilization                  | 004     |
+| ESLint Flat Config Single-Source Enforcement                | 004     |
+| CI Lint Workflow Guard                                      | 004     |
+| Vitest Timeout Governance & Dialog Resilience               | 004     |
+| Playwright Runtime Config Validation                        | 004     |
+| Playwright Socket Event Buffer Observability                | 004     |
+| CI-Only Coverage Enforcement Strategy                       | 004     |
+| Coverage Orchestration Validation Guard                     | 005     |
+| Coverage Gate Recalibration for Parallel Execution          | 005     |
+| CI Coverage Reporting & Codecov Integration                 | 004     |
+| Disposable ESLint Fixture Harness                           | 004     |
+| VS Code Workspace Prettier Enforcement                      | 004     |
+| Workspace Playwright E2E Orchestration                      | 005     |
+| Playwright Responsive Browser Matrix & Artifact Retention   | 005     |
+| Comprehensive Playwright Testing Documentation Architecture | 005     |
+| Three-Tier Documentation Learning Path Pattern              | 005     |
+| Browser Compatibility Matrix Implementation Pattern         | 005     |
+| VSCode Playwright Debugging Integration Pattern             | 005     |
+| Systematic Playwright Troubleshooting Workflow Pattern      | 005     |
 
 ## Maintenance Protocol
 
@@ -79,6 +84,10 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-11-01: Added Comprehensive Playwright Testing Documentation Architecture, Three-Tier
+  Documentation Learning Path, Browser Compatibility Matrix Implementation, VSCode Playwright
+  Debugging Integration, and Systematic Playwright Troubleshooting Workflow patterns (Task 3.5.6) to
+  segment 005; bumped index version to 1.30.0.
 - 2025-10-29: Added Playwright socket event buffer observability pattern (Task 3.5.3) to segment
   004; bumped index version to 1.29.0.
 - 2025-10-28: Added Playwright runtime config validation pattern (Task 3.5.2) to segment 004 and
