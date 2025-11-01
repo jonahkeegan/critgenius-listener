@@ -125,15 +125,38 @@ troubleshooting.
 
 ### Browser E2E Workflow
 
+**Initial Setup:**
+
 - Run `pnpm run test:e2e:install` once per machine (or after Playwright updates) to download browser
   binaries with OS dependencies.
+- Ensure development server is running: `pnpm dev` (required for E2E tests to connect to the app)
+
+**Running E2E Tests:**
+
 - Execute `pnpm run test:e2e` from the repo root to launch the client Playwright suite in headless
   mode via the workspace filter.
 - Use `pnpm run test:e2e:headed` while debugging UI flows locally, or `pnpm run test:e2e:ui` for the
   interactive Playwright test runner.
 - After a run, inspect results with `pnpm run test:e2e:report`; it opens the last Playwright HTML
   report without re-running tests.
-- All commands respect pnpm workspaces, so you can trigger them from any directory inside the repo.
+
+**HTTPS Requirements:**
+
+- For microphone access tests, HTTPS is required in development
+- Follow `docs/https-development-setup.md` for certificate setup
+- See `docs/https-troubleshooting-guide.md` for common HTTPS issues
+
+**Learning Resources:**
+
+- [Playwright Testing Guide](./playwright-testing-guide.md) - Comprehensive Playwright testing
+  patterns
+- [Comprehensive Testing Guide](./comprehensive-testing-guide.md) - Section 2.4 (E2E Browser
+  Testing)
+- [Playwright Parallelization Guide](./playwright-parallelization-guide.md) - Worker allocation and
+  optimization
+
+**All commands respect pnpm workspaces, so you can trigger them from any directory inside the
+repo.**
 
 ### Coverage Workflow Integration
 
