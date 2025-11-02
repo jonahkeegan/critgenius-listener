@@ -416,7 +416,7 @@ test('microphone guard grants access over HTTPS', async ({ page, context }) => {
     }
 
     const access = await guard.requestAccess();
-      error: access.error;
+    return { status: access.status, trackCount: access.trackCount, error: access.error };
     };
   });
 
