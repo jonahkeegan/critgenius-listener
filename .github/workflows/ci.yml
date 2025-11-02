@@ -321,6 +321,7 @@ jobs:
         shell: bash
         run: |
           if [[ -n "${SHARD}" ]]; then
+            # Replace '/' with '-' in SHARD (e.g., '1/2' → '1-2') for safe artifact naming
             SAFE_SHARD=${SHARD//\//-}
             echo "suffix=-shard-${SAFE_SHARD}" >> "$GITHUB_OUTPUT"
           else
