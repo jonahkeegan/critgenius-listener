@@ -37,7 +37,7 @@ describe('playwright parallelization configuration', () => {
     expect(configContent).toMatch(
       /const getShardConfig\s*=\s*\(\)\s*(?::\s*[^=]+)?=>\s*\{/
     );
-    expect(configContent).toMatch(/throw new Error\(\n\s+`Invalid SHARD value/);
+    expect(configContent).toMatch(/throw new Error\([^)]*Invalid SHARD value/s);
   });
 
   it('wires Playwright parallelization into CI', () => {
