@@ -40,6 +40,13 @@ function App() {
   const [sessionId, setSessionId] = useState<string>('');
   const theme = useTheme();
 
+  // Shared button styles to eliminate duplication
+  const buttonStyles = {
+    minHeight: 56,
+    minWidth: 120,
+    px: 3,
+  };
+
   // Secure session ID generator using Web Crypto API (falls back to time-only if unavailable)
   const generateSecureSessionId = (): string => {
     const prefix = 'session_';
@@ -213,9 +220,7 @@ function App() {
                         startIcon={<Mic />}
                         onClick={handleStartRecording}
                         sx={{
-                          minHeight: 56,
-                          minWidth: 120,
-                          px: 3,
+                          ...buttonStyles,
                           bgcolor: theme.palette.success.main,
                           '&:hover': { bgcolor: theme.palette.success.dark },
                         }}
@@ -229,9 +234,7 @@ function App() {
                         startIcon={<Stop />}
                         onClick={handleStopRecording}
                         sx={{
-                          minHeight: 56,
-                          minWidth: 120,
-                          px: 3,
+                          ...buttonStyles,
                           bgcolor: theme.palette.error.main,
                           '&:hover': { bgcolor: theme.palette.error.dark },
                         }}

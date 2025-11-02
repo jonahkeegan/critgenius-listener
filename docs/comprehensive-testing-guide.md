@@ -964,7 +964,7 @@ Uncovered files:
 | `pnpm validate:testing`     | Validate test structure        | After refactoring tests      |
 | `pnpm precommit:validate`   | Pre-commit checks              | Before committing            |
 
-### 2.5 Browser E2E Workflow
+### 2.6 Browser E2E Workflow
 
 - **Install browsers**: `pnpm run test:e2e:install` downloads the Chromium/Firefox/WebKit builds
   that `packages/client/playwright.config.ts` targets. Re-run after upgrading Playwright.
@@ -1231,6 +1231,78 @@ pnpm test
 > now detects these values, logs a warning, and disables diagnostic file output to prevent
 > filesystem errors. Prefer explicit filenames like `diagnostic-output.log` or consult
 > `docs/filename-compatibility-troubleshooting.md` for safe alternatives.
+
+### 3.5 E2E Infrastructure
+
+Playwright E2E testing infrastructure integrates browser automation with the CritGenius Listener
+development environment.
+
+#### Browser Environment Setup
+
+**Package Configuration:**
+
+```typescript
+// packages/client/playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 2 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:5173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+  ],
+  webServer: {
+    command: 'pnpm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
+});
+```
+
+**Development Server Integration:**
+
+For HTTPS requirements and proxy configuration, see:
+
+- [Development Server Guide](./development-server.md) - Development server setup for E2E tests
+- [Development Proxy Configuration](./development-proxy.md) - Proxy routing for E2E testing
+- [HTTPS Development Setup](./https-development-setup.md) - HTTPS configuration for microphone
+  access
+- [HTTPS Troubleshooting Guide](./https-troubleshooting-guide.md) - Common HTTPS issues and
+  solutions
+
+#### Cross-Reference: Playwright Testing Patterns
+
+This E2E infrastructure is complemented by dedicated testing patterns in the
+[Playwright Testing Guide](./playwright-testing-guide.md):
+
+- **Section 2: Core Testing Patterns** - Essential Playwright test patterns for CritGenius
+- **Section 3: Browser Compatibility Matrix** - Browser-specific testing considerations
+- **Section 4: VSCode Debugging Workflows** - Debugging Playwright tests in VSCode
+- **Section 5: Troubleshooting Procedures** - Common Playwright issues and solutions
+
+The integration ensures E2E tests validate the complete audio capture and transcription workflow
+across all supported browsers while maintaining consistency with unit and integration test patterns.
 
 ---
 

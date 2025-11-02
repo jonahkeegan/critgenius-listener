@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-10-29 | Version: 1.35.0 | System Status: Active
+Last Updated: 2025-11-01 | Version: 1.36.0 | System Status: Active
 
 ## Active Segments
 
@@ -70,6 +70,11 @@ domain emerges that doesn't fit existing thematic separation.
 | Workspace Playwright E2E Orchestration                           | 002     |
 | Playwright Browser Matrix & Runtime Config Guard                 | 002     |
 | Playwright Socket Event Buffer Instrumentation                   | 002     |
+| Comprehensive Playwright Testing Documentation System            | 002     |
+| Three-Tier Documentation Architecture (E2E Testing)              | 002     |
+| Playwright Browser Compatibility Matrix & Patterns               | 002     |
+| VSCode Debugging Workflows for Playwright                        | 002     |
+| Systematic Playwright Troubleshooting Procedures                 | 002     |
 
 ## Maintenance Protocol
 
@@ -86,6 +91,9 @@ domain emerges that doesn't fit existing thematic separation.
 
 ## Recent Changes
 
+- 2025-11-01: Added Comprehensive Playwright Testing Documentation System, Three-Tier Documentation
+  Architecture, Browser Compatibility Matrix & Patterns, VSCode Debugging Workflows, and Systematic
+  Troubleshooting Procedures topics (Task 3.5.6) to segment 002; version bumped to 1.36.0.
 - 2025-10-29: Logged Playwright socket event buffer instrumentation topic (Task 3.5.3) in segment
   002; version bumped to 1.35.0.
 - 2025-10-28: Logged Playwright browser matrix & runtime config guard topic (Tasks 3.5.1–3.5.2) in
