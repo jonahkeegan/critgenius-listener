@@ -22,6 +22,8 @@
     "test:browser:edge": "playwright test --project=edge-desktop",
     "test:browser:webkit": "playwright test --project=webkit-desktop",
     "test:browser:shard": "playwright test --shard=$SHARD",
+    "test:visual": "playwright test --config=playwright.visual.config.ts",
+    "test:visual:baseline": "percy exec -- playwright test --config=playwright.visual.config.ts",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "lint:a11y": "eslint src --ext .tsx --rule 'jsx-a11y/*:error'",
@@ -43,6 +45,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@percy/playwright": "^1.0.9",
     "@types/node": "^24.2.1",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
