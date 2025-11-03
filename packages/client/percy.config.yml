@@ -1,0 +1,46 @@
+version: 2
+snapshot:
+  # Percy responsive widths aligned with Playwright configuration
+  widths: [375, 768, 1920]
+  minHeight: 1024
+
+  # Percy CSS to hide dynamic elements that can cause visual drift
+  percyCSS: |
+    /* Hide dynamic elements that can cause visual regressions */
+    [data-testid="timestamp"],
+    [data-testid="live-indicator"],
+    .MuiTimer-root,
+    .live-pulse {
+      visibility: hidden !important;
+    }
+
+    /* Ensure deterministic styling for animations */
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    /* Mock loading states for consistent rendering */
+    .loading-placeholder {
+      background-color: #f0f0f0 !important;
+    }
+
+discovery:
+  # Allow Percy to access local development server
+  allowedHostnames:
+    - localhost
+    - 127.0.0.1
+    - "*.localhost"
+
+  # Network settings for better snapshot reliability
+  networkIdleTimeout: 750
+  requestHeaders:
+    "User-Agent": "percy/agent"
+
+# Percy agent configuration
+agent:
+  assetDiscovery:
+    # Cache responses to speed up snapshotting while respecting `.gitignore`
+    cacheResponses: true
+    networkIdleTimeout: 750

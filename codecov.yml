@@ -8,6 +8,8 @@ coverage:
   ignore:
     - "packages/client/tests/e2e/**"
     - "packages/client/tests/integration/*.integration.test.ts"
+    - "packages/client/tests/integration/visual/**"
+    - "packages/client/tests/visual/**"
     - "tests/infrastructure/thematic-summary.paths.test.ts"
   status:
     project:

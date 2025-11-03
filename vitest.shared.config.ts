@@ -39,6 +39,8 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/.tmp/**',
   '**/tests/e2e/**',
   '**/tests/**/*.e2e.test.{ts,tsx,js,mjs}',
+  '**/tests/integration/visual/**',
+  '**/tests/visual/**',
 ];
 
 const DEFAULT_TEST_TIMEOUT_MS = 10_000;
@@ -535,6 +537,22 @@ function normalizeAliasTarget(target: string): string {
   return target;
 }
 
+function extractFirstStringPath(value: unknown): string | null {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    for (const candidate of value) {
+      if (typeof candidate === 'string') {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function resolveTsconfigAliases(
   tsconfigPath: string
 ): Record<string, string> {
@@ -545,7 +563,7 @@ export function resolveTsconfigAliases(
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const candidate = Array.isArray(value) ? value[0] : value;
+    const candidate = extractFirstStringPath(value);
     if (!candidate) {
       return null;
     }
