@@ -22,6 +22,11 @@ export const PERCY_CONFIG = {
   enableJavaScript: true,
 };
 
+const MUI_READY_SELECTOR = '.MuiTypography-root';
+const MUI_WAIT_TIMEOUT_MS = 3000;
+const MUI_TRANSITION_SETTLE_MS = 500;
+const MUI_FALLBACK_SETTLE_MS = 250;
+
 /**
  * Wait for page to be fully loaded and stable for visual testing
  */
@@ -263,13 +268,15 @@ export class PercyTestUtils {
   static async waitForMUIComponents(page: Page): Promise<void> {
     try {
       // Wait for Material-UI theme to be applied when present
-      await page.waitForSelector('.MuiTypography-root', { timeout: 3000 });
+      await page.waitForSelector(MUI_READY_SELECTOR, {
+        timeout: MUI_WAIT_TIMEOUT_MS,
+      });
 
       // Wait for any MUI transitions to complete
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(MUI_TRANSITION_SETTLE_MS);
     } catch {
       // No MUI elements detected; allow a short settle delay instead
-      await page.waitForTimeout(250);
+      await page.waitForTimeout(MUI_FALLBACK_SETTLE_MS);
     }
   }
 
