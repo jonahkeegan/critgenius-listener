@@ -1,5 +1,5 @@
 // Percy helper utilities for visual regression testing
-import { Page } from '@playwright/test';
+import { Page, type ConsoleMessage } from '@playwright/test';
 import percySnapshot from '@percy/playwright';
 
 /**
@@ -28,6 +28,7 @@ const MUI_TRANSITION_SETTLE_MS = 500;
 const MUI_FALLBACK_SETTLE_MS = 250;
 const PAGE_ANIMATION_SETTLE_TIMEOUT_MS = 3000;
 const PAGE_ANIMATION_FALLBACK_DELAY_MS = 150;
+const EVENT_LOOP_SETTLE_FRAMES = 2;
 
 async function waitForAnimationsToComplete(page: Page): Promise<void> {
   try {
@@ -50,6 +51,35 @@ async function waitForAnimationsToComplete(page: Page): Promise<void> {
     );
   } catch {
     await page.waitForTimeout(PAGE_ANIMATION_FALLBACK_DELAY_MS);
+  }
+}
+
+async function waitForEventLoopToSettle(page: Page): Promise<void> {
+  try {
+    await page.evaluate(frames => {
+      return new Promise<void>(resolve => {
+        if (typeof requestAnimationFrame !== 'function') {
+          setTimeout(resolve, 0);
+          return;
+        }
+
+        let remaining = frames;
+        const advance = () => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            resolve();
+            return;
+          }
+
+          requestAnimationFrame(advance);
+        };
+
+        requestAnimationFrame(advance);
+      });
+    }, EVENT_LOOP_SETTLE_FRAMES);
+  } catch {
+    // Fallback to a macrotask delay if evaluate fails (detached frame, etc.)
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
   }
 }
 
@@ -250,18 +280,24 @@ export async function validateSnapshotSuccess(page: Page): Promise<void> {
   // Check for any JavaScript errors that might affect snapshots
   const errors: string[] = [];
 
-  page.on('console', msg => {
+  const onConsole = (msg: ConsoleMessage) => {
     if (msg.type() === 'error') {
       errors.push(msg.text());
     }
-  });
+  };
 
-  page.on('pageerror', error => {
+  const onPageError = (error: Error) => {
     errors.push(error.message);
-  });
+  };
 
-  // Wait a moment for any async errors
-  await page.waitForTimeout(1000);
+  page.on('console', onConsole);
+  page.on('pageerror', onPageError);
+
+  // Wait for the next animation frames to flush any queued errors
+  await waitForEventLoopToSettle(page);
+
+  page.off('console', onConsole);
+  page.off('pageerror', onPageError);
 
   // Report any errors found
   if (errors.length > 0) {
