@@ -537,6 +537,22 @@ function normalizeAliasTarget(target: string): string {
   return target;
 }
 
+function extractFirstStringPath(value: unknown): string | null {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    for (const candidate of value) {
+      if (typeof candidate === 'string') {
+        return candidate;
+      }
+    }
+  }
+
+  return null;
+}
+
 export function resolveTsconfigAliases(
   tsconfigPath: string
 ): Record<string, string> {
@@ -547,11 +563,7 @@ export function resolveTsconfigAliases(
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const candidate = Array.isArray(value)
-      ? (value.find(item => typeof item === 'string') ?? null)
-      : typeof value === 'string'
-        ? value
-        : null;
+    const candidate = extractFirstStringPath(value);
     if (!candidate) {
       return null;
     }
