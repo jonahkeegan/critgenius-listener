@@ -1,4 +1,6 @@
 // Sample character data for visual regression testing
+
+import { PLACEHOLDER_IMAGE_DATA_URI } from './fixture-constants';
 export interface Character {
   id: string;
   name: string;
@@ -19,8 +21,7 @@ export const sampleCharacters: Character[] = [
     name: 'Gandalf',
     class: 'Wizard',
     speaker: 'speaker-1',
-    imageUrl:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 20,
     hitPoints: 145,
     maxHitPoints: 160,
@@ -33,8 +34,7 @@ export const sampleCharacters: Character[] = [
     name: 'Aragorn',
     class: 'Ranger',
     speaker: 'speaker-2',
-    imageUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 15,
     hitPoints: 134,
     maxHitPoints: 134,
@@ -47,8 +47,7 @@ export const sampleCharacters: Character[] = [
     name: 'Legolas',
     class: 'Ranger',
     speaker: 'speaker-3',
-    imageUrl:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 16,
     hitPoints: 98,
     maxHitPoints: 112,
@@ -61,8 +60,7 @@ export const sampleCharacters: Character[] = [
     name: 'Gimli',
     class: 'Fighter',
     speaker: 'speaker-4',
-    imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 14,
     hitPoints: 156,
     maxHitPoints: 156,
@@ -75,8 +73,7 @@ export const sampleCharacters: Character[] = [
     name: 'Frodo',
     class: 'Rogue',
     speaker: 'speaker-5',
-    imageUrl:
-      'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 8,
     hitPoints: 45,
     maxHitPoints: 52,
@@ -89,8 +86,7 @@ export const sampleCharacters: Character[] = [
     name: 'Boromir',
     class: 'Fighter',
     speaker: 'speaker-6',
-    imageUrl:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop',
+    imageUrl: PLACEHOLDER_IMAGE_DATA_URI,
     level: 12,
     hitPoints: 98,
     maxHitPoints: 112,
@@ -167,8 +163,6 @@ export const characterTestVariations = {
   maximalData: sampleCharacters.map(char => ({
     ...char,
     statusEffects: ['Effect 1', 'Effect 2', 'Effect 3', 'Effect 4', 'Effect 5'],
-    imageUrl:
-      char.imageUrl ||
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=100&h=100&fit=crop',
+    imageUrl: char.imageUrl || PLACEHOLDER_IMAGE_DATA_URI,
   })),
 };

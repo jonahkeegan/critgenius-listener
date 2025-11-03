@@ -1,4 +1,6 @@
 // Sample speaker profile data for visual regression testing
+
+import { PLACEHOLDER_IMAGE_DATA_URI } from './fixture-constants';
 export interface SpeakerProfile {
   id: string;
   name: string;
@@ -24,8 +26,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-1',
     name: 'Gandalf',
-    avatar:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: true,
     microphoneLevel: 75,
     joinTime: new Date('2024-01-15T18:30:00Z'),
@@ -45,8 +46,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-2',
     name: 'Aragorn',
-    avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: true,
     microphoneLevel: 82,
     joinTime: new Date('2024-01-15T18:30:00Z'),
@@ -66,8 +66,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-3',
     name: 'Legolas',
-    avatar:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: true,
     microphoneLevel: 68,
     joinTime: new Date('2024-01-15T18:31:00Z'),
@@ -87,8 +86,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-4',
     name: 'Gimli',
-    avatar:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: false,
     microphoneLevel: 0,
     joinTime: new Date('2024-01-15T18:30:00Z'),
@@ -108,8 +106,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-5',
     name: 'Frodo',
-    avatar:
-      'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: true,
     microphoneLevel: 45,
     joinTime: new Date('2024-01-15T18:32:00Z'),
@@ -129,8 +126,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
   {
     id: 'speaker-6',
     name: 'Boromir',
-    avatar:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: false,
     microphoneLevel: 0,
     joinTime: new Date('2024-01-15T18:30:00Z'),
@@ -232,8 +228,7 @@ export const speakerTestVariations = {
   maximalProfile: {
     id: 'speaker-max',
     name: 'Complex Speaker Profile with Long Name',
-    avatar:
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=80&h=80&fit=crop',
+    avatar: PLACEHOLDER_IMAGE_DATA_URI,
     isActive: true,
     microphoneLevel: 100,
     joinTime: new Date('2024-01-15T18:00:00Z'),
