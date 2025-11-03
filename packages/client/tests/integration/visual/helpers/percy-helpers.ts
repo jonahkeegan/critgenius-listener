@@ -26,6 +26,32 @@ const MUI_READY_SELECTOR = '.MuiTypography-root';
 const MUI_WAIT_TIMEOUT_MS = 3000;
 const MUI_TRANSITION_SETTLE_MS = 500;
 const MUI_FALLBACK_SETTLE_MS = 250;
+const PAGE_ANIMATION_SETTLE_TIMEOUT_MS = 3000;
+const PAGE_ANIMATION_FALLBACK_DELAY_MS = 150;
+
+async function waitForAnimationsToComplete(page: Page): Promise<void> {
+  try {
+    await page.waitForFunction(
+      () => {
+        const animations =
+          typeof document.getAnimations === 'function'
+            ? Array.from(document.getAnimations())
+            : [];
+        const hasActiveAnimations = animations.some(
+          animation => animation.playState === 'running'
+        );
+        const root = document.documentElement;
+        const hasTransitionState =
+          root?.hasAttribute('data-transitioning') ||
+          root?.hasAttribute('data-animating');
+        return !hasActiveAnimations && !hasTransitionState;
+      },
+      { timeout: PAGE_ANIMATION_SETTLE_TIMEOUT_MS }
+    );
+  } catch {
+    await page.waitForTimeout(PAGE_ANIMATION_FALLBACK_DELAY_MS);
+  }
+}
 
 /**
  * Wait for page to be fully loaded and stable for visual testing
@@ -35,7 +61,7 @@ export async function waitForPageStability(page: Page): Promise<void> {
   await page.waitForLoadState('networkidle');
 
   // Wait for any animations to complete
-  await page.waitForTimeout(1000);
+  await waitForAnimationsToComplete(page);
 
   // Wait for any lazy-loaded content
   await page
