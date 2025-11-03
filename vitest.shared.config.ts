@@ -39,6 +39,8 @@ const DEFAULT_EXCLUDE_PATTERNS = [
   '**/.tmp/**',
   '**/tests/e2e/**',
   '**/tests/**/*.e2e.test.{ts,tsx,js,mjs}',
+  '**/tests/integration/visual/**',
+  '**/tests/visual/**',
 ];
 
 const DEFAULT_TEST_TIMEOUT_MS = 10_000;
@@ -545,7 +547,11 @@ export function resolveTsconfigAliases(
 
   const aliasEntries = Object.entries(paths).map(([key, value]) => {
     const sanitizedKey = key.endsWith('/*') ? key.slice(0, -2) : key;
-    const candidate = Array.isArray(value) ? value[0] : value;
+    const candidate = Array.isArray(value)
+      ? (value.find(item => typeof item === 'string') ?? null)
+      : typeof value === 'string'
+        ? value
+        : null;
     if (!candidate) {
       return null;
     }
