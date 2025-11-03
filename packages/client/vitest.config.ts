@@ -93,6 +93,13 @@ const mergedConfig: UserConfig = {
   plugins: mergedPlugins,
   test: {
     ...(sharedConfig.test ?? {}),
+    exclude: Array.from(
+      new Set([
+        ...((sharedConfig.test?.exclude as string[]) ?? []),
+        'tests/integration/visual/**',
+        'tests/visual/**',
+      ])
+    ),
     css: true,
   },
 };
