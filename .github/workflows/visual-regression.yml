@@ -1,0 +1,59 @@
+name: Visual Regression Tests
+
+on:
+  pull_request:
+    paths:
+      - "packages/client/**"
+      - ".github/workflows/visual-regression.yml"
+      - "packages/client/percy.config.yml"
+      - "packages/client/playwright.visual.config.ts"
+      - "packages/client/tests/visual/**"
+      - "tests/infrastructure/percy-visual-testing.test.ts"
+      - "pnpm-lock.yaml"
+
+jobs:
+  percy-visual-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+    steps:
+      - name: Verify Percy token configured
+        run: |
+          if [ -z "${PERCY_TOKEN}" ]; then
+            echo "PERCY_TOKEN secret is not configured."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.8
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Percy visual regression suite
+        run: pnpm --filter @critgenius/client run test:visual:baseline
+
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-visual-artifacts
+          path: |
+            packages/client/test-results/
+            packages/client/playwright-report/
+          if-no-files-found: ignore
