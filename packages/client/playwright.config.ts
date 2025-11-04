@@ -98,6 +98,7 @@ export default defineConfig({
           args: [
             '--use-fake-device-for-media-stream',
             '--use-fake-ui-for-media-stream',
+            '--no-sandbox',
           ],
         },
       },
@@ -111,6 +112,7 @@ export default defineConfig({
           args: [
             '--use-fake-device-for-media-stream',
             '--use-fake-ui-for-media-stream',
+            '--no-sandbox',
           ],
         },
       },
@@ -124,6 +126,7 @@ export default defineConfig({
           args: [
             '--use-fake-device-for-media-stream',
             '--use-fake-ui-for-media-stream',
+            '--no-sandbox',
           ],
         },
       },
@@ -152,6 +155,7 @@ export default defineConfig({
           args: [
             '--use-fake-device-for-media-stream',
             '--use-fake-ui-for-media-stream',
+            '--no-sandbox',
           ],
         },
       },
