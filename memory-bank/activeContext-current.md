@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-11-01 15:08 PST
-- **Version:** 2.50.0
+- **Last Updated:** 2025-11-04 12:58 PST
+- **Version:** 2.51.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -80,6 +80,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ **COMPREHENSIVE PLAYWRIGHT TESTING DOCUMENTATION:** Complete E2E browser testing documentation
   system with authoritative 1,800+ line guide, three-tier documentation architecture, browser
   compatibility matrix, debugging workflows, and troubleshooting procedures (Task 3.5.6)
+- ✅ Percy visual regression workflow integrated into CI via reusable GitHub Actions pipeline with
+  token gating, Node version normalization, infrastructure guard tests, and contributor guidance
+  (Task 3.6.4)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -111,6 +114,23 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-11-04 – Percy Visual Test CI/CD Pipeline (Task 3.6.4)
+
+- Refactored `.github/workflows/visual-regression.yml` into a reusable `workflow_call` template that
+  auto-selects baseline, compare, or dry-run modes via branch metadata while enforcing Percy token
+  presence on protected branches and forcing dry runs on forks.
+- Added a `visual-regression` job to `.github/workflows/ci.yml` so Percy executes after
+  `build-and-validate`, inherits repository secrets, and publishes Markdown summaries plus retained
+  artifact bundles for reviewer review.
+- Introduced `.node-version` (20.19.5) and wired both the Percy workflow and diagnostics workflows
+  to consume it, eliminating duplicated Node version strings.
+- Authored `tests/infrastructure/percy-ci-integration.test.ts` and expanded documentation
+  (`docs/percy-ci-setup-guide.md`, onboarding/testing guides, client visual README) to encode mode
+  logic, token gating expectations, and contributor setup.
+- Validation: `pnpm run test:infrastructure -- --reporter=dot` (guarding
+  `tests/infrastructure/percy-ci-integration.test.ts`) plus manual GitHub Actions workflow review to
+  confirm mode routing and summary output.
 
 ### 2025-11-01 – Playwright Testing Documentation Implementation (Task 3.5.6)
 
@@ -234,6 +254,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-11-04:** Ratified Percy visual regression reusable workflow as a required CI gate with
+  token enforcement, retry logic, and artifact retention backed by infrastructure tests and shared
+  documentation.
 - **2025-10-29:** Ratified Playwright socket event buffer instrumentation as the standard for
   transcript assertions, eliminating cross-browser console parsing and ensuring deterministic data
   capture behind the `VITE_E2E` gate.
@@ -263,12 +286,14 @@ _None - strategic foundation complete, ready for technical planning_
 
 1. **Remaining Infra Clean-up:** Complete Task 2.1.3 (TypeScript foundation packages) & Task 1.7
    (PR/Issue templates)
-2. **System Architecture Design:** Define component architecture and data flow patterns
-3. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
+2. **Protect Mainline with Percy Gate:** Add the `CI / Percy Visual Regression` status check to
+   `main` and `production` branch protection rules once the workflow lands on default branches.
+3. **System Architecture Design:** Define component architecture and data flow patterns
+4. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
    assumptions
-4. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
+5. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
    tasks complete)
-5. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
+6. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
    during onboarding or dev container startup.
 
 ## Reference Links

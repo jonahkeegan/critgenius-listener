@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-10-29 | Segment Version: 1.8.0
+Last Updated: 2025-11-04 | Segment Version: 1.9.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -66,6 +66,29 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** Confirmed via successful CI-equivalent command suite (`pnpm -w test`, coverage
   orchestration scripts) and documentation updates referenced in `docs/coverage-system-guide.md` &
   `docs/comprehensive-testing-guide.md`.
+
+### Percy Visual Regression CI Gate Pattern (Task 3.6.4)
+
+- **Pattern:** Enforce Percy visual regression checks as a reusable GitHub Actions workflow while
+  guaranteeing mode selection, secret gating, and artifact retention remain deterministic across
+  CI consumers.
+- **Implementation:** `.github/workflows/visual-regression.yml` now exposes a `workflow_call`
+  interface with `mode` inputs, branch metadata defaults, and Percy token enforcement. The primary
+  CI workflow delegates to this template in a `visual-regression` job that runs after
+  `build-and-validate`, inherits repository secrets, and publishes Markdown summaries alongside
+  retained Percy artifact bundles for review. Node runtime parity is maintained through the new
+  `.node-version` (20.19.5) file consumed by both Percy and diagnostic workflows.
+- **Safeguards:** `tests/infrastructure/percy-ci-integration.test.ts` parses the workflow to verify
+  secret requirements, retry count, artifact retention tiers, summary publication, and dry-run
+  fallback logic, preventing accidental regressions. Protected branches fail fast when Percy
+  tokens are missing, while forked PRs automatically downgrade to dry runs.
+- **Benefits:** Keeps visual regression gating consistent across pipelines, eliminates version
+  drift for Node setup, and provides fast feedback when automation wiring changes. Documentation in
+  `docs/percy-ci-setup-guide.md`, `docs/developer-onboarding.md`, and `docs/comprehensive-testing-guide.md`
+  aligns contributor onboarding with the new guardrails.
+- **Validation:** `pnpm run test:infrastructure -- --reporter=dot`
+  (`tests/infrastructure/percy-ci-integration.test.ts`) combined with GitHub Actions summary review
+  to confirm mode routing, retry attempt logging, and artifact retention behaviour.
 
 ## Lint & Runtime Stability Patterns
 
@@ -208,6 +231,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-11-04: Added Percy visual regression CI gate pattern; version bump to 1.9.0.
 - 2025-10-29: Added Playwright socket event buffer observability pattern; version bump to 1.8.0.
 - 2025-10-28: Added Playwright runtime config validation pattern; version bump to 1.7.0.
 - 2025-10-27: Added EditorConfig cross-editor alignment pattern; version bump to 1.6.0.
