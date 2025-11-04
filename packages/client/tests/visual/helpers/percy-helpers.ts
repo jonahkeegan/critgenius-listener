@@ -29,6 +29,8 @@ const MUI_FALLBACK_SETTLE_MS = 250;
 const PAGE_ANIMATION_SETTLE_TIMEOUT_MS = 3000;
 const PAGE_ANIMATION_FALLBACK_DELAY_MS = 150;
 const EVENT_LOOP_SETTLE_FRAMES = 2;
+const PERCY_ORIGIN = 'http://percy.local';
+const percyOriginPages = new WeakSet<Page>();
 
 async function waitForAnimationsToComplete(page: Page): Promise<void> {
   try {
@@ -87,19 +89,14 @@ async function waitForEventLoopToSettle(page: Page): Promise<void> {
  * Wait for page to be fully loaded and stable for visual testing
  */
 export async function waitForPageStability(page: Page): Promise<void> {
-  // Wait for network to be idle
   await page.waitForLoadState('networkidle');
-
-  // Wait for any animations to complete
   await waitForAnimationsToComplete(page);
-
-  // Wait for any lazy-loaded content
   await page
     .waitForSelector('[data-testid="content-loaded"]', {
       timeout: 5000,
     })
     .catch(() => {
-      // Content loaded indicator might not exist, continue anyway
+      /* no-op: element optional */
     });
 }
 
@@ -111,12 +108,9 @@ export async function takeResponsiveSnapshot(
   name: string,
   options: PercySnapshotOptions = {}
 ): Promise<void> {
-  // Wait for page stability
   await waitForPageStability(page);
 
   const snapshotName = options.name ?? name;
-
-  // Merge default config with provided options
   const snapshotOptions = {
     widths: options.widths ?? PERCY_CONFIG.widths,
     minHeight: options.minHeight ?? PERCY_CONFIG.minHeight,
@@ -124,7 +118,6 @@ export async function takeResponsiveSnapshot(
     ...(options.percyCSS ? { percyCSS: options.percyCSS } : {}),
   };
 
-  // Take the Percy snapshot
   await percySnapshot(page, snapshotName, snapshotOptions);
 }
 
@@ -137,13 +130,8 @@ export async function takeViewportSnapshot(
   width: number,
   height: number = 1080
 ): Promise<void> {
-  // Set viewport
   await page.setViewportSize({ width, height });
-
-  // Wait for responsive layout to settle
   await page.waitForTimeout(500);
-
-  // Take snapshot with single width
   await takeResponsiveSnapshot(page, `${name}-${width}px`, {
     widths: [width],
   });
@@ -204,6 +192,7 @@ export async function setupPageForVisualTesting(
     waitForSelector?: string;
     additionalSetup?: () => Promise<void>;
     mockExternalResources?: boolean;
+    documentPath?: string;
   } = {}
 ): Promise<void> {
   const {
@@ -211,34 +200,35 @@ export async function setupPageForVisualTesting(
     waitForSelector,
     additionalSetup,
     mockExternalResources: shouldMockExternalResources = true,
+    documentPath,
   } = options;
 
   if (shouldMockExternalResources) {
     await PercyTestUtils.mockExternalResources(page);
   }
 
-  // Navigate to the page
-  await page.goto(url);
+  let targetUrl = url;
+  if (!url || url === 'about:blank') {
+    const pathSlug = sanitizeDocumentPath(documentPath);
+    await PercyTestUtils.ensurePercyOrigin(page);
+    targetUrl = `${PERCY_ORIGIN}/${pathSlug}`;
+  }
 
-  // Apply responsive breakpoints for consistent layout
+  await page.goto(targetUrl);
   await PercyTestUtils.setupResponsiveBreakpoints(page);
 
-  // Hide dynamic elements if requested
   if (shouldHideDynamicElements) {
     await hideDynamicElements(page);
   }
 
-  // Wait for specific selector if provided
   if (waitForSelector) {
     await page.waitForSelector(waitForSelector);
   }
 
-  // Run additional setup if provided
   if (additionalSetup) {
     await additionalSetup();
   }
 
-  // Wait for initial stability
   await waitForPageStability(page);
 }
 
@@ -262,14 +252,13 @@ export async function snapshotComponent(
     ...snapshotOptions
   } = options;
 
-  // Setup page
   await setupPageForVisualTesting(page, url, {
     hideDynamicElements: shouldHideDynamicElements,
     mockExternalResources: shouldMockExternalResources,
+    documentPath: componentName,
     additionalSetup: setupFn,
   });
 
-  // Take snapshot
   await takeResponsiveSnapshot(page, componentName, snapshotOptions);
 }
 
@@ -277,7 +266,6 @@ export async function snapshotComponent(
  * Validate that Percy snapshots were taken successfully
  */
 export async function validateSnapshotSuccess(page: Page): Promise<void> {
-  // Check for any JavaScript errors that might affect snapshots
   const errors: string[] = [];
 
   const onConsole = (msg: ConsoleMessage) => {
@@ -293,13 +281,11 @@ export async function validateSnapshotSuccess(page: Page): Promise<void> {
   page.on('console', onConsole);
   page.on('pageerror', onPageError);
 
-  // Wait for the next animation frames to flush any queued errors
   await waitForEventLoopToSettle(page);
 
   page.off('console', onConsole);
   page.off('pageerror', onPageError);
 
-  // Report any errors found
   if (errors.length > 0) {
     console.warn('JavaScript errors detected during visual testing:', errors);
   }
@@ -309,9 +295,6 @@ export async function validateSnapshotSuccess(page: Page): Promise<void> {
  * Percy-specific test utilities for consistent visual testing
  */
 export class PercyTestUtils {
-  /**
-   * Create a standardized test name for Percy snapshots
-   */
   static createSnapshotName(
     component: string,
     state: string,
@@ -324,29 +307,34 @@ export class PercyTestUtils {
     return parts.join('-').toLowerCase();
   }
 
-  /**
-   * Wait for Material-UI components to be fully rendered
-   */
   static async waitForMUIComponents(page: Page): Promise<void> {
     try {
-      // Wait for Material-UI theme to be applied when present
       await page.waitForSelector(MUI_READY_SELECTOR, {
         timeout: MUI_WAIT_TIMEOUT_MS,
       });
-
-      // Wait for any MUI transitions to complete
       await page.waitForTimeout(MUI_TRANSITION_SETTLE_MS);
     } catch {
-      // No MUI elements detected; allow a short settle delay instead
       await page.waitForTimeout(MUI_FALLBACK_SETTLE_MS);
     }
   }
 
-  /**
-   * Setup responsive breakpoints for testing
-   */
+  static async ensurePercyOrigin(page: Page): Promise<void> {
+    if (percyOriginPages.has(page)) {
+      return;
+    }
+
+    await page.route(`${PERCY_ORIGIN}/**`, route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body data-percy-root></body></html>',
+      });
+    });
+
+    percyOriginPages.add(page);
+  }
+
   static async setupResponsiveBreakpoints(page: Page): Promise<void> {
-    // Add viewport meta tag if not present (for mobile testing)
     await page.addStyleTag({
       content: `
         @viewport {
@@ -357,34 +345,23 @@ export class PercyTestUtils {
     });
   }
 
-  /**
-   * Mock external resources that might affect visual consistency
-   */
   static async mockExternalResources(page: Page): Promise<void> {
-    // Mock external fonts for consistent typography
     await page.route('**/fonts.googleapis.com/**', route => {
       route.abort();
     });
 
-    // Mock external images that might not load consistently
     await page.route('**/images.unsplash.com/**', route => {
       route.abort();
     });
   }
 }
 
-/**
- * Viewport configurations matching Playwright and Percy settings
- */
 export const VIEWPORTS = {
   mobile: { width: 375, height: 667 },
   tablet: { width: 768, height: 1024 },
   desktop: { width: 1920, height: 1080 },
 } as const;
 
-/**
- * Test data configurations for consistent visual states
- */
 export const TEST_DATA = {
   characters: {
     minimal: [{ id: '1', name: 'Test', class: 'Warrior', isAlive: true }],
@@ -398,22 +375,25 @@ export const TEST_DATA = {
         name: 'Test',
         isActive: true,
         speakingState: 'silent' as const,
+        joinTime: new Date(),
+        lastActivity: new Date(),
       },
     ],
     typical: 'speakerScenarios.default',
     maximal: 'speakerScenarios.manySpeakers',
   },
-  transcripts: {
-    minimal: [
-      {
-        id: '1',
-        speakerId: '1',
-        speakerName: 'Test',
-        text: 'Test',
-        timestamp: new Date(),
-      },
-    ],
-    typical: 'transcriptScenarios.default',
-    maximal: 'transcriptScenarios.longSession',
-  },
-} as const;
+};
+
+function sanitizeDocumentPath(path?: string): string {
+  if (!path) {
+    return 'visual-test';
+  }
+
+  const slug = path
+    .toLowerCase()
+    .replace(/[^a-z0-9/]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return slug.length > 0 ? slug : 'visual-test';
+}

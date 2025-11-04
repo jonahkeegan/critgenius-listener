@@ -1,6 +1,7 @@
 // Sample speaker profile data for visual regression testing
 
 import { PLACEHOLDER_IMAGE_DATA_URI } from './fixture-constants';
+
 export interface SpeakerProfile {
   id: string;
   name: string;
@@ -33,7 +34,7 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
     lastActivity: new Date('2024-01-15T19:45:00Z'),
     speakingState: 'speaking',
     sessionStats: {
-      totalSpeakingTime: 2340, // seconds
+      totalSpeakingTime: 2340,
       wordsSpoken: 3421,
       interruptions: 2,
     },
@@ -146,74 +147,78 @@ export const sampleSpeakerProfiles: SpeakerProfile[] = [
 ];
 
 // Test scenarios for different visual states
+const manySpeakers: SpeakerProfile[] = [
+  ...sampleSpeakerProfiles,
+  {
+    id: 'speaker-7',
+    name: 'Samwise',
+    isActive: true,
+    microphoneLevel: 55,
+    joinTime: new Date('2024-01-15T18:35:00Z'),
+    lastActivity: new Date('2024-01-15T19:41:00Z'),
+    speakingState: 'silent',
+    sessionStats: {
+      totalSpeakingTime: 654,
+      wordsSpoken: 987,
+      interruptions: 0,
+    },
+    preferences: {
+      volumeLevel: 75,
+      noiseReduction: true,
+      autoMute: false,
+    },
+  } as SpeakerProfile,
+  {
+    id: 'speaker-8',
+    name: 'Gollum',
+    isActive: false,
+    microphoneLevel: 0,
+    joinTime: new Date('2024-01-15T19:00:00Z'),
+    lastActivity: new Date('2024-01-15T19:10:00Z'),
+    speakingState: 'muted',
+    sessionStats: {
+      totalSpeakingTime: 123,
+      wordsSpoken: 87,
+      interruptions: 1,
+    },
+    preferences: {
+      volumeLevel: 60,
+      noiseReduction: false,
+      autoMute: true,
+    },
+  } as SpeakerProfile,
+];
+
+const mixedSpeakingStates: SpeakerProfile[] = [
+  {
+    ...sampleSpeakerProfiles[0],
+    speakingState: 'speaking' as const,
+  } as SpeakerProfile,
+  {
+    ...sampleSpeakerProfiles[1],
+    speakingState: 'silent' as const,
+  } as SpeakerProfile,
+  {
+    ...sampleSpeakerProfiles[2],
+    speakingState: 'muted' as const,
+  } as SpeakerProfile,
+  {
+    ...sampleSpeakerProfiles[3],
+    speakingState: 'speaking' as const,
+  } as SpeakerProfile,
+];
+
 export const speakerScenarios = {
   default: sampleSpeakerProfiles,
   allActive: sampleSpeakerProfiles.filter(speaker => speaker.isActive),
   allInactive: sampleSpeakerProfiles.filter(speaker => !speaker.isActive),
-  empty: [],
+  empty: [] as SpeakerProfile[],
   singleActiveSpeaker: sampleSpeakerProfiles
     .filter(speaker => speaker.isActive)
     .slice(0, 1),
-  manySpeakers: [
-    ...sampleSpeakerProfiles,
-    {
-      id: 'speaker-7',
-      name: 'Samwise',
-      isActive: true,
-      microphoneLevel: 55,
-      joinTime: new Date('2024-01-15T18:35:00Z'),
-      lastActivity: new Date('2024-01-15T19:41:00Z'),
-      speakingState: 'silent',
-      sessionStats: {
-        totalSpeakingTime: 654,
-        wordsSpoken: 987,
-        interruptions: 0,
-      },
-      preferences: {
-        volumeLevel: 75,
-        noiseReduction: true,
-        autoMute: false,
-      },
-    },
-    {
-      id: 'speaker-8',
-      name: 'Gollum',
-      isActive: false,
-      microphoneLevel: 0,
-      joinTime: new Date('2024-01-15T19:00:00Z'),
-      lastActivity: new Date('2024-01-15T19:10:00Z'),
-      speakingState: 'muted',
-      sessionStats: {
-        totalSpeakingTime: 123,
-        wordsSpoken: 87,
-        interruptions: 1,
-      },
-      preferences: {
-        volumeLevel: 60,
-        noiseReduction: false,
-        autoMute: true,
-      },
-    },
-  ],
-  mixedSpeakingStates: [
-    {
-      ...sampleSpeakerProfiles[0],
-      speakingState: 'speaking',
-    },
-    {
-      ...sampleSpeakerProfiles[1],
-      speakingState: 'silent',
-    },
-    {
-      ...sampleSpeakerProfiles[2],
-      speakingState: 'muted',
-    },
-    {
-      ...sampleSpeakerProfiles[3],
-      speakingState: 'speaking',
-    },
-  ],
-};
+  manySpeakers,
+  mixedSpeakingStates,
+} satisfies Record<string, SpeakerProfile[]>;
 
 // Responsive testing variations
 export const speakerTestVariations = {
@@ -235,7 +240,7 @@ export const speakerTestVariations = {
     lastActivity: new Date('2024-01-15T20:00:00Z'),
     speakingState: 'speaking' as const,
     sessionStats: {
-      totalSpeakingTime: 7200, // 2 hours
+      totalSpeakingTime: 7200,
       wordsSpoken: 12345,
       interruptions: 15,
     },

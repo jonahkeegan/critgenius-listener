@@ -1,5 +1,6 @@
 // Sample transcript data for visual regression testing
-export interface TranscriptEntry {
+
+export interface VisualTranscriptEntry {
   id: string;
   speakerId: string;
   speakerName: string;
@@ -24,7 +25,7 @@ export interface TranscriptEntry {
   };
 }
 
-export const sampleTranscriptEntries: TranscriptEntry[] = [
+export const sampleTranscriptEntries: VisualTranscriptEntry[] = [
   {
     id: 'transcript-1',
     speakerId: 'speaker-1',
@@ -158,8 +159,8 @@ export const transcriptScenarios = {
       confidence: 0.97,
       isHighlighted: false,
     },
-  ],
-  emptySession: [],
+  ] as VisualTranscriptEntry[],
+  emptySession: [] as VisualTranscriptEntry[],
   singleEntry: sampleTranscriptEntries.slice(0, 1),
   highlightedEntries: sampleTranscriptEntries.filter(
     entry => entry.isHighlighted
@@ -210,7 +211,7 @@ export const transcriptScenarios = {
         locations: ['Dungeon'],
       },
     },
-  ],
+  ] as VisualTranscriptEntry[],
 };
 
 // Transcript states for responsive testing

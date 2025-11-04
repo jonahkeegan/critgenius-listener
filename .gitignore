@@ -2,6 +2,7 @@
 node_modules/
 **/node_modules/
 .pnp
+.env.percy
 .pnp.js
 .git/tool-registry.json
 .yarn/cache
@@ -31,6 +32,9 @@ packages/*/build/
 /coverage/
 packages/*/coverage/
 reports/
+packages/client/test-results/
+packages/client/playwright-report/
+.percy/
 
 # Environment variables
 .env
@@ -115,6 +119,9 @@ docs/cli-utilities-that-boost-productivity-guide.md
 docs/enhance-task-plan-with-cli-tools.md
 docs/sync-github-feature-branch-to-local-ENV-guide.md
 implementation_plan.md
+# Task scratchpads (TODO/TEMP markdown helpers)
+**/*temp*.md
+**/*todo*.md
 
 # Local backup scripts remain ignored; allow other tooling scripts to be tracked
 scripts/backup-workspace.ps1

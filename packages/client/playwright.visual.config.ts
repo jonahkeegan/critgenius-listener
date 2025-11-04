@@ -3,8 +3,8 @@ import baseConfig from './playwright.config';
 
 export default defineConfig({
   ...baseConfig,
-  testDir: './tests/integration/visual',
-  testMatch: ['**/*.integration.test.ts'],
+  testDir: './tests/visual',
+  testMatch: ['**/*.test.ts'],
   outputDir: './test-results/visual',
   workers: 1,
   fullyParallel: false,

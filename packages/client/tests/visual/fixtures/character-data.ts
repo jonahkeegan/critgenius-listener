@@ -1,6 +1,7 @@
 // Sample character data for visual regression testing
 
 import { PLACEHOLDER_IMAGE_DATA_URI } from './fixture-constants';
+
 export interface Character {
   id: string;
   name: string;
@@ -97,57 +98,61 @@ export const sampleCharacters: Character[] = [
 ];
 
 // Scenarios for different visual states
+const extendedCharacters: Character[] = [
+  ...sampleCharacters,
+  {
+    id: '7',
+    name: 'Samwise',
+    class: 'Fighter',
+    speaker: 'speaker-7',
+    level: 10,
+    hitPoints: 89,
+    maxHitPoints: 89,
+    armorClass: 16,
+    isAlive: true,
+    statusEffects: ['Loyalty'],
+  },
+  {
+    id: '8',
+    name: 'Gollum',
+    class: 'Rogue',
+    speaker: 'speaker-8',
+    level: 3,
+    hitPoints: 23,
+    maxHitPoints: 23,
+    armorClass: 13,
+    isAlive: true,
+    statusEffects: ['Hidden', 'Stealthy'],
+  },
+];
+
+const injuredCharacters: Character[] = [
+  {
+    ...sampleCharacters[0],
+    hitPoints: 23,
+    statusEffects: ['Wounded', 'Stunned'],
+  } as Character,
+  {
+    ...sampleCharacters[1],
+    hitPoints: 45,
+    statusEffects: ['Bleeding'],
+  } as Character,
+  {
+    ...sampleCharacters[2],
+    hitPoints: 12,
+    statusEffects: ['Unconscious'],
+  } as Character,
+];
+
 export const characterScenarios = {
   default: sampleCharacters,
   allAlive: sampleCharacters.filter(char => char.isAlive),
   allDead: sampleCharacters.filter(char => !char.isAlive),
-  empty: [],
+  empty: [] as Character[],
   singleCharacter: sampleCharacters.slice(0, 1),
-  manyCharacters: [
-    ...sampleCharacters,
-    {
-      id: '7',
-      name: 'Samwise',
-      class: 'Fighter',
-      speaker: 'speaker-7',
-      level: 10,
-      hitPoints: 89,
-      maxHitPoints: 89,
-      armorClass: 16,
-      isAlive: true,
-      statusEffects: ['Loyalty'],
-    },
-    {
-      id: '8',
-      name: 'Gollum',
-      class: 'Rogue',
-      speaker: 'speaker-8',
-      level: 3,
-      hitPoints: 23,
-      maxHitPoints: 23,
-      armorClass: 13,
-      isAlive: true,
-      statusEffects: ['Hidden', 'Stealthy'],
-    },
-  ],
-  injuredCharacters: [
-    {
-      ...sampleCharacters[0],
-      hitPoints: 23,
-      statusEffects: ['Wounded', 'Stunned'],
-    },
-    {
-      ...sampleCharacters[1],
-      hitPoints: 45,
-      statusEffects: ['Bleeding'],
-    },
-    {
-      ...sampleCharacters[2],
-      hitPoints: 12,
-      statusEffects: ['Unconscious'],
-    },
-  ],
-};
+  manyCharacters: extendedCharacters,
+  injuredCharacters,
+} satisfies Record<string, Character[]>;
 
 // Test data variations for responsive testing
 export const characterTestVariations = {

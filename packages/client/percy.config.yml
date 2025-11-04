@@ -3,6 +3,8 @@ snapshot:
   # Percy responsive widths aligned with Playwright configuration
   widths: [375, 768, 1920]
   minHeight: 1024
+  enableJavaScript: true
+  freezeAnimations: true
 
   # Percy CSS to hide dynamic elements that can cause visual drift
   percyCSS: |
