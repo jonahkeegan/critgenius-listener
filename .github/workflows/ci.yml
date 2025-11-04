@@ -295,6 +295,12 @@ jobs:
           esac
           pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
 
+      - name: Apply Firefox sandbox workaround
+        if: ${{ matrix.browser == 'firefox-desktop' }}
+        shell: bash
+        run: |
+          echo "MOZ_DISABLE_CONTENT_SANDBOX=1" >> "$GITHUB_ENV"
+
       - name: Start dev server
         shell: bash
         run: |
