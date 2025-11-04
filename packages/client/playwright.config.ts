@@ -134,6 +134,7 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         viewport: { width: 1920, height: 1080 },
         launchOptions: {
+          args: ['--no-sandbox'],
           firefoxUserPrefs: {
             'media.navigator.streams.fake': true,
             'media.navigator.permission.disabled': true,
