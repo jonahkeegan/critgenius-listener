@@ -47,6 +47,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
       - name: Run Percy visual regression suite
         run: pnpm --filter @critgenius/client run test:visual:baseline
 
