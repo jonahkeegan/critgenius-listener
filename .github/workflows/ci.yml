@@ -224,6 +224,8 @@ jobs:
   e2e-tests:
     name: E2E Tests - ${{ matrix.browser }}
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.1-jammy
     needs: build-and-validate
     timeout-minutes: 20
     strategy:
@@ -274,21 +276,6 @@ jobs:
 
       - name: Build client package
         run: pnpm --filter @critgenius/client run build
-
-      - name: Install Playwright browsers
-        shell: bash
-        run: |
-          case "${{ matrix.browser }}" in
-            chromium*) BROWSER="chromium" ;;
-            firefox*) BROWSER="firefox" ;;
-            webkit*) BROWSER="webkit" ;;
-            edge-desktop) BROWSER="msedge" ;;
-            *)
-              echo "Unknown browser: ${{ matrix.browser }}"
-              exit 1
-              ;;
-          esac
-          pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
 
       - name: Start dev server
         shell: bash
