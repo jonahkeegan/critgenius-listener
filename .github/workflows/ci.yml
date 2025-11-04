@@ -279,6 +279,21 @@ jobs:
       - name: Build client package
         run: pnpm --filter @critgenius/client run build
 
+      - name: Install Playwright browser
+        shell: bash
+        run: |
+          case "${{ matrix.browser }}" in
+            chromium*) BROWSER="chromium" ;;
+            firefox*) BROWSER="firefox" ;;
+            webkit*) BROWSER="webkit" ;;
+            edge-desktop) BROWSER="msedge" ;;
+            *)
+              echo "Unknown browser: ${{ matrix.browser }}"
+              exit 1
+              ;;
+          esac
+          pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
+
       - name: Start dev server
         shell: bash
         run: |
