@@ -301,6 +301,13 @@ jobs:
         run: |
           echo "MOZ_DISABLE_CONTENT_SANDBOX=1" >> "$GITHUB_ENV"
 
+      - name: Debug Firefox environment
+        if: ${{ matrix.browser == 'firefox-desktop' }}
+        shell: bash
+        run: |
+          pnpm --filter @critgenius/client exec -- node -e "console.log('MOZ:', process.env.MOZ_DISABLE_CONTENT_SANDBOX, 'HOME:', process.env.HOME)"
+          pnpm --filter @critgenius/client exec -- node -e "const p=require('playwright-core/package.json'); console.log('playwright-core', p.version)"
+
       - name: Start dev server
         shell: bash
         run: |
