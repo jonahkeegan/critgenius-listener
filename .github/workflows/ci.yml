@@ -250,7 +250,7 @@ jobs:
       CI: true
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       PLAYWRIGHT_BROWSERS_PATH: "0"
-      PLAYWRIGHT_SKIP_FIREFOX_SANDBOX: "1"
+      PLAYWRIGHT_DISABLE_SANDBOX: "1"
       VITE_E2E: "true"
       SHARD: "${{ matrix.shard }}"
     steps:
@@ -282,7 +282,7 @@ jobs:
 
       - name: Install Playwright system dependencies
         shell: bash
-        run: pnpm --filter @critgenius/client exec -- playwright install --with-deps
+        run: pnpm --filter @critgenius/client exec -- playwright install-deps
 
       - name: Install Playwright browser
         shell: bash
@@ -297,7 +297,7 @@ jobs:
               exit 1
               ;;
           esac
-          pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
+          pnpm --filter @critgenius/client exec -- playwright install "$BROWSER"
 
       - name: Apply Firefox sandbox workaround
         if: ${{ matrix.browser == 'firefox-desktop' }}
