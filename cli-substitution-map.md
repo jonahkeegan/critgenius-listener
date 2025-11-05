@@ -1,52 +1,23 @@
-# CLI Tool Substitution Analysis for Playwright Task Plan
+# CLI Tool Substitution Map
 
-## Identified Opportunities
+## Key Modern Tool Replacements for Task Plan Enhancement
 
-### 1. File Discovery & Search (HIGH IMPACT)
+### File Analysis & Search Tools
 
-**Current Approach**: Finding configuration files, test files, documentation **Modern Alternative**:
-`fd` (faster find replacement) **Usage**: `fd playwright.config` vs `find . -name "*playwright*"`
-**Benefit**: 3-10x faster, ignores .gitignore, colored output
+- **grep** → **ripgrep (rg)** - Faster, respects .gitignore, better output
+- **find** → **fd** - Faster, intuitive syntax, colored output
+- **cat** → **bat** - Syntax highlighting, git integration, line numbers
 
-### 2. File Content Search (HIGH IMPACT)
+### Text Processing & Editing
 
-**Current Approach**: grep for searching through documentation and code **Modern Alternative**:
-`ripgrep (rg)` **Usage**: `rg "E2E testing" docs/` vs `grep -r "E2E testing" docs/` **Benefit**:
-Faster, respects .gitignore, better output formatting
+- **sed** → **sd** - Intuitive syntax, better regex support
+- **ast-grep (sg)** - Structural code analysis for precise content extraction
 
-### 3. File Reading (MEDIUM IMPACT)
+### Development Workflow
 
-**Current Approach**: cat for viewing file contents **Modern Alternative**: `bat`
-(syntax-highlighted cat) **Usage**: `bat docs/playwright-testing-guide.md` **Benefit**: Syntax
-highlighting, git integration, line numbers
+- **watchexec** - File watching for automatic testing and validation
+- **delta** - Git diff visualization for change tracking
 
-### 4. Process Monitoring (MEDIUM IMPACT)
+### Data Processing
 
-**Current Approach**: ps/top for monitoring test runners and dev servers **Modern Alternative**:
-`procs` **Usage**: `procs --tree` vs `ps aux | grep node` **Benefit**: Colored output, TCP/UDP
-ports, tree view, watch mode
-
-### 5. File Watching (HIGH IMPACT)
-
-**Current Approach**: Manual test re-running **Modern Alternative**: `watchexec` **Usage**:
-`watchexec -e ts,js -- npm run test:e2e` **Benefit**: Automatic test execution on file changes,
-cross-platform
-
-### 6. Structured Code Search (MEDIUM-HIGH IMPACT)
-
-**Current Approach**: Text-based searching through code **Modern Alternative**: `ast-grep (sg)`
-**Usage**: `sg 'test.*playwright' -r 'test.describe'` **Benefit**: Syntax-aware searching,
-eliminates false positives
-
-## Implementation Priority
-
-1. **HIGH**: fd, ripgrep (rg), watchexec - immediate productivity gains
-2. **MEDIUM**: bat, procs - quality of life improvements
-3. **MEDIUM-HIGH**: ast-grep (sg) - advanced code analysis
-
-## Expected Performance Improvements
-
-- File discovery: 3-10x faster with fd
-- File search: 2-5x faster with ripgrep
-- Development workflow: 50%+ time savings with watchexec
-- Code analysis: 10x more accurate with ast-grep
+- **jq/yq** - JSON/YAML processing for configuration files
