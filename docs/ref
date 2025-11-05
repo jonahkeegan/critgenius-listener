@@ -1,0 +1,70 @@
+# Comprehensive Testing Guide Refactoring - Implementation Todo List
+
+**Task:** Refactor comprehensive-testing-guide.md (2,753 rows) into 7 focused documentation files  
+**Created:** 2025-11-04 13:24:05  
+**Status:** In Progress  
+
+## Phase 1: Information Architecture & Setup
+- [x] Create docs/refactoring-progress.md tracker
+- [x] Create docs/refactoring-learnings.md for insights
+- [x] Review comprehensive-testing-guide.md structure and map sections
+- [x] Identify exact row ranges for each new file
+- [x] Create backup plan for original file
+
+## Phase 2: Core File Creation (Dependency Order)
+- [x] Create docs/testing-overview.md (400 rows - foundation/entry point)
+  - [x] Overview & Philosophy section
+  - [x] Testing Best Practices (general principles)
+  - [x] Troubleshooting & Common Issues (general issues)
+- [x] Create docs/testing-workflows.md (450 rows - practical guide)
+  - [x] Quick Start Workflows section
+- [x] Create docs/testing-infrastructure.md (650 rows - technical deep dive)
+  - [x] Test Infrastructure Deep Dive section
+- [x] Create docs/testing-utilities.md (550 rows - API reference)
+  - [x] Test Utilities Library section
+- [x] Create docs/integration-testing-handbook.md (350 rows - specialized patterns)
+  - [x] Integration Testing Handbook section
+- [x] Create docs/performance-testing-guide.md (250 rows - specialized patterns)
+  - [x] Performance Testing Guide section
+- [x] Create docs/testing-validation.md (100 rows - quality gates)
+  - [x] Validation & Quality Gates section
+
+## Phase 3: Cross-Reference & Navigation Updates
+- [ ] Search for all references to comprehensive-testing-guide.md
+- [ ] Update developer-onboarding.md references
+- [ ] Update testing-standards.md references
+- [ ] Update integration-testing-standards.md references
+- [ ] Update integration-test-patterns.md references
+- [ ] Update packages/test-utils/README.md references
+- [ ] Add "Related Documentation" sections to all new files
+- [ ] Add navigation helpers and cross-references
+
+## Phase 4: Cleanup & Validation
+- [ ] Verify all content migrated (row count verification)
+- [ ] Ensure each file under 700 rows
+- [ ] Run docs validation scripts
+- [ ] Test all documentation links
+- [ ] Delete original comprehensive-testing-guide.md
+- [ ] Update memory bank with refactoring insights
+
+## Phase 5: Documentation & Knowledge Capture
+- [ ] Update memory-bank/raw_reflection_log.md with learnings
+- [ ] Create summary of refactoring approach for future documentation projects
+- [ ] Document any patterns or best practices discovered
+- [ ] Update task completion report
+
+## Success Criteria
+- [x] All 9 sections from original file cleanly distributed across 7 new files
+- [ ] No broken links or references
+- [ ] Each file serves a specific, clear purpose with defined audience
+- [ ] Documentation maintains technical accuracy and examples
+- [ ] Memory bank updated with comprehensive refactoring insights
+
+## Tools & Resources
+- Use `rg` for searching references to original file
+- Use `bat` for reviewing content with syntax highlighting
+- Use `watchexec` for continuous validation during migration
+
+---
+**Major Milestone:** 7/7 files created (100%) ✅  
+**Next Step:** Update cross-references and navigation

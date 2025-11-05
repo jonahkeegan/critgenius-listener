@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-11-01 | Index Version: 1.30.0 | Status: Active
+Last Updated: 2025-11-04 | Index Version: 1.31.0 | Status: Active
 
 ## Segment Registry
 
@@ -58,6 +58,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Coverage Orchestration Validation Guard                     | 005     |
 | Coverage Gate Recalibration for Parallel Execution          | 005     |
 | CI Coverage Reporting & Codecov Integration                 | 004     |
+| Percy Visual Regression CI Gate                             | 004     |
 | Disposable ESLint Fixture Harness                           | 004     |
 | VS Code Workspace Prettier Enforcement                      | 004     |
 | Workspace Playwright E2E Orchestration                      | 005     |
@@ -84,6 +85,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-11-04: Added Percy visual regression CI gate pattern (Task 3.6.4) to segment 004; index
+  version bumped to 1.31.0.
 - 2025-11-01: Added Comprehensive Playwright Testing Documentation Architecture, Three-Tier
   Documentation Learning Path, Browser Compatibility Matrix Implementation, VSCode Playwright
   Debugging Integration, and Systematic Playwright Troubleshooting Workflow patterns (Task 3.5.6) to

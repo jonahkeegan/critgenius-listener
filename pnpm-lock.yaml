@@ -178,6 +178,9 @@ importers:
       playwright:
         specifier: ^1.55.1
         version: 1.55.1
+      playwright-core:
+        specifier: ^1.55.1
+        version: 1.55.1
       react-refresh:
         specifier: ^0.14.0
         version: 0.14.2

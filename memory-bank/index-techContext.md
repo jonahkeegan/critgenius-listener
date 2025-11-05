@@ -1,6 +1,6 @@
 # Technical Context Index
 
-Last Updated: 2025-11-01 | Version: 1.36.0 | System Status: Active
+Last Updated: 2025-11-04 | Version: 1.37.0 | System Status: Active
 
 ## Active Segments
 
@@ -75,6 +75,7 @@ domain emerges that doesn't fit existing thematic separation.
 | Playwright Browser Compatibility Matrix & Patterns               | 002     |
 | VSCode Debugging Workflows for Playwright                        | 002     |
 | Systematic Playwright Troubleshooting Procedures                 | 002     |
+| Percy Visual Regression CI/CD Automation                         | 002     |
 
 ## Maintenance Protocol
 
@@ -91,6 +92,8 @@ domain emerges that doesn't fit existing thematic separation.
 
 ## Recent Changes
 
+- 2025-11-04: Added Percy visual regression CI/CD automation topic (Task 3.6.4) to segment 002;
+  index version bumped to 1.37.0.
 - 2025-11-01: Added Comprehensive Playwright Testing Documentation System, Three-Tier Documentation
   Architecture, Browser Compatibility Matrix & Patterns, VSCode Debugging Workflows, and Systematic
   Troubleshooting Procedures topics (Task 3.5.6) to segment 002; version bumped to 1.36.0.

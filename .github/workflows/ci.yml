@@ -224,6 +224,8 @@ jobs:
   e2e-tests:
     name: E2E Tests - ${{ matrix.browser }}
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.1-jammy
     needs: build-and-validate
     timeout-minutes: 20
     strategy:
@@ -246,6 +248,9 @@ jobs:
         # per browser to split the workload without impacting unrelated projects.
     env:
       CI: true
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      PLAYWRIGHT_BROWSERS_PATH: "0"
+      PLAYWRIGHT_DISABLE_SANDBOX: "1"
       VITE_E2E: "true"
       SHARD: "${{ matrix.shard }}"
     steps:
@@ -275,7 +280,11 @@ jobs:
       - name: Build client package
         run: pnpm --filter @critgenius/client run build
 
-      - name: Install Playwright browsers
+      - name: Install Playwright system dependencies
+        shell: bash
+        run: pnpm --filter @critgenius/client exec -- playwright install-deps
+
+      - name: Install Playwright browser
         shell: bash
         run: |
           case "${{ matrix.browser }}" in

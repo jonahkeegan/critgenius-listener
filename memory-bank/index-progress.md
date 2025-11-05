@@ -1,13 +1,13 @@
 # Progress Log Index
 
-**Last Updated:** 2025-10-29 **Version:** 1.41.0 **System Status:** Active
+**Last Updated:** 2025-11-04 **Version:** 1.42.0 **System Status:** Active
 
 ## Active File
 
 - **Currently Active:** `progress-005.md`
 - **Status:** Active - New Segment
-- **Current Row Count:** ~125
-- **Last Updated:** 2025-11-01 14:57 PST
+- **Current Row Count:** ~94
+- **Last Updated:** 2025-11-04 12:58 PST
 
 ## File Registry
 
@@ -71,12 +71,13 @@
 ### progress-005.md
 
 - **Status:** Active - New Segment
-- **Row Count:** ~82
+- **Row Count:** ~94
 - **Date Range:** 2025-10-29 10:33 PST to Present
-- **Primary Topics:** Cross-browser Playwright smoke stabilization, remaining infrastructure
-  carry-over tasks
+- **Primary Topics:** Cross-browser Playwright smoke stabilization, Percy visual regression
+  infrastructure & CI gating, remaining infrastructure carry-over tasks
 - **Description:** New progress segment continuation from progress-004 with carried forward tasks
-  (Task 1.7, Task 2.1.3) and browser matrix reliability hardening.
+  (Task 1.7, Task 2.1.3), browser matrix reliability hardening, and end-to-end Percy visual review
+  automation.
 
 ## Maintenance Protocol
 
@@ -84,6 +85,9 @@
 - Update this index (row counts, timestamps) with each segment mutation
 - Archive segment by marking status Archived and freezing its header metadata
 
+- 2025-11-04 12:58 PST: Logged Task 3.6.4 Percy visual test CI/CD pipeline; reusable workflow,
+  CI wiring, `.node-version` standardization, infrastructure guard, and documentation updates
+  captured in `progress-005.md`.
 - 2025-11-01 14:57 PST: Logged Task 3.5.6 Playwright Testing Documentation Implementation; complete
   E2E documentation system with 1,800+ line guide, browser compatibility matrix, debugging
   workflows, and 10-minute developer setup achieved.
