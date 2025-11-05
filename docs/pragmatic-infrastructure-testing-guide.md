@@ -55,6 +55,14 @@ purpose.**
 
 **Total:** ~1,375 rows preserved across 4 focused files (vs. 1 original file)
 
+## Decision Matrix Reference
+
+For validation test decision-making, refer to the canonical decision matrix:
+
+| Drift History                                                            | Production Impact | Detection Difficulty | Recommendation |
+| ------------------------------------------------------------------------ | ----------------- | -------------------- | -------------- |
+| Historical content moved to specialized files for better maintainability | -                 | -                    | -              |
+
 ## Navigation Tips
 
 1. **New to infrastructure testing?** Start with
