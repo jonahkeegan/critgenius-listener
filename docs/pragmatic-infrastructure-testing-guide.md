@@ -46,13 +46,11 @@ Primary: Prevent production issues
 Secondary: Minimize test maintenance burden  
 Tertiary: Catch infrastructure drift
 
-Infrastructure validation should be pragmatic, focused, and evidence-based. The goal is to catch
-real issues that matter while avoiding the trap of spending time maintaining tests that rarely catch
-real issues.
+<!-- prettier-ignore -->
+Infrastructure validation should be pragmatic, focused, and evidence-based. The goal is to catch real issues that matter while avoiding the trap of spending time maintaining tests that rarely catch real issues.
 
-This guide provides a systematic approach to infrastructure testing that balances production
-reliability with minimal test maintenance burden. Each validation strategy is chosen deliberately
-based on evidence, not habit.
+<!-- prettier-ignore -->
+This guide provides a systematic approach to infrastructure testing that balances production reliability with minimal test maintenance burden. Each validation strategy is chosen deliberately based on evidence, not habit.
 
 **Key Principles:**
 
@@ -787,9 +785,8 @@ test('validates critical configuration that has shown drift', () => {
 
 ## Summary
 
-Infrastructure validation should be pragmatic, evidence-based, and focused on preventing real
-production issues while minimizing maintenance burden. The key is choosing the right validation
-strategy for each situation:
+<!-- prettier-ignore -->
+Infrastructure validation should be pragmatic, evidence-based, and focused on preventing real production issues while minimizing maintenance burden. The key is choosing the right validation strategy for each situation:
 
 - **🟢 Validation Test** for critical, frequently drifting configurations
 - **🔵 Runtime Check** for critical configurations that are easy to validate
