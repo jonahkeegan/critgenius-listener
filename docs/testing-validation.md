@@ -1,6 +1,6 @@
 # Testing Validation - Quality Gates and CI/CD Integration Guide
 
-**Version:** 1.1.0 **Last Updated:** 2025-11-04 **Target Audience:** Developers, DevOps, CI/CD
+**Version:** 1.1.0 **Last Updated:** 2025-11-05 **Target Audience:** Developers, DevOps, CI/CD
 **Status:** Complete
 
 ---
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -84,7 +84,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -263,7 +263,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies

@@ -135,25 +135,34 @@ export default defineConfig({
       name: 'firefox-desktop',
       use: {
         ...devices['Desktop Firefox'],
-        channel: 'firefox', // Force stable Firefox instead of Nightly
+        channel: 'firefox', // Explicitly set to default 'firefox' channel (stable); does not strictly force stable Firefox if environment is configured otherwise
         viewport: { width: 1920, height: 1080 },
         launchOptions: {
           firefoxUserPrefs: {
             'media.navigator.streams.fake': true,
             'media.navigator.permission.disabled': true,
             // Disable all Firefox sandbox layers for CI containers without user namespaces.
-            'security.sandbox.content.level': 0,
-            'security.sandbox.gpu.level': 0,
-            'security.sandbox.gmp-plugin.level': 0,
-            'security.sandbox.rdd.level': 0,
-            'security.sandbox.socket.process.level': 0,
+            // Security note: Sandbox disabling is conditional on CI environment to maintain
+            // security protection for local development while enabling CI compatibility.
+            ...(process.env.CI
+              ? {
+                  'security.sandbox.content.level': 0,
+                  'security.sandbox.gpu.level': 0,
+                  'security.sandbox.gmp-plugin.level': 0,
+                  'security.sandbox.rdd.level': 0,
+                  'security.sandbox.socket.process.level': 0,
+                }
+              : {}),
           },
           // Disable Firefox content sandbox at process level for CI compatibility.
           // Required to prevent: "Sandbox: CanCreateUserNamespace() clone() failure: EPERM"
           // and "Running Nightly as root in a regular user's session is not supported"
-          env: {
-            MOZ_DISABLE_CONTENT_SANDBOX: '1',
-          },
+          // Security note: Only disabled in CI to maintain local development security.
+          env: process.env.CI
+            ? {
+                MOZ_DISABLE_CONTENT_SANDBOX: '1',
+              }
+            : {},
         },
       },
     },

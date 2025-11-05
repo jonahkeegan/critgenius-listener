@@ -138,10 +138,10 @@ If Playwright updates browser naming conventions:
 
 ## Success Criteria
 
-✅ **Implementation Complete**: Optimized browser installation logic deployed ✅ **Backward
-Compatible**: All existing matrix entries supported ✅ **Error Handling**: Unknown browser entries
-fail fast with clear error messages ✅ **Maintainable**: Easy to add new browser entries to the case
-statement
+- ✅ **Implementation Complete**: Optimized browser installation logic deployed
+- ✅ **Backward Compatible**: All existing matrix entries supported
+- ✅ **Error Handling**: Unknown browser entries fail fast with clear error messages
+- ✅ **Maintainable**: Easy to add new browser entries to the case statement
 
 ## Next Steps
 
