@@ -135,6 +135,7 @@ export default defineConfig({
       name: 'firefox-desktop',
       use: {
         ...devices['Desktop Firefox'],
+        channel: 'firefox', // Force stable Firefox instead of Nightly
         viewport: { width: 1920, height: 1080 },
         launchOptions: {
           firefoxUserPrefs: {
@@ -146,6 +147,12 @@ export default defineConfig({
             'security.sandbox.gmp-plugin.level': 0,
             'security.sandbox.rdd.level': 0,
             'security.sandbox.socket.process.level': 0,
+          },
+          // Disable Firefox content sandbox at process level for CI compatibility.
+          // Required to prevent: "Sandbox: CanCreateUserNamespace() clone() failure: EPERM"
+          // and "Running Nightly as root in a regular user's session is not supported"
+          env: {
+            MOZ_DISABLE_CONTENT_SANDBOX: '1',
           },
         },
       },
