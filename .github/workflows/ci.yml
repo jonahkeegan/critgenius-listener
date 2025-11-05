@@ -251,7 +251,6 @@ jobs:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       PLAYWRIGHT_BROWSERS_PATH: "0"
       PLAYWRIGHT_DISABLE_SANDBOX: "1"
-      MOZ_DISABLE_CONTENT_SANDBOX: "1"
       VITE_E2E: "true"
       SHARD: "${{ matrix.shard }}"
     steps:
