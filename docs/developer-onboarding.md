@@ -158,6 +158,71 @@ troubleshooting.
 **All commands respect pnpm workspaces, so you can trigger them from any directory inside the
 repo.**
 
+### Visual Regression Testing with Percy
+
+**Overview:**
+
+- Percy provides automated visual regression testing to catch unintended UI changes across
+  responsive breakpoints and browsers.
+- Visual snapshots are captured during Playwright E2E tests and compared against approved baselines.
+- Percy integration runs automatically in CI for all pull requests.
+
+**Initial Setup:**
+
+1. **Get Percy Token:**
+   - Request `PERCY_TOKEN` from project maintainer or Percy dashboard
+   - Set as environment variable for local testing:
+     ```bash
+     export PERCY_TOKEN=your_token_here  # Linux/macOS
+     $env:PERCY_TOKEN="your_token_here"  # Windows PowerShell
+     ```
+   - Or add to `.env.local` (not committed): `PERCY_TOKEN=your_token_here`
+
+2. **Understand Baselines:**
+   - Baselines are approved reference snapshots stored in Percy's cloud
+   - New Percy snapshots are compared against baselines to detect visual changes
+   - Baselines are branch-aware and synchronized across team members
+
+**Running Percy Locally:**
+
+```bash
+# Ensure dev server is running
+pnpm dev  # Terminal 1
+
+# Run E2E tests with Percy (captures snapshots automatically)
+pnpm run test:e2e -- --project=chromium-desktop  # Terminal 2
+
+# Check terminal output for Percy build URL
+# Example: https://percy.io/critgenius/listener/builds/12345
+```
+
+**Reviewing Percy Builds:**
+
+- Open the Percy dashboard URL from terminal output
+- Review visual diffs at all three responsive widths (375px, 768px, 1920px)
+- Approve or reject changes based on intentionality
+- See [Percy Workflow Guide](./percy-workflow-guide.md) for detailed review process
+
+**Percy in CI:**
+
+- Percy runs automatically after `build-and-validate` job in `.github/workflows/ci.yml`
+- Protected branches (`main`, `production`): Percy failures block merge
+- Feature branches: Percy runs informational checks only
+- Fork PRs: Percy runs in dry-run mode (no token access required)
+
+**Troubleshooting:**
+
+- **Token missing:** Verify `PERCY_TOKEN` is set correctly
+- **Unexpected diffs:** See [Percy Troubleshooting Guide](./percy-troubleshooting.md)
+- **CI failures:** Check Percy dashboard link in GitHub Actions output
+
+**Learning Resources:**
+
+- [Percy Workflow Guide](./percy-workflow-guide.md) - Daily development workflow and snapshot
+  creation
+- [Visual Regression Standards](./visual-regression-standards.md) - Quality standards and thresholds
+- [Percy Troubleshooting Guide](./percy-troubleshooting.md) - Common issues and debugging
+
 ### Coverage Workflow Integration
 
 - Meet tiered thresholds enforced by `config/coverage.config.mjs` (shared ≥75%, client/server ≥50%,
