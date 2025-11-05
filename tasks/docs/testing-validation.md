@@ -1,0 +1,5 @@
+- [x] Examine current documentation in docs/testing-validation.md
+- [x] Verify actual Node.js version in .github/workflows/ci.yml
+- [x] Update documentation to match CI workflow version
+- [x] Validate the changes
+- [x] Complete task documentation
