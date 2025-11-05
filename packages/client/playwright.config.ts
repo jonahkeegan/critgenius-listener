@@ -137,10 +137,15 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         viewport: { width: 1920, height: 1080 },
         launchOptions: {
-          args: ['--no-sandbox'],
           firefoxUserPrefs: {
             'media.navigator.streams.fake': true,
             'media.navigator.permission.disabled': true,
+            // Disable all Firefox sandbox layers for CI containers without user namespaces.
+            'security.sandbox.content.level': 0,
+            'security.sandbox.gpu.level': 0,
+            'security.sandbox.gmp-plugin.level': 0,
+            'security.sandbox.rdd.level': 0,
+            'security.sandbox.socket.process.level': 0,
           },
         },
       },
