@@ -964,6 +964,202 @@ Uncovered files:
 | `pnpm validate:testing`     | Validate test structure        | After refactoring tests      |
 | `pnpm precommit:validate`   | Pre-commit checks              | Before committing            |
 
+### 2.5 Visual Regression Testing with Percy
+
+Visual regression testing validates UI consistency across code changes, browser versions, and
+responsive breakpoints. Percy integrates with Playwright E2E tests to automatically capture and
+compare visual snapshots.
+
+#### Overview
+
+**What Percy Tests:**
+
+- Component rendering across responsive widths (375px, 768px, 1920px)
+- Material-UI theme consistency
+- Cross-browser visual compatibility (Chromium, Firefox, WebKit)
+- Layout stability and responsive design behavior
+
+**Percy in Testing Pyramid:** Percy operates at the E2E layer, capturing visual snapshots during
+Playwright test execution. It complements functional E2E tests by detecting visual regressions that
+might pass functional assertions but break the user experience.
+
+**Integration Point:**
+
+```typescript
+// In Playwright E2E test
+import percySnapshot from '@percy/playwright';
+
+test('speaker mapping interface renders correctly', async ({ page }) => {
+  await page.goto('/speaker-mapping');
+  await page.waitForLoadState('networkidle');
+
+  // Functional assertions
+  expect(await page.locator('[data-testid="speaker-list"]').isVisible()).toBe(true);
+
+  // Visual regression check (captured at all configured widths)
+  await percySnapshot(page, 'SpeakerMapping - Initial state');
+});
+```
+
+#### Quick Start
+
+**1. Set Percy Token:**
+
+```bash
+# Get token from project maintainer or Percy dashboard
+export PERCY_TOKEN=your_token_here  # Linux/macOS
+$env:PERCY_TOKEN="your_token_here"  # Windows PowerShell
+```
+
+**2. Run E2E Tests with Percy:**
+
+```bash
+# Percy automatically captures snapshots during E2E test execution
+pnpm run test:e2e -- --project=chromium-desktop
+
+# Check terminal output for Percy build URL
+# Example: [percy] Build created: https://percy.io/critgenius/listener/builds/12345
+```
+
+**3. Review Visual Diffs:**
+
+- Navigate to Percy dashboard URL from terminal output
+- Review diffs at all responsive widths
+- Approve or reject changes based on intentionality
+
+#### Percy Configuration
+
+Percy behavior is controlled by `packages/client/percy.config.yml`:
+
+```yaml
+version: 2
+snapshot:
+  widths: [375, 768, 1920] # Mobile, Tablet, Desktop
+  minHeight: 1024
+  enableJavaScript: true
+  freezeAnimations: true
+
+  percyCSS: |
+    /* Hide dynamic elements */
+    [data-testid="timestamp"] { visibility: hidden !important; }
+
+    /* Freeze animations */
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+
+discovery:
+  networkIdleTimeout: 750
+```
+
+**Key Configuration Points:**
+
+- **Widths:** Aligned with Material-UI breakpoints (xs/sm, md, lg/xl)
+- **percyCSS:** Hides timestamps, live indicators, and freezes animations to prevent false positives
+- **networkIdleTimeout:** Ensures all async content loads before snapshot
+
+#### Percy in CI/CD
+
+Percy integrates with GitHub Actions CI pipeline:
+
+**CI Behavior Modes:**
+
+| Branch Type          | Percy Mode | Token Required | Enforcement            |
+| -------------------- | ---------- | -------------- | ---------------------- |
+| `main`, `production` | Compare    | ✅ Yes         | Blocks merge on diffs  |
+| Feature branches     | Compare    | ✅ Yes         | Informational only     |
+| Fork PRs             | Dry Run    | ❌ No          | Skip (no token access) |
+
+**CI Workflow Integration:**
+
+```yaml
+# .github/workflows/ci.yml (simplified)
+jobs:
+  visual-regression:
+    needs: build-and-validate
+    secrets: inherit
+    uses: ./.github/workflows/visual-regression.yml
+    with:
+      node-version-file: .node-version
+```
+
+Percy runs after successful build and test validation, uploading snapshots and comparing against
+approved baselines.
+
+#### When to Add Percy Snapshots
+
+**Required:**
+
+- ✅ Before merging PRs that modify UI components
+- ✅ After Material-UI theme updates
+- ✅ When updating responsive layouts or breakpoints
+
+**Recommended:**
+
+- ✅ New component implementations
+- ✅ Significant CSS refactoring
+- ✅ Accessibility enhancements affecting visual presentation
+
+**Optional:**
+
+- ⚠️ Backend-only changes (Percy runs but expects no diffs)
+- ⚠️ Documentation-only updates
+
+#### Snapshot Naming Conventions
+
+Follow consistent naming for easy identification:
+
+```typescript
+// ✅ Good: Descriptive, component-scoped names
+await percySnapshot(page, 'SpeakerMapping - Empty state');
+await percySnapshot(page, 'SpeakerMapping - With 3 speakers');
+await percySnapshot(page, 'TranscriptDisplay - Real-time updates');
+
+// ❌ Bad: Vague or generic names
+await percySnapshot(page, 'test1');
+await percySnapshot(page, 'homepage');
+```
+
+**Best Practices:**
+
+- Prefix with component name
+- Describe visual state clearly
+- Include variant context (e.g., "Mobile view", "Dark theme")
+
+#### Troubleshooting Percy Issues
+
+**Common Issues:**
+
+1. **Token Missing:**
+
+```bash
+# Error: PERCY_TOKEN environment variable not set
+# Solution: Set token for current session
+export PERCY_TOKEN="your_token"
+```
+
+2. **Unexpected Visual Diffs:**
+
+- Check if dynamic elements are hidden via `percyCSS`
+- Verify animations are frozen
+- Review Material-UI theme consistency
+- See [Percy Troubleshooting Guide](./percy-troubleshooting.md)
+
+3. **Baseline Not Updating:**
+
+- Ensure baselines approved in Percy dashboard
+- Check no new commits after approval
+- Verify CI uses correct branch for baseline comparison
+
+#### Learning Resources
+
+- **[Percy Workflow Guide](./percy-workflow-guide.md)** - Daily development workflow and snapshot
+  review
+- **[Visual Regression Standards](./visual-regression-standards.md)** - Quality standards and
+  thresholds
+- **[Percy Troubleshooting Guide](./percy-troubleshooting.md)** - Common issues and debugging
+
 ### 2.6 Browser E2E Workflow
 
 - **Install browsers**: `pnpm run test:e2e:install` downloads the Chromium/Firefox/WebKit builds
