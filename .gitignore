@@ -118,6 +118,8 @@ certificates/
 docs/cli-utilities-that-boost-productivity-guide.md
 docs/enhance-task-plan-with-cli-tools.md
 docs/sync-github-feature-branch-to-local-ENV-guide.md
+docs/refactoring-learnings.md
+docs/refactoring-progress.md
 implementation_plan.md
 # Task scratchpads (TODO/TEMP markdown helpers)
 **/*temp*.md

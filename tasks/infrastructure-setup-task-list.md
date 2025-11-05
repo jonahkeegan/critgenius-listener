@@ -384,7 +384,7 @@
           create troubleshooting section covering format-on-save not working, editor conflicts, and
           pre-commit hook failures; add quick reference for manual formatting commands and
           verification steps
-  - [ ] 3.5 Install and configure cross-browser testing using Playwright for Chrome, Firefox, Edge,
+  - [x] 3.5 Install and configure cross-browser testing using Playwright for Chrome, Firefox, Edge,
         Safari
     - [x] 3.5.1 Install Playwright dependencies and configure package.json scripts for cross-browser
           testing - Add Playwright packages to workspace root, configure test scripts, and ensure
@@ -402,11 +402,38 @@
     - [x] 3.5.5 Configure test parallelization with worker optimization and browser-specific
           sharding strategies - Set up parallel test execution, optimize worker count for CI/local
           environments, configure browser-specific test sharding for performance
-    - [ ] 3.5.6 Document Playwright testing patterns, browser compatibility requirements, and
-          troubleshooting procedures - Create comprehensive documentation covering test authoring
-          patterns, cross-browser compatibility guidelines, debugging workflows, and common issue
-          resolution
+    - [x 3.5.6 Document Playwright testing patterns, browser compatibility requirements, and
+      troubleshooting procedures - Create comprehensive documentation covering test authoring
+      patterns, cross-browser compatibility guidelines, debugging workflows, and common issue
+      resolution
   - [ ] 3.6 Set up visual regression testing for UI components using Percy or Chromatic
+    - [x] 3.6.1 Evaluate and select visual regression testing service (Percy vs Chromatic) -
+          Research Material-UI compatibility and responsive testing capabilities, assess Playwright
+          integration requirements, compare pricing models and CI/CD integration, evaluate snapshot
+          storage and visual diff algorithms, document service selection rationale. Result:
+          **Percy** selected as the testing service
+    - [x] 3.6.2 Configure Percy visual testing infrastructure and baseline setup - Install
+          dependencies and configure authentication tokens, set up visual testing configuration with
+          responsive viewport settings, create baseline screenshots for existing Material-UI
+          components (AudioCapturePanel, SpeakerIdentificationPanel, TranscriptWindow,
+          CharacterAssignmentGrid, VolumeVisualizer), configure desktop/tablet/mobile viewport
+          testing, validate initial test runs
+    - [x] 3.6.3 Implement Percy's component visual testing with Playwright integration - Create
+          visual test files following existing patterns from tests/e2e/ directory, integrate with
+          existing Playwright cross-browser suite (Chromium, Firefox, Edge, WebKit), set up visual
+          diff thresholds and approval workflows, implement automated visual testing for audio
+          interface and speaker mapping components, validate cross-browser visual consistency
+    - [ ] 3.6.4 Integrate Percy's visual regression testing with CI/CD pipeline - Add visual testing
+          job to GitHub Actions workflow following established patterns, configure automated
+          baseline updates and visual diff notifications with approval gates, set up branch-specific
+          visual testing strategies (feature vs main branches), implement visual testing failure
+          gates and review processes, configure artifact storage and reporting
+    - [ ] 3.6.5 Create comprehensive documentation and team guidelines for Percy integration -
+          Document visual regression testing workflow and best practices, create troubleshooting
+          guide for common visual diff issues and baseline updates, update developer onboarding
+          documentation (docs/developer-onboarding.md) with visual testing setup, establish visual
+          quality standards and review processes, create reference documentation for integration
+          with existing workflow
   - [ ] 3.7 Configure accessibility testing with jest-axe and automated WCAG compliance checking
   - [ ] 3.8 Set up performance testing with Lighthouse CI for Core Web Vitals monitoring
   - [ ] 3.9 Create mock testing infrastructure for Web Audio API and AssemblyAI service integration
