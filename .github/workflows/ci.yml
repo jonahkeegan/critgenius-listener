@@ -280,10 +280,9 @@ jobs:
       - name: Build client package
         run: pnpm --filter @critgenius/client run build
 
-      - name: Setup Playwright dependencies
-        uses: microsoft/playwright-github-action@v1
-        with:
-          install-deps: true
+      - name: Install Playwright system dependencies
+        shell: bash
+        run: pnpm --filter @critgenius/client exec -- playwright install --with-deps
 
       - name: Install Playwright browser
         shell: bash
