@@ -62,7 +62,8 @@ describe('vitest-axe accessibility integration', () => {
     expect(runOnly.values).toEqual(
       expect.arrayContaining(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     );
-    expect(ruleOverrides['media-has-caption']?.enabled).toBe(false);
+    expect(ruleOverrides['video-caption']?.enabled).toBe(false);
+    expect(ruleOverrides['media-has-caption']).toBeUndefined();
     expect(ruleOverrides['color-contrast']?.enabled).toBe(true);
   });
 
@@ -90,13 +91,13 @@ describe('vitest-axe accessibility integration', () => {
 
     const overrides: RunOptions = {
       rules: {
-        'media-has-caption': { enabled: true },
+        'video-caption': { enabled: true },
       },
     };
 
     const results = await runAxeAudit(testEnv.dom.window.document, overrides);
     const mediaRule = results.violations.find(
-      violation => violation.id === 'media-has-caption'
+      violation => violation.id === 'video-caption'
     );
 
     expect(mediaRule?.nodes.length).toBeGreaterThan(0);

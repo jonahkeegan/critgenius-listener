@@ -19,7 +19,7 @@ const CORE_ENFORCEMENTS: AxeRuleMap = {
 };
 
 const AUDIO_UI_EXCEPTIONS: AxeRuleMap = {
-  'media-has-caption': { enabled: false },
+  'video-caption': { enabled: false },
 };
 
 const mergeRuleEntries = (rules: readonly AxeRuleMap[]): AxeRuleMap => {

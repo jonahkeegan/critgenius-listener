@@ -1,4 +1,4 @@
-import axe from 'axe-core';
+import axeCore from 'axe-core';
 import type { AxeResults, ElementContext, RunOptions } from 'axe-core';
 
 import {
@@ -47,23 +47,77 @@ type AxeRuleMap = Record<
   { enabled: boolean } & Record<string, unknown>
 >;
 
-type AxeSpecInput = Parameters<typeof axe.configure>[0];
+type AxeSpecInput = Parameters<typeof axeCore.configure>[0];
 
 type RunOnlyObject = Extract<RunOptions['runOnly'], { type: unknown }>;
+
+type AxeCoreModule = typeof axeCore;
+
+let axeInstance: AxeCoreModule = axeCore;
+
+type AxeTestInstance = Pick<AxeCoreModule, 'configure' | 'reset' | 'run'> & {
+  getRules?: AxeCoreModule['getRules'];
+};
+
+export const __setAxeInstanceForTesting = (
+  instance?: AxeTestInstance
+): void => {
+  axeInstance = (instance as AxeCoreModule) ?? axeCore;
+};
+
+const AVAILABLE_RULE_IDS = (() => {
+  const getRules = (
+    axeCore as unknown as {
+      getRules?: () => Array<{ ruleId: string }>;
+    }
+  ).getRules;
+
+  if (typeof getRules !== 'function') {
+    return undefined;
+  }
+
+  try {
+    return new Set(getRules().map(rule => rule.ruleId));
+  } catch {
+    return undefined;
+  }
+})();
+
+const sanitizeRuleMap = (rules: AxeRuleMap): AxeRuleMap => {
+  if (!AVAILABLE_RULE_IDS) {
+    return { ...rules };
+  }
+
+  const sanitizedEntries = Object.entries(rules).filter(([ruleId]) =>
+    AVAILABLE_RULE_IDS.has(ruleId)
+  );
+
+  if (sanitizedEntries.length === 0) {
+    return { ...rules };
+  }
+
+  return sanitizedEntries.reduce<AxeRuleMap>((acc, [ruleId, config]) => {
+    acc[ruleId] = { ...config };
+    return acc;
+  }, {} as AxeRuleMap);
+};
+
+const RAW_DEFAULT_RULES = createDefaultRuleMap();
+const DEFAULT_RULES = sanitizeRuleMap(RAW_DEFAULT_RULES);
 
 const DEFAULT_SPEC: AxeSpec = {
   reporter: 'v2',
   branding: {
     application: 'CritGenius Listener Accessibility Tests',
   },
-  rules: createDefaultRuleMap(),
+  rules: DEFAULT_RULES,
 };
 
 const DEFAULT_RUN_OPTIONS: RunOptions = {
   reporter: 'v2',
   runOnly: createDefaultRunOnly(),
   resultTypes: createDefaultResultTypes(),
-  rules: createDefaultRuleMap(),
+  rules: DEFAULT_RULES,
 };
 
 let currentSpec: AxeSpec = cloneSpec(DEFAULT_SPEC);
@@ -137,7 +191,7 @@ const DOCUMENT_FRAGMENT_NODE =
     : /* DOM Level 2 */ 11;
 
 export const resetAxeConfiguration = (): void => {
-  axe.reset();
+  axeInstance.reset();
   currentSpec = cloneSpec(DEFAULT_SPEC);
   currentRunOptions = cloneRunOptions(DEFAULT_RUN_OPTIONS);
   configurationApplied = false;
@@ -151,7 +205,7 @@ export const configureAxe = (options: ConfigureAxeOptions = {}): void => {
   }
 
   if (!configurationApplied && !reset) {
-    axe.configure(convertSpecForAxe(currentSpec));
+    axeInstance.configure(convertSpecForAxe(currentSpec));
     configurationApplied = true;
   }
 
@@ -159,7 +213,7 @@ export const configureAxe = (options: ConfigureAxeOptions = {}): void => {
     currentSpec = mergeSpec(currentSpec, spec);
   }
 
-  axe.configure(convertSpecForAxe(currentSpec));
+  axeInstance.configure(convertSpecForAxe(currentSpec));
   configurationApplied = true;
 
   if (runOptions) {
@@ -210,7 +264,8 @@ export const runAxeAudit = async (
           ],
         });
       }
-      return await axe.run(resolvedContext, runOptions);
+
+      return await axeInstance.run(resolvedContext, runOptions);
     } finally {
       if (DEBUG_AXE_GLOBAL_BINDINGS) {
         console.log('[axe-globals] after-run', {
@@ -258,7 +313,7 @@ export const createA11yTestContext = (
 
 function ensureConfigured(): void {
   if (!configurationApplied) {
-    axe.configure(convertSpecForAxe(currentSpec));
+    axeInstance.configure(convertSpecForAxe(currentSpec));
     configurationApplied = true;
   }
 }
