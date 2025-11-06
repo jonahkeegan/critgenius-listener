@@ -110,6 +110,7 @@ context-inputs/
 workflow-docs/
 task-completion-reports/
 task-plans-cline/
+tasks/
 tasks/infrastructure-setup-task-list.md
 tasks/NUL
 # Local development certificates (do not commit HTTPS keys/certs)
