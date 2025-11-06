@@ -5,6 +5,29 @@
 
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
+import { installTestRuntime } from '@critgenius/test-utils/runtime';
+import { registerMatchers } from '@critgenius/test-utils/matchers';
+import {
+  configureAxe,
+  registerAccessibilityMatchers,
+} from '@critgenius/test-utils/accessibility';
+
+const runtime = installTestRuntime();
+runtime.installGlobals();
+registerMatchers();
+registerAccessibilityMatchers();
+
+configureAxe({
+  runOptions: {
+    rules: {
+      'media-has-caption': { enabled: false },
+      'color-contrast': { enabled: true },
+      label: { enabled: true },
+      'button-name': { enabled: true },
+      'link-name': { enabled: true },
+    },
+  },
+});
 
 if (typeof window !== 'undefined') {
   // Setup for client-side testing

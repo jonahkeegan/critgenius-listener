@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-10-27 | Segment Version: 1.5.0
+Last Updated: 2025-11-05 | Segment Version: 1.6.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -62,6 +62,25 @@ Parent Index: `systemPatterns-index.md`
   flake by coordinating fake timer advancement.
 - Validation: `pnpm --filter @critgenius/test-utils test` exercises package suites (24 tests) and
   `pnpm --filter @critgenius/test-utils build` verifies TypeScript emission.
+
+### Testing Infrastructure Pattern: Deterministic Axe Accessibility Harness (Task 3.7.1)
+
+- Pattern: Provide a single-source accessibility audit surface that serializes `axe-core` execution
+  with a promise-based mutex, guarantees global binding restoration, and shares CritGenius WCAG 2.1
+  AA defaults across Vitest suites.
+- Implementation: `@critgenius/test-utils/accessibility` exports `configureAxe`, `runAxeAudit`,
+  `bindWindowGlobals`, matcher registration helpers, and rule metadata. `runAxeAudit` acquires a
+  unique binding ID, awaits a mutex guard, binds globals via `bindWindowGlobals`, runs `axe.run`,
+  and ensures cleanup, with optional `DEBUG_AXE_GLOBAL_BINDINGS` logging. Infrastructure helpers
+  create isolated DOM fixtures that return teardown closures so audits remain hermetic even when
+  tests skip due to JSDOM canvas gaps.
+- Benefits: Eliminates flakiness caused by concurrent axe executions, keeps WCAG defaults
+  consistent, offers targeted debug instrumentation, restores Node globals between audits, and
+  prevents DOM state leakage across suites.
+- Validation: `pnpm test:infrastructure -- --run tests/infrastructure/vitest-axe-integration.test.ts`,
+  `pnpm -w lint`, `pnpm -w type-check`.
+- Follow-Ups: Migrate Material UI canvas audits to a browser-backed harness once Playwright
+  coverage lands; audit remaining Vitest suites for legacy timeout signatures.
 
 ### Testing Infrastructure Pattern: Workspace Playwright Orchestration (Task 3.5.1)
 
@@ -265,6 +284,8 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
+- 2025-11-05: Added deterministic axe accessibility harness pattern; incremented segment to
+  version 1.6.0.
 - 2025-10-27: Documented Playwright parallelization & CI matrix enforcement pattern; incremented
   segment to version 1.5.0.
 - 2025-10-27: Added workspace Playwright orchestration pattern; incremented segment to version

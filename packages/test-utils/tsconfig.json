@@ -24,6 +24,7 @@
       "@test-utils/patterns": ["./src/patterns/index.ts"],
       "@test-utils/matchers": ["./src/matchers/index.ts"],
       "@test-utils/runtime": ["./src/runtime/index.ts"],
+      "@test-utils/accessibility": ["./src/accessibility/index.ts"],
       "@scripts/windows-reserved-names": ["../../scripts/utils/windows-reserved-names.mjs"]
     }
   },
