@@ -168,7 +168,7 @@ let axeRunMutex: Promise<void> = Promise.resolve();
  */
 const withAxeMutex = async <T>(fn: () => Promise<T>): Promise<T> => {
   const previousRun = axeRunMutex;
-  let release: () => void;
+  let release: (() => void) | undefined;
 
   axeRunMutex = new Promise<void>(resolve => {
     release = resolve;
@@ -179,7 +179,7 @@ const withAxeMutex = async <T>(fn: () => Promise<T>): Promise<T> => {
   try {
     return await fn();
   } finally {
-    release!(); // Release next waiting audit
+    release?.(); // Release next waiting audit (if defined)
   }
 };
 

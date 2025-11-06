@@ -95,7 +95,7 @@ const mergedConfig: UserConfig = {
   },
 };
 
-// @ts-ignore - Duplicate Vite installations in node_modules cause incompatible Plugin types.
+// @ts-expect-error - Duplicate Vite installations in node_modules cause incompatible Plugin types.
 // The config is structurally valid and works at runtime. This is a known pnpm hoisting issue.
 assertUsesSharedConfig(mergedConfig);
 

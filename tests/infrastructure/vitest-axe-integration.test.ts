@@ -109,12 +109,12 @@ describe('vitest-axe accessibility integration', () => {
  * Critical pattern: Globals MUST be bound immediately after JSDOM creation,
  * before axe-core initialization, to prevent "Required window or document globals not defined" errors.
  *
- * Known Limitation: JSDOM's canvas implementation is incomplete and causes axe-core's
- * color-contrast rule to hang when testing complex components (e.g., Material UI) that trigger
- * canvas-dependent icon ligature detection. The 'canvas' npm package was tested but caused
- * rendering hangs. This is a known JSDOM architecture issue where the internal implementation
- * layer cannot be properly stubbed, so Vitest suites skip canvas-dependent assertions until
- * JSDOM's canvas support improves. See docs/jsdom-canvas-limitation.md for mitigation context.
+ * Known Limitation: JSDOM's canvas implementation is incomplete, which causes axe-core's
+ * color-contrast rule to hang when components rely on canvas-backed icon ligatures (for example,
+ * Material UI). Attempts to polyfill with the 'canvas' npm package still hang because JSDOM's
+ * internal canvas layer cannot be stubbed. Vitest suites therefore skip canvas-dependent
+ * assertions until JSDOM improves. For mitigation context and workarounds, see
+ * docs/jsdom-canvas-limitation.md (path relative to repo root).
  *
  * @returns Object containing the JSDOM instance and a function to restore previous globals
  */
@@ -189,10 +189,17 @@ async function loadMaterialUIButton(): Promise<
     );
   }
 
-  const FallbackButton: React.FC<
-    React.PropsWithChildren<Record<string, unknown>>
-  > = ({ children, ...rest }) =>
-    React.createElement('button', { type: 'button', ...rest }, children);
+  // Accept core button attributes while tolerating design-system props such as `variant`.
+  type FallbackButtonProps = React.PropsWithChildren<
+    React.ComponentPropsWithoutRef<'button'> & {
+      [key: string]: unknown;
+    }
+  >;
+
+  const FallbackButton: React.FC<FallbackButtonProps> = ({
+    children,
+    ...rest
+  }) => React.createElement('button', { type: 'button', ...rest }, children);
 
   return FallbackButton as React.ComponentType<Record<string, unknown>>;
 }

@@ -21,13 +21,16 @@ configureAxe({
   runOptions: {
     rules: {
       'media-has-caption': { enabled: false },
-      'color-contrast': { enabled: true },
-      label: { enabled: true },
-      'button-name': { enabled: true },
-      'link-name': { enabled: true },
     },
   },
 });
+
+/**
+ * Note: Accessibility rules like 'color-contrast', 'label', 'button-name',
+ * and 'link-name' are already enabled by default through the WCAG 2.1 AA
+ * baseline in @critgenius/test-utils/accessibility. We only override specific
+ * policy exceptions here rather than duplicating the shared defaults.
+ */
 
 if (typeof window !== 'undefined') {
   // Setup for client-side testing
