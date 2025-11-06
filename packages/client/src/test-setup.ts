@@ -5,6 +5,32 @@
 
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
+import { installTestRuntime } from '@critgenius/test-utils/runtime';
+import { registerMatchers } from '@critgenius/test-utils/matchers';
+import {
+  configureAxe,
+  registerAccessibilityMatchers,
+} from '@critgenius/test-utils/accessibility';
+
+const runtime = installTestRuntime();
+runtime.installGlobals();
+registerMatchers();
+registerAccessibilityMatchers();
+
+configureAxe({
+  runOptions: {
+    rules: {
+      'media-has-caption': { enabled: false },
+    },
+  },
+});
+
+/**
+ * Note: Accessibility rules like 'color-contrast', 'label', 'button-name',
+ * and 'link-name' are already enabled by default through the WCAG 2.1 AA
+ * baseline in @critgenius/test-utils/accessibility. We only override specific
+ * policy exceptions here rather than duplicating the shared defaults.
+ */
 
 if (typeof window !== 'undefined') {
   // Setup for client-side testing

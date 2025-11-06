@@ -25,6 +25,17 @@ For secure-context features (microphone access, Socket.IO WSS), complete the
 `docs/https-development-setup.md` walkthrough after cloning. Troubleshooting resources live in
 `docs/https-troubleshooting-guide.md`.
 
+### Accessibility Testing Harness
+
+- Shared matcher + axe defaults live in `@critgenius/test-utils/accessibility`. Import
+  `registerAccessibilityMatchers()` and `configureAxe()` in any package-level `test-setup.ts`
+  immediately after the runtime + base matchers registration; see the client setup for reference.
+- Validate the tooling stays wired by running
+  `pnpm test:infrastructure -- --run tests/infrastructure/vitest-axe-integration.test.ts` whenever
+  you touch accessibility dependencies or WCAG overrides.
+- Dive deeper into recommended patterns in `docs/accessibility-testing-patterns.md` before writing
+  new component audits.
+
 ### VSCode Setup (Prettier Format-on-Save)
 
 - Install the workspace recommendations when prompted (Prettier, ESLint, TypeScript Nightly).

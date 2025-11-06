@@ -7,3 +7,4 @@ export * from './runtime';
 export * from './performance';
 export * from './diagnostics';
 export * from './integration';
+export * from './accessibility';

@@ -46,6 +46,10 @@
     "./integration": {
       "import": "./dist/integration/index.js",
       "types": "./dist/integration/index.d.ts"
+    },
+    "./accessibility": {
+      "import": "./dist/accessibility/index.js",
+      "types": "./dist/accessibility/index.d.ts"
     }
   },
   "files": ["dist/**/*", "package.json", "README.md"],

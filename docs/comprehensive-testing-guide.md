@@ -1,6 +1,6 @@
 # Comprehensive Testing Guide
 
-**Version:** 1.1.0 **Last Updated:** 2025-10-31 **Target Audience:** Expert developers familiar with
+**Version:** 1.1.0 **Last Updated:** 2025-11-05 **Target Audience:** Expert developers familiar with
 testing concepts but new to CritGenius Listener's testing patterns **Status:** Complete
 
 ---
@@ -14,6 +14,9 @@ testing concepts but new to CritGenius Listener's testing patterns **Status:** C
 5. [Integration Testing Handbook](#5-integration-testing-handbook)
 6. [Performance Testing Guide](#6-performance-testing-guide)
 7. [Testing Best Practices](#7-testing-best-practices)
+
+- [Accessibility Audits with vitest-axe](#76-accessibility-audits-with-vitest-axe)
+
 8. [Troubleshooting & Common Issues](#8-troubleshooting--common-issues)
 9. [Validation & Quality Gates](#9-validation--quality-gates)
 
@@ -2530,6 +2533,26 @@ it('transcribes audio', async () => {
 - Tests are documentation - keep them in sync with code
 - If test becomes complex, consider if code needs refactoring
 - Delete obsolete tests immediately
+
+### 7.6 Accessibility Audits with vitest-axe
+
+- **Shared harness:** Import `configureAxe` and `registerAccessibilityMatchers` from
+  `@critgenius/test-utils/accessibility` inside each package test setup right after installing the
+  test runtime. This guarantees Vitest knows about `toPassA11yAudit` and the WCAG 2.1 AA defaults
+  before any assertions run.
+- **Audit usage:** Call `await expect(node).toPassA11yAudit()` against elements returned by
+  testing-library queries. Prefer role/name lookups so failures clearly identify how a user reaches
+  the component. For complex flows use `runAxeAudit` and assert against the returned `violations`
+  array instead of snapshots.
+- **Policy alignment:** The shared configuration disables `media-has-caption` per the audio
+  accessibility policy. All other WCAG 2.1 AA rules remain enforced. Document deviations inline and
+  add targeted assertions so temporary overrides do not linger unnoticed.
+- **Infrastructure guard:** Keep `tests/infrastructure/vitest-axe-integration.test.ts` green to
+  detect dependency drifts, rule changes, or matcher regressions. Run
+  `pnpm test:infrastructure -- --run tests/infrastructure/vitest-axe-integration.test.ts` when
+  updating accessibility tooling.
+- **Extended guidance:** See `docs/accessibility-testing-patterns.md` for detailed patterns,
+  troubleshooting steps, and example Material UI audits wired to CritGenius defaults.
 
 ---
 

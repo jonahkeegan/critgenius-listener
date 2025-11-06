@@ -1,7 +1,7 @@
 # Active Context Index
 
-- **Last Updated:** 2025-11-04
-- **Version:** 1.3.0
+- **Last Updated:** 2025-11-05
+- **Version:** 1.4.0
 - **System Status:** Active
 
 ## Overview
@@ -14,7 +14,7 @@ The Active Context system maintains current project state through a hybrid struc
 ## Active File
 
 **Currently Active:** `activeContext-current.md` **Status:** Active - Primary Current State
-**Current Row Count:** ~302 (target 150) **Last Updated:** 2025-11-04
+**Current Row Count:** ~310 (target 150) **Last Updated:** 2025-11-05
 
 ## File Registry
 
@@ -113,6 +113,9 @@ The Active Context system maintains current project state through a hybrid struc
 
 ## Recent Changes
 
+- 2025-11-05: Logged Vitest Axe accessibility integration (Task 3.7.1); updated current
+  capabilities, latest updates, decision log, and next steps with deterministic audit harness
+  details.
 - 2025-11-04: Logged Percy visual regression CI/CD pipeline (Task 3.6.4), updating current
   capabilities, latest updates, decision log, and next steps with reusable workflow details and
   branch protection follow-up.

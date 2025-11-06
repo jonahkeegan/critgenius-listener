@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-11-04 12:58 PST
-- **Version:** 2.51.0
+- **Last Updated:** 2025-11-05 09:52 PST
+- **Version:** 2.52.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -83,6 +83,8 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - ✅ Percy visual regression workflow integrated into CI via reusable GitHub Actions pipeline with
   token gating, Node version normalization, infrastructure guard tests, and contributor guidance
   (Task 3.6.4)
+- ✅ Deterministic axe accessibility harness ships with mutex-guarded `runAxeAudit`, global binding
+  helpers, WCAG 2.1 AA defaults, and infrastructure validation coverage (Task 3.7.1)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -114,6 +116,20 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-11-05 – Vitest Axe Accessibility Integration (Task 3.7.1)
+
+- Introduced `@critgenius/test-utils/accessibility` with mutex-guarded `runAxeAudit`, global binding
+  helpers, CritGenius WCAG 2.1 AA defaults, and optional `DEBUG_AXE_GLOBAL_BINDINGS` logging to keep
+  axe audits deterministic under Vitest + JSDOM.
+- Updated workspace dependencies, exports, and client test setup to auto-register matchers while
+  documenting the pnpm hoisting suppression in `packages/client/vitest.config.ts`.
+- Rebuilt `tests/infrastructure/vitest-axe-integration.test.ts` around isolated DOM harnesses,
+  explicit JSDOM canvas skips, and the Vitest 4 timeout signature; published accessibility testing
+  patterns, onboarding updates, and a JSDOM canvas limitation report outlining Playwright migration
+  guidance.
+- Validation: `pnpm -w lint`, `pnpm -w type-check`,
+  `pnpm test:infrastructure -- --run tests/infrastructure/vitest-axe-integration.test.ts`.
 
 ### 2025-11-04 – Percy Visual Test CI/CD Pipeline (Task 3.6.4)
 
@@ -254,6 +270,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-11-05:** Ratified deterministic axe accessibility harness with mutex serialization and
+  global binding restoration as the standard for Vitest accessibility audits, backed by
+  infrastructure validation and documentation alignment.
 - **2025-11-04:** Ratified Percy visual regression reusable workflow as a required CI gate with
   token enforcement, retry logic, and artifact retention backed by infrastructure tests and shared
   documentation.
@@ -265,11 +284,7 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   and fast-fail safeguards ahead of harness initialization.
 - **2025-10-27:** Adopted root-level Playwright orchestration pattern with delegated UI runner to
   the client package to keep workspace scripts consistent while preserving package-scoped
-  configuration.
-- **2025-10-27:** Ratified EditorConfig ↔ Prettier alignment as a mandatory cross-editor baseline
-  with documented reviewer checklist to maintain parity as formatting defaults evolve.
-- **2025-10-26:** Ratified VS Code workspace Prettier enforcement so save-on-format behaviour stays
-  consistent across contributors and onboarding includes validation guidance.
+  configuration. consistent across contributors and onboarding includes validation guidance.
 - **2025-10-23:** Ratified CI lint workflow guard as mandatory (infrastructure test + aligned
   scripts + contributor documentation) to ensure zero-warning enforcement and accessibility
   coverage.
@@ -288,12 +303,15 @@ _None - strategic foundation complete, ready for technical planning_
    (PR/Issue templates)
 2. **Protect Mainline with Percy Gate:** Add the `CI / Percy Visual Regression` status check to
    `main` and `production` branch protection rules once the workflow lands on default branches.
-3. **System Architecture Design:** Define component architecture and data flow patterns
-4. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
+3. **Audit Vitest Timeout Signatures:** Sweep remaining suites to adopt the
+   `it(name, { timeout }, fn)` options signature and keep infrastructure guards aligned with Vitest
+   4 expectations.
+4. **System Architecture Design:** Define component architecture and data flow patterns
+5. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
    assumptions
-5. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
+6. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
    tasks complete)
-6. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
+7. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
    during onboarding or dev container startup.
 
 ## Reference Links

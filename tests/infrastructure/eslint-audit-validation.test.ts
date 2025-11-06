@@ -3,6 +3,7 @@ import { ESLint } from 'eslint';
 import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 
 type LintResult = ESLint.LintResult;
 
@@ -22,6 +23,35 @@ const TEMP_FIXTURE_FOLDER = '__eslint-fixtures__';
 
 const isInTempFixtureFolder = (dirPath: string): boolean =>
   path.basename(dirPath) === TEMP_FIXTURE_FOLDER;
+
+const windowsRetryableCodes = new Set(['EPERM', 'EBUSY']);
+
+const removeWithRetry = async (targetPath: string): Promise<void> => {
+  const maxAttempts = process.platform === 'win32' ? 3 : 1;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      await fs.promises.rm(targetPath, { recursive: true, force: true });
+      return;
+    } catch (error) {
+      const { code } = error as NodeJS.ErrnoException;
+
+      if (code === 'ENOENT') {
+        return;
+      }
+
+      const retryable =
+        process.platform === 'win32' && code && windowsRetryableCodes.has(code);
+
+      if (!retryable || attempt === maxAttempts - 1) {
+        throw error;
+      }
+
+      const backoffMs = 25 * (attempt + 1);
+      await delay(backoffMs);
+    }
+  }
+};
 
 const lintFixture = async (
   fixtureName: string,
@@ -77,18 +107,18 @@ const lintFixture = async (
 
     return result;
   } finally {
-    fs.rmSync(absoluteTarget, { recursive: true, force: true });
+    await removeWithRetry(absoluteTarget);
 
     if (targetIsInTempFixtureFolder) {
       const uniqueDir = path.dirname(absoluteTarget);
       if (fs.existsSync(uniqueDir)) {
-        fs.rmSync(uniqueDir, { recursive: true, force: true });
+        await removeWithRetry(uniqueDir);
       }
 
       if (baseTempDir && fs.existsSync(baseTempDir)) {
         const remaining = fs.readdirSync(baseTempDir);
         if (remaining.length === 0) {
-          fs.rmSync(baseTempDir, { recursive: true, force: true });
+          await removeWithRetry(baseTempDir);
         }
       }
     } else if (
@@ -96,7 +126,7 @@ const lintFixture = async (
       fs.existsSync(targetDir) &&
       fs.readdirSync(targetDir).length === 0
     ) {
-      fs.rmSync(targetDir, { recursive: true, force: true });
+      await removeWithRetry(targetDir);
     }
   }
 };

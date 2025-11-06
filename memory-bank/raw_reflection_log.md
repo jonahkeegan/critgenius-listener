@@ -173,3 +173,32 @@ Improvements_Identified_For_Consolidation:
   assurance.
 - Add mobile browser support (iOS Safari, Android Chrome) for complete device coverage across
   critical platforms.
+
+---
+
+Date: 2025-11-05 TaskRef: "Task 3-7-1 Vitest Axe Accessibility Integration"
+
+Learnings:
+
+- Delivered `@critgenius/test-utils/accessibility` with deterministic `configureAxe`, `runAxeAudit`, and `bindWindowGlobals` helpers plus WCAG policy defaults, enabling consistent vitest-axe adoption across packages.
+- Hardened axe audits by wrapping `axe.run` in a mutex, binding JSDOM globals before each run, and documenting the unresolved canvas limitation that forces Material UI audits to remain skipped.
+- Expanded infrastructure coverage with `tests/infrastructure/vitest-axe-integration.test.ts`, verifying dependency declarations, matcher registration, and policy overrides while capturing known skips.
+- Authored supporting documentation (`docs/accessibility-testing-patterns.md`, onboarding updates, JSDOM limitation report) so teams can replicate the tooling without rediscovery.
+
+Success Patterns:
+
+- Reused shared test setup hooks and matcher registration to keep client package wiring minimal while guaranteeing consistent configuration.
+- Validated every change through the standard lint, type-check, and targeted infrastructure guard loop, ensuring deterministic regressions before rollout.
+- Leveraged the task completion report as the single source of truth to synchronize code, infrastructure checks, and documentation deliverables.
+
+Implementation Excellence:
+
+- Added debug-gated global binding telemetry for future investigations without polluting CI output.
+- Structured accessibility helpers with narrow exports and typed configuration snapshots, keeping the API stable for other packages.
+- Updated `it.skip` timeout usage to the new Vitest options signature, proactively clearing Vitest 4 deprecation warnings discovered during guard runs.
+
+Improvements_Identified_For_Consolidation:
+
+- Graduate skipped Material UI accessibility audits into a Playwright (or equivalent) browser harness once canvas support is viable.
+- Audit remaining Vitest suites for legacy timeout signatures to minimize upgrade friction during the Vitest 4 migration window.
+- Automate checks that `DEBUG_AXE_GLOBAL_BINDINGS` remains disabled in CI and surface alerts if verbose logging appears in future runs.

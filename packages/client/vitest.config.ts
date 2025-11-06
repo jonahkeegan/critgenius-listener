@@ -2,8 +2,8 @@
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL, URL as NodeURL } from 'node:url';
-import type { PluginOption } from 'vite';
-import type { UserConfig } from 'vitest/config';
+import { type PluginOption } from 'vite';
+import { defineConfig, type UserConfig } from 'vitest/config';
 
 import {
   assertUsesSharedConfig,
@@ -24,9 +24,6 @@ async function importWithNodeURL<T>(load: () => Promise<T>): Promise<T> {
   }
 }
 
-const { defineConfig } = (await importWithNodeURL(
-  () => import('vite')
-)) as typeof import('vite');
 const { default: react } = (await importWithNodeURL(
   () => import('@vitejs/plugin-react')
 )) as typeof import('@vitejs/plugin-react');
@@ -57,7 +54,7 @@ function clientDefine() {
   return { __CLIENT_ENV__: JSON.stringify(clientCfg) };
 }
 
-const sharedConfig = createVitestConfig({
+const sharedConfigExport = createVitestConfig({
   packageRoot,
   environment: 'jsdom',
   setupFiles: [
@@ -71,18 +68,19 @@ const sharedConfig = createVitestConfig({
     reportsDirectory: clientCoverageDirectory,
     thresholds: clientCoverageThresholds,
   },
-}) as UserConfig;
+});
 
-const basePlugins = Array.isArray(sharedConfig.plugins)
-  ? sharedConfig.plugins
-  : sharedConfig.plugins
-    ? [sharedConfig.plugins]
+const sharedConfig = sharedConfigExport as unknown as UserConfig;
+
+const sharedPlugins = sharedConfig.plugins;
+
+const basePlugins: PluginOption[] = Array.isArray(sharedPlugins)
+  ? (sharedPlugins as PluginOption[])
+  : sharedPlugins
+    ? [sharedPlugins as PluginOption]
     : [];
 
-const mergedPlugins: PluginOption[] = [
-  ...basePlugins,
-  react() as unknown as PluginOption,
-];
+const mergedPlugins: PluginOption[] = [...basePlugins, react() as PluginOption];
 
 const mergedConfig: UserConfig = {
   ...sharedConfig,
@@ -90,11 +88,15 @@ const mergedConfig: UserConfig = {
     ...(sharedConfig.define ?? {}),
     ...clientDefine(),
   },
-  plugins: mergedPlugins,
+  plugins: mergedPlugins as unknown as NonNullable<UserConfig['plugins']>,
   test: {
     ...(sharedConfig.test ?? {}),
     css: true,
   },
 };
 
-export default defineConfig(assertUsesSharedConfig(mergedConfig));
+// @ts-expect-error - Duplicate Vite installations in node_modules cause incompatible Plugin types.
+// The config is structurally valid and works at runtime. This is a known pnpm hoisting issue.
+assertUsesSharedConfig(mergedConfig);
+
+export default defineConfig(mergedConfig);
