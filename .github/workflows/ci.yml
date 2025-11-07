@@ -215,7 +215,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: vitest-path-diagnostics
+          name: build-validate-vitest-path-diagnostics
           path: artifacts/vitest-paths.log
           if-no-files-found: ignore
 
@@ -300,7 +300,7 @@ jobs:
           case "${{ matrix.browser }}" in
             chromium*) BROWSER="chromium" ;;
             firefox*) BROWSER="firefox" ;;
-            webkit*) BROWSER="webkit" ;;
+            webkit-desktop) BROWSER="webkit" ;;
             edge-desktop) BROWSER="msedge" ;;
             *)
               echo "Unknown browser: ${{ matrix.browser }}"
@@ -398,7 +398,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: vitest-path-diagnostics
+          name: e2e-tests-vitest-path-diagnostics-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
           path: |
             artifacts/vitest-paths.log
             artifacts/dev-server.log
