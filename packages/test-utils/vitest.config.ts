@@ -1,51 +1,21 @@
-/// <reference types="vitest" />
-import { dirname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-import {
-  assertUsesSharedConfig,
-  createVitestConfig,
-} from '../../vitest.shared.config';
-
-import type { CoverageConfigModule } from '../../config/coverage.config.types';
-
-const packageRoot = dirname(fileURLToPath(import.meta.url));
-
-const coverageConfigModule = (await import(
-  pathToFileURL(join(packageRoot, '..', '..', 'config', 'coverage.config.mjs'))
-    .href
-)) as CoverageConfigModule;
-const testUtilsTheme = coverageConfigModule.getCoverageTheme('test-utils');
-
-if (!testUtilsTheme) {
-  throw new Error('Missing test-utils coverage configuration');
-}
-
-const testUtilsCoverageDirectory = testUtilsTheme.reportsDirectory;
-const testUtilsCoverageThresholds = { ...testUtilsTheme.thresholds };
-
-export default defineConfig(
-  assertUsesSharedConfig(
-    createVitestConfig({
-      packageRoot,
-      environment: 'node',
-      setupFiles: [
-        '../../tests/setup/common-vitest-hooks.ts',
-        './src/test-setup.ts',
-      ],
-      tsconfigPath: `${packageRoot}/tsconfig.json`,
-      coverageOverrides: {
-        exclude: ['src/matchers/vitest.d.ts'],
-        reportsDirectory: testUtilsCoverageDirectory,
-        thresholds: testUtilsCoverageThresholds,
-      },
-      aliasOverrides: {
-        '@critgenius/test-utils': `${packageRoot}/src`,
-        '@critgenius/test-utils/runtime': `${packageRoot}/src/runtime/index.ts`,
-        '@critgenius/test-utils/matchers': `${packageRoot}/src/matchers/index.ts`,
-        '@critgenius/test-utils/performance': `${packageRoot}/src/performance/index.ts`,
-      },
-    })
-  )
-);
+export default defineConfig({
+  test: {
+    environment: 'node', // tests in this package run under node
+    globals: true,
+    isolate: true,
+    // limit test file scanning to relevant patterns to avoid scanning workspace
+    include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
+    coverage: {
+      provider: 'v8', // fastest, works well on Node 20
+      reporter: ['json', 'lcov', 'text-summary'],
+      reportsDirectory: 'coverage',
+      all: true,
+      include: ['src/**/*.ts'],
+      exclude: ['**/*.test.*', 'tests/**', 'node_modules/**', 'dist/**'],
+      // ensure the json reporter creates coverage-final.json that your aggregator expects
+      // vitest + v8 produces `coverage-*.json` and `coverage-final.json` (with reporter json)
+    },
+  },
+});
