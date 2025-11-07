@@ -65,9 +65,9 @@ export const __setAxeInstanceForTesting = (
   axeInstance = (instance as AxeCoreModule) ?? axeCore;
 };
 
-const AVAILABLE_RULE_IDS = (() => {
+const getAvailableRuleIds = (): Set<string> | undefined => {
   const getRules = (
-    axeCore as unknown as {
+    axeInstance as unknown as {
       getRules?: () => Array<{ ruleId: string }>;
     }
   ).getRules;
@@ -81,15 +81,17 @@ const AVAILABLE_RULE_IDS = (() => {
   } catch {
     return undefined;
   }
-})();
+};
 
 const sanitizeRuleMap = (rules: AxeRuleMap): AxeRuleMap => {
-  if (!AVAILABLE_RULE_IDS) {
+  const availableRuleIds = getAvailableRuleIds();
+
+  if (!availableRuleIds) {
     return { ...rules };
   }
 
   const sanitizedEntries = Object.entries(rules).filter(([ruleId]) =>
-    AVAILABLE_RULE_IDS.has(ruleId)
+    availableRuleIds.has(ruleId)
   );
 
   if (sanitizedEntries.length === 0) {
