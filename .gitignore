@@ -110,8 +110,8 @@ context-inputs/
 workflow-docs/
 task-completion-reports/
 task-plans-cline/
-tasks/
-tasks/infrastructure-setup-task-list.md
+# Task planning artifacts should remain local-only
+tasks/**
 tasks/NUL
 # Local development certificates (do not commit HTTPS keys/certs)
 certificates/

@@ -1,7 +1,7 @@
 # Active Context - CritGenius: Listener
 
-- **Last Updated:** 2025-11-05 09:52 PST
-- **Version:** 2.52.0
+- **Last Updated:** 2025-11-06 09:58 PST
+- **Version:** 2.53.0
 - **Dependencies:** projectbrief.md, productContext.md, systemPatterns-index.md,
   index-techContext.md
 
@@ -85,6 +85,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
   (Task 3.6.4)
 - ✅ Deterministic axe accessibility harness ships with mutex-guarded `runAxeAudit`, global binding
   helpers, WCAG 2.1 AA defaults, and infrastructure validation coverage (Task 3.7.1)
+- ✅ Material-UI accessibility testing framework delivered with renderer factory, CritGenius WCAG
+  matcher suite, audio UI validator helpers, and infrastructure guard enforcing component taxonomy
+  coverage (Task 3.7.2)
 - ✅ **MAJOR MILESTONE:** Complete Material-UI Integration & Validation System
   - Material-UI v7.3.1 fully integrated with CritGenius custom theme
   - Enhanced responsive design system with xxl breakpoint and fluid typography
@@ -116,6 +119,21 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 - Deployment and infrastructure patterns
 
 ## Latest Updates
+
+### 2025-11-06 – Material-UI Accessibility Test Patterns (Task 3.7.2)
+
+- Introduced `createMaterialUIAccessibilityRenderer` and `auditMaterialUIComponent` helpers in
+  `@critgenius/test-utils/accessibility` to hydrate CritGenius themes, bind deterministic teardown,
+  and keep Material UI audits hermetic under the mutex-backed axe harness.
+- Authored CritGenius-specific WCAG matcher suite (`toBeA11yCompliant`, `toHaveProperContrast`,
+  `toSupportKeyboardNavigation`, `toHaveProperFocusManagement`, etc.) plus audio UI validators for
+  real-time transcription, speaker mapping, media/session controls, and high-contrast guarantees.
+- Shipped `tests/infrastructure/accessibility-test-patterns.validation.test.ts` (50+ assertions)
+  guarding matcher registration, component taxonomy coverage, and configuration drift, while
+  updating documentation to capture the Material UI accessibility blueprint and D&D audio UI
+  policies.
+- Validation: `pnpm -w lint`, `pnpm -w type-check`, and
+  `pnpm test:infrastructure -- --run tests/infrastructure/accessibility-test-patterns.validation.test.ts`.
 
 ### 2025-11-05 – Vitest Axe Accessibility Integration (Task 3.7.1)
 
@@ -270,6 +288,9 @@ Based on comprehensive analysis of all Memory Bank files, the current project st
 
 ## Decision Log
 
+- **2025-11-06:** Ratified Material-UI accessibility renderer + matcher suite as the CritGenius
+  standard for component accessibility audits, coupling deterministic axe execution with domain
+  validators and infrastructure guards.
 - **2025-11-05:** Ratified deterministic axe accessibility harness with mutex serialization and
   global binding restoration as the standard for Vitest accessibility audits, backed by
   infrastructure validation and documentation alignment.
@@ -306,12 +327,14 @@ _None - strategic foundation complete, ready for technical planning_
 3. **Audit Vitest Timeout Signatures:** Sweep remaining suites to adopt the
    `it(name, { timeout }, fn)` options signature and keep infrastructure guards aligned with Vitest
    4 expectations.
-4. **System Architecture Design:** Define component architecture and data flow patterns
-5. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
+4. **Extend Accessibility Coverage:** Plan Playwright-backed Material-UI accessibility audits using
+   the new renderer/matcher blueprint once canvas limitations are resolved.
+5. **System Architecture Design:** Define component architecture and data flow patterns
+6. **Technical Requirements Analysis:** Validate real-time performance & audio pipeline latency
    assumptions
-6. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
+7. **Benchmark Evolution (Deferred):** Add JSON output + ESLint cache instrumentation (after infra
    tasks complete)
-7. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
+8. **IDE Automation Follow-Up:** Evaluate lightweight checks to detect missing Prettier extension
    during onboarding or dev container startup.
 
 ## Reference Links

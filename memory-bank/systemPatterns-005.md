@@ -1,7 +1,7 @@
 ```markdown
 # System Patterns – Testing Infrastructure & Quality Assurance (Segment 005)
 
-Last Updated: 2025-11-05 | Segment Version: 1.6.0
+Last Updated: 2025-11-06 | Segment Version: 1.7.0
 
 Parent Index: `systemPatterns-index.md`
 
@@ -81,6 +81,30 @@ Parent Index: `systemPatterns-index.md`
   `pnpm -w lint`, `pnpm -w type-check`.
 - Follow-Ups: Migrate Material UI canvas audits to a browser-backed harness once Playwright
   coverage lands; audit remaining Vitest suites for legacy timeout signatures.
+
+### Testing Infrastructure Pattern: Material-UI Accessibility Audit Blueprint (Task 3.7.2)
+
+- Pattern: Deliver reusable Material UI accessibility renderers, matchers, and audio UI validators
+  so component-level audits inherit CritGenius-specific WCAG posture without per-suite wiring.
+- Implementation: `packages/test-utils/src/accessibility/material-ui-renderers.ts` exports
+  `createMaterialUIAccessibilityRenderer` and `auditMaterialUIComponent` helpers that hydrate the
+  CritGenius theme, wrap renderers in deterministic teardown, and integrate with the mutex-backed
+  axe harness. `material-ui-matchers.ts` registers domain matchers covering WCAG compliance,
+  contrast, keyboard navigation, ARIA semantics, focus management, screen reader compatibility,
+  Material UI pattern adherence, and CritGenius audio UI policies. `audio-ui-integration.ts`
+  codifies D&D session requirements such as live transcription regions, speaker color-blind
+  palettes, media/session controls, and multi-participant accessibility signals. All helpers export
+  through `packages/test-utils/src/accessibility/index.ts` for TypeScript-aware consumption.
+- Benefits: Enables deterministic component audits that respect CritGenius audio UI needs,
+  eliminates duplicated accessibility heuristics across suites, and pairs renderer + matcher
+  tooling with infrastructure validation to prevent regression of component coverage.
+- Validation: `pnpm -w lint`, `pnpm -w type-check`, and
+  `pnpm test:infrastructure -- --run tests/infrastructure/accessibility-test-patterns.validation.test.ts`
+  (50+ assertions covering exports, taxonomy coverage, matcher registration, error messaging, and
+  drift safeguards).
+- Follow-Ups: Add shared fixtures for transcript/control states, integrate Playwright-backed
+  accessibility sweeps once canvas limitations lift, and extend infrastructure tests with targeted
+  snapshot sanity checks as component coverage expands.
 
 ### Testing Infrastructure Pattern: Workspace Playwright Orchestration (Task 3.5.1)
 
@@ -284,6 +308,8 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log
 
+- 2025-11-06: Added Material-UI accessibility audit blueprint pattern; incremented segment to
+  version 1.7.0.
 - 2025-11-05: Added deterministic axe accessibility harness pattern; incremented segment to
   version 1.6.0.
 - 2025-10-27: Documented Playwright parallelization & CI matrix enforcement pattern; incremented

@@ -1,14 +1,17 @@
 # Memory Bank Learnings Index
 
-**Last Updated:** 2025-10-27 09:30 PST **Version:** 1.13.0 **System Status:** Active
+**Last Updated:** 2025-11-06 15:18 PST **Version:** 1.14.0 **System Status:** Active
 
 ## Active File
 
-**Currently Active:** `consolidated-learnings-007.md` **Status:** Active **Current Row Count:** 271
-**Last Updated:** 2025-10-27 09:30 PST
+**Currently Active:** `consolidated-learnings-008.md` **Status:** Active **Current Row Count:** 197
+**Last Updated:** 2025-11-06 15:17 PST
 
 **Update Log:**
 
+- 2025-11-06 15:17 PST — Consolidated 7 entries from raw reflection log covering documentation
+  refactoring, accessibility testing, Material-UI integration, and E2E testing patterns into
+  `consolidated-learnings-008.md`; row count now 197.
 - 2025-10-27 09:30 PST — Captured lint workflow guardrails, consolidated ESLint onboarding docs, and
   editor formatting baselines in `consolidated-learnings-007.md`; row count now 271.
 - 2025-10-19 10:10 PST — Logged disposable ESLint fixture harness validation and linked lint
@@ -94,7 +97,7 @@
 
 ### consolidated-learnings-005.md
 
-- **Status:** Active - Contains Environment & Testing Patterns
+- **Status:** Completed/Archived
 - **Row Count:** 188
 - **Created:** 2025-08-21 21:22 PST
 - **Last Updated:** 2025-08-28 22:20 PST
@@ -127,7 +130,7 @@
 
 ### consolidated-learnings-007.md
 
-- **Status:** Active - Coverage & Testing Evolution
+- **Status:** Completed/Archived
 - **Row Count:** 271
 - **Created:** 2025-09-30 21:43 PST
 - **Last Updated:** 2025-10-27 09:30 PST
@@ -138,6 +141,20 @@
   performance harness hardening, coverage orchestration guardrails, tiered coverage enforcement,
   coverage configuration governance, lint validation harnesses, and cross-editor formatting
   baselines for the Listener monorepo.
+
+### consolidated-learnings-008.md
+
+- **Status:** Active - E2E Testing, Accessibility & Documentation
+- **Row Count:** 197
+- **Created:** 2025-11-06 15:16 PST
+- **Last Updated:** 2025-11-06 15:17 PST
+- **Primary Topics:** E2E Testing Infrastructure, Visual Regression Testing, Playwright
+  Optimization, Testing Documentation Architecture, Accessibility Testing, Material-UI Integration,
+  Documentation Refactoring, CLI Tools Enhancement
+- **Description:** Consolidated learnings covering comprehensive E2E testing patterns including
+  Socket.IO event buffering, Playwright parallelization, Percy visual regression testing,
+  documentation architecture refactoring, vitest-axe accessibility integration, Material-UI
+  accessibility frameworks, and tiered testing documentation systems with modern CLI tooling.
 
 ## Topic Index
 
@@ -163,6 +180,9 @@
 - **Type-Safe Configuration Injection** (consolidated-learnings-005.md)
 - **Environment Loader Utilities** (consolidated-learnings-005.md)
 - **Test Runtime State Isolation** (consolidated-learnings-007.md)
+- **Deterministic Socket.IO Event Buffering for Cross-Browser E2E Testing**
+  (consolidated-learnings-008.md)
+- **Sharded Playwright Parallelization with Matrix CI Integration** (consolidated-learnings-008.md)
 
 ### Project Management
 
@@ -175,12 +195,16 @@
 - **Git Hook Automation with Husky 9** (consolidated-learnings-001.md)
 - **Comprehensive Responsive Design System** (consolidated-learnings-001.md)
 - **Responsive Layout Development** (consolidated-learnings-001.md)
+- **Percy Visual Regression Testing with Material-UI Component Integration**
+  (consolidated-learnings-008.md)
 
 ### Performance & Optimization
 
 - **Context7 MCP Integration** (consolidated-learnings-001.md)
 - **Dependency Verification Workflow** (consolidated-learnings-001.md)
 - **Hardened Performance Benchmarks Under Real Timers** (consolidated-learnings-007.md)
+- **Monolithic Documentation Refactoring with Information Architecture**
+  (consolidated-learnings-008.md)
 
 ### Security & Best Practices
 
@@ -188,6 +212,7 @@
 - **Security Monitoring Process** (consolidated-learnings-001.md)
 - **Selective File Staging for Monorepos** (consolidated-learnings-001.md)
 - **Centralized Configuration Management in Monorepos** (consolidated-learnings-005.md)
+- **Vitest Axe Accessibility Integration for Deterministic Audits** (consolidated-learnings-008.md)
 
 ### Material UI & Theming
 
@@ -195,6 +220,8 @@
 - **MUI Theme Development Workflow** (consolidated-learnings-001.md)
 - **Audio Interface Design Patterns** (consolidated-learnings-001.md)
 - **Audio Interface Component Development** (consolidated-learnings-001.md)
+- **Material-UI Accessibility Test Framework with Audio UI Integration**
+  (consolidated-learnings-008.md)
 
 ### Development Workflow & Tooling
 
@@ -209,6 +236,8 @@
 - **VS Code Prettier Workspace Baseline** (consolidated-learnings-007.md)
 - **EditorConfig Cross-Editor Alignment** (consolidated-learnings-007.md)
 - **ESLint Onboarding Documentation Hub** (consolidated-learnings-007.md)
+- **Tiered Testing Documentation Architecture with Interactive Troubleshooting**
+  (consolidated-learnings-008.md)
 
 ### Testing Strategies
 
@@ -238,20 +267,20 @@
 
 ## Pagination Status
 
-- **Total Files:** 7 (1 active, 6 archived)
-- **Active File Capacity:** 97 remaining rows (300 max)
-- **Next File Number:** 008
+- **Total Files:** 8 (1 active, 7 archived)
+- **Active File Capacity:** 103 remaining rows (300 max)
+- **Next File Number:** 009
 
 ## System Notes
 
-- Learnings index initialized and operational
-- Ready to track consolidated learning files
-- Will update automatically as learnings are processed
-- Supports pagination system for knowledge management
-- Maintains topic cross-references for efficient retrieval
+- Successfully consolidated 7 entries from raw reflection log (2025-10-29 through 2025-11-06)
+- Added accessibility testing, Material-UI integration, and documentation refactoring patterns
+- Row count increased to 197 with comprehensive testing infrastructure patterns
+- All entries follow established Memory Bank structure and formatting conventions
+- Index updated to reflect active consolidated-learnings-008.md as the primary file
 
 ## Maintenance Schedule
 
-- **Next Review:** Upon first raw reflection log consolidation
+- **Next Review:** Upon next raw reflection log consolidation
 - **Periodic Review:** Every 10 consolidated entries or monthly
 - **Index Updates:** Automatic with each consolidation process
