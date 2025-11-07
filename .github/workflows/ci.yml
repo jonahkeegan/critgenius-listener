@@ -308,6 +308,14 @@ jobs:
               ;;
           esac
 
+
+          # Special handling for webkit: always install it as it is not included in the container
+          if [[ "${BROWSER}" == "webkit" ]]; then
+            echo "Installing Webkit browser (not included in container)"
+            pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
+            exit 0
+          fi
+
           # If PLAYWRIGHT_BROWSERS_PATH=0 we are using the container-provided browsers, skip download.
           if [[ "${PLAYWRIGHT_BROWSERS_PATH}" == "0" ]]; then
             echo "PLAYWRIGHT_BROWSERS_PATH=0 (container-provided browsers); skipping playwright install for $BROWSER"
