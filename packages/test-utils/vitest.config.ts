@@ -1,21 +1,47 @@
+/// <reference types="vitest" />
+import { dirname, join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
-  test: {
-    environment: 'node', // tests in this package run under node
-    globals: true,
-    isolate: true,
-    // limit test file scanning to relevant patterns to avoid scanning workspace
-    include: ['tests/**/*.test.ts', 'src/**/*.test.ts'],
-    coverage: {
-      provider: 'v8', // fastest, works well on Node 20
-      reporter: ['json', 'lcov', 'text-summary'],
-      reportsDirectory: 'coverage',
-      all: true,
-      include: ['src/**/*.ts'],
-      exclude: ['**/*.test.*', 'tests/**', 'node_modules/**', 'dist/**'],
-      // ensure the json reporter creates coverage-final.json that your aggregator expects
-      // vitest + v8 produces `coverage-*.json` and `coverage-final.json` (with reporter json)
-    },
-  },
-});
+import {
+  assertUsesSharedConfig,
+  createVitestConfig,
+} from '../../vitest.shared.config';
+
+import type { CoverageConfigModule } from '../../config/coverage.config.types';
+
+const packageRoot = dirname(fileURLToPath(import.meta.url));
+
+const coverageConfigModule = (await import(
+  pathToFileURL(join(packageRoot, '..', '..', 'config', 'coverage.config.mjs'))
+    .href
+)) as CoverageConfigModule;
+const testUtilsTheme = coverageConfigModule.getCoverageTheme('test-utils');
+
+if (!testUtilsTheme) {
+  throw new Error('Missing test-utils coverage configuration');
+}
+
+const testUtilsCoverageDirectory = testUtilsTheme.reportsDirectory;
+const testUtilsCoverageThresholds = { ...testUtilsTheme.thresholds };
+
+export default defineConfig(
+  // @ts-expect-error - Duplicate Vite installations in node_modules cause incompatible Plugin types.
+  // The config is structurally valid and works at runtime. This is a known pnpm hoisting issue.
+  assertUsesSharedConfig(
+    createVitestConfig({
+      packageRoot,
+      environment: 'node',
+      setupFiles: [
+        '../../tests/setup/common-vitest-hooks.ts',
+        './src/test-setup.ts',
+      ],
+      tsconfigPath: `${packageRoot}/tsconfig.json`,
+      coverageOverrides: {
+        exclude: ['tests/**'],
+        reportsDirectory: testUtilsCoverageDirectory,
+        thresholds: testUtilsCoverageThresholds,
+      },
+    })
+  )
+);
