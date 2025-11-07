@@ -258,8 +258,6 @@ jobs:
         # per browser to split the workload without impacting unrelated projects.
     env:
       CI: true
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-      PLAYWRIGHT_BROWSERS_PATH: "0"
       PLAYWRIGHT_DISABLE_SANDBOX: "1"
       VITE_E2E: "true"
       SHARD: "${{ matrix.shard }}"
