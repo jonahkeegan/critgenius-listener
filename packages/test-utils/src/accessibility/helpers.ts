@@ -555,7 +555,7 @@ function mergeRuleMaps(
       merged[ruleId] = { ...(merged[ruleId] ?? {}), ...config };
     }
   }
-  return merged;
+  return sanitizeRuleMap(merged);
 }
 
 function mergeRunOptions(base: RunOptions, override: RunOptions): RunOptions {
@@ -748,3 +748,11 @@ function convertSpecForAxe(spec: AxeSpec): AxeSpecInput {
 
 export const isAxeRuleEnforced = (ruleId: string): boolean =>
   Boolean(DEFAULT_ACCESSIBILITY_RULES[ruleId]?.enabled !== false);
+
+// Re-export convenience bindings for legacy imports. Some test suites import
+// matcher registration helpers directly from the helpers module. Re-exporting
+// keeps those imports stable while the dedicated matchers module owns the
+// implementation.
+// Re-export Material-UI matcher registration as well for legacy imports.
+export { registerAccessibilityMatchers } from './matchers';
+export { registerMaterialUIMatchers } from './material-ui-matchers';
