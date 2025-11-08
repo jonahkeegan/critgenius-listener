@@ -1,6 +1,6 @@
 # System Patterns Index
 
-Last Updated: 2025-11-05 | Index Version: 1.32.0 | Status: Active
+Last Updated: 2025-11-06 | Index Version: 1.33.0 | Status: Active
 
 ## Segment Registry
 
@@ -69,6 +69,7 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 | Browser Compatibility Matrix Implementation Pattern         | 005     |
 | VSCode Playwright Debugging Integration Pattern             | 005     |
 | Systematic Playwright Troubleshooting Workflow Pattern      | 005     |
+| Material-UI Accessibility Audit Blueprint                   | 005     |
 
 ## Maintenance Protocol
 
@@ -86,6 +87,8 @@ thematic domain emerges (e.g., AI augmentation patterns) exceeding existing scop
 
 ## Recent Changes
 
+- 2025-11-06: Added Material-UI accessibility audit blueprint pattern (Task 3.7.2) to segment 005;
+  index version bumped to 1.33.0.
 - 2025-11-05: Added deterministic axe accessibility harness pattern (Task 3.7.1) to segment 005;
   index version bumped to 1.32.0.
 - 2025-11-04: Added Percy visual regression CI gate pattern (Task 3.6.4) to segment 004; index

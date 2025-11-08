@@ -55,6 +55,16 @@ beforeEach(() => {
   axeMock.run.mockReset();
   axeMock.reset.mockClear();
   axeMock.getRules.mockReset();
+
+  // Mock getRules to return rule IDs so custom rules aren't filtered out
+  axeMock.getRules.mockReturnValue([
+    { ruleId: 'color-contrast' },
+    { ruleId: 'video-caption' },
+    { ruleId: 'custom-run-rule' },
+    { ruleId: 'custom-override' },
+    { ruleId: 'custom-spec-rule' },
+  ]);
+
   axeMock.run.mockImplementation(async () => buildAxeResults());
   __setAxeInstanceForTesting(axeMock as unknown as typeof import('axe-core'));
   resetAxeConfiguration();

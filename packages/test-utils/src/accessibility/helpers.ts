@@ -65,9 +65,9 @@ export const __setAxeInstanceForTesting = (
   axeInstance = (instance as AxeCoreModule) ?? axeCore;
 };
 
-const AVAILABLE_RULE_IDS = (() => {
+const getAvailableRuleIds = (): Set<string> | undefined => {
   const getRules = (
-    axeCore as unknown as {
+    axeInstance as unknown as {
       getRules?: () => Array<{ ruleId: string }>;
     }
   ).getRules;
@@ -81,15 +81,17 @@ const AVAILABLE_RULE_IDS = (() => {
   } catch {
     return undefined;
   }
-})();
+};
 
 const sanitizeRuleMap = (rules: AxeRuleMap): AxeRuleMap => {
-  if (!AVAILABLE_RULE_IDS) {
+  const availableRuleIds = getAvailableRuleIds();
+
+  if (!availableRuleIds) {
     return { ...rules };
   }
 
   const sanitizedEntries = Object.entries(rules).filter(([ruleId]) =>
-    AVAILABLE_RULE_IDS.has(ruleId)
+    availableRuleIds.has(ruleId)
   );
 
   if (sanitizedEntries.length === 0) {
@@ -555,7 +557,7 @@ function mergeRuleMaps(
       merged[ruleId] = { ...(merged[ruleId] ?? {}), ...config };
     }
   }
-  return merged;
+  return sanitizeRuleMap(merged);
 }
 
 function mergeRunOptions(base: RunOptions, override: RunOptions): RunOptions {
@@ -748,3 +750,11 @@ function convertSpecForAxe(spec: AxeSpec): AxeSpecInput {
 
 export const isAxeRuleEnforced = (ruleId: string): boolean =>
   Boolean(DEFAULT_ACCESSIBILITY_RULES[ruleId]?.enabled !== false);
+
+// Re-export convenience bindings for legacy imports. Some test suites import
+// matcher registration helpers directly from the helpers module. Re-exporting
+// keeps those imports stable while the dedicated matchers module owns the
+// implementation.
+// Re-export Material-UI matcher registration as well for legacy imports.
+export { registerAccessibilityMatchers } from './matchers';
+export { registerMaterialUIMatchers } from './material-ui-matchers';

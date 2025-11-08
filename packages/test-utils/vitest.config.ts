@@ -26,6 +26,8 @@ const testUtilsCoverageDirectory = testUtilsTheme.reportsDirectory;
 const testUtilsCoverageThresholds = { ...testUtilsTheme.thresholds };
 
 export default defineConfig(
+  // @ts-expect-error - Duplicate Vite installations in node_modules cause incompatible Plugin types.
+  // The config is structurally valid and works at runtime. This is a known pnpm hoisting issue.
   assertUsesSharedConfig(
     createVitestConfig({
       packageRoot,
@@ -36,15 +38,9 @@ export default defineConfig(
       ],
       tsconfigPath: `${packageRoot}/tsconfig.json`,
       coverageOverrides: {
-        exclude: ['src/matchers/vitest.d.ts'],
+        exclude: ['tests/**'],
         reportsDirectory: testUtilsCoverageDirectory,
         thresholds: testUtilsCoverageThresholds,
-      },
-      aliasOverrides: {
-        '@critgenius/test-utils': `${packageRoot}/src`,
-        '@critgenius/test-utils/runtime': `${packageRoot}/src/runtime/index.ts`,
-        '@critgenius/test-utils/matchers': `${packageRoot}/src/matchers/index.ts`,
-        '@critgenius/test-utils/performance': `${packageRoot}/src/performance/index.ts`,
       },
     })
   )

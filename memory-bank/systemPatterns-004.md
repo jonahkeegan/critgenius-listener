@@ -1,6 +1,6 @@
 # System Patterns – Quality Gates & Coverage Governance (Segment 004)
 
-Last Updated: 2025-11-04 | Segment Version: 1.9.0
+Last Updated: 2025-11-06 | Segment Version: 1.9.1
 
 Parent Index: `systemPatterns-index.md`
 
@@ -89,6 +89,8 @@ Parent Index: `systemPatterns-index.md`
 - **Validation:** `pnpm run test:infrastructure -- --reporter=dot`
   (`tests/infrastructure/percy-ci-integration.test.ts`) combined with GitHub Actions summary review
   to confirm mode routing, retry attempt logging, and artifact retention behaviour.
+- **Related Patterns:** Coordinates with the Material-UI accessibility audit blueprint (Segment
+  005) to keep visual and accessibility regression gates aligned on shared component coverage.
 
 ## Lint & Runtime Stability Patterns
 
@@ -231,6 +233,7 @@ Parent Index: `systemPatterns-index.md`
 
 ## Change Log (Segment 004)
 
+- 2025-11-06: Linked Percy visual regression CI gate pattern to Material-UI accessibility audit blueprint; version bump to 1.9.1.
 - 2025-11-04: Added Percy visual regression CI gate pattern; version bump to 1.9.0.
 - 2025-10-29: Added Playwright socket event buffer observability pattern; version bump to 1.8.0.
 - 2025-10-28: Added Playwright runtime config validation pattern; version bump to 1.7.0.

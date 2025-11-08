@@ -40,6 +40,11 @@ jobs:
       - name: Build test-utils package
         run: pnpm --filter @critgenius/test-utils run build
 
+      - name: Coverage debug listing
+        run: |
+          echo "Listing coverage directories before thematic coverage"
+          find coverage -maxdepth 3 -type f -print || echo "no coverage files found yet"
+
       - name: Run thematic coverage
         run: pnpm run test:coverage:thematic
 
@@ -75,6 +80,11 @@ jobs:
         run: |
           ls -la coverage
           cat coverage/thematic-summary.json
+
+      - name: Coverage debug listing
+        run: |
+          echo "Listing coverage directories"
+          find coverage -maxdepth 3 -type f -print || echo "no coverage files found"
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
@@ -205,7 +215,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: vitest-path-diagnostics
+          name: build-validate-vitest-path-diagnostics
           path: artifacts/vitest-paths.log
           if-no-files-found: ignore
 
@@ -248,8 +258,6 @@ jobs:
         # per browser to split the workload without impacting unrelated projects.
     env:
       CI: true
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-      PLAYWRIGHT_BROWSERS_PATH: "0"
       PLAYWRIGHT_DISABLE_SANDBOX: "1"
       VITE_E2E: "true"
       SHARD: "${{ matrix.shard }}"
@@ -284,28 +292,59 @@ jobs:
         shell: bash
         run: pnpm --filter @critgenius/client exec -- playwright install-deps
 
-      - name: Install Playwright browser
+      - name: Install Playwright browser (conditional)
         shell: bash
         run: |
           case "${{ matrix.browser }}" in
             chromium*) BROWSER="chromium" ;;
             firefox*) BROWSER="firefox" ;;
-            webkit*) BROWSER="webkit" ;;
+            webkit-desktop) BROWSER="webkit" ;;
             edge-desktop) BROWSER="msedge" ;;
             *)
               echo "Unknown browser: ${{ matrix.browser }}"
               exit 1
               ;;
           esac
+
+
+          # Special handling for webkit: always install it as it is not included in the container
+          if [[ "${BROWSER}" == "webkit" ]]; then
+            echo "Installing Webkit browser (not included in container)"
+            pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
+            exit 0
+          fi
+
+          # If PLAYWRIGHT_BROWSERS_PATH=0 we are using the container-provided browsers, skip download.
+          if [[ "${PLAYWRIGHT_BROWSERS_PATH}" == "0" ]]; then
+            echo "PLAYWRIGHT_BROWSERS_PATH=0 (container-provided browsers); skipping playwright install for $BROWSER"
+            exit 0
+          fi
+
+          # Only attempt to install the browser when it is not already present
+          # (this check uses the common Playwright cache dir -- adjust if you set a custom path)
+          CACHE_DIR="${HOME}/.cache/ms-playwright"
+          if [[ -d "${CACHE_DIR}/${BROWSER}" ]]; then
+            echo "Cached Playwright browser found at ${CACHE_DIR}/${BROWSER}; skipping install"
+            exit 0
+          fi
+
           pnpm --filter @critgenius/client exec -- playwright install --with-deps "$BROWSER"
 
       - name: Start dev server
         shell: bash
         run: |
-          pnpm --filter @critgenius/client run dev -- --host 127.0.0.1 --port 5173 &
+          mkdir -p artifacts
+          pnpm --filter @critgenius/client run dev -- --host 127.0.0.1 --port 5173 > artifacts/dev-server.log 2>&1 &
           DEV_SERVER_PID=$!
           echo "DEV_SERVER_PID=$DEV_SERVER_PID" >> "$GITHUB_ENV"
-          timeout 60 bash -c 'until curl -sf http://127.0.0.1:5173/; do sleep 1; done'
+
+          # wait up to 120s for server to respond
+          timeout 120 bash -c 'until curl -sf http://127.0.0.1:5173/ >/dev/null 2>&1; do sleep 1; done' || {
+            echo "Dev server failed to start within 120s; dumping dev-server.log:"
+            sed -n '1,400p' artifacts/dev-server.log || true
+            kill ${DEV_SERVER_PID} || true
+            exit 1
+          }
 
       - name: Run Playwright tests
         shell: bash
@@ -352,6 +391,16 @@ jobs:
           name: playwright-report-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
           path: packages/client/playwright-report/
           retention-days: 7
+
+      - name: Upload path diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-vitest-path-diagnostics-${{ matrix.browser }}${{ steps.artifact-meta.outputs.suffix }}
+          path: |
+            artifacts/vitest-paths.log
+            artifacts/dev-server.log
+          if-no-files-found: ignore
 
       - name: Upload failure artifacts
         if: failure()

@@ -66,7 +66,7 @@
     "setup": "pnpm install && pnpm run build",
     "type-check": "pnpm --filter @critgenius/shared run build && pnpm --filter @critgenius/test-utils run build && pnpm run type-check:workspace",
     "type-check:workspace": "pnpm --recursive run type-check",
-    "prepare": "husky",
+    "prepare": "[[ -d .git ]] && husky install || echo 'Skipping husky install, not in a git repo'",
     "precommit:validate": "node scripts/precommit-validate.mjs",
     "precommit:simulate": "node scripts/precommit-simulate.mjs",
     "precommit:benchmark": "node scripts/precommit-benchmark.mjs",
